@@ -53,4 +53,5 @@
   'Financial Data Field' => 'נתונים כספיים שדה',
   'Select a model type' => 'בחר סוג מודל',
   'Select a field' => 'בחר שדה',
+  'Default For' => 'ברירת מחדל עבור',
 );

@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -86,7 +85,7 @@ class SiteController extends x2base {
                 'actions' => array(
                     'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
                     'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
-                    'mobileResetPassword'),
+                    'mobileResetPassword', 'webleadCaptcha', 'needsTwoFactor'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -106,12 +105,12 @@ class SiteController extends x2base {
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen'),
+                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen', 'viewEmbedded'),
                 'users' => array('@'),
             ),
             array('allow',
                 'actions' => array('motd'),
-                'users' => array('admin'),
+                'expression' => 'Yii::app()->params->isAdmin',
             ),
             array('deny',
                 'users' => array('*')
@@ -126,6 +125,9 @@ class SiteController extends x2base {
                 'class' => 'CCaptchaAction',
                 'backColor' => 0xFFFFFF,
                 'testLimit' => 1,
+            ),
+            'webleadCaptcha' => array(
+                'class' => 'WebFormCaptchaAction',
             ),
             // page action renders "static" pages stored under 'protected/views/site/pages'
             // They can be accessed via: index.php?r=site/page&view=FileName
@@ -591,7 +593,11 @@ class SiteController extends x2base {
             $visStr = "";
             foreach ($newOrder as $item) {
                 $pos = array_search($item, $order);
-                $vis = $visibility[$pos];
+                if (array_key_exists($pos, $visibility)) {
+                    $vis = $visibility[$pos];
+                } else {
+                    $vis = 1;
+                }
                 $str.=$item . ":";
                 $visStr.=$vis . ":";
             }
@@ -739,24 +745,59 @@ class SiteController extends x2base {
      * @param string $name
      */
     private function handleFeedTypeUpload($model, $name) {
+        $newEventIdTimestamp = 0;
         $event = new Events;
         $event->user = Yii::app()->user->getName();
         if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
             $event->text = $_POST['attachmentText'];
-        } else {
+        } /*else {
             $event->text = Yii::t('app', 'Attached file: ');
+        }*/
+        $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+        $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
+        $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+        if ($location && $isCheckIn) {
+            // Only associate location when a checkin is requested
+            $event->locationId = $location->id;
+            $staticMap = $location->generateStaticMap();
+            $event->text .= '$|&|$' . $geoCoords['comment'] . '$|&|$'; //temporary dividers to be parsed later
+            $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
         }
         $event->type = 'media';
+        $event->subtype = 'Social Post';
         $event->timestamp = time();
         $event->lastUpdated = time();
-        $event->associationId = $model->id;
-        $event->associationType = 'Media';
+        $event->associationId = $model->associationId;
+        $event->associationType = 'User';
+        if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+            $event->recordLinks = $decodedLinks;
+        $newEventIdTimestamp = $event->timestamp;
+        if ($model->private) 
+            $event->visibility = 0;
+        $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+        if ($location)
+            $event->locationId = $location->id;
         if ($event->save()) {
             //$this->redirect('profile');
+            if (!empty($staticMap)) {
+                if (!empty($geocodedAddress)) { 
+                    $event->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
+                        Formatter::formatDateTime(time());
+                }
+                $event->saveRaw(Yii::app()->params->profile, $staticMap);
+            }
         } else {
             unlink('uploads/protected/' . $name);
         }
-
+        
+        $event = X2Model::model('Events')->findByAttributes(array('timestamp' => $newEventIdTimestamp));
+        // relate file to event
+        $join = new RelationshipsJoin ('insert', 'x2_events_to_media');
+        $join->eventsId = $event->id;
+        $join->mediaId = $model->id;
+        if (!$join->save ()) {
+            throw new CException (implode (';', $join->getAllErrorMessages ()));
+        }
 
         if (isset($_POST['profileId'])) {
             $this->redirect(array('/profile/view', 'id' => $_POST['profileId']));
@@ -878,14 +919,16 @@ class SiteController extends x2base {
                             $event->user = Yii::app()->user->getName();
                             if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
                                 $event->text = $_POST['attachmentText'];
-                            } else {
+                            } /*else {
                                 $event->text = Yii::t('app', 'Attached file: ');
-                            }
+                            }*/
                             $event->type = 'media';
                             $event->timestamp = time();
                             $event->lastUpdated = time();
                             $event->associationId = $model->id;
                             $event->associationType = 'Media';
+                            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                                $event->recordLinks = $decodedLinks;
                             $event->save();
                             if (Auxlib::isAjax()) return print("success");
                             $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
@@ -958,8 +1001,11 @@ class SiteController extends x2base {
                         $model->associationId = $_POST['associationId'];
                     if (isset($_POST['associationType']))
                         $model->associationType = $_POST['associationType'];
-                    if (isset($_POST['private']))
-                        $model->private = true;
+                    if (isset($_POST['private']) && !strcmp($_POST['private'],'true')) {
+                        $model->private = 1;
+                    } else {
+                        $model->private = 0;
+                    }
                     $model->uploadedBy = Yii::app()->user->getName();
                     $model->createDate = time();
                     $model->lastUpdated = time();
@@ -1368,6 +1414,19 @@ class SiteController extends x2base {
     }
 
     /**
+     * View a linked page as an iframe to provide X2CRM context
+     */
+    public function actionViewEmbedded($id) {
+        $model = Modules::model()->findByPk($id);
+        if (!$model || !$model->linkOpenInFrame)
+            throw new CHttpException('400', 'Invalid request.');
+        $this->render('viewEmbedded', array(
+            'title' => $model->title,
+            'url' => $model->linkHref,
+        ));
+    }
+
+    /**
      * View all notifications for the current web user.
      */
     public function actionViewNotifications() {
@@ -1470,6 +1529,22 @@ class SiteController extends x2base {
     }
 
     /**
+     * Test is a user needs two factor auth, and send a verification code if so
+     */
+    public function actionNeedsTwoFactor() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
+        $model = Profile::model()->findByAttributes(array(
+            'username' => $username,
+        ));
+        if ($model && $model->enableTwoFactor) {
+            if (!$model->requestTwoFA(true))
+                throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
+            else echo 'yes';
+        }
+    }
+
+    /**
      * Log in using a Google account.
      */
     public function actionGoogleLogin() {
@@ -1515,6 +1590,7 @@ class SiteController extends x2base {
                         $ip = $this->getRealIp();
 
                         Session::cleanUpSessions();
+                        SessionToken::cleanUpSessions();
                         if (isset($_SESSION['sessionId']))
                             $sessionId = $_SESSION['sessionId'];
                         else
@@ -1533,17 +1609,7 @@ class SiteController extends x2base {
                         } else {
                             $session->lastUpdated = time();
                         }
-                        // x2base::cleanUpSessions();
-                        // $session = X2Model::model('Session')->findByAttributes(array('user'=>$userRecord->username,'IP'=>$ip));
-                        // if(isset($session)) {
-                        // $session->lastUpdated = time();
-                        // } else {
-                        // $session = new Session;
-                        // $session->user = $model->username;
-                        // $session->lastUpdated = time();
-                        // $session->status = 1;
-                        // $session->IP = $ip;
-                        // }
+                        
                         $session->save();
                         SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
                         $userRecord->login = time();
@@ -2347,7 +2413,7 @@ class SiteController extends x2base {
             }
             $missingFields = array_diff(array_keys($model->attributes), array_keys($data));
             foreach($missingFields as $attr){
-                if(!in_array($attr, $model->MergeableBehavior->restrictedFields)){
+                if(in_array($attr, array_keys($fields)) && !in_array($attr, $model->MergeableBehavior->restrictedFields)){
                     $model->MergeableBehavior->setMergedField($fields[$attr], $models);
                 }
             }

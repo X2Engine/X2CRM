@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 (function () {
@@ -94,6 +93,69 @@ ProfileSettings.prototype.highlightSave = function () {
 
 ProfileSettings.prototype.getCurrentTheme = function () {
     return $('[name="preferences[themeName]"]').val ();
+};
+
+ProfileSettings.prototype.initiateTwoFAActivation = function (elem) {
+    var that = this;
+    if ($(elem).is(':checked')) {
+        if (confirm(this.translations.enableTwoFAMessage)) {
+            $.ajax({
+                url: this.beginTwoFAUrl,
+                type: 'POST',
+                success: function() {
+                    alert(that.translations.twoFACodeSentMessage);
+                    $(".twofa-activation").show();
+                    $("input.twofa-activation[type='text']").focus();
+                    $("#code.twofa-activation").val('');
+                },
+                error: function(data) {
+                    alert(data.responseText);
+                    $(elem).attr('checked', false);
+                    $(".twofa-activation").hide();
+                    $("#code.twofa-activation").val('');
+                }
+            });
+        } else {
+            $(elem).attr('checked', false);
+            $(".twofa-activation").hide();
+        }
+    } else {
+        if (confirm(this.translations.disableTwoFAMessage)) {
+            $(".twofa-activation").hide();
+            $.ajax({
+                url: this.disableTwoFAUrl,
+                type: 'POST',
+                success: function() {
+                    alert(that.translations.disableTwoFASuccessMessage);
+                },
+                error: function() {
+                    console.log('Failed to disable two factor auth');
+                }
+            });
+        } else {
+            $(elem).attr('checked', true);
+        }
+    }
+};
+
+ProfileSettings.prototype.activateTwoFA = function (code) {
+    var that = this;
+    if (code) {
+        $.ajax({
+            url: this.completeTwoFAUrl + '?code=' + code,
+            type: 'POST',
+            success: function() {
+                alert(that.translations.enableTwoFASuccessMessage);
+                $(".twofa-activation").hide();
+            },
+            error: function(data) {
+                alert(data.responseText);
+                $(".twofa-activation").hide();
+                $("#code.twofa-activation").val('');
+                $("#Profile_enableTwoFactor").removeAttr('checked');
+            }
+        });
+    }
 };
 
 ProfileSettings.prototype._setUpModuleOverrides = function () {
@@ -363,6 +425,16 @@ function setupPrefsEventListeners () {
         selectPreferredColor (
             'background', '#F5F4DE', $(this), $('div.grid-view table.items tr.even'));
 	});
+
+    $('input.twofa-activation[type="button"]').click(function() {
+        var code = $('input.twofa-activation[type="text"]').val();
+        x2.profileSettings.activateTwoFA(code);
+    });
+    $('input.twofa-activation[type="text"]').keypress(function(e) {
+        if (e.which != 13)  return; // 13 is the Enter Key
+        var code = $(this).val();
+        x2.profileSettings.activateTwoFA(code);
+    });
 
     $(document).on ('blur', '.color-picker-input', function () {
         var text = $(this).val ();

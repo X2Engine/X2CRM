@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => '自动记录入站邮件',
   'From' => '从',
   'Copy to Sent Folder' => '复制到文件夹发送',
-  'Disabled' => '残',
   'Failed to associate message "{subject}" with {type} {model}' => '未能消息“关联{subject} ”与{type} {model}',
   'Message "{subject}" already associated with {type} {model}' => '消息“ {subject} ”已经与相关{type} {model}',
   'Disable Quota Operations' => '禁用配额操作',
+  'Manage your application credentials' => '管理应用程序凭据',
+  'Associate attachment with related record' => '与相关记录相关联的附件',
+  'Attachment successfully associated' => '附件成功关联',
+  'Association failed: the attachment could not be saved' => '协会失败：附件不能保存',
+  'Association failed: there are no related records' => '协会失败：有没有相关记录',
 );

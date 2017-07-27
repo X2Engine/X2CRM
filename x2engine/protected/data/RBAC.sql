@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 drop table if exists `x2_auth_assignment`,`x2_auth_item_child`,`x2_auth_item`,`x2_auth_cache`;
@@ -86,6 +85,13 @@ VALUES
 ('ServicesMobileActionHistoryPublish', 0, '', NULL, 'N;'),
 ('X2LeadsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
 ('BugReportsMobileActionHistoryPublish', 0, '', NULL, 'N;'),
+('ContactsMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('AccountsMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('OpportunitiesMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('ProductsMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('ServicesMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('X2LeadsMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
+('BugReportsMobileActionHistoryAttachmentsPublish', 0, '', NULL, 'N;'),
 ('AccountsMobileCreate', 0, '', NULL, 'N;'),
 ('AccountsMobileUpdate', 0, '', NULL, 'N;'),
 ('ContactsMobileCreate', 0, '', NULL, 'N;'),
@@ -123,6 +129,7 @@ VALUES
 ('BugReportsMobileIndex', 0, '', NULL, 'N;'),
 ('BugReportsMobileView', 0, '', NULL, 'N;'),
 ('AccountsMobileDelete', 0, '', NULL, 'N;'),
+('ActionsMobileDelete', 0, '', NULL, 'N;'),
 ('ContactsMobileDelete', 0, '', NULL, 'N;'),
 ('OpportunitiesMobileDelete', 0, '', NULL, 'N;'),
 ('ProductsMobileDelete', 0, '', NULL, 'N;'),
@@ -219,6 +226,7 @@ VALUES
 ('ActionsDeleteNote',0,'',NULL,'N;'),
 ('ActionsDeletePrivate',1,'Delete assigned records','return $this->checkAssignment($params);','N;'),
 ('ActionsFullAccess',1,'',NULL,'N;'),
+('ActionsGetAutocompleteAssocLink',0,'',NULL,'N;'),
 ('ActionsGetTerms',0,'',NULL,'N;'),
 ('ActionsGetX2ModelInput',0,'',NULL,'N;'),
 ('ActionsIndex',0,'',NULL,'N;'),
@@ -261,6 +269,9 @@ VALUES
 ('AdminAddCriteria',0,'Access the page to create criteria which will trigger notifications.',NULL,'N;'),
 ('AdminCreateUpdateField',0,'Create a new field, or update a field.',NULL,'N;'),
 ('AdminAppSettings',0,'General settings for the application.',NULL,'N;'),
+('AdminUserLocationHistory',0,'General Location History for the application.',NULL,'N;'),
+('AdminLocationSettings',0,'General Location settings for the application.',NULL,'N;'),
+('AdminManageUserCount',0,'General max user count for the application.',NULL,'N;'),
 ('AdminApi2Settings',0,'Advance REST API settings.',NULL,'N;'),
 ('AdminManageSessions',0,'Manage user sessions.',NULL,'N;'),
 ('AdminToggleSession',0,'',NULL,'N;'),
@@ -272,6 +283,7 @@ VALUES
 ('AdminPrepareExport',0,'',NULL,'N;'),
 ('AdminGlobalExport',0,'',NULL,'N;'),
 ('AdminFinishGlobalExport',0,'',NULL,'N;'),
+('AdminLocateMissingRecords',0,'',NULL,'N;'),
 ('AdminRollbackImport',0,'',NULL,'N;'),
 ('AdminRollbackStage',0,'',NULL,'N;'),
 ('AdminManageTags',0,'',NULL,'N;'),
@@ -295,8 +307,9 @@ VALUES
 ('AdminExport',0,'Global data export.',NULL,'N;'),
 ('AdminExportModule',0,'Export a module to a .zip file.',NULL,'N;'),
 ('AdminGoogleIntegration',0,'Permissions for integrating the application with Google.',NULL,'N;'),
-('AdminTwitterIntegration',0,'Permissions for integrating the application with Twitter.',NULL,
-'N;'),
+('AdminX2HubIntegration',0,'Permissions for integrating the application with X2 Hub Services.',NULL,'N;'),
+('AdminTwitterIntegration',0,'Permissions for integrating the application with Twitter.',NULL,'N;'),
+('AdminJasperIntegration',0,'Permissions for integrating the application with Jasper Reports.',NULL,'N;'),
 ('AdminUndoMerge',0,'',NULL, 'N;'),
 ('AdminImport',0,'Global data import.',NULL,'N;'),
 ('AdminExportModels',0,'','return $this->checkAdminOn($params);','N;'),
@@ -357,6 +370,7 @@ VALUES
 ('AdminConvertEmailTemplates',0,'',NULL,'N;'),
 ('AdminMassDedupe',0,'',NULL,'N;'),
 ('AdminAutoMergeDuplicates',0,'',NULL,'N;'),
+('AdminUserHistory',0,'',NULL,'N;'),
 ('StudioImportFlow',0,'',NULL,'N;'),
 ('StudioQuickView',0,'',NULL,'N;'),
 ('StudioExportFlow',0,'',NULL,'N;'),
@@ -412,6 +426,7 @@ VALUES
 ('CalendarSyncActionsToGoogleCalendar',0,'',NULL,'N;'),
 ('CalendarTogglePortletVisible',0,'',NULL,'N;'),
 ('CalendarToggleUserCalendarsVisible',0,'',NULL,'N;'),
+('CalendarNewAction',0,'',NULL,'N;'),
 ('CalendarUncompleteAction',0,'',NULL,'N;'),
 ('CalendarUpdate',0,'',NULL,'N;'),
 ('CalendarUpdateAccess',1,'',NULL,'N;'),
@@ -420,6 +435,7 @@ VALUES
 ('CalendarQuickView',0,'',NULL,'N;'),
 ('CalendarViewAction',0,'',NULL,'N;'),
 ('CalendarViewGoogleEvent',0,'',NULL,'N;'),
+('CalendarEventRsvp',0,'',NULL,'N;'),
 ('ContactsAddToList',0,'',NULL,'N;'),
 ('ContactsAjaxGetModelAutocomplete',0,'',NULL,'N;'),
 ('ContactsAdmin',0,'',NULL,'N;'),
@@ -541,6 +557,7 @@ VALUES
 ('EmailInboxesSearch',0,'',NULL,'N;'),
 ('EmailInboxesAjaxGetModelAutocomplete',0,'',NULL,'N;'),
 ('EmailInboxesGetX2ModelInput',0,'',NULL,'N;'),
+('EmailInboxesAssociateAttachment',0,'',NULL,'N;'),
 ('FieldsTask',1,'Field editor control.',NULL,'N;'),
 ('GeneralAdminSettingsTask',1,'A suite of application wide settings configurable by the administrator.',NULL,'N;'),
 ('GroupsAdmin',0,'',NULL,'N;'),
@@ -600,6 +617,7 @@ VALUES
 ('MarketingUpdate',0,'',NULL,'N;'),
 ('MarketingUpdateAccess',1,'',NULL,'N;'),
 ('MarketingUpdatePrivate',1,'Update their own records','return $this->checkAssignment($params);','N;'),
+('MarketingValidate',0,'',NULL,'N;'),
 ('MarketingView',0,'',NULL,'N;'),
 ('MarketingQuickView',0,'',NULL,'N;'),
 ('MarketingViewPrivate',1,'View their own records','return $this->checkAssignment($params);','N;'),
@@ -785,6 +803,7 @@ VALUES
 ('ReportsUpdate',0,'',NULL,'N;'),
 ('ReportsRowsAndColumnsReport',0,'',NULL,'N;'),
 ('ReportsSummationReport',0,'',NULL,'N;'),
+('ReportsExternalReport',0,'',NULL,'N;'),
 ('ReportsPrintChart',0,'',NULL,'N;'),
 ('ReportsCallChartFunction',0,'',NULL,'N;'),
 ('RoleAccessTask',1,'A set of operations for managing roles.',NULL,'N;'),
@@ -872,6 +891,7 @@ VALUES
 ('UsersFullAccess',1,'',NULL,'N;'),
 ('UsersGetX2ModelInput',0,'',NULL,'N;'),
 ('UsersIndex',0,'',NULL,'N;'),
+('UsersDeactivateTwoFactor',0,'',NULL,'N;'),
 ('UsersInviteUsers',0,'',NULL,'N;'),
 ('UsersMinimumRequirements',1,'',NULL,'N;'),
 ('UsersReadOnlyAccess',1,'',NULL,'N;'),
@@ -881,6 +901,7 @@ VALUES
 ('UsersUpdateAccess',1,'',NULL,'N;'),
 ('UsersView',0,'',NULL,'N;'),
 ('UsersQuickView',0,'',NULL,'N;'),
+('UsersUserMap',0,'',NULL,'N;'),
 ('WeblistCreate',0,'',NULL,'N;'),
 ('WeblistAjaxGetModelAutocomplete',0,'',NULL,'N;'),
 ('WeblistRemoveFromList', 0, '', NULL, 'N;'),
@@ -1010,7 +1031,15 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ServicesView', 'ServicesMobileActionHistoryPublish'),
 ('X2LeadsView', 'X2LeadsMobileActionHistoryPublish'),
 ('BugReportsView', 'BugReportsMobileActionHistoryPublish'),
+('ContactsView', 'ContactsMobileActionHistoryAttachmentsPublish'),
+('AccountsView', 'AccountsMobileActionHistoryAttachmentsPublish'),
+('OpportunitiesView', 'OpportunitiesMobileActionHistoryAttachmentsPublish'),
+('ProductsView', 'ProductsMobileActionHistoryAttachmentsPublish'),
+('ServicesView', 'ServicesMobileActionHistoryAttachmentsPublish'),
+('X2LeadsView', 'X2LeadsMobileActionHistoryAttachmentsPublish'),
+('BugReportsView', 'BugReportsMobileActionHistoryAttachmentsPublish'),
 ('AccountsDelete','AccountsMobileDelete'),
+('ActionsDelete','ActionsMobileDelete'),
 ('ContactsDelete','ContactsMobileDelete'),
 ('OpportunitiesDelete','OpportunitiesMobileDelete'),
 ('ProductsDelete','ProductsMobileDelete'),
@@ -1120,6 +1149,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ActionsPrivateFullAccess','ActionsDeleteNote'),
 ('ActionsPrivateFullAccess','ActionsDeletePrivate'),
 ('ActionsAdminAccess','ActionsMinimumRequirements'),
+('ActionsMinimumRequirements','ActionsGetAutocompleteAssocLink'),
 ('ActionsMinimumRequirements','ActionsGetTerms'),
 ('ActionsMinimumRequirements','ActionsIndex'),
 ('ActionsMinimumRequirements','ActionsInvalid'),
@@ -1138,6 +1168,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ActionsMinimumRequirements','ActionsSearch'),
 ('GuestSiteFunctionsTask','ActionsSendReminder'),
 ('GuestSiteFunctionsTask','ActionsViewEmail'),
+('GuestSiteFunctionsTask','CalendarEventRsvp'),
 ('ActionsReadOnlyAccess','ActionsSendReminder'),
 ('ActionsViewPrivate','ActionsSendReminder'),
 ('ActionsReadOnlyAccess','ActionsShareAction'),
@@ -1189,6 +1220,11 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('GeneralAdminSettingsTask','AdminConvertEmailTemplates'),
 ('GeneralAdminSettingsTask','AdminMassDedupe'),
 ('GeneralAdminSettingsTask','AdminAutoMergeDuplicates'),
+('GeneralAdminSettingsTask','AdminUserHistory'),
+('GeneralAdminSettingsTask','AdminManageUserCount'),
+('GeneralAdminSettingsTask','AdminUserLocationHistory'),
+('GeneralAdminSettingsTask','AdminLocationSettings'),
+('GeneralAdminSettingsTask','AdminLocateMissingRecords'),
 ('AuthenticatedSiteFunctionsTask','StudioExecuteMacro'),
 ('AuthenticatedSiteFunctionsTask','AdminDownloadData'),
 ('X2StudioTask','AdminCreateModule'),
@@ -1215,7 +1251,9 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('AdminImport','AdminPrepareModelImport'),
 ('AdminImport','AdminCleanUpModelImport'),
 ('GeneralAdminSettingsTask','AdminGoogleIntegration'),
+('GeneralAdminSettingsTask','AdminX2HubIntegration'),
 ('GeneralAdminSettingsTask','AdminTwitterIntegration'),
+('GeneralAdminSettingsTask','AdminJasperIntegration'),
 ('GeneralAdminSettingsTask','AdminUndoMerge'),
 ('GeneralAdminSettingsTask','AdminImport'),
 ('X2StudioTask','AdminImportModule'),
@@ -1311,6 +1349,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('ContactsPrivateUpdateAccess','ContactsMinimumRequirements'),
 ('ContactsUpdateAccess','ContactsMinimumRequirements'),
 ('ContactsUpdateAccess','ContactsCreateRecordAlias'),
+('ContactsPrivateUpdateAccess','ContactsCreateRecordAlias'),
 ('ContactsBasicAccess','ContactsCreate'),
 ('ContactsBasicAccess','ContactsCreateList'),
 ('ContactsBasicAccess','ContactsCreateListFromSelection'),
@@ -1492,6 +1531,7 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('MarketingMinimumRequirements','MarketingIndex'),
 ('MarketingBasicAccess','MarketingLaunch'),
 ('MarketingBasicPrivate','MarketingLaunch'),
+('MarketingBasicAccess','MarketingValidate'),
 ('MarketingPrivateReadOnlyAccess','MarketingMinimumRequirements'),
 ('MarketingReadOnlyAccess','MarketingMinimumRequirements'),
 ('DefaultRole','MarketingPrivateUpdateAccess'),
@@ -1891,7 +1931,9 @@ INSERT INTO `x2_auth_item_child` (`parent`,`child`) VALUES
 ('UsersIndex', 'UsersMobileIndex'),
 ('UsersIndex', 'UsersAjaxGetModelAutocomplete'),
 ('UsersIndex', 'UsersX2GridViewMassAction'),
+('UsersAdminAccess','UsersDeactivateTwoFactor'),
 ('UsersAdminAccess','UsersInviteUsers'),
+('UsersAdminAccess','UsersUserMap'),
 ('UsersReadOnlyAccess','UsersMinimumRequirements'),
 ('UsersBasicAccess','UsersMinimumRequirements'),
 ('UsersReadOnlyAccess', 'UsersInlineEmail'),

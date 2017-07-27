@@ -23,7 +23,6 @@
   'Completed:' => '',
   '{action} Description' => '',
   'Action Description' => '',
-  'All Day' => '',
   'Calendar ID' => '',
   'Date Completed' => '',
   'Subtype' => '',
@@ -120,4 +119,7 @@
   '{Action} Description' => '',
   'color' => '',
   'Calendar Color' => '',
+  'Enter email addresses, one per line' => '',
+  'Add to Calendar' => '',
+  'By default, the Contact who sent the email will be associated.' => '',
 );

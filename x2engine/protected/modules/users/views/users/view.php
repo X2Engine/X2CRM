@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 $menuOptions = array(
@@ -61,11 +60,24 @@ $this->insertMenu($menuOptions, $model);
 		'homePhone',
 		'address',
 		'backgroundInfo',
+		array(
+			'name'=>'createDate',
+			'type'=>'raw',
+			'value'=>$model->createDate ? Formatter::formatDate($model->createDate) : "n/a",
+		),
 		'emailAddress',
 		array(
 			'name'=>'status',
 			'type'=>'raw',
-			'value'=>$model->status==1?"Active":"Inactive",
+			'value'=>$model->status==1?Yii::t('users', "Active"):Yii::t('users', "Inactive"),
+		),
+		array(
+			'name'=>'enableTwoFactor',
+            'label' => 'Two Factor Auth',
+			'type'=>'raw',
+            'value'=>($model->profile && $model->profile->enableTwoFactor)?
+                Yii::t('users', 'Enabled').CHtml::button('Deactivate', array('id' => 'deactivate-twofactor', 'class' => 'x2-button x2-small-button', 'style' => 'display:inline;', 'confirm' => Yii::t('users', 'Are you sure you want to deactivate this users two factor auth requirement?'))) :
+                Yii::t('users', 'Disabled'),
 		),
 	),
 )); ?>
@@ -79,10 +91,22 @@ $this->insertMenu($menuOptions, $model);
 
 <?php
 foreach($actionHistory as $action) {
+    $association = $action->getAssociation();
+    $associatedDescription = '';
+    if ($association)
+        $associatedDescription = (isset($association->backgroundInfo) ?
+                        $association->backgroundInfo : $association->description);
+
 	$this->widget('zii.widgets.CDetailView', array(
 		'data'=>$action,
 		'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/detailview',
 		'attributes'=>array(
+			array(
+				'label'=>'Associated Record',
+				'type'=>'raw',
+                'value'=> ($action->getAssociationLink().(!empty($associatedDescription) ?
+                    ': '.$associatedDescription : ''))
+			),
 			array(
 				'label'=>'Action Description',
 				'type'=>'raw',
@@ -115,7 +139,40 @@ foreach($actionHistory as $action) {
 				'type'=>'raw',
 				'value'=>date("F j, Y",$action->createDate),
 			),
+            array(
+                'name'=>'location',
+				'label'=>'Location',
+				'type'=>'raw',
+                'value'=>((isset($action->location) && $association instanceof Contacts) ?
+                    CHtml::link(Yii::t('contacts', 'View on Large Map'),
+                    array(
+                        'contacts/googleMaps',
+                        'userId' => $model->id,
+                        'noHeatMap' => 1,
+                        'locationType' => array($action->location->type),
+                    ))
+                    : ''),
+			),
 		),
 	));
+    echo '<br />';
 }
 ?><br /><br />
+<?php
+Yii::app()->clientScript->registerScript('deactivate-twofactor', '
+    $("#deactivate-twofactor").click(function() {
+        var that = this;
+        $.ajax({
+            url: "'.Yii::app()->createUrl('users/deactivateTwoFactor', array('id' => $model->id)).'",
+            method: "POST",
+            data: {
+                YII_CSRF_TOKEN: "'.Yii::app()->request->csrfToken.'",
+            },
+            success: function() {
+                alert("'.Yii::t('users', 'Successfully deactivated two factor auth').'");
+                $(that).parent().html("'.Yii::t('users', 'Disabled').'");
+            }
+        });
+    });
+');
+?>

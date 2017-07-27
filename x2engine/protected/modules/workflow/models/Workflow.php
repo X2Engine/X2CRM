@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 // Yii::import('application.models.X2Model');
@@ -41,7 +40,7 @@
  * This is the model class for table "x2_workflows".
  * @package application.modules.workflow.models
  */
-class Workflow extends CActiveRecord {
+class Workflow extends X2ActiveRecord {
 
     const DEFAULT_ALL_MODULES = '-1';
 
@@ -74,6 +73,11 @@ class Workflow extends CActiveRecord {
                     ),
                 ),
                 'maintainCurrentFieldsOrder' => true
+            ),
+            'ERememberFiltersBehavior' => array(
+                'class' => 'application.components.behaviors.ERememberFiltersBehavior',
+                'defaults' => array(),
+                'defaultStickOnClear' => false
             ),
         ));
     }
@@ -173,8 +177,9 @@ class Workflow extends CActiveRecord {
         return $this->_isDefaultFor;
     }
 
-    public function renderAttribute ($attr) {
-        switch ($attr) {
+    public function renderAttribute (
+            $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
+        switch ($fieldName) {
             case 'isDefaultFor':
                 $isDefaultFor = $this->getIsDefaultFor ();
                 if (in_array (self::DEFAULT_ALL_MODULES, $isDefaultFor)) {
@@ -192,7 +197,7 @@ class Workflow extends CActiveRecord {
                 }
                 break;
             default:
-                return $this->$attr;
+                return $this->$fieldName;
         }
     }
 
@@ -252,6 +257,16 @@ class Workflow extends CActiveRecord {
         }
         
         parent::afterSave();
+    }
+
+    public function beforeDelete() {
+        // Explicitly delete associated actions for installations who have updated and failed
+        // to receive the CASCADE on the constraint
+        Actions::model()->deleteAllByAttributes(array(
+            'workflowId' => $this->id,
+        ));
+
+        return parent::beforeDelete ();
     }
 
     /**

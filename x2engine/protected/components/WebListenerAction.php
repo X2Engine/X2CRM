@@ -1,7 +1,8 @@
 <?php
+
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -45,6 +45,7 @@
  * Tracks using a cookie set by filling out a web capture form.
  * Looks up the contact by trackingKey, and creates a "webactivity" type action.
  */
+
 class WebListenerAction extends CAction {
 
     const DEBUG_TRACK = 1;
@@ -53,25 +54,22 @@ class WebListenerAction extends CAction {
         self::track();
     }
 
-     
     /**
      * Retrieve valid fingerprint attributes from the GET parameters 
      * @return array fingerprint attributes
      */
-    private static function getFingerPrintAttributes () {
-        $fingerprintAttributes = array_diff (
-            array_keys (Fingerprint::model()->getAttributes ()), 
-            array ('id', 'createDate', 'lastUpdated'));
+    private static function getFingerPrintAttributes() {
+        $fingerprintAttributes = array_diff(
+                array_keys(Fingerprint::model()->getAttributes()), array('id', 'createDate', 'lastUpdated'));
 
-        $attributes = array ();
+        $attributes = array();
         foreach ($fingerprintAttributes as $attr) {
-            if (isset ($_GET[$attr])) {
+            if (isset($_GET[$attr])) {
                 $attributes[$attr] = $_GET[$attr];
             }
         }
         return $attributes;
     }
-     
 
     /**
      * Lookup contact by key. There are two types of keys: GET keys and cookie keys.
@@ -84,25 +82,25 @@ class WebListenerAction extends CAction {
      * @param boolean $getContent if set to true, the return value of any flow triggered by this
      *  method will be returned.
      */
-    public static function track($getContent=false) {
-        if(!Yii::app()->settings->enableWebTracker)
+    public static function track($getContent = false) {
+        if (!Yii::app()->settings->enableWebTracker)
             return;
 
 
-        
+
         $fingerprint = isset($_GET['fingerprint']) ? $_GET['fingerprint'] : null;
 
-        $attributes = self::getFingerPrintAttributes ();
-        
+        $attributes = self::getFingerPrintAttributes();
+
 
         $keys = array();
         // key set from generic tracking link or campaign tracking link
-        if(isset($_GET['get_key']) && ctype_alnum($_GET['get_key'])) {
+        if (isset($_GET['get_key']) && ctype_alnum($_GET['get_key'])) {
             $keys['GETKey'] = $_GET['get_key'];
-        } 
+        }
 
         // web tracker key
-        if(isset($_COOKIE['x2_key']) && ctype_alnum($_COOKIE['x2_key'])) { 
+        if (isset($_COOKIE['x2_key']) && ctype_alnum($_COOKIE['x2_key'])) {
             $keys['cookieKey'] = $_COOKIE['x2_key'];
         }
 
@@ -111,50 +109,48 @@ class WebListenerAction extends CAction {
         $contact = false;
         $retArr = null;
 
-         
+
         // get fingerprint tracking to work even if there aren't any keys
-        if (!sizeof ($keys) && Yii::app()->contEd('pla') && 
-            Yii::app()->settings->enableFingerprinting) {
+        if (!sizeof($keys) && Yii::app()->contEd('pla') &&
+                Yii::app()->settings->enableFingerprinting) {
 
             $keys['dummyKey'] = null;
         }
-          
+
 
         // look up the link key, then the cookie key
-        foreach($keys as $keyName => $key) {
+        foreach ($keys as $keyName => $key) {
             if ($key !== null) {
-                $contact = self::trackCampaignClick($key,$url); // see if this key is a campaign key
+                $contact = self::trackCampaignClick($key, $url); // see if this key is a campaign key
             } else {
                 $contact = false;
             }
 
-            if($contact === true) {// means there's no contact record (newsletter type campaign)
-                continue; 
+            if ($contact === true) {// means there's no contact record (newsletter type campaign)
+                continue;
             }
 
-            if($contact === false) { // no campaign key found,
+            if ($contact === false) { // no campaign key found,
                 // see if the key is a generic tracking key
                 $retArr = self::trackGeneric(
-                    $key, $url, $getContent , $fingerprint,
-                    $attributes );
+                                $key, $url, $getContent, $fingerprint, $attributes);
                 $contact = $retArr['contact'];
             }
 
-            if($contact instanceof Contacts) { // we found the contact!
+            if ($contact instanceof Contacts) { // we found the contact!
                 // The contact is not being edited by any user, and this will
                 // cause errors, so we shall disable the behavior.
                 $contact->disableBehavior('changelog');
 
-                $contact->lastActivity = time (); // update lastActivity
-
+                $contact->lastActivity = time(); // update lastActivity
                 // make sure contact has a generic tracking key
-                if(empty($contact->trackingKey)) {
-                    $contact->trackingKey = Contacts::getNewTrackingKey ();
-                } 
+                if (empty($contact->trackingKey)) {
+                    $contact->trackingKey = Contacts::getNewTrackingKey();
+                }
 
-                $contact->update(array('lastActivity','trackingKey'));
+                $contact->update(array('lastActivity', 'trackingKey'));
 
-                
+
                 // Since the contact has been found, update their browser fingerprint, which
                 // may have changed since it was last computed, due to browser updates and such.
                 if (Yii::app()->settings->enableFingerprinting && (bool) $fingerprint) {
@@ -164,28 +160,43 @@ class WebListenerAction extends CAction {
 
                 // Only set the cookie if the contact was identified with a cookie
                 if (!isset($retArr['probability']) || $retArr['probability'] >= 100)
-                
-                self::setKey($contact->trackingKey);
+                    self::setKey($contact->trackingKey);
+
+                $location = $contact->logLocation('webactivity', 'GET');
+
+                if ($location) {
+                    $latest = Yii::app()->db->createCommand()
+                            ->select('id, MAX(completeDate) as completeDate')
+                            ->from('x2_actions')
+                            ->where('associationId=:id AND associationType="contacts" AND type="webactivity"', array(':id' => $contact->id))
+                            ->queryRow();
+
+                    // Only mark webactivity location if this action was captured within the
+                    // cooldown period
+                    if ($latest['completeDate'] !== null && $latest['completeDate'] > time() - Yii::app()->settings->webTrackerCooldown) {
+                        Yii::app()->db->createCommand()
+                                ->update('x2_actions', array('locationId' => $location->id), 'id = :id', array(':id' => $latest['id']));
+                    }
+                }
             }
         }
 
         // no contact-specific targeted content was generated
         if (!$retArr && $getContent) { // trigger default content request
-            $retArr = array (
+            $retArr = array(
                 'flowRetVal' =>
-                    X2Flow::trigger('TargetedContentRequestTrigger', array(
-                        'model'=>null,
-                        'url'=>$url,
-                        'flowId'=>$_GET['flowId']
-                    ))
+                X2Flow::trigger('TargetedContentRequestTrigger', array(
+                    'model' => null,
+                    'url' => $url,
+                    'flowId' => $_GET['flowId']
+                ))
             );
         }
-        
+
         if ($getContent) {
             return $retArr['flowRetVal'];
         }
     }
-
 
     /**
      * Looks up the contact with the generic tracking key provided
@@ -196,159 +207,153 @@ class WebListenerAction extends CAction {
      * @return mixed the contact if it is found, FALSE otherwise
      */
     public static function trackGeneric(
-        $key, $url, $getContent , $fingerprint = null, 
-        $attributes = null ) {
+    $key, $url, $getContent, $fingerprint = null, $attributes = null) {
 
-        
+
         $byFingerprint = false;
-        
 
-        $contact = null; 
+
+        $contact = null;
         if ($key !== null) {
             $contact = CActiveRecord::model('Contacts')
-                ->findByAttributes(array('trackingKey'=>$key));
-            
+                    ->findByAttributes(array('trackingKey' => $key));
+
             if (isset($contact))
                 $contact->recordAddress();
-            
         }
 
-        if($contact === null) {
-            
-            if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting && 
-                 $fingerprint !== null) {
+        if ($contact === null) {
 
-                list($contact,$bits) = 
-                    X2Model::model('Fingerprint')->track($fingerprint, $attributes);
+            if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
+                    $fingerprint !== null) {
+
+                list($contact, $bits) = X2Model::model('Fingerprint')->track($fingerprint, $attributes);
                 if ($contact instanceof Contacts || $contact instanceof AnonContact)
                     $contact->recordAddress();
             }
             if ($contact === null)
-            
-            return null;
-            
+                return null;
             else
                 $byFingerprint = true;
-            
         }
 
         $now = time();
         $flowRetVal = null;
 
         // let's see if there's already a recent record about this
-        
+
         if (Yii::app()->contEd('pla') && $contact instanceof AnonContact)
             $where = 'associationId=:id AND associationType="AnonContact" AND type="webactivity"';
-        else 
-        $where = 'associationId=:id AND associationType="contacts" AND type="webactivity"';
+        else
+            $where = 'associationId=:id AND associationType="contacts" AND type="webactivity"';
 
         $latest = Yii::app()->db->createCommand()
-            ->select('MAX(completeDate)')
-            ->from('x2_actions')
-            ->where($where, array(':id'=>$contact->id))
-            ->queryScalar();
+                ->select('MAX(completeDate)')
+                ->from('x2_actions')
+                ->where($where, array(':id' => $contact->id))
+                ->queryScalar();
 
         if ($getContent) {
             $flowRetVal = X2Flow::trigger('TargetedContentRequestTrigger', array(
-                'model'=>$contact,
-                'url'=>$url,
-                'flowId'=>$_GET['flowId']
+                        'model' => $contact,
+                        'url' => $url,
+                        'flowId' => $_GET['flowId']
             ));
         }
-    
+
         // ignore if it's been < 1 min since the last visit
-        if((YII_UNIT_TESTING && self::DEBUG_TRACK) ||
-           $latest === null || $latest < $now - Yii::app()->settings->webTrackerCooldown) { 
+        if ((YII_UNIT_TESTING && self::DEBUG_TRACK) ||
+                $latest === null || $latest < $now - Yii::app()->settings->webTrackerCooldown) {
 
             $webActivityTriggerParams = array(
                 'model' => $contact,
                 'url' => $url,
             );
 
-            
+
             if (Yii::app()->contEd('pla')) {
                 $probability = 100;
                 if ($byFingerprint && $bits !== null) {
-                    $probability = Fingerprint::calculateProbability ($bits);
+                    $probability = Fingerprint::calculateProbability($bits);
                     $probabilityText = "({$probability}% probability)";
                 }
                 $webActivityTriggerParams['probability'] = $probability;
             }
-            
+
 
             // run automation
             X2Flow::trigger('WebActivityTrigger', $webActivityTriggerParams);
 
             $action = new Actions('webTracker');
             $action->associationType = 'contacts';
-            
+
             if (Yii::app()->contEd('pla') && $contact instanceof AnonContact) {
                 $action->associationType = 'anoncontact';
             }
-            
+
             $action->associationId = $contact->id;
             $action->type = 'webactivity';
-            $action->assignedTo = ($contact instanceof Contacts)? $contact->assignedTo : 'admin';
+            $action->assignedTo = ($contact instanceof Contacts) ? $contact->assignedTo : 'admin';
             $action->visibility = '1';
-            $action->associationName = ($contact instanceof Contacts)?
-                $contact->name : $contact->email;
+            $action->associationName = ($contact instanceof Contacts) ?
+                    $contact->name : $contact->email;
             $action->actionDescription = $url;
-            
+
             if (Yii::app()->contEd('pla') && $byFingerprint && $bits !== null) {
                 $action->actionDescription .= " $probabilityText";
             }
-            
+
             $action->createDate = $now;
             $action->lastUpdated = $now;
             $action->completeDate = $now;
-            $action->complete= 'Yes';
+            $action->complete = 'Yes';
             $action->updatedBy = 'admin';
             $action->save();
 
             if ($contact instanceof Contacts) {
                 $event = new Events;
-                $event->level=1;
+                $event->level = 1;
                 $event->user = $contact->assignedTo;
                 $event->type = "web_activity";
                 $event->associationType = 'Contacts';
                 $event->associationId = $contact->id;
-                
+
                 if (Yii::app()->contEd('pla') && $byFingerprint)
                     $event->text = "$url $probabilityText";
-                
+
                 $event->save();
             }
 
             // create a notification if the record is assigned to someone
-            if($contact instanceof Contacts && $contact->assignedTo != 'Anyone' && 
-                $contact->assignedTo != '') {
+            if ($contact instanceof Contacts && $contact->assignedTo != 'Anyone' &&
+                    $contact->assignedTo != '') {
 
                 $notif = new Notification;
-                $notif->user = ($contact instanceof Contacts)? $contact->assignedTo : 'admin';
+                $notif->user = ($contact instanceof Contacts) ? $contact->assignedTo : 'admin';
                 $notif->createdBy = 'API';
                 $notif->createDate = time();
                 $notif->type = 'webactivity';
                 $notif->modelType = 'Contacts';
                 $notif->modelId = $contact->id;
-                
+
                 if (Yii::app()->contEd('pla') && $byFingerprint) {
                     $notif->text = $probabilityText;
                     if ($contact instanceof AnonContact)
                         $notif->modelType = 'AnonContact';
                 }
-                
+
                 $notif->save();
             }
         }
-        $retArr = array (
+        $retArr = array(
             'contact' => $contact,
             'flowRetVal' => $flowRetVal
         );
 
-        
+
         if (isset($probability))
             $retArr['probability'] = $probability;
-        
+
         return $retArr;
     }
 
@@ -362,15 +367,15 @@ class WebListenerAction extends CAction {
      * but there was no contact record (newsletter type campaign), or FALSE
      * if uniqueId was not found in campaigns
      */
-    public static function trackCampaignClick($uniqueId,$url) {
+    public static function trackCampaignClick($uniqueId, $url) {
         $item = CActiveRecord::model('X2ListItem')->
-            with('contact','list')->findByAttributes(array('uniqueId'=>$uniqueId));
+                        with('contact', 'list')->findByAttributes(array('uniqueId' => $uniqueId));
 
-        if(!isset($item))
+        if (!isset($item))
             return false;
 
         $list = $item->list;
-        if(empty($list) || !(bool)$list->campaign) // Nonexistent list/campaign
+        if (empty($list) || !(bool) $list->campaign) // Nonexistent list/campaign
             return false;
 
         $campaign = $list->campaign;
@@ -382,18 +387,17 @@ class WebListenerAction extends CAction {
         $action->complete = 'Yes';
         $action->updatedBy = 'API';
 
-        if((bool)$item->contact) { // Contact is present and in the email campaign
-
+        if ((bool) $item->contact) { // Contact is present and in the email campaign
             $action->associationType = 'contacts';
             $action->associationId = $item->contact->id;
             $action->associationName = $item->contact->name;
             $action->visibility = $item->contact->visibility;
             $action->assignedTo = $item->contact->assignedTo;
 
-            $action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name.
-                "\n\n".Yii::t('marketing','{Contact} has clicked a link', array(
-                    '{Contact}' => Modules::displayName(false, 'Contacts')
-                )) .":\n". urldecode($url);
+            $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' . $campaign->name .
+                    "\n\n" . Yii::t('marketing', '{Contact} has clicked a link', array(
+                        '{Contact}' => Modules::displayName(false, 'Contacts')
+                    )) . ":\n" . urldecode($url);
 
             // create event
             $event = new Events;
@@ -404,7 +408,7 @@ class WebListenerAction extends CAction {
             $event->save();
 
             // create notification
-            if($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
+            if ($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
                 $notif = new Notification;
                 $notif->type = 'email_clicked';
                 $notif->user = $action->assignedTo;
@@ -415,18 +419,17 @@ class WebListenerAction extends CAction {
                 $notif->save();
             }
 
-            X2Flow::trigger('CampaignWebActivityTrigger',array(
-                'model'=>$item->contact,
-                'campaign'=>$campaign->name,
-                'url'=>$url,
+            X2Flow::trigger('CampaignWebActivityTrigger', array(
+                'model' => $item->contact,
+                'campaign' => $campaign->name,
+                'url' => $url,
             ));
-
         } else { // Contact not set; was deleted or part of a newsletter-type campaign
-            $action->actionDescription = Yii::t('marketing','Campaign') .': '. $campaign->name.
-                "\n\n".$item->emailAddress ." ". Yii::t('marketing','has clicked a link') .":\n". 
-                urldecode($url);
+            $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' . $campaign->name .
+                    "\n\n" . $item->emailAddress . " " . Yii::t('marketing', 'has clicked a link') . ":\n" .
+                    urldecode($url);
 
-            if(isset($item->list)) {
+            if (isset($item->list)) {
                 $action->associationType = 'X2List';
                 $action->associationId = $item->list->id;
                 $action->associationName = $item->list->name;
@@ -437,15 +440,15 @@ class WebListenerAction extends CAction {
                 $action->assignedTo = 'Anyone';
             }
 
-            X2Flow::trigger('NewsletterWebActivityTrigger',array(
-                'item'=>$item,
-                'campaign'=>$campaign->name,
-                'url'=>$url,
+            X2Flow::trigger('NewsletterWebActivityTrigger', array(
+                'item' => $item,
+                'campaign' => $campaign->name,
+                'url' => $url,
             ));
         }
         $action->save();
 
-        if($item->contact)
+        if ($item->contact)
             return $item->contact;
 
         return true;
@@ -459,11 +462,12 @@ class WebListenerAction extends CAction {
         $serverName = Yii::app()->request->getServerName();
 
         // strip out subdomain, leaving leading '.' to set cookie for all subdomains
-        $parts = explode ('.', $serverName);
-        if (count ($parts) > 2)
-            $serverName = preg_replace ("/^[^.]*/", '', $serverName); 
+        $parts = explode('.', $serverName);
+        if (count($parts) > 2)
+            $serverName = preg_replace("/^[^.]*/", '', $serverName);
 
         // set cookie for 1 year
-        setcookie('x2_key', $key, time()+31536000, '/', $serverName);
+        setcookie('x2_key', $key, time() + 31536000, '/', $serverName);
     }
+
 }

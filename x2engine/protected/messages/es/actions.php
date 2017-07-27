@@ -4,7 +4,6 @@
   'Reminder' => 'Recordatorio',
   'Complete Date' => 'Fecha de Finalización',
   'Date Completed' => 'Fecha de Terminación',
-  'All Day' => 'Todo el Día',
   'Complete + New Action' => 'Completar + Nueva Acción',
   'Uncomplete' => 'Incompletas',
   'Overdue' => 'Atrasado',
@@ -120,4 +119,7 @@
   'Event Subtype' => 'Subtipo Evento',
   'Event Status' => 'Estado de eventos',
   'Calendar Color' => 'color de calendario',
+  'Enter email addresses, one per line' => 'Introduzca las direcciones de correo electrónico, una por línea',
+  'Add to Calendar' => 'Añadir al calendario',
+  'By default, the Contact who sent the email will be associated.' => 'De forma predeterminada, se asociará al contacto que envió el correo electrónico.',
 );

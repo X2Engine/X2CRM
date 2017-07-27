@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.components.X2Settings.*');
@@ -50,8 +49,9 @@ class X2FlowApiCallTest extends X2FlowTestBase {
 
     public static function setUpBeforeClass () {
         // replace token in flow with base 64 encoded auth info
-        $template = 'fixtures/x2_flows.X2FlowApiCallTestTemplate.php';
-        $file = 'fixtures/x2_flows.X2FlowApiCallTest.php';
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        $template = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTestTemplate.php';
+        $file = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php';
         $username = 'admin';
         $userKey = User::model ()->findByPk (1)->userKey;
         X2_TEST_DEBUG_LEVEL > 1 && println ($userKey);
@@ -67,8 +67,9 @@ class X2FlowApiCallTest extends X2FlowTestBase {
 
     public static function tearDownAfterClass () {
         parent::tearDownAfterClass();
-        if(file_exists('fixtures/x2_flows.X2FlowApiCallTest.php')) {
-            unlink('fixtures/x2_flows.X2FlowApiCallTest.php');
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        if(file_exists($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php')) {
+            unlink($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowApiCallTest.php');
         }
     }
 
@@ -221,6 +222,7 @@ class X2FlowApiCallTest extends X2FlowTestBase {
         $debugMessage = $this->getApiCallDebugMessage ('flow3');
         $this->assertEquals (
             TEST_BASE_URL.'api2/Contacts', $debugMessage['url']);
+        TestingAuxLib::restoreController();
     }
 
 //    /**

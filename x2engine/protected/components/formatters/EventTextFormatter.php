@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -41,6 +40,10 @@
  *
  */
 class EventTextFormatter {
+    /**
+     * Whether associated record links were already rendered in a formatter function
+     */
+    public static $renderedRecordLinks = false;
 
     public static function getText(Events $event, array $params = array(), array $htmlOptions
     = array()) {
@@ -52,9 +55,16 @@ class EventTextFormatter {
         } else {
             $text = static::formatDefault($event, $params, $htmlOptions);
         }
+        if (!static::$renderedRecordLinks && !empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = false;
+        }
         if ($truncated && mb_strlen($text, 'UTF-8') > 250) {
             $text = mb_substr($text, 0, 250, 'UTF-8') . "...";
         }
+        //takeout trailing $|&|$ that's used to format activity feed posts
+        $text = str_replace("$|&|$", "", $text);
         return $text;
     }
 
@@ -342,7 +352,7 @@ class EventTextFormatter {
     private static function formatWorkflow_start($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
         $action = X2Model::model('Actions')->findByPk($event->associationId);
-        if (isset($action)) {
+        if (isset($action) && isset($action->workflowStage)) {
             $record = X2Model::model(ucfirst($action->associationType))->findByPk($action->associationId);
             if (isset($record)) {
                 return $authorText . Yii::t('app',
@@ -396,7 +406,7 @@ class EventTextFormatter {
     private static function formatWorkflow_revert($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
         $action = X2Model::model('Actions')->findByPk($event->associationId);
-        if (isset($action)) {
+        if (isset($action) && isset($action->workflowStage)) {
             $record = X2Model::model(ucfirst($action->associationType))->findByPk($action->associationId);
             if (isset($record)) {
                 return $authorText . Yii::t('app',
@@ -788,21 +798,71 @@ class EventTextFormatter {
 
     private static function formatMedia($event, $params, $htmlOptions) {
         $authorText = static::getAuthorText($event, $htmlOptions);
+        $authorText = rtrim($authorText, " ");
         $truncated = (array_key_exists('truncated', $params)) ? $params['truncated']
                     : false;
-        $media = $event->legacyMedia;
-        $text = substr($authorText, 0, -1) . ": " . $event->text;
-        if ($media) {
-            if (!$truncated) {
-                $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, true);
+        /*
+         *  get table x2_events_to_media and by using $event->id get mediaId
+         *  but for legacy media that weren't loaded in x2_events_to_media get them via legacyMedia
+         * 
+         */
+        
+        // var array $eventTexts to parse $event->text for further formatting
+        $eventTexts = explode('$|&|$', $event->text);
+        if ($params['media'] == null) {
+            $media = $event->legacyMedia;
+            //$text = substr($authorText, 0, -1) . ": " . $event->text;
+            if(count($eventTexts) == 3) {
+                $text = $authorText . ": " . $eventTexts[2]."<br><br>".$eventTexts[0];    
             } else {
+                $text = $authorText . ": " . $event->text;          
+            }
+        } else {
+            $media = $params['media'];
+            $recipient = $params['recipient'];
+            $profileRecipient = $params['profileRecipient'];
+            if ($recipient) {
+                $recipientLink = 
+                    CHtml::link(
+                        Yii::t('app', $recipient->firstName . ' ' . $recipient->lastName), 
+                        $profileRecipient->getUrl ());
+                $modifier = ' &raquo; ';
+                if (Yii::app()->user->getName() == $recipient->username) {
+                    $recipientLink = CHtml::link(
+                        Yii::t('app', 'You'), 
+                        $profileRecipient->getUrl ());
+                }      
+                if (!($event->user == Yii::app()->user->getName() && $recipient->username == Yii::app()->user->getName())){
+                    $authorText .= $modifier . $recipientLink;
+                }
+                
+            }
+            if(count($eventTexts) == 3) {
+                $text = $authorText . ": " . $eventTexts[2]."<br><br><br>".$eventTexts[0];    
+            } else {
+                $text = $authorText . ": " . $event->text;          
+            }
+        }
+        if (!empty($event->recordLinks)) {
+            $text .= '<br /><br /><div>'.Yii::t('app', 'Associated Records').'</div>';
+            $text .= $event->renderRecordLinks(array('style' => 'margin-bottom: 0px'));
+            static::$renderedRecordLinks = true;
+        }
+        if (!empty($event->media)) {
+            $index = 0;
+            foreach($event->media as $key=>$media) {
+                if ($index == (count($event->media)-1) && count($eventTexts) == 3) {
+                    $text .= "<br>";
+                    $text .= $eventTexts[1];   
+                }
                 $text.="<br>" . Media::attachmentSocialText($media->getMediaLink(),
-                                true, false);
+                                false, !$truncated) . "<br>";
+                $index++;
             }
         } else {
             $text.="<br>Media file not found.";
         }
+        
         return $text;
     }
 
@@ -811,11 +871,17 @@ class EventTextFormatter {
         $reply = TopicReplies::model()->findByPk($event->associationId);
         if (isset($reply)) {
             if (!Yii::app()->params->isMobileApp) {
+                if (!ResponseUtil::isCli()) {
+                    $url = Yii::app()->controller->createUrl(
+                            '/topics/topics/view',
+                            array('id' => $reply->topic->id, 'replyId' => $reply->id));
+                } else {
+                    $url = Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php'
+                                        : '/index.php') . '/topics/topics/view/' . $reply->topic->id . '?replyId=' . $reply->id;
+                }
                 $topicLink = X2Html::link(
                                 $reply->topic->name,
-                                Yii::app()->controller->createUrl(
-                                        '/topics/topics/view',
-                                        array('id' => $reply->topic->id, 'replyId' => $reply->id)));
+                                $url);
             } else {
                 $topicLink = $reply->topic->name;
             }

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /*
@@ -143,6 +142,7 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'added' => Yii::t('app', 'added'),
                 'updated' => Yii::t('app', 'updated'),
                 'removed' => Yii::t('app', 'removed'),
+                'executed' => Yii::t('app', 'executed'),
                 'doubleConfirmDialogTitle' => Yii::t('app', 'Confirm Deletion'),
                 'addedItems' => Yii::t('app', 'Added items to list'),
                 'addToList' => Yii::t('app', 'Add selected to list'),
@@ -174,13 +174,16 @@ Yii::app()->clientScript->registerScript($namespacePrefix.'massActionsInitScript
                 'tag' => Yii::t('app', 'Tag'),
                 'untag' => Yii::t('app', 'Remove tag'),
                 'update' => Yii::t('app', 'Update'),
+                'execute' => Yii::t('app', 'Execute'),
                 'tagSelected' => Yii::t('app', 'Tag selected'),
                 'untagSelected' => Yii::t('app', 'Remove tags from selected'),
                 'deleteSelected' => Yii::t('app', 'Delete selected'),
+                'macroExecute' => Yii::t('app','Execute macro'),
                 'delete' => Yii::t('app', 'Delete'),
                 'updateField' => Yii::t('app', 'Update fields of selected'),
                 'emptyTagError' => Yii::t('app', 'At least one tag must be included'),
                 'emptyUntagError' => Yii::t('app', 'At least one tag must be specified'),
+                'emptyMacroError' => Yii::t('app','You must select a macro to be executed'),
                 'add' => Yii::t('app', 'Add'),
                 'MassPublishActionDialogTitle' => Yii::t('app', 'Add Action'),
                 'MassPublishActionGoButton' => Yii::t('app', 'Add'),

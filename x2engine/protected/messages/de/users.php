@@ -43,4 +43,10 @@
   'Delete {user}' => 'Löschen {user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => 'Überprüfen Sie Ihre E-Mail an {email} um weitere Anweisungen zu beenden Ihr Passwort zurückzusetzen.',
   'You should now have access as "{user}" with the new password specified.' => 'Sie sollten nun den Zugang als {user} mit dem neuen Kennwort angegeben.',
+  'View {users} Map' => 'Ansicht {users} Map',
+  'User Location Map' => 'Benutzer Lageplan',
+  'Inactive' => 'Inaktiv',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => 'Sind Sie sicher, dass Sie diese Benutzer deaktivieren wollen zwei Faktor auth Anforderung?',
+  'Successfully deactivated two factor auth' => 'Erfolgreich deaktiviert zwei Faktor auth',
+  'Sorry, we are not creating anymore user accounts at this time.' => 'Es tut uns leid, dass wir zu diesem Zeitpunkt keine weiteren Benutzerkonten erstellen.',
 );

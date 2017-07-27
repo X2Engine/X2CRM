@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -55,7 +54,7 @@ class RelationshipsController extends x2base {
         return array (
             array ('allow',
                 'actions' => array (
-                    'addRelationship', 
+                    'addRelationship', 'relabelRelationship',
                       
                     'graph', 'getRecordData', 'addNode', 'connectNodes', 
                     'deleteEdges', 'viewInlineGraph', 'ajaxGetModelAutocomplete',
@@ -134,6 +133,57 @@ class RelationshipsController extends x2base {
         $this->render ('graphFullScreen', array (
             'model' => $model,
         ));
+    }
+
+    /**
+     * Update the label of a specific relationship
+     * @param int $firstId ID
+     * @param string $firstType Type of the record being related
+     * @param string $label New relationship label
+     */
+    public function actionRelabelRelationship ($secondId, $secondType) {
+        $firstId = filter_input(INPUT_POST, 'firstId', FILTER_SANITIZE_NUMBER_INT);
+        $firstType = filter_input(INPUT_POST, 'firstType', FILTER_SANITIZE_STRING);
+        $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $firstModel = $this->getModelFromTypeAndId ($firstType, $firstId);
+        $secondModel = $this->getModelFromTypeAndId ($secondType, $secondId);
+        if (!Yii::app()->controller->checkPermissions ($firstModel, 'edit') ||
+            !Yii::app()->controller->checkPermissions ($secondModel, 'edit')) {
+                $this->denied ();
+        }
+
+        $criteria = new CDbCriteria;
+        $params = array(
+            ':firstType' => $firstType,
+            ':firstId' => $firstId,
+            ':secondType' => $secondType,
+            ':secondId' => $secondId,
+        );
+        $criteria->addCondition (
+            "firstType=:firstType AND
+             firstId=:firstId AND
+             secondType=:secondType AND
+             secondId=:secondId", 'OR');
+        $criteria->addCondition (
+            "firstType=:secondType AND
+             firstId=:secondId AND
+             secondType=:firstType AND
+             secondId=:firstId", 'OR');
+        $criteria->params = $params;
+        $relationship = Relationships::model ()->find($criteria);
+
+        if ($relationship) {
+            if ($relationship->firstLabel === $relationship->secondLabel)
+                $relationship->firstLabel = $relationship->secondLabel = $label;
+            else if ($secondId === $relationship->secondId && $secondType === $relationship->secondType)
+                $relationship->firstLabel = $label;
+            else
+                $relationship->secondLabel = $label;
+            if ($relationship->update(array('firstLabel', 'secondLabel'))) {
+                echo 'success';
+                Yii::app()->end();
+            }
+        }
     }
 
     /**

@@ -1,3 +1,118 @@
+# 6.6 #
+5/17/2017
+* General Changelog / Developer Notes
+  * Campaign Improvements
+    * Email campaigns can now be scheduled
+    * Added email opened time and location to campaign launch grid
+    * Improved database performance of campaign email sends
+  * X2Touch Improvements
+    * Added barcode scanner to import product barcode identifier
+    * Mobile publisher now supports voice to text notes
+  * X2Workflow Improvements
+    * New Location Trigger to support general workflow operations when a Location is logged
+    * Added AddToNewsletter workflow action to manage web leads on newsletter contact lists
+  * Added new feature tours
+  * Improved email client IMAP server compatibility, including with Dovecot, Exchange, Office365, and Rackspace
+  * Added new import console command with 'rollback' operation
+  * Added an admin page to locate missing records that may have been inadvertently hidden
+  * New RackspaceEmail account type
+  * Fixed bug in email subject replacement
+  * Enabled mass execute macro on Contact list grids
+  * Added option to weblead form designer to disable dupe detection by X2Identity on a per-form basis
+  * X2Packager stability fixes
+  * Fixed date format issue under French locale
+  * Miscellaneous UI enhancements
+  * Miscellaneous bug fixes
+* Tracked Bug Fixes:
+  * [3703](http://x2software.com/index.php/bugReports/3703): Undefined index: X2List
+  * [5825](http://x2software.com/index.php/bugReports/5825): Call to a member function asa() on null
+  * [5966](http://x2software.com/index.php/bugReports/5966): Trying to get property of non-object
+  * [5971](http://x2software.com/index.php/bugReports/5971): Function mcrypt_create_iv() is deprecated
+
+# 6.5.2 #
+12/23/2016
+* General Changelog / Developer Notes
+  * X2Touch Improvements
+    * Added video attachments on iOS
+    * Added audio attachments on iOS and Android
+  * New X2Workflow actions for creating notifications, emails, text messages, and activity feed posts with records in a specified proximity
+  * Activity feed posts can now be associated with arbitrary records
+  * Added Twilio account type and SMS-based two factor authentication
+  * Checkin post formatting improvements
+  * Added weblead form thank you text customization
+  * Fixed Doc template usage with Opportunities
+  * Added option to toggle geolocation functionality
+  * Standard Actions can now be posted to a user's calendar
+  * Added ability to relabel existing relationships
+  * AnonContact webactivity visits can now be filtered from your notifications
+  * Miscellaneous bug fixes
+
+# 6.5.1 #
+11/17/2016
+* General Changelog / Developer Notes
+  * Added open rate, click rate, and unsubscribe rate attributes to Campaigns
+  * Added ability to import Contacts from mobile devices
+  * Added static maps to webapp check ins
+  * Added mobile audio attachments
+  * Resurfaced calendar event reminders
+  * Fixed broken images in Image Gallery widget
+* Tracked Bug Fixes:
+  * [3396](http://x2software.com/index.php/bugReports/3396): CDbCommand failed to execute the SQL statement: SQLSTATE[23000]: Integrity constraint violation: 1451 Cannot delete or update a parent row: a foreign key constraint fails (`nevulosa_x2153`.`x2_actions`, CONSTRAINT `fk_actions_workflow_id` FOREIGN KEY
+  * [5375](http://x2software.com/index.php/bugReports/5375): syntax error, unexpected '}'
+  * [5391](http://x2software.com/index.php/bugReports/5391): CDbCommand failed to execute the SQL statement: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ') AND x2_lo
+  * [5416](http://x2software.com/index.php/bugReports/5416): Undefined variable: sessionTokenCookie
+  * [5420](http://x2software.com/index.php/bugReports/5420): Argument 1 passed to RelationshipsBehavior::deleteRelationship() must be an instance of CActiveRecord, null given
+
+# 6.5 #
+10/7/2016
+* General Changelog / Developer Notes
+  * New Location tracking features
+    * Log locations when Contacts open emails, visit your webpage, etc.
+    * Log locations of users when they log in to the system
+    * Log periodic location updates from X2Touch mobile
+    * Settings page to configure and enable user location logging
+  * Google Maps API Re-enabled
+  * Jasper Reporting Integration
+  * Two-way Google Calendar sync
+  * Support for multiple user calendars
+  * Miscellaneous bug fixes and improvements
+* Tracked Bug Fixes:  
+  * [4858](http://x2software.com/index.php/bugReports/4858): The system is unable to find the requested action "configureMyInbox".  
+  * [4923](http://x2software.com/index.php/bugReports/4923): Trying to get property of non-object  
+  * [5288](http://x2software.com/index.php/bugReports/5288): Undefined variable: success  
+
+# 6.0.4 #
+8/12/2016
+* General Changelog / Developer Notes
+  * More improvements to Admin control panel
+  * Fix inline email issue on Opportunities
+  * Added ability to disable Email Inbox per credential
+  * Miscellaneous bug fixes
+
+# 6.0.3 #
+8/3/2016
+* General Changelog / Developer Notes
+  * Admin control panel UI overhaul
+  * Ability to delete from mobile activity feed
+  * Mobile login tokens persist longer
+  * Miscellaneous bug fixes
+
+# 6.0.2 #
+7/14/2016
+* General Changelog / Developer Notes
+  * Action history is now accessible from mobile
+  * New "Change Record" flow action allows workflows to execute on related records
+  * New "Mass Execute Macro" mass action allows execution of macro type workflows from the grids
+  * More improvements to web capture API, including file upload fields
+  * Miscellaneous bug fixes
+
+# 6.0.1 #
+5/26/2016
+* General Changelog / Developer Notes
+  * X2Touch now supports persistent sessions
+  * Improvements to web capture API
+  * Miscellaneous bug fixes
+
 # 6.0 #
 4/26/2016
 * General Changelog / Developer Notes

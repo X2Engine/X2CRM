@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -83,6 +82,19 @@ Main.prototype.getController = function () {
         new x2.Controller;
 };
 
+/*
+ * http://stackoverflow.com/questions/10730362/get-cookie-by-name
+ * @func: function to get Cookie
+ */
+Main.prototype.getCookie = function (name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2){
+        return parseInt(parts.pop().split(";").shift(),10);
+    } 
+    return null;
+};
+
 Main.prototype.updateHeader = function () {
     var that = this;
 
@@ -125,7 +137,6 @@ Main.prototype.configurePageShow = function () {
     this.onPageShow (function(){       
         that.prevPage$ = that.activePage$;
         that.activePage$ = $.mobile.activePage ? $('#' + $.mobile.activePage.attr ('id')) : null;
-
         that.updateHeader ();
         that.updatePanel ();
     });
@@ -197,6 +208,55 @@ Main.prototype.refreshPage = function (data) {
         'change', url);
 };
 
+Main.prototype.setUpLocation = function () {
+    var that = this;
+    var form$ = $('#geoCoordsForm');   
+    $('<input />').attr('type', 'hidden')
+          .attr('name', "YII_CSRF_TOKEN")
+          .attr('value', x2.csrfToken)
+          .appendTo('#geoCoordsForm');
+
+    var locationTrackingFrequency = this.getCookie("locationTrackingFrequency");
+    if (locationTrackingFrequency === null){
+        locationTrackingFrequency = 60; //every hour
+    } 
+    var locationTrackingSwitch = this.getCookie("locationTrackingSwitch");
+    if (locationTrackingSwitch === null){
+        locationTrackingSwitch = 0; //every hour
+    } 
+   var phpSessionId = this.getCookie("PHPSESSID");
+    
+   if(locationTrackingSwitch === 1 && phpSessionId !== null) {
+        setInterval(function() {
+            //your jQuery ajax code
+            if (x2.main.isPhoneGap) {
+              x2touch.API.getCurrentPosition(function(position) {
+                  var pos = {
+                     lat: position.coords.latitude,
+                     lon: position.coords.longitude
+                   };
+
+                   $.mobile.activePage.find ('#geoCoords').val(JSON.stringify (pos));
+              }, function (error) {
+                  alert('code: '    + error.code    + '\n' +
+                        'message: ' + error.message + '\n');
+              }, {});         
+            }
+            x2.mobileForm.submitWithFiles (
+                form$, 
+                function (data) {
+                    
+                }, function (jqXHR, textStatus, errorThrown) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (textStatus, 'Error');
+                }
+            );
+        }, 1000 * 60 * locationTrackingFrequency); 
+        // where locationTrackingFrequency is your every x minutes
+    }
+    
+};
+
 /**
  * Meant to be called after a page is fetched via ajax. Updates parts of the page with updated
  * version contained in server response.
@@ -207,7 +267,6 @@ Main.prototype.refreshContent = function () {
     if (!activePage$) return null;
     //console.log ('refreshContent');
     var newContent$ = $('.refresh-content');
-
     newContent$.each (function () {
         // data attribute contains selector of elements to update
         var updateSelector = $(this).attr ('data-refresh-selector'); 
@@ -555,6 +614,7 @@ Main.prototype.init = function () {
         this.setUpBackButton (); 
     }
     this.fixedCornerButtonFixes (); 
+    this.setUpLocation ();
 };
 
 return Main;

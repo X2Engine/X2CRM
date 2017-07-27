@@ -4,7 +4,6 @@
   'Reminder' => '提醒',
   'Complete Date' => '完成日期',
   'Date Completed' => '完成日期',
-  'All Day' => '整天',
   'Complete + New Action' => '完成 + 新任务',
   'Uncomplete' => '未完成',
   'Overdue' => '过期的',
@@ -120,4 +119,7 @@
   'Event Subtype' => '事件亚型',
   'Event Status' => '事件状态',
   'Calendar Color' => '日历颜色',
+  'Enter email addresses, one per line' => '输入电子邮件地址，每行一个',
+  'Add to Calendar' => '添加到日历',
+  'By default, the Contact who sent the email will be associated.' => '默认情况下，发送电子邮件的联系人将被关联。',
 );

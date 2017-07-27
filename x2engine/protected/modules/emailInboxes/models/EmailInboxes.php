@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.models.X2Model');
@@ -985,6 +984,12 @@ class EmailInboxes extends X2Model {
         }
         $folders = array_diff ($folders, $skipFolders);
         foreach ($folders as $folder) {
+            // Skip folders if logging is not requested
+            if (in_array($folder, $sentFolders)) {
+                if (!$this->settings['logOutboundByDefault']) continue;
+            } else {
+                if (!$this->settings['logInboundByDefault']) continue;
+            }
             Yii::log("Beginning inbound logging for folder $folder in inbox {$this->id}", 'trace', 'application.automation.cron');
             $this->selectFolder ($folder);
             // Retrieve the UID of the most recently logged email for this folder and
@@ -1094,6 +1099,8 @@ class EmailInboxes extends X2Model {
                 'outlook.office365.com',
                 'imap-mail.outlook.com',
                 'imap.mail.yahoo.com',
+                'imap.secureserver.net',
+                'imap.mail.ru',
             );
             if (!($this->settings['disableQuota'] ||
                in_array($this->credentials->auth->imapServer, $incompatibleImapServers))) {
@@ -1487,10 +1494,8 @@ class EmailInboxes extends X2Model {
             if (count($message->attachments) > 0)
                 $message->parseInlineAttachments();
         } else {
-            $message->body = $body['plain'];
+            $message->body = nl2br($body['plain']);
         }
-        if (!empty($message->body) && (mb_detect_encoding ($message->body, 'ISO-8859-1') === 'ISO-8859-1'))
-            $message->body = utf8_encode ($message->body);
     }
 
     public function getBodyPart ($uid, $structure, $part) {
@@ -1550,17 +1555,9 @@ class EmailInboxes extends X2Model {
      * @param int|array $uids The message UIDs to delete
      */
     public function deleteMessages ($uids) {
-        if ($this->isGmail()) {
-            imap_mail_move (
-                $this->stream, $this->sequence($uids), '[Gmail]/Trash', CP_UID);
-        } else {
-            // TODO check for other possible "Trash" folders
-            imap_delete($this->stream, $this->sequence($uids), FT_UID);
-        }
+        imap_delete($this->stream, $this->sequence($uids), FT_UID);
         imap_expunge($this->stream);
         $this->updateCachedMailbox($uids, true);
-        if ($this->isGmail())
-            $this->invalidateCachedMailbox("[Gmail]/Trash");
     }
 
     /**
@@ -1661,6 +1658,7 @@ class EmailInboxes extends X2Model {
             $structureEncoding = $this->getStructureMimetype ($structure);
             $disposition = isset($structure->ifdisposition) && $structure->ifdisposition ?
                 $structure->disposition : false;
+            $disposition = strtoupper($disposition);
             if (!in_array ($disposition, array ('ATTACHMENT', 'INLINE')) && 
                 $structureEncoding === 'TEXT/HTML') {
                 $body['html'] = $this->decodeBodyPart ($uid, $structure, $part);
@@ -1674,7 +1672,7 @@ class EmailInboxes extends X2Model {
 
                 $filename = $structure->dparameters[0]->value;
                 $size = $structure->bytes;
-                $type = ($structure->disposition === 'ATTACHMENT' ? 'attachment' : 'inline');
+                $type = ($disposition === 'ATTACHMENT' ? 'attachment' : 'inline');
                 $mimeType = $this->getStructureMimetype($structure, true);
                 $partNumber = is_null($part) ? 1 : $part;
                 if (isset($structure->id))  {
@@ -1771,6 +1769,16 @@ class EmailInboxes extends X2Model {
      */
     public function getTabOptions () {
         $visibleInboxes = $this->getVisibleInboxes ();
+        if (!Yii::app()->params->isAdmin) {
+            $visibleInboxes = array_filter($visibleInboxes, function($x) {
+                // Filter out inboxes that are shared, but not owned by System.
+                // These credentials will NOT be present in the hidden credentials dropdown,
+                // causing mail to be sent from an incorrect address
+                if ($x->shared)
+                    return $x->credentials->userId == Credentials::SYS_ID;
+                return true;
+            });
+        }
         if (!empty($visibleInboxes)) {
             return array_combine (array_map (function ($inbox) {
                 return $inbox->id;

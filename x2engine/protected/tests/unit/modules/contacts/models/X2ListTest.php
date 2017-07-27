@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -122,7 +121,24 @@ class X2ListTest extends X2DbTestCase {
                 , array_map($emailsInList, $staticClone->listItems));
     }
     
+    public function testAddIds() {
+        $contact = $this->contacts('listTest3');
+        $staticList = $this->lists('testUser');
+        $newsletter = $this->lists('testNewsletter');
+        $prevStaticCount = $staticList->count;
+        $prevNewsletterCount = $newsletter->count;
 
+        $this->assertTrue($staticList->addIds($contact->id));
+        $this->assertEquals($staticList->count, $prevStaticCount + 1);
+
+        // Should fail to add a contact to a newsletter without the $allowNewsletter param
+        $this->assertFalse($newsletter->addIds($contact->id));
+        $this->assertEquals($newsletter->count, $prevNewsletterCount);
+
+        // Should now succeed when adding the contact
+        $this->assertTrue($newsletter->addIds($contact->id, true));
+        $this->assertEquals($newsletter->count, $prevNewsletterCount + 1);
+    }
 }
 
 ?>

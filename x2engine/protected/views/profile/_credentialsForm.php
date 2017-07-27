@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -61,7 +60,8 @@ if($model->isNewRecord)
 else
 	$action = array('/profile/createUpdateCredentials','id'=>$model->id);
 
-echo CHtml::beginForm($action);
+echo CHtml::beginForm($action, 'post', array('enctype' => 'multipart/form-data'));
+
 ?>
 
 <!-- Credentials metadata -->
@@ -147,6 +147,10 @@ $defaultSecurity = CJSON::encode($modelClass->security);
             if ($('#Credentials_auth_user').length && $('#Credentials_auth_user').val ()) 
                 email = $('#Credentials_auth_user').val();
             var password = $("[name='Credentials[auth][password]']").val();
+            if (password.length < 1) {
+                alert("<?php echo Yii::t('app', 'Please enter a password to verify'); ?>");
+                return;
+            }
 
             // server, port, and security are not specified in the form for provider-specific
             // account types, such as GMail accounts
@@ -154,12 +158,15 @@ $defaultSecurity = CJSON::encode($modelClass->security);
             var server = <?php echo $defaultServer; ?>;
             var port = <?php echo $defaultPort; ?>;
             var security = <?php echo $defaultSecurity; ?>;
+            var smtpNoValidate = false;
             if ($('#Credentials_auth_server').length)
                 server = $('#Credentials_auth_server').val();
             if ($('#Credentials_auth_port').length)
                 port = $('#Credentials_auth_port').val();
             if ($('#Credentials_auth_security').length)
                 security = $('#Credentials_auth_security').val();
+            if ($('#Credentials_auth_smtpNoValidate').length)
+                smtpNoValidate = $('#Credentials_auth_smtpNoValidate').is(':checked');
 
             var successMsg = "<?php echo Yii::t('app', 'Authentication successful.'); ?>";
             var failureMsg = "<?php echo Yii::t('app', 'Failed to authenticate! Please check your credentials.'); ?>";
@@ -178,7 +185,8 @@ $defaultSecurity = CJSON::encode($modelClass->security);
                     password: password,
                     server: server,
                     port: port,
-                    security: security
+                    security: security,
+                    smtpNoValidate: smtpNoValidate
                 },
                 complete: function(xhr, textStatus) {
                     $('#verify-credentials-loading').children().remove();

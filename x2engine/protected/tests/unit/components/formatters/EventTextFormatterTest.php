@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.modules.accounts.models.Accounts');
@@ -53,6 +52,7 @@ class EventTextFormatterTest extends X2DbTestCase {
     public static function referenceFixtures() {
         return array(
             'events' => array('Events', '.GetText'),
+            'eventsToMedia' => ':x2_events_to_media',
             'users' => 'User',
             'contacts' => 'Contacts',
             'notifications' => 'Notification',
@@ -71,8 +71,10 @@ class EventTextFormatterTest extends X2DbTestCase {
             
             'services' => 'Services',
             'media' => 'Media',
+            'profile' => 'Profile',
             'topics' => 'Topics',
-            'topicReplies' => 'TopicReplies'
+            'topicReplies' => 'TopicReplies',
+            'docs' => 'Docs'
         );
     }
 
@@ -94,14 +96,14 @@ class EventTextFormatterTest extends X2DbTestCase {
         $event = $this->events('longEvent');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ex malesuada feugiat. Integer quis diam ornare, molestie nibh ullamcorper, sollicitudin velit. In placerat ex non lacus dapibus congue. Curabitur tristique ligula mi, non hendrerit arcu dignissim in. Duis pulvinar felis a velit auctor imperdiet. Morbi porttitor sapien et purus porttitor mattis.
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ex malesuada feugiat. Integer quis diam ornare, molestie nibh ullamcorper, sollicitudin velit. In placerat ex non lacus dapibus congue. Curabitur tristique ligula mi, non hendrerit arcu dignissim in. Duis pulvinar felis a velit auctor imperdiet. Morbi porttitor sapien et purus porttitor mattis.
 
 Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncus finibus. Mauris lacinia non sem a suscipit. Etiam id nibh sit amet nunc suscipit dictum ut eget.',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ...',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas maximus dui et dolor convallis malesuada. Nulla aliquam congue mi, in vestibulum enim dictum in. Nullam in nulla vitae ex ...',
                 $truncatedText);
     }
 
@@ -114,25 +116,25 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $youAuthorText = EventTextFormatter::getAuthorText($event);
         $this->assertNotEmpty($youAuthorText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> ',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> ',
                 $youAuthorText);
 
         $event2 = $this->events('feedEvent2');
         $otherAuthorText = EventTextFormatter::getAuthorText($event2);
         $this->assertNotEmpty($otherAuthorText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a> ',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a> ',
                 $otherAuthorText);
 
         TestingAuxLib::suLogin('testuser');
 
         $testUserAuthorText = EventTextFormatter::getAuthorText($event2);
         $this->assertNotEmpty($testUserAuthorText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/2">You</a> ',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/2">You</a> ',
                 $testUserAuthorText);
 
         $testUserAdminAuthorText = EventTextFormatter::getAuthorText($event);
         $this->assertNotEmpty($testUserAdminAuthorText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> ',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> ',
                 $testUserAdminAuthorText);
     }
 
@@ -188,27 +190,27 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('recordCreateEvent');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> created a new contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> created a new contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('recordCreateEvent2');
         $notFoundText = $event2->getText();
         $this->assertNotEmpty($notFoundText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> created a new contact, but it could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> created a new contact, but it could not be found.',
                 $notFoundText);
 
         
         $event3 = $this->events('recordCreateEmailInbox');
         $emailInboxText = $event3->getText();
         $this->assertNotEmpty($emailInboxText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> created a new email inbox',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> created a new email inbox',
                 $emailInboxText);
         
 
         $event4 = $this->events('recordCreateNoAuthor');
         $noAuthorText = $event4->getText();
         $this->assertNotEmpty($noAuthorText);
-        $this->assertEquals('A new contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>, has been created.',
+        $this->assertEquals('A new contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>, has been created.',
                 $noAuthorText);
 
         $event5 = $this->events('recordCreateNoAuthorNoRecord');
@@ -229,7 +231,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $recordCreatedDeletedText = $event6->getText();
         $this->assertNotEmpty($recordCreatedDeletedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> created a new contact, Deleted Contact. It has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> created a new contact, Deleted Contact. It has been deleted.',
                 $recordCreatedDeletedText);
 
         $event7 = $this->events('recordCreateWithDeletionNoAuthor');
@@ -246,61 +248,61 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('recordCreateAction');
         $actionText = $event->getText();
         $this->assertNotEmpty($actionText);
-        $this->assertEquals('A new <a class="action-frame-link" data-action-id="1" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> has been assigned to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a>',
+        $this->assertEquals('A new <a class="action-frame-link" data-action-id="1" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has been assigned to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a>',
                 $actionText);
 
         $event2 = $this->events('recordCreateActionUnassigned');
         $actionTextUnassigned = $event2->getText();
         $this->assertNotEmpty($actionTextUnassigned);
-        $this->assertEquals('A new <a class="action-frame-link" data-action-id="2" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> has been created.',
+        $this->assertEquals('A new <a class="action-frame-link" data-action-id="2" href="#">action</a> associated with the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has been created.',
                 $actionTextUnassigned);
 
         $event3 = $this->events('recordCreateActionCall');
         $callActionText = $event3->getText();
         $this->assertNotEmpty($callActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test call action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test call action',
                 $callActionText);
 
         $event4 = $this->events('recordCreateActionCall2');
         $unassignedCallActionText = $event4->getText();
         $this->assertNotEmpty($unassignedCallActionText);
-        $this->assertEquals('Someone logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned call action',
+        $this->assertEquals('Someone logged a call (duration unknown) with <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned call action',
                 $unassignedCallActionText);
 
         $event5 = $this->events('recordCreateActionNote');
         $noteActionText = $event5->getText();
         $this->assertNotEmpty($noteActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test note action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test note action',
                 $noteActionText);
 
         $event6 = $this->events('recordCreateActionNote2');
         $unassignedNoteActionText = $event6->getText();
         $this->assertNotEmpty($unassignedNoteActionText);
-        $this->assertEquals('Someone posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned note action',
+        $this->assertEquals('Someone posted a comment on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned note action',
                 $unassignedNoteActionText);
 
         $event7 = $this->events('recordCreateActionTime');
         $timeActionText = $event7->getText();
         $this->assertNotEmpty($timeActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test time action',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test time action',
                 $timeActionText);
 
         $event8 = $this->events('recordCreateActionTime2');
         $unassignedTimeActionText = $event8->getText();
         $this->assertNotEmpty($unassignedTimeActionText);
-        $this->assertEquals('Someone logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned time action',
+        $this->assertEquals('Someone logged 0 minutes on <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>: Test unassigned time action',
                 $unassignedTimeActionText);
 
         $event9 = $this->events('recordCreateAccountAction');
         $accountActionText = $event9->getText();
         $this->assertNotEmpty($accountActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action, <a class="action-frame-link" data-action-id="9" href="#">test</a>',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> created a new action, <a class="action-frame-link" data-action-id="9" href="#">test</a>',
                 $accountActionText);
 
         $event10 = $this->events('recordCreateAccountAction2');
         $targetedAccountActionText = $event10->getText();
         $this->assertNotEmpty($targetedAccountActionText);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/1"><span>Web Admin</span></a> created a new action for <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>, <a class="action-frame-link" data-action-id="10" href="#">test</a>',
                 $targetedAccountActionText);
 
         $event11 = $this->events('recordCreateAccountAction3');
@@ -318,7 +320,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('webleadCreate');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('A new web lead has come in: <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('A new web lead has come in: <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('webleadCreateDeletedNoRecord');
@@ -353,7 +355,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('recordDeleted');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> deleted the contact, Deleted Contact.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> deleted the contact, Deleted Contact.',
                 $text);
 
         $event->user = null;
@@ -370,20 +372,26 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('workflowStart');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> started the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> started the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('workflowStartNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> started a process stage, but the associated contact was not found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> started a process stage, but the associated contact was not found.',
                 $noRecordText);
 
         $event3 = $this->events('workflowStartNoWorkflowAction');
         $noActionText = $event3->getText();
         $this->assertNotEmpty($noActionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> started a process stage, but the process record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> started a process stage, but the process record could not be found.',
                 $noActionText);
+        
+        $event4 = $this->events('workflowStartWorkflowActionNoStage');
+        $noStageText = $event4->getText();
+        $this->assertNotEmpty($noStageText);
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> started a process stage, but the process record could not be found.',
+                $noStageText);
     }
 
     public function testFormatWorkflowComplete() {
@@ -394,19 +402,19 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('workflowComplete');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> completed the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> completed the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('workflowCompleteNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> completed a process stage, but the associated contact was not found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> completed a process stage, but the associated contact was not found.',
                 $noRecordText);
 
         $event3 = $this->events('workflowCompleteNoWorkflowAction');
         $noActionText = $event3->getText();
         $this->assertNotEmpty($noActionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> completed a process stage, but the process record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> completed a process stage, but the process record could not be found.',
                 $noActionText);
     }
 
@@ -418,19 +426,19 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('workflowRevert');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> reverted the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> reverted the process stage "Received Resume" for the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('workflowRevertNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> reverted a process stage, but the associated contact was not found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> reverted a process stage, but the associated contact was not found.',
                 $noRecordText);
 
         $event3 = $this->events('workflowRevertNoWorkflowAction');
         $noActionText = $event3->getText();
         $this->assertNotEmpty($noActionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> reverted a process stage, but the process record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> reverted a process stage, but the process record could not be found.',
                 $noActionText);
     }
 
@@ -442,13 +450,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('structuredFeedEvent');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> : Self social post',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Self social post',
                 $text);
 
         $event2 = $this->events('structuredFeedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -460,13 +468,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('feedEvent');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> : Self social post',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> : Self social post',
                 $text);
 
         $event2 = $this->events('feedEvent2');
         $text2 = $event2->getText();
         $this->assertNotEmpty($text2);
-        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/3"><span>Sales2 Rep2</span></a>: Targeted social post',
+        $this->assertEquals('<a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>  &raquo; <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/3"><span>Sales2 Rep2</span></a>: Targeted social post',
                 $text2);
     }
 
@@ -478,13 +486,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('quoteEmailEvent');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued the quote "<a href="http://localhost/index-test.php/quotes/id/8"><span>Pro, Training &amp; Data Migration</span></a>" via email',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued the quote "<a href="http://localhost/index-test.php/quotes/8"><span>Pro, Training &amp; Data Migration</span></a>" via email',
                 $text);
 
         $event2 = $this->events('quoteEmailEvent2');
         $quoteEmailNoRecordText = $event2->getText();
         $this->assertNotEmpty($quoteEmailNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued a quote by email, but that record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued a quote by email, but that record could not be found.',
                 $quoteEmailNoRecordText);
 
         $quoteDeletionEvent = new Events();
@@ -497,7 +505,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $quoteEmailNoRecordWithDeletionText = $event2->getText();
         $this->assertNotEmpty($quoteEmailNoRecordWithDeletionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued a quote by email, but that record has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued a quote by email, but that record has been deleted.',
                 $quoteEmailNoRecordWithDeletionText);
 
         $quoteDeletionEvent->delete();
@@ -505,13 +513,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('invoiceEmailEvent');
         $invoiceText = $event3->getText();
         $this->assertNotEmpty($invoiceText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued the invoice "<a href="http://localhost/index-test.php/quotes/id/8"><span>Pro, Training &amp; Data Migration</span></a>" via email',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued the invoice "<a href="http://localhost/index-test.php/quotes/8"><span>Pro, Training &amp; Data Migration</span></a>" via email',
                 $invoiceText);
 
         $event4 = $this->events('invoiceEmailEvent2');
         $invoiceEmailNoRecordText = $event4->getText();
         $this->assertNotEmpty($invoiceEmailNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued an invoice by email, but that record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued an invoice by email, but that record could not be found.',
                 $invoiceEmailNoRecordText);
 
         $invoiceDeletionEvent = new Events();
@@ -524,7 +532,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $invoiceEmailNoRecordWithDeletionText = $event4->getText();
         $this->assertNotEmpty($invoiceEmailNoRecordWithDeletionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> issued an invoice by email, but that record has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> issued an invoice by email, but that record has been deleted.',
                 $invoiceEmailNoRecordWithDeletionText);
 
         $invoiceDeletionEvent->delete();
@@ -532,13 +540,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event5 = $this->events('genericEmailEvent');
         $genericEmailText = $event5->getText();
         $this->assertNotEmpty($genericEmailText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> sent an email to the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> sent an email to the contact <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $genericEmailText);
 
         $event6 = $this->events('genericEmailEvent2');
         $genericEmailNoRecordText = $event6->getText();
         $this->assertNotEmpty($genericEmailNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> sent an email to a contact, but that record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> sent an email to a contact, but that record could not be found.',
                 $genericEmailNoRecordText);
 
         $genericDeletionEvent = new Events();
@@ -551,7 +559,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $genericDeletedEmailText = $event6->getText();
         $this->assertNotEmpty($genericDeletedEmailText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> sent an email to a contact, but that record has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> sent an email to a contact, but that record has been deleted.',
                 $genericDeletedEmailText);
 
         $genericDeletionEvent->delete();
@@ -565,7 +573,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('quoteEmailOpen');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> has opened a quote email!',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has opened a quote email!',
                 $text);
 
         $event2 = $this->events('quoteEmailOpen2');
@@ -577,7 +585,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('invoiceEmailOpen');
         $invoiceText = $event3->getText();
         $this->assertNotEmpty($invoiceText);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> has opened an invoice email!',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has opened an invoice email!',
                 $invoiceText);
 
         $event4 = $this->events('invoiceEmailOpen2');
@@ -589,7 +597,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event5 = $this->events('genericEmailOpen');
         $genericEmailText = $event5->getText();
         $this->assertNotEmpty($genericEmailText);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> has opened an email!',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> has opened an email!',
                 $genericEmailText);
 
         $event6 = $this->events('genericEmailOpen2');
@@ -607,7 +615,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('emailClicked');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> opened a link in an email campaign and is visiting your website!',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> opened a link in an email campaign and is visiting your website!',
                 $text);
 
         $event2 = $this->events('emailClicked2');
@@ -625,7 +633,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('webActivity');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> is currently on your website!',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> is currently on your website!',
                 $text);
 
         $event2 = $this->events('webActivity2');
@@ -638,7 +646,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('webActivityAnonContact');
         $webActivityAnonContactText = $event3->getText();
         $this->assertNotEmpty($webActivityAnonContactText);
-        $this->assertEquals('Anonymous contact <a href="http://localhost/index-test.php/marketing/anonContactView/id/1"><span>1</span></a> is currently on your website!',
+        $this->assertEquals('Anonymous contact <a href="http://localhost/index-test.php/marketing/marketing/anonContactView/1"><span>1</span></a> is currently on your website!',
                 $webActivityAnonContactText);
         
     }
@@ -651,13 +659,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('caseEscalated');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> escalated service case <a href="http://localhost/index-test.php/services/id/1"><span>1</span></a> to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/2"><span>Sales Rep</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> escalated service case <a href="http://localhost/index-test.php/services/1"><span>1</span></a> to <a style="text-decoration:none;" href="http://localhost/index-test.php/profile/view/2"><span>Sales Rep</span></a>',
                 $text);
 
         $event2 = $this->events('caseEscalated2');
         $caseEscalatedNoRecordText = $event2->getText();
         $this->assertNotEmpty($caseEscalatedNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> escalated a service case but that case could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> escalated a service case but that case could not be found.',
                 $caseEscalatedNoRecordText);
     }
 
@@ -710,13 +718,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('actionComplete');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> completed the following action: <a class="action-frame-link" data-action-id="1" href="#">test</a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> completed the following action: <a class="action-frame-link" data-action-id="1" href="#">test</a>',
                 $text);
 
         $event2 = $this->events('actionCompleteNoRecord');
         $completeNoRecordText = $event2->getText();
         $this->assertNotEmpty($completeNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> completed an action, but the record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> completed an action, but the record could not be found.',
                 $completeNoRecordText);
     }
 
@@ -728,13 +736,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('docUpdate');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> updated a document, <a href="http://localhost/index-test.php/docs/id/1"><span>quis</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> updated a document, <a href="http://localhost/index-test.php/docs/1"><span>quis</span></a>',
                 $text);
 
         $event2 = $this->events('docUpdateNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> updated a document, but the record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> updated a document, but the record could not be found.',
                 $noRecordText);
     }
 
@@ -746,13 +754,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('emailFrom');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> received an email from a contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> received an email from a contact, <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>',
                 $text);
 
         $event2 = $this->events('emailFromNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> received an email from a contact, but that record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> received an email from a contact, but that record could not be found.',
                 $noRecordText);
 
         $deletionEvent = new Events();
@@ -764,7 +772,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
 
         $noRecordDeletionEventText = $event2->getText();
         $this->assertNotEmpty($noRecordDeletionEventText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> received an email from a contact, but that record has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> received an email from a contact, but that record has been deleted.',
                 $noRecordDeletionEventText);
 
         $deletionEvent->delete();
@@ -772,13 +780,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event3 = $this->events('emailFromWithAction');
         $withActionText = $event3->getText();
         $this->assertNotEmpty($withActionText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> received an email <a class="action-frame-link" data-action-id="14" href="#">test</a> from the contacts, <a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a>, <a class="contact-name" href="http://localhost/index-test.php/contacts/id/67890"><span>Testfirstnametwo Testlastnametwo</span></a>, regarding the service <a href="http://localhost/index-test.php/services/id/1"><span>1</span></a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> received an email <a class="action-frame-link" data-action-id="14" href="#">test</a> from the contacts, <a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a>, <a class="contact-name" href="http://localhost/index-test.php/contacts/67890"><span>Testfirstnametwo Testlastnametwo</span></a>, regarding the service <a href="http://localhost/index-test.php/services/1"><span>1</span></a>',
                 $withActionText);
 
         $event4 = $this->events('emailFromWithActionNoRecord');
         $withActionNoRecordText = $event4->getText();
         $this->assertNotEmpty($withActionNoRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> received an email from a action, but that record could not be found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> received an email from a action, but that record could not be found.',
                 $withActionNoRecordText);
     }
 
@@ -790,7 +798,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('voipCall');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/id/12345"><span>Testfirstname Testlastname</span></a> called.',
+        $this->assertEquals('<a class="contact-name" href="http://localhost/index-test.php/contacts/12345"><span>Testfirstname Testlastname</span></a> called.',
                 $text);
 
         $event2 = $this->events('voipCallNoRecord');
@@ -822,18 +830,18 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a>: <br>File: <a href="/index-test.php/media/view/1">Divers.jpg</a><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile/id/1/key/d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" />',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile?id=1&key=d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" /><br>',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));
         $this->assertNotEmpty($truncatedText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a>: <br>File: <a href="/index-test.php/media/view/1">Divers.jpg</a>',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br><br>',
                 $truncatedText);
-
+        
         $event2 = $this->events('mediaNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a>: <br>Media file not found.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br>Media file not found.',
                 $noRecordText);
     }
 
@@ -846,13 +854,13 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('topicReply');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> posted a new reply to <a href="/index-test.php/topics/1?replyId=1">Test Topic</a>.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to <a href="http://localhost/index-test.php/topics/topics/view/1?replyId=1">Test Topic</a>.',
                 $text);
 
         $event2 = $this->events('topicReplyNoRecord');
         $noRecordText = $event2->getText();
         $this->assertNotEmpty($noRecordText);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> posted a new reply to a topic, but that reply has been deleted.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> posted a new reply to a topic, but that reply has been deleted.',
                 $noRecordText);
 
         Yii::app()->params->isMobileApp = true;
@@ -870,7 +878,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('invalidType');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/id/1">You</a> This event has a type not covered by the formatter.',
+        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a> This event has a type not covered by the formatter.',
                 $text);
     }
 

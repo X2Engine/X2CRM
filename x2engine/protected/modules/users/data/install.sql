@@ -18,22 +18,21 @@ CREATE TABLE x2_users (
     status                 TINYINT NOT NULL,
     temporary              TINYINT DEFAULT 0,
     lastUpdated            VARCHAR(50),
+    createDate             BIGINT,
     updatedBy              VARCHAR(50),
     recentItems            VARCHAR(100),
     topContacts            VARCHAR(100),
     lastLogin              INT DEFAULT 0,
     login                  INT DEFAULT 0,
     showCalendars          TEXT,
-    calendarViewPermission TEXT,
-    calendarEditPermission TEXT,
-    calendarFilter         TEXT,
-    setCalendarPermissions TINYINT,
     inviteKey              VARCHAR(16),
     userKey                VARCHAR(64),
     calendarKey            VARCHAR(64),
     UNIQUE(username, emailAddress),
     INDEX (username)
 ) COLLATE = utf8_general_ci;
+/*&*/
+ALTER TABLE `x2_calendar_permissions` ADD CONSTRAINT FOREIGN KEY (`userId`) REFERENCES x2_users(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
 /*&*/
 DROP TABLE IF EXISTS x2_password_reset;
 /*&*/

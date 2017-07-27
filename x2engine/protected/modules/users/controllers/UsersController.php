@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -67,7 +66,7 @@ class UsersController extends x2base {
                 'users'=>array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers'),
+                'actions'=>array('view','index','create','update','admin','delete','search','inviteUsers', 'deactivateTwoFactor'),
                 'users'=>array('admin'),
             ),
             array('deny',  // deny all users
@@ -86,10 +85,18 @@ class UsersController extends x2base {
      */
     public function actionView($id) {
         $user=User::model()->findByPk($id);
+
+        // Only load the Google Maps widget if we're on a User with an address
+        if(isset($this->portlets['GoogleMaps']) && Yii::app()->settings->enableMaps) {
+            $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+            $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
+            $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
+            $this->portlets['GoogleMaps']['params']['modelParam'] = 'userId';
+        }
         $dataProvider=new CActiveDataProvider('Actions', array(
             'criteria'=>array(
-                'order'=>'complete DESC',
-                'condition'=>'assignedTo=\''.$user->username.'\'',
+                'order'=>'createDate DESC',
+                'condition'=>'assignedTo=\''.$user->username.'\' OR completedBy = \''.$user->username.'\'',
         )));
         $actionHistory=$dataProvider->getData();
         $this->render('view',array(
@@ -103,6 +110,15 @@ class UsersController extends x2base {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate() {
+        $admin = &Yii::app()->settings;
+        $userCount = Yii::app()->db->createCommand(
+                "SELECT COUNT(*) FROM x2_users;"
+        )->queryAll();
+        $userCountParsed = $userCount[0]["COUNT(*)"];
+        if ($userCountParsed >= $admin->maxUserCount) {
+            $this->render('userLimit',array());
+        }
+        
         $model=new User;
         $groups=array();
         foreach(Groups::model()->findAll() as $group){
@@ -143,7 +159,15 @@ class UsersController extends x2base {
              
 
             if($model->save()){
+                $calendar = new X2Calendar();
+                $calendar->createdBy = $model->username;
+                $calendar->updatedBy = $model->username;
+                $calendar->createDate = time();
+                $calendar->lastUpdated = time();
+                $calendar->name = $profile->fullName."'s Calendar";
+                $calendar->save();
                 $profile->id=$model->id;
+                $profile->defaultCalendar = $calendar->id;
                 $profile->save();
                 if(isset($_POST['roles'])){
                     $roles=$_POST['roles'];
@@ -466,6 +490,61 @@ Please click on the link below to create an account at X2Engine!
         if (TopContacts::removeBookmark ($model))
             $this->renderTopContacts();
     }
+    
+    public function actionUserMap(){
+        if (!Yii::app()->settings->googleIntegration) {
+            throw new CHttpException(403, 'Please enable Google Integration to use this page.');
+        }
+        $users = User::getUserIds();
+        unset($users['']);
+        $selectedUsers = array_keys($users);
+        $filterParams = filter_input(INPUT_POST,'params',FILTER_DEFAULT,FILTER_REQUIRE_ARRAY);
+        $params = array();
+        if(isset($filterParams['users'])){
+            $selectedUsers = $filterParams['users'];
+            $userParams = AuxLib::bindArray($selectedUsers);
+            $userList = AuxLib::arrToStrList($userParams);
+        }
+        $time = isset($filterParams['timestamp'])?$filterParams['timestamp']:Formatter::formatDateTime(time());
+        $locations = Yii::app()->db->createCommand(
+                "SELECT lat, lon AS lng, recordId, type, comment AS info, createDate AS time"
+                . " FROM ("
+                ."SELECT * FROM x2_locations"
+                ." WHERE recordType = 'User'"
+                .(isset($filterParams['users'])?" AND recordId IN ".$userList:'')
+                ." AND createDate < :time"
+                ." ORDER BY createDate DESC"
+                .") AS tmp GROUP BY recordId"
+        )->queryAll(true, array(':time'=>strtotime($time)));
+        if(!empty($locations)){
+            $center = $locations[0];
+        } else {
+            $center = array('lat' => 0, 'lng' => 0);;
+        }
+        $types = Locations::getLocationTypes();
+        foreach($locations as &$location){
+            $location['time'] = Formatter::formatLongDateTime($location['time']);
+            if(array_key_exists($location['type'],$types)){
+                $location['type'] = $types[$location['type']];
+            }
+        }
+        $this->render('userMap',array(
+            'users' => $users,
+            'selectedUsers'=>$selectedUsers,
+            'timestamp'=>$time,
+            'center'=>json_encode($center),
+            'locations'=>$locations,
+        ));
+    }
+
+    public function actionDeactivateTwoFactor($id){
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = Profile::model()->findByPk($id);
+        if ($model) {
+            $model->enableTwoFactor = 0;
+            $model->update(array('enableTwoFactor'));
+        }
+    }
 
     private function renderTopContacts() {
         $this->renderPartial('application.components.leftWidget.views.topContacts',array(
@@ -504,6 +583,14 @@ Please click on the link below to create an account at X2Engine!
                     '{users}' => $Users,
                 )),
                 'url'=>array('admin')
+            ),
+            array(
+                'name'=>'map',
+                'label' => Yii::t('users', 'View {users} Map', array(
+                    '{users}' => $Users,
+                )),
+                'url'=>array('userMap'),
+                'visible' => (bool) Yii::app()->settings->enableMaps,
             ),
             array(
                 'name'=>'create',

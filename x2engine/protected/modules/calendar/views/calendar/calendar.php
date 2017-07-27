@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 $this->noBackdrop = true;
@@ -96,20 +95,11 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl ().'/js/X2Di
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
 $menuOptions = array(
-    'index', 'myPermissions',
+    'index', 'create'
 );
-if (Yii::app()->params->isAdmin)
-    $menuOptions[] = 'userPermissions';
-if (Yii::app()->settings->googleIntegration)
-    $menuOptions[] = 'sync';
 $this->insertMenu($menuOptions);
 
 $this->calendarUsers = X2CalendarPermissions::getViewableUserCalendarNames();
-$this->groupCalendars = X2Calendar::getViewableGroupCalendarNames();
-
-//$this->sharedCalendars = X2Calendar::getViewableCalendarNames();
-//$this->googleCalendars = X2Calendar::getViewableGoogleCalendarNames();
-$this->calendarFilter = X2Calendar::getCalendarFilters();
 
 // urls for ajax (and other javascript) calls
 $urls = X2Calendar::getCalendarUrls();
@@ -124,27 +114,14 @@ if(!isset($showCalendars['groupCalendars'])){
 }
 
 $userCalendars = $showCalendars['userCalendars'];
-$groupCalendars = $showCalendars['groupCalendars'];
-$sharedCalendars = $showCalendars['sharedCalendars'];
-$googleCalendars = $showCalendars['googleCalendars'];
 
 $checkedUserCalendars = '';
 foreach($userCalendars as $user){
     if(isset($this->calendarUsers[$user])){
-        $userCalendarFeed = $this->createUrl('jsonFeed', array('user' => $user));
+        $userCalendarFeed = $this->createUrl('jsonFeed', array('calendarId' => $user));
         $checkedUserCalendars .= '
         $("#calendar").fullCalendar("addEventSource",{
             url: "'.$userCalendarFeed.'"
-        });';
-    }
-}
-
-$checkedGroupCalendars = '';
-foreach($groupCalendars as $groupId){
-    if(isset($this->groupCalendars[$groupId])){
-        $checkedGroupCalendars .= '
-        $("#calendar").fullCalendar("addEventSource",{
-            url:"'.$urls['jsonFeedGroup'].'?groupId='.$groupId.'"
         });';
     }
 }
@@ -160,7 +137,7 @@ foreach($groupCalendars as $groupId){
 
 $(function() {
 
-    $('#calendar').fullCalendar({
+        $('#calendar').fullCalendar({
         theme: true,
         weekMode: 'liquid',
         header: {
@@ -197,8 +174,9 @@ $(function() {
             $(element).css('font-size', '0.8em');
             /*if(view.name == 'month' || view.name == 'basicWeek')
                 $(element).find('.fc-event-time').remove();*/
-            if(event.associationType == 'contacts')
-                element.attr('title', event.associationName);
+            if(event.associationType == 'contacts') {
+                element.attr('title', "name:"+event.associationName);
+            }
         },
         // Day Clicked!! Scroll to Publisher and set date to the day that was clicked
         dayClick: function(date, allDay, jsEvent, view) { 
@@ -218,37 +196,13 @@ $(function() {
         },
         // drop onto a different day
         eventDrop: function(event, dayDelta, minuteDelta, allDay, revertFunc) { 
-            if(event.source.source == 'google') { // moving event from Google Calendar
-                $.post(
-                    '<?php echo $urls['moveGoogleEvent']; ?>?calendarId=' + event.source.calendarId, 
-                    {
-                        EventId: event.id, 
-                        dayChange: dayDelta, 
-                        minuteChange: minuteDelta, 
-                        isAllDay: allDay
-                    }
-                );
-            } else {
-                $.post('<?php echo $urls['moveAction']; ?>', {
-                    id: event.id, dayChange: dayDelta, minuteChange: minuteDelta, isAllDay: allDay
-                });
-            }
+            $.post('<?php echo $urls['moveAction']; ?>', {
+                id: event.id, dayChange: dayDelta, minuteChange: minuteDelta, isAllDay: allDay
+            });
         },
         eventResize: function(event, dayDelta, minuteDelta, revertFunc) {
-            if(event.source.source == 'google') { // moving event from Google Calendar
-                $.post(
-                    '<?php echo $urls['resizeGoogleEvent']; ?>?calendarId=' + 
-                        event.source.calendarId, 
-                    {
-                        EventId: event.id, 
-                        dayChange: dayDelta, 
-                        minuteChange: minuteDelta
-                    }
-                );
-            } else {
-                $.post('<?php echo $urls['resizeAction']; ?>', {
-                    id: event.id, dayChange: dayDelta, minuteChange: minuteDelta});
-            }
+            $.post('<?php echo $urls['resizeAction']; ?>', {
+                id: event.id, dayChange: dayDelta, minuteChange: minuteDelta});
         },
         eventClick: function(event) { // Event Click! Pop up a dialog with info about the event
 
@@ -256,9 +210,6 @@ $(function() {
             if ($('[id="dialog-content_' + event.id + '"]').length != 0) { 
                 return;
             }
-
-            if(event.source.type == 'googleFeed')
-                return;
 
             // dialog box (opened at the end of this function)
             var viewAction = $('<div></div>', {id: 'dialog-content' + '_' + event.id});  
@@ -281,123 +232,96 @@ $(function() {
                 },
             ];
 
-            if(event.source.source == 'google') {
-                var boxTitle = '<?php echo CHtml::encode (Yii::t('calendar', 'Google Event')); ?>';
-                if(event.editable){
-                    dialogWidth = 600;
-                    $.post(
-                        '<?php echo $urls['editGoogleEvent']; ?>', {
-                            EventId: event.id, 
-                            CalendarId: event.source.calendarId
-                        }, function(data) {
-                            $(viewAction).append(data);
-                            $(viewAction).x2Dialog('open');
-                        }
-                    );
-                    boxButtons.unshift({
-                        // update event
-                        text: '<?php echo CHtml::encode (Yii::t('app', 'Save')); ?>', 
-                        click: function() {
-                            // delete event from database
-                            $.post(
-                                '<?php echo $urls['saveGoogleEvent']; ?>?calendarId=' + 
-                                    event.source.calendarId, 
-                                $(viewAction).find('form').serializeArray(),
-                                function() {
-                                    $('#calendar').fullCalendar('refetchEvents');
-                                }
-                            ); 
-                            $(this).x2Dialog('close');
-                        }
-                    });
-                    boxButtons.unshift({
-                        // delete event
-                        text: '<?php echo CHtml::encode (Yii::t('app', 'Delete')); ?>', 
-                        click: function() {
-                            if(confirm(
-                                '<?php echo Yii::t(
-                                    "calendar",
-                                    "Are you sure you want to delete this action?") ?>')) {
-                                    o
-                                // delete event from Google Calendar
-                                $.post('<?php echo $urls['deleteGoogleEvent']; ?>?calendarId=' + 
-                                    event.source.calendarId, {EventId: event.id}); 
-                                $('#calendar').fullCalendar('removeEvents', event.id);
-                                $(this).x2Dialog('close');
-                            }
-                        }
-                    });
-                } else {
-                    $.post('<?php echo $urls['viewGoogleEvent']; ?>', {
-                        EventId: event.id, CalendarId: event.source.calendarId}, function(data) {
+            if(event.editable){
 
+                dialogWidth = 600;
+                $.post(
+                    '<?php echo $urls['editAction']; ?>', {
+                        'ActionId': event.id, 'IsEvent': event.type=='event'
+                    }, function(data) {
                         $(viewAction).append(data);
-                        $(viewAction).x2Dialog('open');
-                    });
-                }
-            } else {
-
-                if(event.editable){
-
-                    dialogWidth = 600;
-                    $.post(
-                        '<?php echo $urls['editAction']; ?>', {
-                            'ActionId': event.id, 'IsEvent': event.type=='event'
-                        }, function(data) {
-                            $(viewAction).append(data);
-                            //open dialog after its filled with action/event
-                            viewAction.x2Dialog('open'); 
-                        }
-                    );
-                    boxButtons.unshift({
-                        text: '<?php echo CHtml::encode (Yii::t('app', 'Save')); ?>', // delete event
-                        'class': 'save-event-button',
-                        click: function() {
+                        //open dialog after its filled with action/event
+                        viewAction.x2Dialog('open'); 
+                    }
+                );
+                boxButtons.unshift({
+                    text: '<?php echo CHtml::encode (Yii::t('app', 'Save')); ?>', // delete event
+                    'class': 'save-event-button',
+                    click: function() {
     //                        var description = $(eventDescription).val();
-                            // delete event from database
-                            $.post(
-                                '<?php echo $urls['saveAction']; ?>?id=' + event.id, 
-                                $(viewAction).find('form').serialize(),
-                                function() {
-                                    $('#calendar').fullCalendar('refetchEvents');
-                                }
-                            ); 
+                        // delete event from database
+                        $.post(
+                            '<?php echo $urls['saveAction']; ?>?id=' + event.id, 
+                            $(viewAction).find('form').serialize(),
+                            function() {
+                                $('#calendar').fullCalendar('refetchEvents');
+                            }
+                        ); 
     //                        event.title = description.substring(0, 30);
     //                        event.description = description;
     //                        $('#calendar').fullCalendar('updateEvent', event);
+                        $(this).x2Dialog('close');
+                    }
+                });
+                boxButtons.unshift({
+                    // delete event
+                    'class': 'event-delete-button',
+                    html: '<span title="<?php 
+                        echo CHtml::encode (Yii::t('app', 'Delete')); 
+                    ?>" class="fa fa-trash fa-lg"></span>', 
+                    click: function() {
+                        var deleteMsg = '<?php
+                            echo Yii::t('calendar','Are you sure you want to delete this {action}?',array(
+                                '{action}' => lcfirst(Modules::displayName(false, "Actions"))
+                            ));
+                        ?>';
+                        if(confirm(deleteMsg)) {
+                            // delete event from database
+                            $.post('<?php echo $urls['deleteAction']; ?>', {id: event.id}); 
+                            $('#calendar').fullCalendar('removeEvents', event.id);
                             $(this).x2Dialog('close');
                         }
-                    });
+                    }
+                });
+                boxButtons.unshift({
+                    html: '<span title="<?php 
+                        echo CHtml::encode (Yii::t('app', 'Copy')); 
+                    ?>" class="fa fa-copy fa-lg"></span>', 
+                    'class': 'event-copy-button',
+                    click: function() {
+                        var dialogOuter$ = $(this).closest ('.ui-dialog');
+                        dialogOuter$.find ('.event-copy-button').hide ();
+                        dialogOuter$.find ('.ui-dialog-title').append ($('<span>', {
+                            html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Copy)')); ?>'
+                        }));
+                        var that = this;  
+                        dialogOuter$.find ('.event-delete-button').unbind ('click').
+                            bind ('click', function () {
+                                $(that).x2Dialog ('close');
+                            });
+                        dialogOuter$.find ('.save-event-button').unbind ('click').bind ('click',
+                            function () {
+                                $.ajax({
+                                    type: 'post',
+                                    url: yii.scriptUrl + '/actions/copyEvent?id=' + event.id,
+                                    data: $(viewAction).find('form').serializeArray(),
+                                    success: function() {
+                                        $('#calendar').fullCalendar('refetchEvents');
+                                    }
+                                }); 
+                                $(that).x2Dialog('close');
+                            });
+                    }
+                });
+                if (event.type != 'event' && event.complete != 'Yes') {
                     boxButtons.unshift({
-                        // delete event
-                        'class': 'event-delete-button',
-                        html: '<span title="<?php 
-                            echo CHtml::encode (Yii::t('app', 'Delete')); 
-                        ?>" class="fa fa-trash fa-lg"></span>', 
-                        click: function() {
-                            var deleteMsg = '<?php
-                                echo Yii::t('calendar','Are you sure you want to delete this {action}?',array(
-                                    '{action}' => lcfirst(Modules::displayName(false, "Actions"))
-                                ));
-                            ?>';
-                            if(confirm(deleteMsg)) {
-                                // delete event from database
-                                $.post('<?php echo $urls['deleteAction']; ?>', {id: event.id}); 
-                                $('#calendar').fullCalendar('removeEvents', event.id);
-                                $(this).x2Dialog('close');
-                            }
-                        }
-                    });
-                    boxButtons.unshift({
-                        html: '<span title="<?php 
-                            echo CHtml::encode (Yii::t('app', 'Copy')); 
-                        ?>" class="fa fa-copy fa-lg"></span>', 
-                        'class': 'event-copy-button',
+                        text: '<?php echo CHtml::encode (Yii::t('app', 'Complete and Create New Action')); ?>', // delete event, 
+                        'class': 'event-close-create-button',
                         click: function() {
                             var dialogOuter$ = $(this).closest ('.ui-dialog');
-                            dialogOuter$.find ('.event-copy-button').hide ();
+                            dialogOuter$.find ('.event-close-create-button').hide ();
                             dialogOuter$.find ('.ui-dialog-title').append ($('<span>', {
-                                html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Copy)')); ?>'
+                                html: '&nbsp;<?php echo CHtml::encode (Yii::t('app', '(Complete and Create New Action)')); ?>'
                             }));
                             var that = this;  
                             dialogOuter$.find ('.event-delete-button').unbind ('click').
@@ -408,170 +332,305 @@ $(function() {
                                 function () {
                                     $.ajax({
                                         type: 'post',
-                                        url: yii.scriptUrl + '/actions/copyEvent?id=' + event.id,
+                                        url: yii.scriptUrl + '/actions/complete?id=' + event.id,
                                         data: $(viewAction).find('form').serializeArray(),
                                         success: function() {
                                             $('#calendar').fullCalendar('refetchEvents');
                                         }
                                     }); 
-                                    $(that).x2Dialog('close');
+                                    dialogOuter$.find ('.save-event-button').hide ();
+                                    dialogOuter$.find ('.event-delete-button').hide ();
+                                    dialogOuter$.find ('.event-copy-button').hide ();
+                                    dialogOuter$.find ('.save-event-button').hide ();
+                                    dialogOuter$.find ('.view-contact-button').hide ();
+                                    dialogOuter$.find ('.complete-button').hide ();
+                                    dialogOuter$.find ('.complete-and-view-contact').hide ();
+                                    var phoneNumber = document.getElementById("phoneNumber");
+                                    var name = document.getElementById("name");
+                                    var priority, visibility, notificationUsers, notificationTime, reminder, color  = null;
+                                    var e = document.getElementById("Actions_reminder");
+                                    if (e)
+                                        reminder = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("dialog_Actions_priority");
+                                    if (e) 
+                                        priority = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("dialog_Actions_visibility");
+                                    if (e)
+                                        visibility = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationUsers");
+                                    if (e)
+                                        notificationUsers = e.options[e.selectedIndex].value;
+                                    e = document.getElementById("Actions_notificationTime");
+                                    if (e)
+                                        notificationTime = e.options[e.selectedIndex].value;  
+                                    e = document.getElementById("Actions_color");
+                                    if (e)
+                                        color = e.options[e.selectedIndex].value;  
+                                    $.post(
+                                        '<?php echo $urls['newAction']; ?>', { 
+                                            'ActionId': event.id, 'IsEvent': event.type=='event'
+                                        }, function(data) {
+                                            $(viewAction).empty().append(data);                                     
+                                            //open dialog after its filled with action/event
+                                            if (phoneNumber != null 
+                                                && name != null 
+                                                && !$.trim($('#phoneNumber').html()).length 
+                                                && !$.trim($('#name').html()).length) {
+                                                $("textarea#Actions_actionDescription").val(
+                                                    name.innerHTML.trim() + ": " + phoneNumber.innerHTML.trim() + " - "
+                                                );
+                                            }
+                                            $("select#Actions_associationType").val (event.associationType).change();
+                                            $("#associationName").val (name.innerHTML.trim()).change();
+                                            $("select#Actions_priority").val (priority).change();
+                                            $("select#Actions_visibility").val (visibility).change();
+                                            if (reminder)
+                                                $("select#Actions_reminder").val (reminder).change();
+                                            if (notificationUsers)
+                                                $("select#Actions_notificationUsers").val (notificationUsers).change();
+                                            if (notificationTime)
+                                                $("select#Actions_notificationTime").val (notificationTime).change();   
+                                            if (color)
+                                                $("select#Actions_color").val (color).change();                                              
+                                            var str = event.associationUrl;
+                                            var res = str.split("/");          
+                                            $("input#associationId").val (res.pop()).change();
+                                            dialogOuter$.find ('#save-button1').bind ('click',function () {
+                                                $.ajax({
+                                                   type: 'post',
+                                                   url: yii.scriptUrl + '/actions/create',
+                                                   data: dialogOuter$.find('form').serializeArray(),
+                                                   success: function() {
+                                                       $('#calendar').fullCalendar('refetchEvents');
+                                                   }
+                                               });                                               
+                                                viewAction.x2Dialog('close');
+                                            });                                        
+                                        }
+                                    );   
                                 });
+                            dialogOuter$.find ('.save-event-button').click();
                         }
                     });
-                    /*if (event.type === 'event') {
-                        boxButtons.unshift({
-                            html: '<span title="<?php 
-                                echo CHtml::encode (Yii::t('app', 'Send invitation')); 
-                            ?>" class="fa fa-envelope-o fa-lg"></span>', 
-                            'class': 'event-email-button',
-                            click: function() {
-                            }
-                        });
-                    }*/
-                } else { // non-editable event/action
-                    $.post(
-                        '<?php echo $urls['viewAction']; ?>', {
-                            'ActionId': event.id, 
-                            'IsEvent': event.type=='event'
-                        }, function(data) {
-                            $(viewAction).append(data);
-                            //open dialog after its filled with action/event
-                            viewAction.x2Dialog('open'); 
+                }
+                /*if (event.type === 'event') {
+                    boxButtons.unshift({
+                        html: '<span title="<?php 
+                            echo CHtml::encode (Yii::t('app', 'Send invitation')); 
+                        ?>" class="fa fa-envelope-o fa-lg"></span>', 
+                        'class': 'event-email-button',
+                        click: function() {
                         }
-                    );
+                    });
+                }*/
+            } else { // non-editable event/action
+                $.post(
+                    '<?php echo $urls['viewAction']; ?>', {
+                        'ActionId': event.id, 
+                        'IsEvent': event.type=='event'
+                    }, function(data) {
+                        $(viewAction).append(data);
+                        //open dialog after its filled with action/event
+                        viewAction.x2Dialog('open'); 
+                    }
+                );
+            }
+
+            if(event.associationType == 'calendar') { // calendar event clicked
+                var boxTitle = 'Event';
+            } else if(event.associationType != '' && event.associationType != 'contacts' && 
+                      event.associationType != undefined) {
+
+                if(typeof associations[event.associationType]!='undefined'){
+                    var associationType=associations[event.associationType];
+                }else{
+                    var associationType=event.associationType;
                 }
 
-                if(event.associationType == 'calendar') { // calendar event clicked
-                    var boxTitle = 'Event';
-                } else if(event.associationType != '' && event.associationType != 'contacts' && 
-                          event.associationType != undefined) {
+                if(event.linked) {
+                    viewAction.prepend(
+                        '<b><a href="' + event.associationUrl + '">' + event.associationName + 
+                        '</a></b><br />');
+                }
 
-                    if(typeof associations[event.associationType]!='undefined'){
-                        var associationType=associations[event.associationType];
-                    }else{
-                        var associationType=event.associationType;
+                boxButtons.unshift({  //prepend button
+                    text: '<?php echo CHtml::encode (Yii::t('calendar', 'View')); ?> '+ 
+                        associationType,
+                    click: function() {
+                        window.location = event.associationUrl;
                     }
+                });
 
-                    if(event.linked) {
-                        viewAction.prepend(
-                            '<b><a href="' + event.associationUrl + '">' + event.associationName + 
-                            '</a></b><br />');
+                if(event.editable && event.type != 'event') {
+                    if(event.complete == 'Yes') {
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
+                            'class': 'save-event-button',
+                            click: function() {
+                                $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
+                                event.complete = 'No';
+                                $(this).x2Dialog('close');
+                            }
+                        });
+                    } else {
+                        boxButtons.unshift({  // prepend button
+                            html: '<span title="<?php 
+                                echo CHtml::encode (Yii::t('actions', 'Complete')); 
+                            ?>" class="fa fa-check fa-lg"></span>', 
+                            click: function() {
+                                                                alert("test6");
+                                $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
+                                event.complete = 'Yes';
+                                //$(this).x2Dialog('close');
+                            }
+                        });
                     }
+                }
+            } else if(event.associationType == 'contacts') { 
+                // action associated with a contact clicked
+                if(event.type == 'event')
+                    boxTitle = '<?php echo Yii::t('calendar','Contact Event') ?>';
+                else
+                    boxTitle = '<?php echo Yii::t('calendar','Contact Action') ?>';
 
-                    boxButtons.unshift({  //prepend button
-                        text: '<?php echo CHtml::encode (Yii::t('calendar', 'View')); ?> '+ 
-                            associationType,
-                        click: function() {
-                            window.location = event.associationUrl;
-                        }
-                    });
+                if(event.linked) {
+                    viewAction.prepend(
+                        '<b><a href="' + event.associationUrl + '">' + event.associationName + 
+                        '</a></b><br />');
+                }
 
-                    if(event.editable && event.type != 'event') {
-                        if(event.complete == 'Yes') {
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
-                                    event.complete = 'No';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                        } else {
-                            boxButtons.unshift({  // prepend button
-                                html: '<span title="<?php 
-                                    echo CHtml::encode (Yii::t('actions', 'Complete')); 
-                                ?>" class="fa fa-check fa-lg"></span>', 
-                                click: function() {
-                                    $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
-                                    event.complete = 'Yes';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                        }
+                boxButtons.unshift ({
+                    lineBreak: true
+                });
+                boxButtons.unshift({  //prepend button
+                    text: '<?php echo CHtml::encode (Yii::t('contacts', 'View {contact}', array(
+                        '{contact}' => Modules::displayName(false, "Contacts"),
+                    ))); ?>',
+                    'class': 'view-contact-button',
+                    click: function() {
+                        window.location = event.associationUrl;
                     }
-                } else if(event.associationType == 'contacts') { 
-                    // action associated with a contact clicked
-                    if(event.type == 'event')
-                        boxTitle = '<?php echo Yii::t('calendar','Contact Event') ?>';
-                    else
-                        boxTitle = '<?php echo Yii::t('calendar','Contact Action') ?>';
-
-                    if(event.linked) {
-                        viewAction.prepend(
-                            '<b><a href="' + event.associationUrl + '">' + event.associationName + 
-                            '</a></b><br />');
+                });
+                if(event.editable && event.type != 'event') {
+                    if(event.complete == 'Yes') {
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
+                            click: function() {
+                                $.post('<?php echo $urls['uncompleteAction']; ?>', {
+                                    id: event.id});
+                                event.complete = 'No';
+                                $(this).x2Dialog('close');
+                            }
+                        });
+                    } else {
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php 
+                                echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
+                            'class': 'complete-buttons',
+                            click: function() {
+                                var that = this;
+                                var resetFlag = false;
+                                $("#dialog").dialog({
+                                    autoOpen: true,
+                                    buttons: {
+                                        "Complete": function() {
+                                            $(this).dialog('close');
+                                            $.ajax({
+                                                url:yii.scriptUrl + '/actions/complete?id=' + event.id,
+                                                type:'post',
+                                                data:{
+                                                    'notes':$('#completion-notes').val()
+                                                },
+                                                success:function(data){
+                                                    if(data && data=='Success'){
+                                                        if(!publisher){
+                                                            if(that._lastClass==''){
+                                                                that._lastClass='history-'+id;
+                                                                resetFlag=true;
+                                                            }
+                                                            $('#'+that._lastClass).find('.header').html(
+                                                                '<span class="complete">Complete!</span>');
+                                                            $('#'+that._lastClass).find('.description').css(
+                                                                'text-decoration','line-through');
+                                                            $('#'+that._lastClass).find('.complete-box').replaceWith(
+                                                                '<div class="icon action-index uncomplete-box" '+
+                                                                 'data-action-id="'+
+                                                                    $('#'+that._lastClass).find('.complete-box').
+                                                                        attr('data-action-id')+'">'+
+                                                                    '<div class="icon action-index checkmark-overlay"></div>'+
+                                                                '</div>');
+                                                            if(resetFlag){
+                                                                that._lastClass='';
+                                                            }
+                                                        }
+                                                        $('#action-frame').attr('src', $('#action-frame').attr('src'));
+                                                        $('#completion-notes').val('');
+                                                    }
+                                                }
+                                            });
+                                        },
+                                        "Cancel":function(){
+                                            $(this).dialog('close');
+                                        }
+                                    },
+                                    show: 'fade',
+                                    hide: 'fade',
+                                    height:'auto',
+                                    width:450,
+                                    resizable:false
+                                });                              
+                                //$.post('<?php //echo $urls['completeAction']; ?>', {id: event.id});
+                                event.complete = 'Yes';
+                                $(this).x2Dialog('close');
+                            }
+                        });
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php echo CHtml::encode (
+                                Yii::t('actions', 'Complete and View {contact}', array(
+                                    '{contact}' => Modules::displayName(false, "Contacts"),
+                                ))); ?>',
+                            'class': 'complete-and-view-contact',
+                            click: function() {
+                                alert("test2");
+                                $.ajax({
+                                    type: 'post',
+                                    url: yii.scriptUrl + '/actions/complete?id=' + event.id,
+                                    data: $(viewAction).find('form').serializeArray(),
+                                    success: function() {
+                                        $('#calendar').fullCalendar('refetchEvents');
+                                    }
+                                });                                 
+                                //$.post('<?php //echo $urls['completeAction']; ?>', {id: event.id});
+                                window.location = event.associationUrl;
+                            }
+                        });
                     }
-
-                    boxButtons.unshift ({
-                        lineBreak: true
-                    });
-                    boxButtons.unshift({  //prepend button
-                        text: '<?php echo CHtml::encode (Yii::t('contacts', 'View {contact}', array(
-                            '{contact}' => Modules::displayName(false, "Contacts"),
-                        ))); ?>',
-                        'class': 'view-contact-button',
-                        click: function() {
-                            window.location = event.associationUrl;
-                        }
-                    });
-                    if(event.editable && event.type != 'event') {
-                        if(event.complete == 'Yes') {
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['uncompleteAction']; ?>', {
-                                        id: event.id});
-                                    event.complete = 'No';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                        } else {
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php 
-                                    echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
-                                    event.complete = 'Yes';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php echo CHtml::encode (
-                                    Yii::t('actions', 'Complete and View {contact}', array(
-                                        '{contact}' => Modules::displayName(false, "Contacts"),
-                                    ))); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
-                                    window.location = event.associationUrl;
-                                }
-                            });
-                        }
-                    }
-                } else { // action clicked
-                    var boxTitle = 'Action';
-                    if(event.editable) {
-                        if(event.complete == 'Yes') {
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
-                                    event.complete = 'No';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                        } else {
-                            boxButtons.unshift({  // prepend button
-                                text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
-                                click: function() {
-                                    $.post('<?php echo $urls['completeAction']; ?>', {id: event.id});
-                                    event.complete = 'Yes';
-                                    $(this).x2Dialog('close');
-                                }
-                            });
-                        }
+                }
+            } else { // action clicked
+                var boxTitle = 'Action';
+                if(event.editable) {
+                    if(event.complete == 'Yes') {
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php echo CHtml::encode (Yii::t('actions', 'Uncomplete')); ?>',
+                            click: function() {
+                                $.post('<?php echo $urls['uncompleteAction']; ?>', {id: event.id});
+                                event.complete = 'No';
+                                $(this).x2Dialog('close');
+                            }
+                        });
+                    } else {
+                        boxButtons.unshift({  // prepend button
+                            text: '<?php echo CHtml::encode (Yii::t('actions', 'Complete')); ?>',
+                            click: function() {
+                                alert("test1");
+                                event.complete = 'Yes';
+                                $(this).x2Dialog('close');
+                            }
+                        });
                     }
                 }
             }
+            
 
             var buttonpaneHeight;
             //var textareaHeight;
@@ -656,19 +715,15 @@ $(function() {
         $('#calendar').fullCalendar('removeEventSources');
 
         <?php echo $checkedUserCalendars; ?>
-        <?php echo $checkedGroupCalendars; ?>
 
     });*/
 
-<?php echo $checkedGroupCalendars; ?>
 <?php echo $checkedUserCalendars; ?>
-<?php //echo $checkedSharedCalendars;  ?>
-<?php //echo $checkedGoogleCalendars;  ?>
 
     });
 
      /* Begin: calendar export code (generates URL for third-party ical format reader) */
-    x2CalendarExporter = {'users':<?php echo json_encode(array_merge($userCalendars,$groupCalendars)); ?>};
+    x2CalendarExporter = {'users':<?php echo json_encode($userCalendars); ?>};
     // Adds or removes a user from the calendar export URL
     x2CalendarExporter.toggleUser = function(user,add) {
         // New list of user/group calendars
@@ -719,11 +774,11 @@ $(function() {
             user = 'Anyone';
         if(on) {
             $('#calendar').fullCalendar('addEventSource', {
-                url: '<?php echo $urls['jsonFeed']; ?>?user=' + user
+                url: '<?php echo $urls['jsonFeed']; ?>?calendarId=' + user
             });
         } else {
             $('#calendar').fullCalendar('removeEventSource', {
-                url: '<?php echo $urls['jsonFeed']; ?>?user=' + user
+                url: '<?php echo $urls['jsonFeed']; ?>?calendarId=' + user
             });
             //This is to remove the prepopulated events
             $('#calendar').fullCalendar('removeEvents', function(event){
@@ -738,40 +793,6 @@ $(function() {
         $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
             Calendar: user, Checked: on, Type: 'user'
         });
-    }
-
-    function toggleGroupCalendarSource(groupId, on) {
-        if (on) {
-            $('#calendar').fullCalendar('addEventSource', {
-                url: '<?php echo $urls['jsonFeedGroup']; ?>?groupId=' + groupId
-            });
-        } else {
-            $('#calendar').fullCalendar('removeEventSource', {
-                url: '<?php echo $urls['jsonFeedGroup']; ?>?groupId=' + groupId
-            });
-            // This is to remove the prepopulated events
-            $('#calendar').fullCalendar('removeEvents', function(event){
-                if( event.calendarAssignment == groupId ){
-                    return true;
-                }
-            });
-        }
-         x2CalendarExporter.toggleUser(groupId,on); 
-        $.post('<?php echo $urls['saveCheckedCalendar']; ?>', {
-            Calendar: groupId, 
-            Checked: on, 
-            Type: 'group'
-        });
-    }
-
-    // filter calendar actions
-    function toggleCalendarFilter(filterName, on) {
-        $.post('<?php echo $urls['saveCheckedCalendarFilter']; ?>', {
-                Filter: filterName, 
-                Checked: on
-            }).done(function() { 
-                $('#calendar').fullCalendar('refetchEvents'); 
-            });
     }
 
     // remove id's so we can create another dialog

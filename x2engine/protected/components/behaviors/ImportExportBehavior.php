@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -265,7 +264,7 @@ class ImportExportBehavior extends CBehavior {
                     ->from('x2_fields')
                     ->where('modelName = :model AND required = 1', array(
                         ':model' => str_replace(' ', '', $model)))
-                    ->query();
+                    ->queryAll();
             $missingAttrs = array();
             foreach ($requiredAttrs as $attr) {
                 // Skip visibility, it can be set for them
@@ -372,7 +371,7 @@ class ImportExportBehavior extends CBehavior {
         }
         if (empty($meta)) {
             $_SESSION['errors'] = Yii::t('admin', "Empty CSV or no metadata specified");
-            $this->redirect('importModels');
+            $this->owner->redirect('importModels');
         }
 
         // Add the import failures column to the failed records meta
@@ -773,20 +772,13 @@ class ImportExportBehavior extends CBehavior {
      * @param array $importedIds Array of ids from imported models
      */
     protected function saveImportedModel(X2Model $model, $modelName, $importedIds) {
-        if (!empty($model->id)) {
-            $lookup = X2Model::model(str_replace(' ', '', $modelName))->findByPk($model->id);
-            if (isset($lookup)) {
-                Relationships::model()->deleteAllByAttributes(array(
-                    'firstType' => $modelName,
-                    'firstId' => $lookup->id)
-                );
-                Relationships::model()->deleteAllByAttributes(array(
-                    'secondType' => $modelName,
-                    'secondId' => $lookup->id)
-                );
-                $lookup->delete();
-                unset($lookup);
-            }
+        if (!empty($model->id) && $_SESSION['updateRecords']) {
+            $tableName = X2Model::model($modelName)->tableName();
+            $criteria = new CDbCriteria;
+            $criteria->compare('id', $model->id);
+            Yii::app()->db->schema->commandBuilder
+                    ->createDeleteCommand($tableName, $criteria)
+                    ->execute();
         }
         // Save our model & create the import records and 
         // relationships. Passing $validate=false to CActiveRecord.save
@@ -1030,7 +1022,7 @@ class ImportExportBehavior extends CBehavior {
 
         for ($i = 0; $i < count($models); $i++) {
             $record = $models[$i];
-            if ($mappedId) {
+            if ($mappedId || ($_SESSION['updateRecords'] && !empty($record['id']))) {
                 $modelId = $models[$i]['id'];
             } else {
                 $modelId = $i + $firstNewId;
@@ -1063,14 +1055,22 @@ class ImportExportBehavior extends CBehavior {
 
             // Add all listed tags
             foreach ($_SESSION['tags'] as $tag) {
-                $tagModel = new Tags;
-                $tagModel->taggedBy = 'Import';
-                $tagModel->timestamp = $now;
-                $tagModel->type = $modelName;
-                $tagModel->itemId = $modelId;
-                $tagModel->tag = $tag;
-                $tagModel->itemName = $modelName;
-                $auxModelContainer['Tags'][] = $tagModel->attributes;
+                // Retrieve existing records to avoid duplicate tags, as we don't have the
+                // convenience of ActiveRecord while adding tags
+                if (!empty($record['id']) && $_SESSION['updateRecords'])
+                    $model = X2Model::model($modelName)->findByPk($record['id']);
+                else
+                    unset($model);
+                if (!isset($model) || $model->isNewRecord || !$model->hasTag($tag)) {
+                    $tagModel = new Tags;
+                    $tagModel->taggedBy = 'Import';
+                    $tagModel->timestamp = $now;
+                    $tagModel->type = $modelName;
+                    $tagModel->itemId = $modelId;
+                    $tagModel->tag = $tag;
+                    $tagModel->itemName = $modelName;
+                    $auxModelContainer['Tags'][] = $tagModel->attributes;
+                }
             }
             // Log a comment if one was requested
             if (!empty($_SESSION['comment'])) {
@@ -1250,7 +1250,7 @@ class ImportExportBehavior extends CBehavior {
         $importMap = json_decode($importMap, true);
         if ($importMap === null) {
             $_SESSION['errors'] = Yii::t('admin', 'Invalid JSON string specified');
-            $this->redirect('importModels');
+            $this->owner->redirect('importModels');
         }
         $_SESSION['importMap'] = $importMap;
 
@@ -1491,6 +1491,43 @@ class ImportExportBehavior extends CBehavior {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Rollback a particular import stage
+     * @param string $model Imported model name
+     * @param string $stage Import stage to rollback
+     * @param int $importId Import ID
+     * @return int Number of rows affected
+     */
+    protected function rollbackStage($model, $stage, $importId) {
+        $stages = array(
+            // Delete all tag data
+            "tags" => "DELETE a FROM x2_tags a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete all relationship data
+            "relationships" => "DELETE a FROM x2_relationships a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete any associated actions
+            "actions" => "DELETE a FROM x2_actions a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete the records themselves
+            "records" => "DELETE a FROM " . X2Model::model($model)->tableName() . " a
+                INNER JOIN
+                x2_imports b ON b.modelId=a.id
+                WHERE b.modelType='$model' AND b.importId='$importId'",
+            // Delete the log of the records being imported
+            "import" => "DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
+        );
+        $sqlQuery = $stages[$stage];
+        $command = Yii::app()->db->createCommand($sqlQuery);
+        return $command->execute();
     }
     
 }

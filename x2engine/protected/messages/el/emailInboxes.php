@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => 'Auto-log εισερχόμενα μηνύματα ηλεκτρονικού ταχυδρομείου',
   'From' => 'Από',
   'Copy to Sent Folder' => 'Αντιγραφή σε φάκελο Sent',
-  'Disabled' => 'Ανάπηρος',
   'Failed to associate message "{subject}" with {type} {model}' => 'Αποτυχία να συνδέσει το μήνυμα &quot; {subject} &quot; με {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Μήνυμα &quot; {subject} &quot; έχει ήδη συσχετιστεί με {type} {model}',
   'Disable Quota Operations' => 'Απενεργοποίηση Λειτουργίας Ποσόστωση',
+  'Manage your application credentials' => 'Διαχειριστείτε τα διαπιστευτήριά της αίτησής σας',
+  'Associate attachment with related record' => 'Συνεργάτης συνημμένο με σχετική εγγραφή',
+  'Attachment successfully associated' => 'Συνημμένο που σχετίζονται με επιτυχία',
+  'Association failed: the attachment could not be saved' => 'Σύλλογος απέτυχε: το συνημμένο δεν θα μπορούσε να σωθεί',
+  'Association failed: there are no related records' => 'Σύλλογος απέτυχε: δεν υπάρχουν σχετικές καρτέλες',
 );

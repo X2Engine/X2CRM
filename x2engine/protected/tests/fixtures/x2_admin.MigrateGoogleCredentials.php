@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 return array(
@@ -45,6 +44,7 @@ return array(
   'enableWebTracker' => '1',
   'currency' => 'USD',
   'chatPollTime' => '2000',
+  'locationTrackingFrequency' => '60',
   'defaultTheme' => NULL,
   'ignoreUpdates' => '0',
   'rrId' => '0',
@@ -75,6 +75,7 @@ return array(
   'updateDate' => '0',
   'updateInterval' => '0',
   'quoteStrictLock' => '0',
+  'locationTrackingSwitch' => '1',
   'googleIntegration' => '1',
   'googleClientId' => 'testClientId',
   'googleClientSecret' => 'testClientSecret',
@@ -107,6 +108,7 @@ Just wanted to check in with you about the support case you created. It is numbe
   'userActionBackdating' => '0',
   'historyPrivacy' => 'default',
   'batchTimeout' => '300',
+  'locationTrackingDistance' => '1',
   'massActionsBatchSize' => '10',
   'externalBaseUrl' => '',
   'externalBaseUri' => '',

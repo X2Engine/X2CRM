@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,18 +29,18 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
 
-Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/securitySettings.css');
-
+Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/admin/securitySettings.css');
+Tours::loadTips('admin.securitySettings');
 ?>
 
-<div class="page-title"><h2><?php echo Yii::t('admin', 'Firewall Settings'); ?></h2></div>
+<div class="page-title"><h2><?php echo Yii::t('admin', 'Security Settings'); ?></h2></div>
 <div id='security-settings-form' class="form">
 <div class='admin-form-container'>
     <?php
@@ -50,6 +49,20 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/secur
         'id' => 'settings-form',
         'enableAjaxValidation' => false,
     ));
+
+    // Anti virus scanning settings
+    echo '<h3>'.Yii::t('admin', 'Anti Virus Scanning').'</h3>';
+    echo Yii::t ('admin', 'Configure whether to scan uploaded Media. Note: this requires that '.
+                          'the clamav utility is installed on the system.<br /><br />');
+    echo $form->labelEx ($model, 'scanUploads', array('style'=>'display:inline-block;margin-right:5px;'));
+    echo $form->checkbox ($model, 'scanUploads').'<br />';
+
+    // Two factor auth settings
+    echo '<h3>'.Yii::t('admin', 'Two Factor Authentication').'</h3>';
+    echo Yii::t ('admin', 'Configure whether to enable two factor authentication for user logins. '.
+                          'Please select a credential to use for sending.<br /><br />');
+    echo $form->labelEx ($model, 'twoFactorCredentialsId', array('style'=>'display:inline-block;margin-right:5px;'));
+    echo $form->dropDownList ($model, 'twoFactorCredentialsId', $twoFAOptions).'<br />';
 
     // IP Whitelist/Blacklist settings
     $hint = Yii::t('admin', 'You may enter entire address blocks here, either using '.
@@ -94,7 +107,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/secur
     echo '<h3>'.Yii::t('admin', 'Failed Login Penalties').'</h3>';
     echo '<div class="row">';
     echo Yii::t ('admin', 'Configure the timeout in between failed login attempts, and the '.
-                          'number of failed login attempts before the IP address is banned.'
+                          'number of failed login attempts before the IP address is banned.'.
+                          ' To view a record of failed and successful login attempts, please '.
+                          'visit the {link} page.',
+                          array(
+                              '{link}' => CHtml::link(Yii::t('admin', 'User History'), array('admin/userHistory'))
+                          )
     ).'<br /><br />';
 
     // Login timeout controls
@@ -317,110 +335,4 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/secur
     ', CClientScript::POS_READY);
 ?>
 </div>
-<?php
-    // Display a grid of failed login attempts
-    $this->widget('X2GridViewGeneric', array(
-        'id' => 'failed-logins-grid',
-	    'title'=>Yii::t('admin', 'Failed Login Attempts'),
-        'dataProvider' => $failedLoginsDataProvider,
-	    'baseScriptUrl'=>  
-            Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	    'template'=> '<div class="page-title">{title}'
-		    .'{buttons}{summary}</div>{items}{pager}',
-        'buttons' => array ('autoResize', 'exportFailedLogins'),
-        'defaultGvSettings' => array (
-            'IP' => 100,
-            'attempts' => 120,
-            'active' => 20,
-            'lastAttempt' => 200,
-            'aclControls' => '50',
-        ),
-        'gvSettingsName' => 'failed-logins-grid',
-    	'columns'=>array(
-    		array (
-                'name' => 'IP',
-                'header' => Yii::t('admin','IP Address'),
-            ),
-    		array (
-                'name' => 'attempts',
-                'header' => Yii::t('admin','Last Failed Attempts'),
-            ),
-            array(
-                'name' => 'active',
-                'header' => Yii::t('admin','Active?'),
-                'type' => 'raw',
-                'value' => 'X2Html::fa ($data->active ? "check" : "times")',
-            ),
-            array(
-                'name' => 'lastAttempt',
-                'header' => Yii::t('admin','Last Failed Login Attempt'),
-                'type' => 'raw',
-                'value' => 'Formatter::formatCompleteDate($data->lastAttempt)',
-            ),
-            array(
-                'name' => 'aclControls',
-                'header' => '',
-                'type' => 'raw',
-                'value' => 'Admin::renderACLControl ("blacklist", $data["IP"])',
-            ),
-	    ),
-    ));
-
-    echo '<br /><br />';
-
-    // Display a grid of user login history
-    $this->widget('X2GridViewGeneric', array(
-        'id' => 'login-history-grid',
-	    'title'=>Yii::t('admin', 'User Login History'),
-        'dataProvider' => $loginHistoryDataProvider,
-	    'baseScriptUrl'=>  
-            Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
-	    'template'=> '<div class="page-title">{title}'
-		    .'{buttons}{summary}</div>{items}{pager}',
-        'buttons' => array ('autoResize', 'exportLogins'),
-        'defaultGvSettings' => array (
-            'username' => 100,
-            'emailAddress' => 100,
-            'IP' => 100,
-            'timestamp' => 180,
-            'aclControls' => 150,
-        ),
-        'gvSettingsName' => 'login-history-grid',
-    	'columns'=>array(
-    		array (
-                'name' => 'username',
-                'header' => Yii::t('admin','User'),
-                'type' => 'raw',
-                'value' => '$data->userLink',
-            ),
-    		array (
-                'name' => 'emailAddress',
-                'header' => Yii::t('admin','Email'),
-                'type' => 'raw',
-                'value' => '$data->email',
-            ),
-    		array (
-                'name' => 'timestamp',
-                'header' => Yii::t('admin','Login Time'),
-                'type' => 'raw',
-                'value' => 'Formatter::formatCompleteDate($data["timestamp"])',
-            ),
-    		array (
-                'name' => 'IP',
-                'header' => Yii::t('admin','IP Address'),
-            ),
-            array(
-                'name' => 'aclControls',
-                'header' => '',
-                'type' => 'raw',
-                'value' => 
-                    '"<div class=\"x2-button-group\">".
-                        Admin::renderACLControl ("blacklist", $data["IP"]).
-                        Admin::renderACLControl ("whitelist", $data["IP"]).
-                        Admin::renderACLControl ("disable", $data["username"]).
-                    "</div>"',
-            ),
-	    ),
-    ));
-    ?>
 </div>

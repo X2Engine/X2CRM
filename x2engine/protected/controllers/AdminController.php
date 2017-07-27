@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.components.util.*');
@@ -137,6 +136,7 @@ class AdminController extends X2Controller {
             'viewLog' => array(
                 'class' => 'LogViewerAction',
             ),
+            
         ));
     }
 
@@ -399,11 +399,28 @@ class AdminController extends X2Controller {
     }
 
     /**
+     * Page for User History
+     */
+    public function actionUserHistory() {
+        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
+            'sort' => array('defaultOrder' => 'timestamp DESC'),
+        ));
+        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
+            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
+        ));
+
+        $this->render ('userHistory', array(
+            'failedLoginsDataProvider' => $failedLoginsDataProvider,
+            'loginHistoryDataProvider' => $loginHistoryDataProvider,
+        ));
+    }
+
+    /**
      * Page for firewall configuration
      */
     public function actionSecuritySettings() {
         $admin = &Yii::app()->settings;
-        $firewallSettings = array(
+        $securitySettings = array(
             'accessControlMethod',
             'ipWhitelist',
             'ipBlacklist',
@@ -411,6 +428,9 @@ class AdminController extends X2Controller {
             'failedLoginsBeforeCaptcha',
             'maxFailedLogins',
             'maxLoginHistory',
+            'maxFailedLoginHistory',
+            'scanUploads',
+            'twoFactorCredentialsId',
         );
         $jsonFields = array(
             'ipWhitelist',
@@ -424,7 +444,7 @@ class AdminController extends X2Controller {
                     $passwordSettings[$req] = $_POST[$req];
             $admin->passwordRequirements = $passwordSettings;
 
-            foreach ($firewallSettings as $setting) {
+            foreach ($securitySettings as $setting) {
                 if (isset($_POST['Admin'][$setting])) {
                     $admin->$setting = $_POST['Admin'][$setting];
 
@@ -453,17 +473,13 @@ class AdminController extends X2Controller {
             if (is_array ($admin->$field))
                 $admin->$field = implode("\r\n", $admin->$field);
 
-        $loginHistoryDataProvider  = new CActiveDataProvider ('SuccessfulLogins', array(
-            'sort' => array('defaultOrder' => 'timestamp DESC'),
-        ));
-        $failedLoginsDataProvider = new CActiveDataProvider ('FailedLogins', array(
-            'sort' => array('defaultOrder' => 'lastAttempt DESC'),
-        ));
+        $twilioCreds = Credentials::getCredentialOptions($admin, 'twoFactorCredentialsId', 'sms');
+        $hubCreds = Credentials::getCredentialOptions($admin, 'twoFactorCredentialsId', 'x2HubConnector');
+        $twoFAOptions = array('' => 'Disabled') + $twilioCreds['credentials'] + $hubCreds['credentials'];
 
         $this->render ('securitySettings', array(
             'model' => $admin,
-            'failedLoginsDataProvider' => $failedLoginsDataProvider,
-            'loginHistoryDataProvider' => $loginHistoryDataProvider,
+            'twoFAOptions' => $twoFAOptions,
         ));
     }
 
@@ -904,8 +920,10 @@ class AdminController extends X2Controller {
 
         // Collect a list of role names
         $roles = array();
-        foreach ($exportIds['Roles'] as $roleId) {
-            $roles[] = Roles::model()->findByPk ($roleId)->name;
+        if (array_key_exists('Roles', $exportIds)) {
+            foreach ($exportIds['Roles'] as $roleId) {
+                $roles[] = Roles::model()->findByPk ($roleId)->name;
+            }
         }
 
         // Generate a manifest containing the information and contents of the package
@@ -1318,6 +1336,15 @@ class AdminController extends X2Controller {
         $count = 0;
         $importedContacts = false; // if Contacts were included in this package
         $errors = array();
+        $readIdFields = array( // Models which require their ID for relations
+            'AuthItem',
+            'AuthItemChild',
+            'Fields',
+            'Roles',
+            'RoleToPermission',
+            'Workflow',
+            'WorkflowStage',
+        );
 
         $csv = fopen($recordsFile, 'r');
         while (false !== ($arr = fgetcsv($csv)) && !is_null($arr)) {
@@ -1336,7 +1363,8 @@ class AdminController extends X2Controller {
                 if (class_exists($currentModel)) {
                     $model = new $currentModel;
                     foreach ($attributes as $key => $value) {
-                        if ($model->hasAttribute($key) && isset($value)) {
+                        if ((($key !== 'id' && $key !== 'nameId') || in_array($currentModel, $readIdFields))
+                                && $model->hasAttribute($key) && isset($value)) {
                             if ($value == "")
                                 $value = null;
                             $model->$key = $value;
@@ -2529,6 +2557,112 @@ class AdminController extends X2Controller {
       } */
 
     /**
+     * Page for User Location History
+     * 
+     * This page shows users' location history acquired from:
+     *  'address' 'weblead' 'webactivity' 'email open' 'email click' 'email unsub'  
+     *  'user login' 'activityPost' 'mobileIdle' 'mobileActivityPost' 'mobileActionPost' 
+     *  'mobileCheckIn' 'eventRSVP'. It shows the user's username, ip address,
+     *  first and last name, lon and lat, and when it was acquired.
+     */
+    public function actionUserLocationHistory() {
+        $locationHistoryDataProvider  = new CActiveDataProvider ('Locations', array(
+            'sort' => array('defaultOrder' => 'createDate DESC'),
+            'criteria' => array(
+                'condition' => 'recordType = "User"'
+            ),
+        ));
+        $users = new CActiveDataProvider ('User', array(
+            'sort' => array('defaultOrder' => 'id ASC'),
+        ));
+        
+        $this->render ('userLocationHistory', array(
+            'locationHistoryDataProvider' => $locationHistoryDataProvider,
+            'users' => $users,
+        ));
+    }
+    
+    /**
+     * Render a grid of all hidden records of a specific type. This is helpful in
+     * situations where a record has been hidden inadvertantly, eg by the duplicate checker.
+     */
+    public function actionLocateMissingRecords($modelName = null) {
+        $skipModules = array(
+            'Groups', 'Media', 'Product', 'Quote', 'Charts', 'Reports', 'Services', 'Topics', 'EmailInboxes'
+        );
+        $model = $models = $dataProvider = null;
+        if (!is_null($modelName)) {
+            if (in_array($modelName, $skipModules)) {
+                throw new CHttpException(400, Yii::t('admin',
+                    'The model you have requested cannot be hidden'));
+            }
+            $model = X2Model::model($modelName);
+            $model = new $model('search');
+            $criteria = new CDbCriteria;
+            $assignmentAttr = $model->getAssignmentAttr();
+            $visibilityAttr = $model->getVisibilityAttr();
+            $condition = "($assignmentAttr='Anyone' AND 
+                $visibilityAttr = ".X2PermissionsBehavior::VISIBILITY_PRIVATE.")";
+            $criteria->addCondition($condition);
+            $dataProvider = $model->searchBase($criteria, null, true);
+            $dataProvider->sort->params = array('modelName' => $modelName);
+        } else {
+            $models = array_diff(Modules::getNamesOfModelsOfModules(), $skipModules);
+            sort($models);
+        }
+
+        $this->render('locateMissingRecords', array(
+            'modelName' => $modelName,
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'models' => $models,
+	        'moduleName' => X2Model::getModuleName($modelName),
+        ));
+    }
+
+    public function actionLocationSettings() {
+
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+
+            $oldFormat = $admin->contactNameFormat;
+            $admin->attributes = $_POST['Admin'];
+            $admin->timeout *= 60; //convert from minutes to seconds
+
+
+            if ($admin->save()) {
+                $this->redirect('locationSettings');
+            }
+        }
+        $admin->timeout = ceil($admin->timeout / 60);
+        $this->render('locationSettings', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
+     * Render a page with options for activity feed settings.
+     *
+     * The administrator is allowed to configure what sort of information should
+     * be displayed in the activity feed and for how long. This page sets options
+     * for automated deletion of any chosen types after a set time period to help
+     * keep the database cleaner.
+     */    
+    public function actionManageUserCount() {
+        $admin = &Yii::app()->settings;
+        if (isset($_POST['Admin'])) {
+            $admin->attributes = $_POST['Admin'];
+
+            if ($admin->save()) {
+                $this->redirect('manageUserCount');
+            }
+        }
+        $this->render('manageUserCount', array(
+            'model' => $admin,
+        ));
+    }
+
+    /**
      * Control general settings for the software.
      *
      * This method renders a page with settings for a variety of admin options.
@@ -2545,11 +2679,6 @@ class AdminController extends X2Controller {
             // $admin->ignoreUpdates = 1;
             $oldFormat = $admin->contactNameFormat;
             $admin->attributes = $_POST['Admin'];
-            foreach ($_POST['Admin'] as $attribute => $value) {
-                if ($admin->hasAttribute($attribute)) {
-                    $admin->$attribute = $value;
-                }
-            }
             if (isset($_POST['currency'])) {
                 if ($_POST['currency'] == 'other') {
                     $admin->currency = $_POST['currency2'];
@@ -2704,6 +2833,30 @@ class AdminController extends X2Controller {
         $this->redirect($url);
     }
 
+    public function actionX2HubIntegration() {
+        $credId = Yii::app()->settings->hubCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'X2HubConnector');
+        }
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
+    }
+
+    public function actionJasperIntegration() {
+        $credId = Yii::app()->settings->jasperCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'JasperServer');
+        }
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
+    }
+
     public function actionTwitterIntegration() {
         $credId = Yii::app()->settings->twitterCredentialsId;
 
@@ -2843,6 +2996,9 @@ class AdminController extends X2Controller {
         if (isset($_POST['field']) && $_POST['field'] != "") {
             $id = $_POST['field'];
             $field = Fields::model()->findByPk($id);
+            $listsUsingField = false;
+            if ($field->modelName === 'Contacts')
+                $listsUsingField = $field->checkListCriteria();
             if ($getCount) {
                 $nonNull = $field->countNonNull();
                 if ($nonNull) {
@@ -2853,7 +3009,24 @@ class AdminController extends X2Controller {
                 } else {
                     echo Yii::t('admin', 'The field appears to be empty. Deleting it will not result in any data loss.');
                 }
+                if ($listsUsingField) {
+                    echo '<br /><br />';
+                    echo Yii::t('admin', 'This field is used as criteria for the following '.
+                        'lists. You can remove them manually, or proceed to remove these '.
+                        'criteria automatically. Note: This may change the contents of your list.');
+                    echo '<ul>';
+                    foreach ($listsUsingField as $list) {
+                        echo '<li>'.$list.'</li>';
+                    }
+                    echo '</ul>';
+                }
                 Yii::app()->end();
+            }
+            if ($listsUsingField) {
+                foreach ($listsUsingField as $id => $link) {
+                    Yii::app()->db->createCommand()
+                        ->delete('x2_list_criteria', 'id = :id', array(':id' => $id));
+                }
             }
             $field->delete();
         }
@@ -3023,6 +3196,7 @@ class AdminController extends X2Controller {
                 if ($type === 'link') {
                     $module->title = $model->topLinkText;
                     $module->linkHref = $model->topLinkUrl;
+                    $module->linkOpenInFrame = $model->openInFrame;
                 } else {
                     $module->linkRecordType = $model->recordType;
                     $module->linkRecordId = $model->recordId;
@@ -3761,6 +3935,7 @@ class AdminController extends X2Controller {
         $auth->createOperation($moduleName . 'Search');  // Minimum Requirements
 
         $auth->createOperation($moduleName . 'MobileActionHistoryPublish'); 
+        $auth->createOperation($moduleName . 'MobileActionHistoryAttachmentsPublish'); 
         $auth->createOperation($moduleName . 'MobileView'); 
         $auth->createOperation($moduleName . 'MobileCreate'); 
         $auth->createOperation($moduleName . 'MobileUpdate'); 
@@ -3813,6 +3988,7 @@ class AdminController extends X2Controller {
         $roleReadOnlyAccess->addChild($moduleName . 'QuickView');
         $roleReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $roleReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Private Read Only
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MinimumRequirements');
@@ -3820,6 +3996,7 @@ class AdminController extends X2Controller {
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'QuickView');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'InlineEmail');
         $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryPublish');
+        $rolePrivateReadOnlyAccess->addChild($moduleName . 'MobileActionHistoryAttachmentsPublish');
 
         // Basic Access
         $roleBasicAccess->addChild($moduleName . 'MinimumRequirements');
@@ -4110,6 +4287,7 @@ class AdminController extends X2Controller {
 
         $auth->removeAuthItem($ucName . 'MobileView');
         $auth->removeAuthItem($ucName . 'MobileActionHistoryPublish');
+        $auth->removeAuthItem($ucName . 'MobileActionHistoryAttachmentsPublish');
         $auth->removeAuthItem($ucName . 'QuickView');
         $auth->removeAuthItem($ucName . 'MobileIndex');
         $auth->removeAuthItem($ucName . 'MobileCreate');
@@ -4348,6 +4526,7 @@ class AdminController extends X2Controller {
             "description",
             "createDate",
             "lastUpdated",
+            "lastActivity",
             "updatedBy",
         );
 
@@ -4369,11 +4548,12 @@ class AdminController extends X2Controller {
                     // Export associated dropdown values
                     $dropdown = Dropdowns::model()->findByPk($field->linkType);
                     if ($dropdown) {
+                        $parent = empty($dropdown->parent) ? 'NULL' : "'".$dropdown->parent."'";
                         $sql .= "/*&*/INSERT INTO x2_dropdowns " .
                                 "(name, options, multi, parent, parentVal) " .
                                 "VALUES " .
                                 "('$dropdown->name', '$dropdown->options', '$dropdown->multi', " .
-                                "'$dropdown->parent', '$dropdown->parentVal');";
+                                "$parent, '$dropdown->parentVal');";
                         // Temporarily set the linkType to the dropdowns name: this is to avoid
                         // messy ID conflicts when importing a module to existing installations
                         $linkType = $dropdown->name;
@@ -4584,8 +4764,7 @@ class AdminController extends X2Controller {
             fseek($fp, $_SESSION['offset']); // Seek to the right file offset
             $mappedId = false; // Whether the user has mapped the ID field
 
-            // validate meta data
-            if (!ArrayUtil::setEquals (array_keys ($importMap), $metaData)) {
+            if (empty($importMap)) {
                 throw new CHttpException (400, Yii::t('app', 'Bad import map'));
             }
 
@@ -4621,10 +4800,9 @@ class AdminController extends X2Controller {
                     else
                         continue;
 
-                    
                     // Locate an existing model to update, if requested, otherwise create
                     // a new model to populate
-                    if (isset($matchAttribute) && $_SESSION['updateRecords']) {
+                    if (isset($matchAttribute) && $_SESSION['updateRecords'] && !empty($importAttributes[$matchAttribute])) {
                         $model = X2Model::model($modelName)->findByAttributes (array(
                             $_SESSION['matchAttribute'] => $importAttributes[$matchAttribute]
                         ));
@@ -4632,11 +4810,8 @@ class AdminController extends X2Controller {
                         if (is_null($model))
                             $model = new $modelName;
                     } else {
-                    
                         $model = new $modelName;
-                    
                     }
-                    
 
                     foreach ($metaData as $attribute) {
                         if ($importMap[$attribute] === 'id')
@@ -5282,6 +5457,11 @@ class AdminController extends X2Controller {
                     $tempAttributes['theme'] = json_encode($record->theme);
                 }
                 $tempAttributes[] = $model;
+                if ($model === 'Admin') {
+                    $tempAttributes['googleCredentialsId'] = null;
+                    $tempAttributes['twitterCredentialsId'] = null;
+                    $tempAttributes['jasperCredentialsId'] = null;
+                }
                 // Export the data to CSV
                 fputcsv($fp, $tempAttributes, $this->importDelimeter, $this->importEnclosure);
             }
@@ -5335,33 +5515,7 @@ class AdminController extends X2Controller {
      * @param int $importId The ID of the import being rolled back
      */
     public function actionRollbackStage($model, $stage, $importId) {
-        $stages = array(
-            // Delete all tag data
-            "tags" => "DELETE a FROM x2_tags a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.itemId AND b.modelType=a.type
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete all relationship data
-            "relationships" => "DELETE a FROM x2_relationships a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.firstId AND b.modelType=a.firstType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete any associated actions
-            "actions" => "DELETE a FROM x2_actions a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.associationId AND b.modelType=a.associationType
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the records themselves
-            "records" => "DELETE a FROM " . X2Model::model($model)->tableName() . " a
-                INNER JOIN
-                x2_imports b ON b.modelId=a.id
-                WHERE b.modelType='$model' AND b.importId='$importId'",
-            // Delete the log of the records being imported
-            "import" => "DELETE FROM x2_imports WHERE modelType='$model' AND importId='$importId'",
-        );
-        $sqlQuery = $stages[$stage];
-        $command = Yii::app()->db->createCommand($sqlQuery);
-        $result = $command->execute();
+        $result = $this->rollbackStage($model, $stage, $importId);
         echo $result;
     }
 
@@ -5618,10 +5772,6 @@ class AdminController extends X2Controller {
             $_SESSION['imported'] = 0;
             $_SESSION['failed'] = 0;
             $_SESSION['created'] = array();
-            if ($preselectedMap) {
-                $keys = array_keys($_SESSION['importMap']);
-                $attributes = array_values($_SESSION['importMap']);
-            }
              
             $matchField = Fields::model()->findByAttributes (array(
                 'fieldName' => $_SESSION['matchAttribute'],
@@ -6641,7 +6791,7 @@ class AdminController extends X2Controller {
         //No valid duplicate clusters found
         echo 1;
     }
-    
 
+    
     
 }

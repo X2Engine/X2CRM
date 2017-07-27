@@ -57,4 +57,10 @@
   'Rows & Columns' => 'ردیف و ستون',
   '{type} Report' => '{type} گزارش',
   'Rows and Columns' => 'سطر و ستون',
+  'Report Path:' => 'گزارش مسیر:',
+  'External Reports' => 'گزارش های خارجی',
+  'Save Changes' => 'ذخیره تغییرات',
+  'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'لطفا مسیر کامل این گزارش در جاسپر و سرور، به عنوان مثال، / گزارش / MyReport عرضه است. این را می توان با راست کلیک کردن در گزارش خود در جاسپر سرور و انتخاب پیدا شده است &quot;خواص&quot;',
+  'Failed to load external report. Please check your Jasper Server credential details.' => 'برای بارگذاری گزارش های خارجی شکست خورده است. لطفا جزئیات اعتبار جاسپر سرور خود را چک کنید.',
+  'Create Contact List' => 'ایجاد لیست تماس',
 );

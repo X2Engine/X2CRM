@@ -4,7 +4,6 @@
   'Reminder' => 'Υπενθύμιση',
   'Complete Date' => 'Ημ/νία Ολοκλήρωσης',
   'Date Completed' => 'Ημ/νία Ολοκλήρωσης',
-  'All Day' => 'Ολοήμερο',
   'Complete + New Action' => 'Ολοκλήρωση και Νέα Ενέργεια',
   'Uncomplete' => 'Ημιτελές',
   'Overdue' => 'Ληξιπρόθεσμος',
@@ -120,4 +119,7 @@
   'Event Subtype' => 'Δευτερεύων Εκδήλωση',
   'Event Status' => 'Κατάσταση Εκδήλωση',
   'Calendar Color' => 'Ημερολόγιο χρώμα',
+  'Enter email addresses, one per line' => 'Εισάγετε τις διευθύνσεις ηλεκτρονικού ταχυδρομείου, μια γραμμή ανά',
+  'Add to Calendar' => 'Προσθήκη στο ημερολόγιο',
+  'By default, the Contact who sent the email will be associated.' => 'Από προεπιλογή, η επαφή που έστειλε το μήνυμα ηλεκτρονικού ταχυδρομείου θα συσχετιστεί.',
 );

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import ('application.modules.mobile.components.ThemeGenerator.*');
@@ -186,7 +185,9 @@ if (YII_UNIT_TESTING) {
 X2Html::getFlashes ();
 ?>
 </div>
-
+<form id="geoCoordsForm" action="" method="POST">
+    <input type="hidden" name="geoCoords" id="geoCoords">
+</form>
     <div id='header' data-role='header'>
         <a href='#<?php echo $this->pageId; ?>-panel' 
           style='display: none;' 
@@ -194,15 +195,38 @@ X2Html::getFlashes ();
             <i class='fa fa-bars'></i>
         </a>
         <?php
+        $currentUrl = Yii::app()->request->url;
+        if (strpos($currentUrl, '/mobile/login') == false){
+        ?>
+            <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileActivity'); ?>' 
+              style='margin-left: 40px;' 
+              class='ui-btn-left ui-btn show-left-menu-button-right' id='home-btn'>
+                <i class='fa fa-home'></i>
+            </a>
+            <?php
+            if (Yii::app()->params->isPhoneGap) {
+            ?>
+            <a href='<?php echo Yii::app()->createAbsoluteUrl ('profile/mobileCheckInPublisher'); ?>' 
+              style='margin-left: 80px;' 
+              class='ui-btn-left ui-btn show-left-menu-button-right'>
+                <i class='fa fa-location-arrow'></i>
+            </a>
+            <?php
+            }
+            ?>
+        <?php
+        }
+        ?>
+        <?php
         if (MobileModule::getPlatform () === 'iOS') {
         ?>
-        <div class='header-back-button'
-          style='display: none;'>
-            <i class='fa fa-chevron-left'></i>
-            <?php
-            echo CHtml::encode (Yii::t('app', 'Back'));
-            ?>
-        </div>
+            <div class='header-back-button'
+              style='display: none;'>
+                <i class='fa fa-chevron-left'></i>
+                <?php
+                echo CHtml::encode (Yii::t('app', 'Back'));
+                ?>
+            </div>
         <?php
         }
         ?>

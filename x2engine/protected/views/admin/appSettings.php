@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::app()->clientScript->registerCss('appSettingsCss',"
@@ -105,7 +104,7 @@ $('#currency').change(function() {
         ?><br>
         <?php echo Yii::t('admin', 'Set the duration between notification requests in milliseconds.'); ?>
         <br><br>
-        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 2000 (2 seconds).'); ?>
+        <?php echo Yii::t('admin', 'Decreasing this number allows for more instantaneous notifications, but generates more server requests, so adjust it to taste. The default value is 3000 (3 seconds).'); ?>
     </div>
     <div class="form">
         <?php
@@ -139,6 +138,39 @@ $('#currency').change(function() {
         <br>
         <label for="Admin_sessionLog"><?php echo Yii::t('admin', 'Log user sessions?'); ?></label>
         <?php echo $form->checkBox($model, 'sessionLog'); ?>
+    </div>
+    <div class="form">
+        <?php
+        echo $form->labelEx($model, 'loginCredsTimeout');
+        $this->widget('zii.widgets.jui.CJuiSlider', array(
+            'value' => $model->loginCredsTimeout,
+            // additional javascript options for the slider plugin
+            'options' => array(
+                'min' => 1,
+                'max' => 365,
+                'step' => 1,
+                'change' => "js:function(event,ui) {
+					$('#loginCredsTimeout').val(ui.value);
+					$('#save-button').addClass('highlight');
+				}",
+                'slide' => "js:function(event,ui) {
+					$('#loginCredsTimeout').val(ui.value);
+				}",
+            ),
+            'htmlOptions' => array(
+                'style' => 'margin:10px 0;',
+                'class'=>'x2-wide-slider',
+                'id' => 'loginCredsTimeoutSlider'
+            ),
+        ));
+
+        echo $form->textField($model, 'loginCredsTimeout', array('id' => 'loginCredsTimeout'));
+        ?>
+        <br>
+        <?php echo Yii::t('admin', 'Set all mobile users Single sign-on token expiration time (in days). Default is 30.'); ?><br>
+        <br>
+        <label for="Admin_tokenPersist"><?php echo Yii::t('admin', 'Persist token indefinitely?'); ?></label>
+        <?php echo $form->checkBox($model, 'tokenPersist'); ?>
     </div>
     <div class="form">
         <?php
@@ -227,6 +259,12 @@ $('#currency').change(function() {
         <?php echo Yii::t('admin', 'Choose a privacy setting for the Action History widget and Activity Feed. Please note that any user with Admin level access to the module that the History is on will ignore this setting. Only users with full Admin access will ignore this setting on the Activity Feed.') ?>
     </div>
     <div class="form">
+        <?php echo $form->labelEx($model, 'corporateAddress'); ?>
+        <div>
+        <?php echo Yii::t('admin', 'Enter your corporate address to enable directions on the Google Maps widget.') ?>
+        </div>
+        <?php echo $form->textArea($model, 'corporateAddress', array('id' => 'corporateAddress', 'style' => 'height:100px;', 'class'=>'x2-extra-wide-input')); ?>
+        <br><br>
         <?php echo $form->labelEx($model, 'properCaseNames'); ?>
         <?php echo Yii::t('admin', 'Attempt to format Contact names to have proper case?') ?><br>
         <?php echo $form->dropDownList($model, 'properCaseNames', array(1 => Yii::t('app', 'Yes'), 0 => Yii::t('app', 'No'))); ?>

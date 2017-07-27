@@ -4,7 +4,6 @@
   'Reminder' => '조언',
   'Complete Date' => '날짜를 완료',
   'Date Completed' => '날짜 완료',
-  'All Day' => '하루 종일',
   'Complete + New Action' => '완전한 + 새로운 액션',
   'Uncomplete' => 'Uncomplete',
   'Overdue' => '연체',
@@ -120,4 +119,7 @@
   'Event Subtype' => '이벤트 하위 유형',
   'Event Status' => '이벤트 상태',
   'Calendar Color' => '달력 색상',
+  'Enter email addresses, one per line' => '이메일 주소를 입력 한 당 라인',
+  'Add to Calendar' => '캘린더에 추가',
+  'By default, the Contact who sent the email will be associated.' => '기본적으로 전자 메일을 보낸 사람은 연결됩니다.',
 );

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -233,6 +232,10 @@ endif;
                         <?php echo Yii::t('marketing','Default') .': '. Yii::t('marketing','none'); ?>
                     </p>
                 </div>
+                <div class="cell">
+                    <?php echo CHtml::label(Yii::t('marketing','Customize Thank You Text'), 'thankYouText'); ?>
+                    <?php echo CHtml::textArea('thankYouText', '', array('class'=>'half')); ?>
+                </div>
                 <div style="display: none;">
                     <?php echo CHtml::hiddenField('type', $this->type); ?>
                 </div>
@@ -240,20 +243,29 @@ endif;
         </div>
     </div>
 
-    <?php  if ($this->edition == 'pro' && $this->type != 'weblist'):  ?>
+    <?php  if ($this->edition == 'pro'):  ?>
     <div class="webform-tab" id='advanced-tab' data-title='<?php echo Yii::t('app','Advanced'); ?>'>
         <div class='tab-content'>
-            <div class="row" id="custom-css-input-container">
-                <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
-                <p class="fieldhelp">
-                    <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
-                </p>
-                <?php echo CHtml::textArea('css', '/* custom css */', array(
-                    'class' => 'code', 
-                    'id'=>'custom-css',
-                    'data-mode'=> 'css'
-                )); ?>
+            <div class="row">
+                <label class='left-label' for='requireCaptcha'>
+                    <?php echo Yii::t('app', 'Require CAPTCHA: '); ?>
+                </label>
+                <input id='require-captcha-checkbox' type='checkbox'  name='requireCaptcha'>
             </div>
+
+            <?php if ($this->type != 'weblist'): ?>
+                <div class="row" id="custom-css-input-container">
+                    <h4><?php echo Yii::t('marketing','CSS') .':'; ?></h4>
+                    <p class="fieldhelp">
+                        <?php echo Yii::t('marketing','Enter custom css for the web form.'); ?>
+                    </p>
+                    <?php echo CHtml::textArea('css', '/* custom css */', array(
+                        'class' => 'code',
+                        'id'=>'custom-css',
+                        'data-mode'=> 'css'
+                    )); ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php endif;  ?>

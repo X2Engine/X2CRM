@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::app()->clientScript->registerScriptFile(
@@ -165,11 +164,88 @@ $this->renderPartial ('_feedFilters');
                 'translateOptions',
                 Dropdowns::getSocialSubtypes ()),
             array ('class' => 'x2-select'));
-        ?>
+?>
+        <div class="x2-button" title="<?php echo Yii::t('profile', 'Insert Link to Record'); ?>" onclick='$("#feed_link_record").slideToggle()'><?php echo X2Html::fa('chain'); ?></div>
+        <div class="row" id="feed_link_record" style="display:none">
+            <div class="cell"><?php
+                // Model association autocomplete
+                echo $form->hiddenField($feed, 'recordLinks');
+                $modelList = Fields::getDisplayedModelNamesList();
+                echo $form->label($feed, 'associationType'); 
+                echo $form->dropDownList(
+                    $feed, 'associationType', 
+                    array_merge(array('none' => Yii::t('app','None')), $modelList), 
+                    array(
+                        'ajax' => array(
+                            'type' => 'POST',
+                            'url' => CController::createUrl('/actions/actions/parseType'), 
+                            'update' => '#', //selector to update
+                            'success' => 'function(data){
+                                if(data){
+                                    $("#feed_auto_select").autocomplete("option","source",data);
+                                    $("#feed_auto_select").val("");
+                                    $("#feed_auto_complete").show();
+                                }else{
+                                    $("#feed_auto_complete").hide();
+                                }
+                            }'
+                        )
+                    )
+                );
+                echo $form->error($feed, 'associationType');
+                ?>
+            </div>
+            <div class="cell" id="feed_auto_complete" 
+             style="display:none;">
+                <?php
+                echo $form->label($feed, 'associationName');
+                $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
+                    'name' => 'feed_auto_select',
+                    'value' => '',
+                    'source' => '',
+                    'options' => array(
+                        'minLength' => '2',
+                        'select' => 'js:function( event, ui ) {
+                            var recordType = $("#Events_associationType").val();
+                            $.ajax({
+                                url: "'.$this->createUrl('/actions/actions/getAutocompleteAssocLink').'",
+                                method: "POST",
+                                data: {
+                                    type: recordType,
+                                    id: ui.item.id,
+                                    YII_CSRF_TOKEN: x2.csrfToken
+                                },
+                                complete: function(data) {
+                                    data = JSON.parse(data.responseText);
+                                    $("#feed_record_links").show().append("<br />" + data[2]);
+                                    var recordLinksVal = $("#Events_recordLinks").val();
+                                    var currentLinks = false;
+                                    if (recordLinksVal)
+                                        currentLinks = JSON.parse(recordLinksVal);
+                                    if (!currentLinks) currentLinks = [];
+                                    currentLinks.push([data[0], data[1]]);
+                                    $("#Events_recordLinks").val(JSON.stringify(currentLinks));
+                                    $("#Events_associationType").val("none");
+                                    $("#feed_link_record").slideUp();
+                                    $("#feed_auto_complete").hide();
+                                    $("#feed_auto_select").val("");
+                                }
+                            });
+                            return false;
+                        }',
+                    ),
+                ));
+                ?>
+            </div>
+            <div class="cell" id="feed_record_links" style="display:none;"></div>
+        </div>
+
         <div id='second-row-buttons-container'>
             <?php
+            echo CHtml::hiddenField('geoCoords', '');
             echo CHtml::submitButton(
                 Yii::t('app','Post'),array('class'=>'x2-button','id'=>'save-button'));
+
             if ($isMyProfile) {
                 echo CHtml::button(
                     Yii::t('app','Attach A File/Photo'),
@@ -177,11 +253,29 @@ $this->renderPartial ('_feedFilters');
                         'class'=>'x2-button',
                         'onclick'=>"x2.FileUploader.toggle('activity')",
                         'id'=>"toggle-attachment-menu-button"));
-            }
+            } ?>
+
+            <button id="toggle-location-button" class="x2-button" title="<?php echo Yii::t('app', 'Location Check-In'); ?>" style="display:inline-block; margin-left:10px"><?php
+                echo X2Html::fa('crosshairs fa-lg');
+            ?></button>
+            <button id="toggle-location-comment-button" class="x2-button" title="<?php echo Yii::t('app', 'Add a comment on your location '); ?>" style="display:inline-block"><?php
+                echo X2Html::fa('stack', array(),
+                    X2Html::fa('comment-o fa-stack-2x').
+                    X2Html::fa('crosshairs fa-stack-1x')
+                );
+            ?></button>
+            <?php
+            $checkInPlaceholder = Yii::t('app', 'Check-in comment.');
+            if (!isset($_SERVER['HTTPS']) ?  : '')
+                $checkInPlaceholder .= Yii::t('app', ' Note: for higher accuracy and an embedded static map, visit the site under HTTPS.');
             ?>
+            <textarea id="checkInComment" rows=2 placeholder="<?php echo $checkInPlaceholder; ?>"></textarea>
         </div>
         </div>
         <?php
+            Yii::app()->clientScript->registerGeolocationScript(true);
+            $checkinByDefault = Yii::app()->settings->checkinByDefault;
+            Yii::app()->clientScript->registerCheckinScript("#feed-form input[type=\'submit\'", $checkinByDefault);
         ?>
     </div>
     <?php $this->endWidget(); ?>

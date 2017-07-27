@@ -79,10 +79,9 @@ INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `desc
 ('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B"}',0),
 ('-6', "theme",'admin','Phosphor','{"themeName":"Phosphor","background":"050320","content":"1E1E20","text":"ECF4EA","link":"44FF24","highlight1":"131A19","highlight2":"226B15"}',0),
 ('-7', "theme",'admin','Night','{"themeName":"Night","background":"252525","content":"252525","text":"E0E0E0","link":"E0E0E0","highlight1":"131A19","highlight2":"E0E0E0"}',0);
+
 /*&*/
 INSERT INTO x2_form_layouts 
 (id, model,version, scenario, layout,defaultView,defaultForm,createDate,lastUpdated) 
 VALUES  
 (24, "Media","View","Default",'{"version":"1.3","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_name","labelType":"left","readOnly":0},{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_private","labelType":"left","readOnly":"0","tabindex":"undefined"}]},{"items":[{"name":"formItem_associationType","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_associationId","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_drive","labelType":"left","readOnly":"0","tabindex":"undefined"}]}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_fileName","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_filesize","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_mimetype","labelType":"left","readOnly":"0","tabindex":"undefined"}]},{"items":[{"name":"formItem_dimensions","labelType":"left","readOnly":0},{"name":"formItem_uploadedBy","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_createDate","labelType":"left","readOnly":"0","tabindex":"undefined"}]}]}],"collapsible":false,"title":"File"}]}',"1","0","1427158713","1427158713")
-
-

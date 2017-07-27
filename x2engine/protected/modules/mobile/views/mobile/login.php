@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 //$this->pageTitle = Yii::app()->settings->appName . ' - Login';
@@ -83,7 +82,7 @@ if (Yii::app()->params->isPhoneGap) {
  
 
 
-if ($model->hasErrors ()) {
+if ($model->hasErrors () && !isset($_COOKIE['sessionToken'])) {
     $title = Yii::t('mobile', 'Login Failed');
     if ($model->hasErrors ('verifyCode')) {
         $message = Yii::t(
@@ -143,24 +142,79 @@ if ($model->hasErrors ()) {
      
     ?>
     </div>
+    
+    <script type="text/javascript">
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+        
+        // If browser supports localStorage
+        if(typeof(Storage) !== void(0)){
+            var sessionToken = localStorage.getItem("sessionToken")
+            if(sessionToken !== null ){
+                setCookie("sessionToken",sessionToken,6);
+            } else {
+
+            }
+        }
+    </script>
+
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'username', array()); ?-->
         <?php 
+        
+        if(isset($_COOKIE['sessionToken'])){
+            $sessionTokenCookie = $_COOKIE['sessionToken'];
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+            $admin = &Yii::app()->settings;
+            
+            if($sessionTokenModel === null)
+                unset(Yii::app()->request->cookies['sessionToken']);
+            if ($admin->tokenPersist === 0) {
+                if ($sessionTokenModel->lastUpdated + $admin->loginCredsTimeout >= time()) 
+                    unset(Yii::app()->request->cookies['sessionToken']);
+                
+            }         
+        }
+        
+        if(isset($_COOKIE['sessionToken'])) {
+            $model->sessionToken = $_COOKIE['sessionToken'];
+            echo $form->hiddenField ($model, 'sessionToken');
+        }
         if ($hasProfile) $model->username = $profile->username;
         echo $form->textField($model, 'username', 
             array(
                 'placeholder'=>Yii::t('app','Username')
             )
-        ); ?>
+        ); 
+        
+        ?>
     </div>
     <div data-role="fieldcontain">
         <!--?php echo $form->label($model, 'password', array()); ?-->
         <?php 
-        echo $form->passwordField($model, 'password', 
-            array(
-                'placeholder'=>Yii::t('app','Password')
-            )
-        ); ?>
+        $settings = Yii::app()->settings;
+        if(Yii::app()->settings->locationTrackingFrequency != null) {
+            Yii::app()->request->cookies['locationTrackingFrequency'] = new CHttpCookie('locationTrackingFrequency', $settings->locationTrackingFrequency);
+        }
+        if(Yii::app()->settings->locationTrackingSwitch != null) {
+            Yii::app()->request->cookies['locationTrackingSwitch'] = new CHttpCookie('locationTrackingSwitch', $settings->locationTrackingSwitch);
+        }
+        if(isset($_COOKIE['sessionToken'])) {
+
+        } else {
+            echo $form->passwordField($model, 'password', 
+                array(
+                    'placeholder'=>Yii::t('app','Password')
+                )
+            );             
+        }
+
+        ?>
     </div>
 
     <?php 
@@ -185,9 +239,16 @@ if ($model->hasErrors ()) {
     ?>
     <div data-role="fieldcontain">
     <?php
-    echo CHtml::submitButton(Yii::t('app', 'Sign in'), array (
-        'class' => 'no-css-override',
-    )); 
+        if(isset($_COOKIE['sessionToken'])) {
+            $model = new LoginForm;
+            $this->login ($model, true);
+       
+        } else {
+            echo CHtml::submitButton(Yii::t('app', 'Sign in'), array (
+                'class' => 'no-css-override',
+            ));             
+        }
+
     ?>
     </div>
     <div data-role="fieldcontain" class='password-help-container'>
@@ -201,7 +262,8 @@ if ($model->hasErrors ()) {
     ?>
     <div data-role="fieldcontain" class='full-app-link'>
         <a href='<?php echo $this->createAbsoluteUrl ('/site/login'); ?>' rel='external'><?php 
-            echo CHtml::encode (Yii::t('app', 'Desktop version')); ?>
+            echo CHtml::encode (Yii::t('app', 'Desktop version')); 
+            setcookie('isMobileApp','true'); // save cookie?>
         </a>
     </div>
     <?php

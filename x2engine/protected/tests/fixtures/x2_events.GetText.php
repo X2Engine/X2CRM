@@ -367,6 +367,19 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         'lastUpdated' => 1359485241,
         'important' => 0
     ),
+    'workflowStartWorkflowActionNoStage' => array(
+        'type' => 'workflow_start',
+        'subtype' => null,
+        'level' => null,
+        'visibility' => 1,
+        'text' => '',
+        'associationType' => 'Actions',
+        'associationId' => 15,
+        'user' => 'admin',
+        'timestamp' => 1359485241,
+        'lastUpdated' => 1359485241,
+        'important' => 0
+    ),
     'workflowComplete' => array(
         'type' => 'workflow_complete',
         'subtype' => null,

@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -46,6 +45,10 @@ class ActionsController extends x2base {
 
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
+            'MobileControllerBehavior' => array(
+                'class' => 
+                    'application.modules.mobile.components.behaviors.MobileActionHistoryItemBehavior'
+            ),
             'ActionsQuickCreateRelationshipBehavior' => array(
                 'class' => 'ActionsQuickCreateRelationshipBehavior',
                 'attributesOfNewRecordToUpdate' => array(
@@ -271,7 +274,7 @@ class ActionsController extends x2base {
             if ($model instanceof ActionFormModelBase) {
                 $model->setAttributes ($post);
 
-                if ($model->validate ()) {
+                if ($model->validate () && !isset($_POST['keepForm'])) {
                     $model = $model->getAction (); // convert to active record
                 }
             } else { // ($model instanceof Actions)
@@ -279,10 +282,13 @@ class ActionsController extends x2base {
             }
 
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
+                $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+                $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
+                $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+                if ($location && $isCheckIn)
+                    $model->locationId = $location->id;
                 $this->quickCreate($model);
-                $model->syncGoogleCalendar('create');
             } elseif(!$model->hasErrors () && $model->save()){
-                $model->syncGoogleCalendar('create');
                 $this->redirect(array('index'));
             }
         }
@@ -292,7 +298,7 @@ class ActionsController extends x2base {
 
         if (isset($_POST['x2ajax'])) {
             // allows form to be refreshed
-            if (!$model->hasErrors ()) $model = new $modelType;
+            if (!$model->hasErrors () && !isset($_POST['keepForm'])) $model = new $modelType;
             $this->renderInlineForm ($model);
         } else {
             $this->render('create', array(
@@ -466,7 +472,6 @@ class ActionsController extends x2base {
                     $event->associationId = $model->id;
                     $event->save();
                 }
-                //$model->syncGoogleCalendar('create', true);
             }else{
                 if($model->hasErrors('verifyCode')){
                     echo CJSON::encode (array ('error' => $model->getError('verifyCode')));
@@ -585,36 +590,6 @@ class ActionsController extends x2base {
     }
 
     public function update($model, $oldAttributes, $api){
-
-        // now in Actions::beforeSave()
-        /* $model->dueDate = Formatter::parseDateTime($model->dueDate);
-
-          if($model->completeDate)
-          $model->completeDate = Formatter::parseDateTime($model->completeDate);
-
-          $association = $this->getAssociation($model->associationType,$model->associationId);
-
-          if($association != null) {
-          $model->associationName = $association->name;
-          } else {
-          $model->associationName = 'None';
-          $model->associationId = 0;
-          } */
-
-        // now in Actions::synchGoogleCalendar()
-        /* if( !is_numeric($model->assignedTo)) { // assigned to user
-          $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model); // update action in Google Calendar if user has a Google Calendar
-          } else { // Assigned to group
-          $groups = Yii::app()->db->createCommand()->select('userId')->from('x2_group_to_user')->where("groupId={$model->assignedTo}")->queryAll();
-          foreach($groups as $group) {
-          $profile = Profile::model()->findByPk($group['userId']);
-          if(isset($profile)) // prevent error for actions assigned to 'Anyone'
-          $profile->updateGoogleCalendarEvent($model);
-          }
-          } */
-
         if($api == 0)
             parent::update($model, $oldAttributes, $api);
         else
@@ -707,7 +682,6 @@ class ActionsController extends x2base {
                         $event->update(array('timestamp'));
                     }
                 }
-                $model->syncGoogleCalendar('update');
                 // if the action has an association
                 if(isset($_GET['redirect']) && $model->associationType != 'none'){ 
                     if($model->associationType == 'product' || 
@@ -754,7 +728,6 @@ class ActionsController extends x2base {
         $copy = new $modelClass;
         $copy->setAttributes ($model->getAttributes (), false);
         if ($copy->save ()) {
-            $copy->syncGoogleCalendar('create');
             echo $this->ajaxResponse ('success');
         } else {
             echo $this->ajaxResponse ('failure');
@@ -773,7 +746,7 @@ class ActionsController extends x2base {
                 $model->completeDate = $model->dueDate;
             }
             if($model->save()){
-                $model->syncGoogleCalendar('update');
+                
             }
             if (isset($_POST['isEvent']) && $_POST['isEvent']) {
                 // Update calendar event
@@ -839,8 +812,6 @@ class ActionsController extends x2base {
             $event->user = Yii::app()->user->getName();
             $event->save();
             Events::model()->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $id, 'type' => 'action_reminder'));
-
-            $model->syncGoogleCalendar('delete');
 
             /* if(!is_numeric($model->assignedTo)) { // assigned to user
               $profile = Profile::model()->findByAttributes(array('username'=>$model->assignedTo));
@@ -1039,8 +1010,13 @@ class ActionsController extends x2base {
     }
 
     public function actionParseType(){
-        if(isset($_POST['Actions']['associationType'])){
-            $type = $_POST['Actions']['associationType'];
+        $associationType = null;
+        if (isset($_POST['Actions']['associationType']))
+            $associationType = $_POST['Actions']['associationType'];
+        else if (isset($_POST['Events']['associationType']))
+            $associationType = $_POST['Events']['associationType'];
+        if($associationType){
+            $type = $associationType;
             if($modelName = X2Model::getModelName($type)){
                 $linkModel = $modelName;
                 if(class_exists($linkModel)){
@@ -1052,6 +1028,28 @@ class ActionsController extends x2base {
                     $linkSource = "";
                 }
                 echo $linkSource;
+            }else{
+                echo '';
+            }
+        }else{
+            echo '';
+        }
+    }
+
+    public function actionGetAutocompleteAssocLink(){
+        $associationType = null;
+        if (isset($_POST['type']))
+            $associationType = $_POST['type'];
+        if (isset($_POST['id']))
+            $associationId = $_POST['id'];
+        if($associationType && $associationId){
+            $modelName = X2Model::getModelName($associationType);
+            if($model = X2Model::model($modelName)->findByPk($associationId)){
+                echo CJSON::encode(array(
+                    $modelName,
+                    $associationId,
+                    $model->getLink(),
+                ));
             }else{
                 echo '';
             }

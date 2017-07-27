@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.components.behaviors.JSONEmbeddedModelFieldsBehavior');
@@ -83,6 +82,42 @@ class Admin extends X2ActiveRecord {
     }
 
     /**
+     * @param string $type X2Hub Activity type (optional)
+     */
+    public function getGoogleApiKey($type = null) {
+        $apiKey = null;
+        if ($this->hubCredentialsId) {
+            $creds = Credentials::model()->findByPk($this->hubCredentialsId);
+            if ($creds && $creds->auth && $creds->auth->hubEnabled) {
+                $disabled = false;
+                if (in_array($type, array('maps', 'staticmap', 'directions', 'geocoding')) && !$creds->auth->enableGoogleMaps)
+                    $disabled = true;
+                if (!$disabled) {
+                    $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+                    $apiKey = $hub->getGoogleApiKey(Yii::app()->user->id, $type);
+                }
+            }
+        }
+        if (empty($apiKey)) {
+            $creds = $this->getGoogleIntegrationCredentials();
+            if ($creds && isset($creds['apiKey']))
+                $apiKey = $creds['apiKey'];
+        }
+        return $apiKey;
+    }
+
+    public function getEnableMaps() {
+        $settings = Yii::app()->settings;
+        if ($settings->hubCredentialsId) {
+            $hubCreds = Credentials::model()->findByPk($settings->hubCredentialsId);
+            if ($hubCreds && $hubCreds instanceof X2HubConnector && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
+                return true;
+        }
+        if ($settings->googleIntegration)
+            return true;
+    }
+
+    /**
      * @return string the associated database table name
      */
     public function tableName(){
@@ -114,7 +149,7 @@ class Admin extends X2ActiveRecord {
                         'PublisherActionTab' => true,
                         'PublisherCallTab' => true,
                         'PublisherTimeTab' => true,
-                        'PublisherEventTab' => false,
+                        'PublisherEventTab' => true,
                         'PublisherProductsTab' => false,
                     ),
                     
@@ -189,26 +224,25 @@ class Admin extends X2ActiveRecord {
             array('emailType,emailFromName, emailFromAddr', 'requiredIfSysDefault', 'field' => 'emailBulkAccount'),
             array('serviceCaseFromEmailName, serviceCaseFromEmailAddress', 'requiredIfSysDefault', 'field' => 'serviceCaseEmailAccount'),
             array('serviceCaseEmailSubject, serviceCaseEmailMessage', 'required'),
-            array('timeout, webTrackerCooldown, chatPollTime, ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, installDate, updateDate, updateInterval, workflowBackdateWindow, workflowBackdateRange', 'numerical', 'integerOnly' => true),
+            array('batchTimeout, timeout, loginCredsTimeout, webTrackerCooldown, chatPollTime, locationTrackingFrequency, maxUserCount, '
+                . 'ignoreUpdates, rrId, onlineOnly, emailBatchSize, emailInterval, emailPort, '
+                . 'installDate, updateDate, updateInterval, workflowBackdateWindow, '
+                . 'workflowBackdateRange, locationTrackingDistance',
+                'numerical', 'integerOnly' => true),
             // accounts, sales,
+            array('loginCredsTimeout', 'numerical', 'max' => 365, 'min' => 1),
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
+            array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
+            array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
+            array('maxUserCount', 'numerical', 'max' => 100000, 'min' => 1),
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
-            array('batchTimeout', 'numerical', 'integerOnly' => true),
-            array(
-                'massActionsBatchSize',
-                'numerical',
-                'integerOnly' => true,
-                'min' => 5,
-                'max' => 100,
-            ),
+            array('massActionsBatchSize','numerical','integerOnly' => true,'min' => 5,'max' => 100,),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
-            
-            array('emailDropbox'  .',api2' ,'safe'),
-            
+            array('emailDropbox'  .',api2' ,'safe'),          
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
             array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
@@ -217,7 +251,10 @@ class Admin extends X2ActiveRecord {
             array('externalBaseUrl','url','allowEmpty'=>true),
             array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
             array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
-            array('enableWebTracker, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader', 'boolean'),
+            array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault, sessionLog, userActionBackdating, properCaseNames', 'boolean'),
+            array('historyPrivacy', 'in', 'range' => array('default', 'user', 'group')),
+            array('contactNameFormat', 'in', 'range' => array('firstName lastName', 'lastName, firstName')),
+            array('corporateAddress', 'length', 'max' => 4096),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array ('appDescription', 'length', 'max' => 255),
             array (
@@ -252,8 +289,10 @@ class Admin extends X2ActiveRecord {
             // 'accounts' => Yii::t('admin','Accounts'),
             // 'sales' => Yii::t('admin','Opportunities'),
             'timeout' => Yii::t('admin', 'Session Timeout'),
+            'loginCredsTimeout' => Yii::t('admin', 'Login Credentials Timeout'),
             'webLeadEmail' => Yii::t('admin', 'Web Lead Email'),
             'enableWebTracker' => Yii::t('admin', 'Enable Web Tracker'),
+            'disableAnonContactNotifs' => Yii::t('admin', 'Disable AnonContact Notifications'),
             'webTrackerCooldown' => Yii::t('admin', 'Web Tracker Cooldown'),
             'currency' => Yii::t('admin', 'Currency'),
             'chatPollTime' => Yii::t('admin', 'Notification Poll Time'),
@@ -303,6 +342,7 @@ class Admin extends X2ActiveRecord {
             'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
             'batchTimeout' => Yii::t('admin','Time limit on batch actions'),
             'massActionsBatchSize' => Yii::t('admin','Batch size for grid view mass actions'),
+            'maxUserCount' => Yii::t('admin', 'Manage User Count'),
             'externalBaseUrl' => Yii::t('admin','External / Public Base URL'),
             'externalBaseUri' => Yii::t('admin','External / Public Base URI'),
             'appName' => Yii::t('admin','Application Name'),
@@ -312,13 +352,17 @@ class Admin extends X2ActiveRecord {
             'doNotEmailLinkPage' => Yii::t('admin','"Do not email" Page'),
             'doNotEmailPage' => Yii::t('admin','Do Not Email Page'),
             'enableAssetDomains' => Yii::t('admin','Enable Asset Domains'),
+            'twoFactorCredentialsId' => Yii::t('admin','Two Factor Auth Credentials'),
              
             'imapPollTimeout' => Yii::t('admin','Email Polling Timeout'),
             'ipBlacklist' => Yii::t('admin','IP Blacklist'),
             'ipWhitelist' => Yii::t('admin','IP Whitelist'),
             'triggerLogMax' => Yii::t('admin','Maximum number of X2Workflow trigger logs'),
-             
             
+            'locationTrackingFrequency' => Yii::t('admin', 'Location Tracking Frequency'), 
+            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'), 
+            'locationTracking' => Yii::t('admin', 'Location Tracking'), 
+             
             'enableFingerprinting' => Yii::t('marketing', 'Enable Fingerprinting'),
             'performHostnameLookups' => Yii::t('marketing', 'Perform Hostname Lookups'),
             'identityThreshold' => Yii::t('marketing','Identity Threshold'),
@@ -541,7 +585,8 @@ class Admin extends X2ActiveRecord {
                     } elseif (isset ($tryJson['dateExpires']) && isset ($tryJson['maxUsers'])) {
                         $this->_licenseKeyInfo = array (
                             'dateExpires' => $tryJson['dateExpires'],
-                            'maxUsers' => $tryJson['maxUsers']
+                            'maxUsers' => $tryJson['maxUsers'],
+                            'hubEnabled' => (isset($tryJson['hubEnabled']) ? $tryJson['hubEnabled'] : false),
                         );
                     }
                 }

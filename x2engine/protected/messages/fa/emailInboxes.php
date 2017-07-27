@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => 'خودکار ورود ایمیل های ورودی',
   'From' => 'از',
   'Copy to Sent Folder' => 'کپی کنید به پوشه فرستاده',
-  'Disabled' => 'معلول',
   'Failed to associate message "{subject}" with {type} {model}' => 'به معاشرت پیام &quot;شکست خورده {subject} &quot; با {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'پیام &quot; {subject} &quot; در حال حاضر با همراه {type} {model}',
   'Disable Quota Operations' => 'غیر فعال کردن عملیات سهمیه',
+  'Manage your application credentials' => 'مدیریت اطلاعات کاربری نرم افزار خود را',
+  'Associate attachment with related record' => 'پیوست دانشیار با سابقه مرتبط',
+  'Attachment successfully associated' => 'پیوست موفقیت همراه',
+  'Association failed: the attachment could not be saved' => 'انجمن شکست خورده: پیوست ذخیره نمی شود',
+  'Association failed: there are no related records' => 'انجمن شکست خورده: هیچ پرونده مرتبط وجود دارد',
 );

@@ -1,6 +1,6 @@
-/*!*******************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+/*!*********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- ********************************************************************************/.pseudo-link,.x2-tour .close{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover,.x2-tour .close:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}.x2-tour{box-sizing:border-box;width:100%;min-width:150px;display:none}.x2-tour h2{color:#454545 !important}.x2-tour a{color:#033e5a !important}.x2-tour a:hover{color:#05608b !important}.x2-tour .inner{box-sizing:border-box;position:relative;padding-right:25px;width:100%;max-width:600px}.x2-tour .close{position:absolute;top:10px;right:6px;font-size:15px;opacity:0.3}.x2-tour .close:hover{opacity:1}.x2-tour .bottom{margin-top:10px;text-align:left}.x2-tour .bottom .enough,.x2-tour .bottom .disable{line-height:25px;font-size:80%;margin-top:5px}.x2-tour .bottom .enough input,.x2-tour .bottom .disable input{vertical-align:middle}.x2-tour .bottom .enough{margin-left:5px}.x2-tour .bottom .disable{float:right;cursor:pointer}.x2-tour .bottom .x2-button{background:#ace3fc !important;border-color:#94dafb !important;color:#033e5a !important}.x2-tour .bottom .x2-button:active{background:#94dafb !important;border-color:#62c9fa !important}.x2-tour-highlight{box-sizing:border-box;position:absolute;border:2px dashed #94dafb !important}.x2-tour-tip{margin:0px;z-index:999 !important}.x2-tour-tip.qtip,.x2-tour-tip .qtip-content,.x2-tour-tip .qtip-tip{background-color:#C5EBFD;border-color:#94dafb}.x2-tour-tip .close{display:none}.x2-tour-tip .x2-tour{display:block}.x2-tour-tip .x2-tour .inner{margin:0px;padding:0px;border:none}.x2-tour.block{box-sizing:border-box;background:#C5EBFD;border:1px solid #94dafb;padding:10px}.x2-tour.block .inner{max-width:100%}
+ * "Powered by X2 Engine".
+ **********************************************************************************/.pseudo-link,.x2-tour .close{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover,.x2-tour .close:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}.x2-tour{box-sizing:border-box;width:100%;min-width:150px;display:none}.x2-tour h2{color:#454545 !important}.x2-tour a{color:#033e5a !important}.x2-tour a:hover{color:#05608b !important}.x2-tour .inner{box-sizing:border-box;position:relative;padding-right:25px;width:100%;max-width:600px}.x2-tour .close{position:absolute;top:10px;right:6px;font-size:15px;opacity:0.3}.x2-tour .close:hover{opacity:1}.x2-tour .bottom{margin-top:10px;text-align:left}.x2-tour .bottom .enough,.x2-tour .bottom .disable{line-height:25px;font-size:80%;margin-top:5px}.x2-tour .bottom .enough input,.x2-tour .bottom .disable input{vertical-align:middle}.x2-tour .bottom .enough{margin-left:5px}.x2-tour .bottom .disable{float:right;cursor:pointer}.x2-tour .bottom .x2-button{background:#ace3fc !important;border-color:#94dafb !important;color:#033e5a !important}.x2-tour .bottom .x2-button:active{background:#94dafb !important;border-color:#62c9fa !important}.x2-tour-highlight{box-sizing:border-box;position:absolute;border:2px dashed #94dafb !important}.x2-tour-tip{margin:0px;z-index:999 !important}.x2-tour-tip.qtip,.x2-tour-tip .qtip-content,.x2-tour-tip .qtip-tip{background-color:#C5EBFD;border-color:#94dafb}.x2-tour-tip .close{display:none}.x2-tour-tip .x2-tour{display:block}.x2-tour-tip .x2-tour .inner{margin:0px;padding:0px;border:none}.x2-tour.block{box-sizing:border-box;background:#C5EBFD;border:1px solid #94dafb;padding:10px}.x2-tour.block .inner{max-width:100%}

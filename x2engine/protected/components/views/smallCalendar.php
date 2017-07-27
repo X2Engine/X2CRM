@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -52,7 +51,6 @@ function giveSaveButtonFocus() {
 
 $(function(){
 
-    var justMe;
     var urls;
     var myurl; 
     var indicator;
@@ -62,7 +60,6 @@ $(function(){
     function initialize(){
         x2.calendarManager.calendar = '#small-calendar';
         x2.calendarManager.widgetSettingUrl = '$widgetSettingUrl';
-        justMe = $justMe;
 
 
         // Initialize the calendar, ensure that only one is present
@@ -73,20 +70,15 @@ $(function(){
         // By fetching the checked user calendars
         var calendars = $showCalendars;
         urls = [];
-        myurl = '$urls[jsonFeed]?user=$user';
+        myurl = '$urls[jsonFeed]?calendarId=$user';
 
         for (var i in calendars.userCalendars){
-            urls.push('$urls[jsonFeed]?user='+calendars.userCalendars[i]);
-        }
-
-        for (var i in calendars.groupCalendars){
-            urls.push('$urls[jsonFeedGroup]?groupId='+calendars.groupCalendars[i]);
+            urls.push('$urls[jsonFeed]?calendarId='+calendars.userCalendars[i]);
         }
 
         indicatorClass();
         initCalendar();
         applyHeader();
-        justMeButton();
         miscModifications();
         $('#small-calendar .fc-button').click(responsiveBehavior);
         responsiveBehavior();
@@ -215,7 +207,7 @@ $(function(){
                 center: '',
                 right: 'month agendaDay prev,next'
             },
-            eventSources: justMe ? [myurl] : urls,
+            eventSources: urls,
             eventRender: function(event, element, view) {
                 indicator.addEvent(event, view);
             },
@@ -380,29 +372,6 @@ $(function(){
     // Make header a link to the full calendar 
     // $('#small-calendar .fc-header-title h2').wrap('<a href=\"$urls[index]\"></a>').
     // attr('title', 'Go to full calendar');
-     
-
-    function justMeButton(){
-
-        var meButton = $('#small-calendar-container #me-button');
-        meButton.click(function(evt){
-            if( !meButton.hasClass('pressed') ){
-                $('#small-calendar').fullCalendar('removeEventSources');
-                $('#small-calendar').fullCalendar('addEventSource', myurl);
-                meButton.addClass('pressed');
-                x2.calendarManager.updateWidgetSetting('justMe', true);
-            } else {
-                $('#small-calendar').fullCalendar('removeEventSources');
-                for(var i in urls){
-                    $('#small-calendar').fullCalendar('addEventSource', urls[i]);
-                }
-                meButton.removeClass('pressed');            
-                x2.calendarManager.updateWidgetSetting('justMe', false);
-            }
-            
-        });
-        
-    }
 
     function applyHeader(){
         var headerRight = $('#small-calendar .fc-header-right').hide();
@@ -489,9 +458,6 @@ $(function(){
 //                    'type' =>'button',
 //                ))
             ?>                
-
-            <span title='<?php echo Yii::t('calendar','Show just my events') ?>'
-            style='display:none;' class="x2-button fc-button <?php if($justMe == 'true'){ echo 'pressed'; } ?>" id="me-button" type='button'><?php echo Yii::t('calendar','Just Me') ?></span>
     </div>
 
 </div>

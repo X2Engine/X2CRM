@@ -1,7 +1,7 @@
 <?php
-/*************************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -163,6 +162,13 @@ class Media extends X2Model {
 
         $this->getPath();
 
+        // Scan uploaded media for viruses if requested
+        if ($this->isNewRecord && Yii::app()->settings->scanUploads === '1' &&
+                !$this->clamScan()) {
+                    FileUtil::rrmdir($this->path);
+                    return false;
+        }
+
         return parent::beforeSave();
     }
 
@@ -177,6 +183,10 @@ class Media extends X2Model {
                 'class' => 'application.components.behaviors.ERememberFiltersBehavior',
                 'defaults' => array(),
                 'defaultStickOnClear' => false
+            ),
+            'ClamScanBehavior' => array(
+                'class' => 'application.components.behaviors.ClamScanBehavior',
+                'pathAttribute' => 'path',
             )
         ));
         unset($behaviors['changelog']);
@@ -244,6 +254,13 @@ class Media extends X2Model {
         return strpos($this->resolveType(), 'image/') === 0;
     }
 
+    public function isAudio() {
+        return strpos($this->resolveType(), 'audio/') === 0;
+    }
+    
+    public function isVideo() {
+        return strpos($this->resolveType(), 'video/') === 0;
+    }
     /**
      * Return true if $filename has an image extension. Image extensions include:
      * jpg, gif, png, bmp, jpeg, jpe
@@ -257,7 +274,7 @@ class Media extends X2Model {
 
     // return an img tag of this file
     // return '' if file is not an image
-    public function getImage($link = false, array $htmlOptions=array ()) {
+    public function getImage($link = false, array $htmlOptions=array ('encode'=>false)) {
         if (!$this->fileExists() || !$this->isImage()) {
             return '';
         }
@@ -277,6 +294,72 @@ class Media extends X2Model {
         }
 
         return X2Html::link($img, $this->getPublicUrl());
+    }
+    
+    // return an audio tag of this file
+    // return '' if file is not an image
+    public function getAudio($link = false, array $htmlOptions=array ('encode'=>false)) {
+        if (!$this->fileExists() || !$this->isAudio()) {
+            return '';
+        }
+
+        if ($this->drive) {
+            return $this->googlePreview;
+        }
+        $audio = '';
+        if (!Yii::app()->params->isPhoneGap) {     
+            $audio = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);   
+        } else {
+            $audio = '';
+        }
+
+        if (!$link) {
+            return $audio;
+        } 
+
+        return X2Html::link($audio, $this->getPublicUrl());
+    }
+    
+    // return an video tag of this file
+    // return '' if file is not an image
+    public function getVideo($link = false, array $htmlOptions=array ('encode'=>false)) {
+        if (!$this->fileExists() || !$this->isVideo()) {
+            return '';
+        }
+
+        if ($this->drive) {
+            return $this->googlePreview;
+        }
+        $video = '';
+        if (!Yii::app()->params->isPhoneGap) {
+            $video = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);  
+        } else {
+            $video = '';
+        }
+        
+        if (!$link) {
+            return $video;
+        }
+
+        return X2Html::link($video, $this->getPublicUrl());
     }
 
     public function getGooglePreview() {
@@ -493,8 +576,16 @@ class Media extends X2Model {
         } else {
             $name = $this->fileName;
         }
-        return CHtml::link(
-            $this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
+        if (!ResponseUtil::isCli()) {
+            return CHtml::link(
+                            $this->fileName,
+                            Yii::app()->controller->createUrl('/media/',
+                                    array('view' => $this->id)));
+        } else {
+            return CHtml::link($this->fileName,
+                            Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php'
+                                        : '/index.php') . '/media/media/view/' . $this->id);
+        }
     }
     
     //
@@ -587,7 +678,7 @@ class Media extends X2Model {
 
                 $media = X2Model::model('Media')->findByPk($matches[1]);
                 if (isset($media)) {
-                    $str = Yii::t('media', 'File:') . ' ';
+                    $str = $makeLink ? Yii::t('media', 'File:') . ' ' : '';
 
                     return self::getImageText($str, $makeLink, $makeImage, $media);
                 }
@@ -596,7 +687,7 @@ class Media extends X2Model {
             if (count($matches) == 2) {
                 $media = X2Model::model('Media')->findByAttributes(array('fileName' => $matches[1]));
                 if (isset($media)) {
-                    $str = Yii::t('media', 'Google Drive:') . ' ';
+                    $str = $makeLink ? Yii::t('media', 'Google Drive:') . ' ' : '';
 
                     return self::getImageText($str, $makeLink, $makeImage, $media);
                 }

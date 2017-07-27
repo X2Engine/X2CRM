@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -73,7 +72,8 @@ class ProfileController extends x2base {
                     'toggleEmailReport', 'deleteEmailReport', 'sendTestActivityReport',
                     'createProfileWidget','deleteSortableWidget','deleteTheme','previewTheme', 
                     'resetTours', 'disableTours', 'mobileIndex', 'mobileView', 'mobileActivity', 
-                    'mobileViewEvent', 'mobilePublisher'),
+                    'beginTwoFactorActivation', 'completeTwoFactorActivation', 'disableTwoFactor',
+                    'mobileViewEvent', 'mobileDeleteEvent','mobilePublisher', 'mobileCheckInPublisher'),
                 'users' => array('@'),
             ),
             array('deny', // deny all users
@@ -545,6 +545,31 @@ class ProfileController extends x2base {
         ));
     }
 
+    public function actionBeginTwoFactorActivation() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if (!$model->requestTwoFA(true))
+            throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
+    }
+
+    public function actionCompleteTwoFactorActivation($code) {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        if ($model->verifyTwoFACode($code)) {
+            $model->enableTwoFactor = 1;
+            $model->update(array('enableTwoFactor'));
+        } else {
+            throw new CHttpException(500, Yii::t('profile', 'Verification Failed!'));
+        }
+    }
+
+    public function actionDisableTwoFactor() {
+        if (!Yii::app()->request->isPostRequest) $this->denied();
+        $model = $this->loadModel(Yii::app()->user->getId());
+        $model->enableTwoFactor = 0;
+        $model->update(array('enableTwoFactor'));
+    }
+
     public function actionManageCredentials() {
         $this->pageTitle = Yii::t('app', 'Manage Credentials');
         Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() . '/js/manageCredentials.js');
@@ -558,7 +583,7 @@ class ProfileController extends x2base {
      * @throws CHttpException
      */
     public function actionCreateUpdateCredentials($id = null, $class = null) {
-
+        
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
         // Create or retrieve model:
@@ -599,10 +624,23 @@ class ProfileController extends x2base {
         }
 
         $model->scenario = $model->isNewRecord ? 'create' : 'update';
-
+        
         // Apply changes if any:
         if (isset($_POST['Credentials'])) {
-            $model->attributes = $_POST['Credentials'];
+            $formCredentials = $_POST['Credentials'];
+            if (isset($_FILES['keyFile']) && !empty($_FILES['keyFile'])) {
+                $temp = CUploadedFile::getInstanceByName('keyFile');
+                if (!empty($temp)) {
+                    $rawJsonKey = file_get_contents($temp->tempName);
+                    if (!AuxLib::isJson($rawJsonKey)) {
+                        throw new CHttpException(404, Yii::t('app', 'Sorry, this is not a json file.'));
+                    }
+                    //TODO: $rawJsonKey must be cleansed and hashed!
+                    $formCredentials['auth']['serviceAccountKeyFileContents'] = $rawJsonKey;                    
+                }
+
+            }
+            $model->attributes = $formCredentials;
             // Check to see if user has permission:
             if (!Yii::app()->user->checkAccess(
                 'CredentialsCreateUpdate', array('model' => $model))) {
@@ -650,8 +688,11 @@ class ProfileController extends x2base {
         $attributes = array('email', 'password', 'server', 'port', 'security');
         foreach ($attributes as $attr)
             ${$attr} = isset($_POST[$attr])? $_POST[$attr] : "";
+        $smtpNoValidate = false;
+        if (isset($_POST['smtpNoValidate']) && $_POST['smtpNoValidate'] === 'true')
+            $smtpNoValidate = true;
         $this->attachBehavior('EmailDeliveryBehavior', new EmailDeliveryBehavior);
-        $valid = $this->testUserCredentials($email, $password, $server, $port, $security);
+        $valid = $this->testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate);
         if (!$valid) echo "Failed";
     }
 
@@ -1602,6 +1643,14 @@ class ProfileController extends x2base {
 
         if (!Yii::app()->user->isGuest) {
             $activityFeedParams = $this->getActivityFeedViewParams($id, $publicProfile);
+            $user = $activityFeedParams['model']->user;
+            if(!$activityFeedParams['isMyProfile'] && Yii::app()->params->isAdmin &&
+                    isset($this->portlets['GoogleMaps']) && Yii::app()->settings->googleIntegration) {
+                $this->portlets['GoogleMaps']['params']['location'] = $user->address;
+                $this->portlets['GoogleMaps']['params']['activityLocations'] = $user->getMapLocations();
+                $this->portlets['GoogleMaps']['params']['defaultFilter'] = Locations::getDefaultUserTypes();
+                $this->portlets['GoogleMaps']['params']['modelParam'] = 'userId';
+            }
 
             $params = array(
                 'activityFeedParams' => $activityFeedParams,
@@ -1921,6 +1970,24 @@ class ProfileController extends x2base {
             }
             //$soc->attributes = $_POST['Social'];
             //die(var_dump($_POST['Social']));
+            $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
+            $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
+            $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
+	    if ($location && $isCheckIn) {
+		// TODO: add to eventtextformatter
+                // Only associate location when a checkin is requested
+                $post->locationId = $location->id;
+                $geocodedAddress = isset($geoCoords['address']) ? $geoCoords['address'] : $location->geocode();
+                if (!empty($geocodedAddress)) {
+                    $post->text .= '<br>' . Yii::t('app', 'Checking in at ') . $geocodedAddress;
+                }
+                $staticMap = $location->generateStaticMap();
+		if (!empty($staticMap)) {	 
+		    $post->text .= '<br><br>' . $staticMap;
+                }
+            }
+            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                $post->recordLinks = $decodedLinks;
             $post->user = Yii::app()->user->getName();
             $post->type = 'feed';
             $post->subtype = $_POST['subtype'];

@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -115,10 +114,16 @@ class EmailDeliveryBehavior extends CBehavior {
         $tokenizedHeader = str_replace(',',$delimiter,strtr($header,$tokens));
         $headerPieces = explode($delimiter,strtr($tokenizedHeader,$values));
         $headerArray = array();
-        foreach($headerPieces as $recipient){
+        $skipNext = false;
+        foreach($headerPieces as $i => $recipient){
             $recipient = trim($recipient);
             if(empty($recipient))
                 continue;
+            if ($skipNext) {
+                // if this piece was used to reconstruct on the last iteration
+                $skipNext = false;
+                continue;
+            }
             $matches = array();
             $emailValidator = new CEmailValidator;
 
@@ -132,12 +137,23 @@ class EmailDeliveryBehavior extends CBehavior {
 
                 // (with or without quotes)
                 if(count($matches) == 3 && $emailValidator->validateValue($matches[2])){  
-                    $headerArray[] = array($matches[1], $matches[2]);
+                    $headerArray[] = array(trim($matches[1], "' "), $matches[2]);
                 }else{
                     if (!$ignoreInvalidAddresses)
                         throw new CException(Yii::t('app', 'Invalid email address list.'));
                 }
             }else{
+                if ($i < count($headerPieces) - 1) {
+                    // Maybe quotes were left off? Check if the next piece is part of this address
+                    $testRecipient = trim($recipient) . ',' . $headerPieces[$i+1];
+                    if (preg_match('/^"?((?:\\\\"|[^"])*[^\s])"?\s*<(.+)>$/i', $testRecipient, $matches)){
+                        if(count($matches) == 3 && $emailValidator->validateValue($matches[2])) {
+                            $headerArray[] = array(trim($matches[1], "' "), $matches[2]);
+                            $skipNext = true;
+                            continue;
+                        }
+                    }
+                }
                 if (!$ignoreInvalidAddresses)
                     throw new CException(Yii::t('app', 'Invalid email address list:'.$recipient));
             }
@@ -234,7 +250,17 @@ class EmailDeliveryBehavior extends CBehavior {
         // writing would be to use its translated exception messages (brittle).
         if ($this->credentials) {
             try {
-                $phpMail->smtpConnect ();
+                $smtpOptions = array();
+                if(isset($this->credentials->auth->smtpNoValidate) && $this->credentials->auth->smtpNoValidate) {
+                    $smtpOptions = array(
+                        'ssl' => array(
+                            'verify_peer' => false,
+                            'verify_peer_name' => false,
+                            'allow_self_signed' => true,
+                        ),
+                    );
+                }
+                $phpMail->smtpConnect ($smtpOptions);
             } catch (phpmailerException $e) {
                 $escalated = new phpmailerException (
                     $e->getMessage (), PHPMailer::STOP_CRITICAL);
@@ -523,7 +549,7 @@ class EmailDeliveryBehavior extends CBehavior {
         $this->_userProfile = $profile;
     }
 
-    public function testUserCredentials($email, $password, $server, $port, $security) {
+    public function testUserCredentials($email, $password, $server, $port, $security, $smtpNoValidate) {
         require_once(
             realpath(Yii::app()->basePath.'/components/phpMailer/PHPMailerAutoload.php'));
         $phpMail = new PHPMailer(true);
@@ -535,9 +561,19 @@ class EmailDeliveryBehavior extends CBehavior {
         $phpMail->Host = $server;
         $phpMail->Port = $port;
         $phpMail->SMTPSecure = $security;
+        $smtpOptions = array();
+        if ($smtpNoValidate) {
+            $smtpOptions = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ),
+            );
+        }
 
         try {
-            $validCredentials = $phpMail->SmtpConnect();
+            $validCredentials = $phpMail->SmtpConnect($smtpOptions);
         } catch(phpmailerException $error) {
             $validCredentials = false;
         }

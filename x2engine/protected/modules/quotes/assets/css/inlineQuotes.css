@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/.product-select-button{padding:0 0 0 0 !important}#wide-quote-form{background:white;padding:0}#wide-quote-form .quotes-section-title,#wide-quote-form h2{padding:6px}#wide-quote-form .quotes-section-title{color:black;position:relative;top:6px;font-weight:bold;font-size:1.5em}#wide-quote-form h2{margin-top:0}#wide-quote-form .quote-detail-container-inner{padding:10px}#show-new-quote-button{margin-left:6px}#quote-save-button{float:right}#quotes-line-items-table{padding:6px}#wide-quote-form .widget-close-button{color:#222}.viewQuote hr{background-color:black;overflow:visible}.product-table th{background-color:inherit}.product-table tfoot{font-style:normal}.quote-detail-table{padding:0;width:100%}.quote-detail-table th{background-color:inherit;color:#666;font-weight:normal;font-size:0.8em;padding:5px 0 0 0}.quote-detail-table td{font-weight:bold;padding:0}.quote-create-table{width:100%;padding:0}.quote-create-table th{background-color:inherit;font-weight:bold;font-size:0.8em;padding:5px 0 0 0}.quote-detail-table td{padding:0}.items td{border-top:none;border-bottom:none}

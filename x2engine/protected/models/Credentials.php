@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -147,8 +146,12 @@ class Credentials extends CActiveRecord {
         'SendgridAccount',
         'SESAccount',
         'YahooEmailAccount',
+        'RackspaceEmailAccount',
+        'TwilioAccount',
         'TwitterApp',
         'GoogleProject',
+        'JasperServer',
+        'X2HubConnector',
     );
 
 	/**
@@ -161,6 +164,7 @@ class Credentials extends CActiveRecord {
         'Office365EmailAccount',
         'OutlookEmailAccount',
         'YahooEmailAccount',
+        'RackspaceEmailAccount',
     );
 
     public function afterDelete () {
@@ -204,7 +208,7 @@ class Credentials extends CActiveRecord {
 
     public function afterSave () {
         if ($this->modelClass && 
-            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject'))) {
+            in_array ($this->modelClass, array ('TwitterApp', 'GoogleProject', 'JasperServer', 'X2HubConnector'))) {
 
             $modelClass = $this->modelClass;
             $prop = $modelClass::getAdminProperty ();
@@ -328,9 +332,15 @@ class Credentials extends CActiveRecord {
                 'SendgridAccount',
                 'SESAccount',
                 'YahooEmailAccount',
+                'RackspaceEmailAccount',
+            ),
+			'sms' => array(
+                'TwilioAccount',
             ),
             'twitter' => array ('TwitterApp'),
             'googleProject' => array ('GoogleProject'),
+            'jasperServer' => array ('JasperServer'),
+            'x2HubConnector' => array ('X2HubConnector'),
 //			'google' => array('GMailAccount'),
 		);
 	}
@@ -350,8 +360,12 @@ class Credentials extends CActiveRecord {
 			'SendgridAccount' => array('email'),
 			'SESAccount' => array('email'),
 			'YahooEmailAccount' => array('email'),
+            'RackspaceEmailAccount' => array('email'),
+			'TwilioAccount' => array('sms'),
             'TwitterApp' => array ('twitter'),
             'GoogleProject' => array ('googleProject'),
+            'JasperServer' => array ('jasperServer'),
+            'X2HubConnector' => array ('x2HubConnector'),
 		);
 	}
 
@@ -428,8 +442,11 @@ class Credentials extends CActiveRecord {
 	public function getServiceLabels(){
 		return array(
 			'email' => Yii::t('app', 'Email Account'),
+			'sms' => Yii::t('app', 'SMS Account'),
 			'twitter' => Yii::t('app', 'Twitter App'),
 			'googleProject' => Yii::t('app', 'Google Project'),
+			'jasperServer' => Yii::t('app', 'Jasper Server'),
+			'x2HubConnector' => Yii::t('app', 'X2Hub Connector'),
 			// 'google' => Yii::t('app','Google Account')
 		);
 	}
@@ -521,7 +538,7 @@ class Credentials extends CActiveRecord {
 		if($model === null || $model->$name == null){
 			// Figure out which one is default since it hasn't been set yet
 			$defaultCreds = $staticModel->getDefaultCredentials();
-			if($type == 'email')
+			if($type == 'email' || $type == 'sms' || $type == 'x2HubConnector')
 				$selectedCredentials = self::LEGACY_ID;
 			if(array_key_exists($defaultUserId, $defaultCreds))
 				if(array_key_exists($type, $defaultCreds[$defaultUserId]))
@@ -532,10 +549,14 @@ class Credentials extends CActiveRecord {
 		}
 		// Compose options for the selector
 		foreach($credRecords as $cred) {
+			if ($imapOnly && $type == 'email' && $cred->auth->disableInbox) continue;
 			$credentials[$cred->id] = $cred->name;
 			if($type == 'email') {
 				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
                     ' : "'.$cred->auth->senderName.'" <'.$cred->auth->email.'>',50);
+            } else if ($type == 'sms') {
+				$credentials[$cred->id] = Formatter::truncateText($credentials[$cred->id].
+                    ' : "'.$cred->auth->from.'"',50);
             }
 		}
 		if($type == 'email' && !$excludeLegacy) {// Legacy email delivery method(s)

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 ?>
 <div class='webform-tab' id='generate-tab' data-title='<?php echo Yii::t('marketing','Generate Records'); ?>' >
@@ -161,5 +160,23 @@ if($this->edition == 'pro'):
         'id' => 'redirect-url'
     ))
     ?>
+</div>
+<div class="row webform-tab-content" id="fingerprint-detection-input-container" data-tab='advanced-tab'>
+    <h4>
+        <?php echo Yii::t('marketing','X2Identity duplicate detection') .':'; ?>
+    </h4>
+    <p class="fieldhelp" style="width: 100%">
+        <?php echo Yii::t('marketing','Configure whether duplicate detection will be performed '.
+            'using the lead\'s fingerprint. This setting should be disabled for any form used '.
+            'from a single device to capture leads.'); ?>
+    </p>
+    <div class="row">
+        <label class='left-label' for='fingerprintDetection'>
+            <?php echo Yii::t('app', 'Enable duplicate detection by fingerprint: '); ?>
+        </label>
+        <input id='fingerprint-detection-checkbox' type='checkbox'  name='fingerprintDetection'>
+    </div>
+
+    <br/>
 </div>
 <?php endif;  ?>

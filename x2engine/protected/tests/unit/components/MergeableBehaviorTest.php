@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.modules.contacts.models.*');
@@ -180,6 +179,99 @@ class MergeableBehaviorTest extends X2DbTestCase {
                                 'associationType = "contacts" AND associationId = :id',
                                 array(':id' => $model->id))
                         ->queryScalar());
+    }
+
+    public function testMergeWorkflowActions() {
+        $workflow = new Workflow;
+        $workflow->name = 'Test Workflow';
+        $workflow->save();
+        $workflowStage = new WorkflowStage;
+        $workflowStage->workflowId = $workflow->id;
+        $workflowStage->save();
+
+        $contact = $this->contact('testAnyone');
+        $action = new Actions;
+        $action->actionDescription = "TEST1";
+        $action->type = 'workflow';
+        $action->workflowId = $workflow->id;
+        $action->stageNumber = $workflowStage->id;
+        $action->visibility = 1;
+        $action->associationType = "contacts";
+        $action->associationId = $contact->id;
+        $action->save();
+
+        $model = new Contacts;
+        foreach ($contact->attributes as $key => $val) {
+            if ($key != 'id' && $key != 'nameId') {
+                $model->$key = $val;
+            }
+        }
+        $model->save();
+
+        $now = time();
+        $action = new Actions;
+        $action->actionDescription = "TEST2";
+        $action->type = 'workflow';
+        $action->workflowId = $workflow->id;
+        $action->stageNumber = $workflowStage->id;
+        $action->complete = 'Yes';
+        $action->completedBy = 'admin';
+        $action->completeDate = $now;
+        $action->visibility = 1;
+        $action->associationType = "contacts";
+        $action->associationId = $model->id;
+        $action->save();
+
+        $this->assertEquals(2,
+            Yii::app()->db->createCommand()->select('COUNT(*)')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = "contacts" AND workflowId = :id AND stageNumber = :stage',
+                    array(
+                        ':id' => $workflow->id,
+                        ':stage' => $workflowStage->id,
+                    ))
+                ->queryScalar());
+
+        $mergeData = $contact->mergeWorkflowActions($model, true);
+
+        $this->assertEquals(1,
+            Yii::app()->db->createCommand()->select('COUNT(*)')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = "contacts" AND workflowId = :id AND stageNumber = :stage',
+                    array(
+                        ':id' => $workflow->id,
+                        ':stage' => $workflowStage->id,
+                    ))
+                ->queryScalar());
+        $data = Yii::app()->db->createCommand()
+            ->select('t.text, a.complete, a.completedBy, a.completeDate')
+            ->from('x2_actions a')
+            ->join('x2_action_text t', 't.actionId = a.id')
+            ->where(
+                'associationType = "contacts" AND workflowId = :id AND stageNumber = :stage',
+                array(
+                    ':id' => $workflow->id,
+                    ':stage' => $workflowStage->id,
+                ))
+            ->queryRow();
+        $this->assertEquals('TEST1 - TEST2', $data['text']);
+        $this->assertEquals('Yes', $data['complete']);
+        $this->assertEquals('admin', $data['completedBy']);
+        $this->assertEquals($now, $data['completeDate']);
+
+        $contact->unmergeWorkflowActions($mergeData);
+        $this->assertEquals(2,
+            Yii::app()->db->createCommand()->select('COUNT(*)')
+                ->from('x2_actions')
+                ->where(
+                    'associationType = "contacts" AND workflowId = :id AND stageNumber = :stage',
+                    array(
+                        ':id' => $workflow->id,
+                        ':stage' => $workflowStage->id,
+                    ))
+                ->queryScalar());
     }
 
     public function testMergeEvents() {

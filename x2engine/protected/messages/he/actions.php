@@ -4,7 +4,6 @@
   'Reminder' => 'תזכורת',
   'Complete Date' => 'הושלמה ביום',
   'Date Completed' => 'הושלמה ביום',
-  'All Day' => 'כל היום',
   'Complete + New Action' => 'השלם ומוסיפים פעולה חדשה',
   'Uncomplete' => 'לעבד לא גמור',
   'Overdue' => 'מאחר',
@@ -120,4 +119,7 @@
   'Event Subtype' => 'סוג משנה אירוע',
   'Event Status' => 'סטטוס אירוע',
   'Calendar Color' => 'צבע לוח שנה',
+  'Enter email addresses, one per line' => 'זן כתובות דוא&quot;ל, אחת בכל שורה',
+  'Add to Calendar' => 'הוסף ליומן',
+  'By default, the Contact who sent the email will be associated.' => 'כברירת מחדל, איש הקשר ששלח את האימייל ישויך.',
 );

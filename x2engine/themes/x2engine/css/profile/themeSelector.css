@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/#theme-picker{margin-top:10px;max-height:231px;overflow-y:auto}#theme-picker .scheme-container{padding:2px;margin:5px;display:inline-block;text-align:center;border-radius:3px;border:1px solid transparent;cursor:pointer}#theme-picker .scheme-container-inner{padding:10px;padding-top:5px;display:inline-block;text-align:center;border-radius:3px}#theme-picker .scheme-container-inner>div:first-child{text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:107px}#theme-picker .scheme-container:hover{border:1px solid grey}#theme-picker .scheme-container.active{border:1px solid black}#theme-picker .scheme-container #edit{float:right;opacity:0}#theme-picker .scheme-container:hover #edit{opacity:1}#theme-picker .scheme-container #name{float:left;display:inline-block;font-weight:bold;margin-bottom:3px}#theme-picker .scheme-container #uploadedBy{float:right;font-size:90%}#theme-picker .scheme-color{width:35px;height:25px;display:inline-block}#theme-picker .scheme-color[name="highlight2"]{border-top-right-radius:2px;border-bottom-right-radius:2px}#theme-picker .scheme-color[name="background"]{border-top-left-radius:2px;border-bottom-left-radius:2px}#theme-picker .hidden{display:none}#theme-picker .scheme-container-inner{background:white;color:black}#theme-picker .scheme-container[name="Default"] .scheme-color[name="content"]{background:white}#theme-picker .scheme-container[name="Default"] .scheme-color[name="highlight1"]{background:#c5c5c5}#theme-picker .scheme-container[name="Default"] .scheme-color[name="highlight2"]{background:#01b701}#theme-picker .scheme-container[name="Default"] .scheme-color[name="link"]{background:#004baf}

@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => 'Auto-log inkomende e-mails',
   'From' => 'Van',
   'Copy to Sent Folder' => 'Kopiëren naar map Verzonden',
-  'Disabled' => 'invalide',
   'Failed to associate message "{subject}" with {type} {model}' => 'Mislukt bericht associëren &quot; {subject} &quot; met {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Message &quot; {subject} &quot; reeds in verband met {type} {model}',
   'Disable Quota Operations' => 'Uitschakelen Quota Operations',
+  'Manage your application credentials' => 'Beheren van de applicatie referenties',
+  'Associate attachment with related record' => 'Associate bevestiging met gerelateerde record',
+  'Attachment successfully associated' => 'Attachment succes geassocieerd',
+  'Association failed: the attachment could not be saved' => 'Vereniging mislukt: de bijlage kon niet worden opgeslagen',
+  'Association failed: there are no related records' => 'Vereniging mislukt: er zijn geen gerelateerde records',
 );

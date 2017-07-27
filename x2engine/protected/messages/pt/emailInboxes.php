@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => 'Auto-log-mails de entrada',
   'From' => 'A partir da',
   'Copy to Sent Folder' => 'Copiar para pasta de itens enviados',
-  'Disabled' => 'Desativado',
   'Failed to associate message "{subject}" with {type} {model}' => 'Falha ao associar mensagem &quot; {subject} &quot; com {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => 'Mensagem &quot; {subject} &quot; já associada a {type} {model}',
   'Disable Quota Operations' => 'Desativar Operações de cota',
+  'Manage your application credentials' => 'Gerir as suas credenciais de aplicativos',
+  'Associate attachment with related record' => 'apego associado com registro relacionado',
+  'Attachment successfully associated' => 'Anexo associado com sucesso',
+  'Association failed: the attachment could not be saved' => 'Associação falhou: o anexo não poderia ser salvo',
+  'Association failed: there are no related records' => 'Associação falhou: não há registros relacionados',
 );

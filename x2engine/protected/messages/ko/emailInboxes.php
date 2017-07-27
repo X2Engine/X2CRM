@@ -61,8 +61,12 @@
   'Auto-log inbound emails' => '인바운드 이메일을 자동 로그',
   'From' => '에서',
   'Copy to Sent Folder' => '보낸 폴더로 복사',
-  'Disabled' => '장애인',
   'Failed to associate message "{subject}" with {type} {model}' => '&quot;메시지를 연결하는 데 실패 {subject} 에&quot; {type} {model}',
   'Message "{subject}" already associated with {type} {model}' => '메시지 &quot; {subject} &quot;이미와 관련된 {type} {model}',
   'Disable Quota Operations' => '할당량 작업을 사용하지 않도록 설정',
+  'Manage your application credentials' => '응용 프로그램 자격 증명 관리',
+  'Associate attachment with related record' => '관련 기록과 연관 첨부',
+  'Attachment successfully associated' => '첨부 파일이 성공적으로 연결된',
+  'Association failed: the attachment could not be saved' => '협회 실패 : 첨부 파일을 저장할 수 없습니다',
+  'Association failed: there are no related records' => '협회 실패 : 어떤 관련 기록이없는',
 );

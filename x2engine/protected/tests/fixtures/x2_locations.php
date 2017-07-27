@@ -1,0 +1,87 @@
+<?php
+
+
+
+return array(
+    'locationMobileIdle' => array(
+        'id' => 1,
+        'recordId' => 1,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' =>  'mobileIdle',
+        'ipAddress' => '10.3.3.1',
+        'createDate' => 1234,
+    ),
+    'locationMobileActivityPost' => array(
+        'id' => 2,
+        'recordId' => 2,
+        'recordType' => 'mobileActivityPost',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' =>  'mobileActivityPost',
+        'ipAddress' => '10.0.0.10',
+        'createDate' => 124,
+    ),
+    'locationLogin' => array(
+        'id' => 3,
+        'recordId' => 3,
+        'recordType' => 'login',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' =>  'login',
+        'ipAddress' => '10.0.0.1',
+        'createDate' => 1,
+    ),
+    /*'locationNullType' => array(
+        'id' => 4,
+        'recordId' => 0,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => NULL,
+        'ipAddress' => '10.0.0.2',
+        'createDate' => 0,
+    ),
+    'locationNullIpAddress' => array(
+        'id' => 5,
+        'recordId' => 0,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => '',
+        'ipAddress' => NULL,
+        'createDate' => 0,
+    ),
+    'locationNullTypeAndIpAddress' => array(
+        'id' => 6,
+        'recordId' => 0,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => NULL,
+        'ipAddress' => NULL,
+        'createDate' => 0,
+    ),
+    'locationZeroRecordId' => array(
+        'id' => 8,
+        'recordId' => 0,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => NULL,
+        'ipAddress' => '10.0.0.6',
+        'createDate' => 0,
+    ),
+    'locationZeroCreateDate' => array(
+        'id' => 9,
+        'recordId' => 0,
+        'recordType' => 'mobileIdle',
+        'lat' => 36.9914,
+        'lon' => 122.0609,
+        'type' => NULL,
+        'ipAddress' => '10.0.0.7',
+        'createDate' => 0,
+    ),*/
+);
+?>

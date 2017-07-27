@@ -57,4 +57,10 @@
   'Rows & Columns' => 'Filas y Columnas',
   '{type} Report' => '{type} Reportar',
   'Rows and Columns' => 'Filas y Columnas',
+  'Report Path:' => 'Ruta de reporte:',
+  'External Reports' => 'Informes externos',
+  'Save Changes' => 'Guardar cambios',
+  'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => 'Por favor proporcionar la ruta completa al informe sobre el Jasper Server, por ejemplo, / Informes / MyReport. Esto se puede encontrar haciendo clic derecho sobre su informe en el servidor de Jasper y seleccionando &quot;Propiedades&quot;.',
+  'Failed to load external report. Please check your Jasper Server credential details.' => 'No se pudo cargar informe externo. Se recomienda consultar los detalles de credenciales de servidor de Jasper.',
+  'Create Contact List' => 'Crear lista de contactos',
 );

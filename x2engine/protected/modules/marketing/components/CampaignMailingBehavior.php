@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.modules.marketing.models.*');
@@ -216,8 +215,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 if($media){
                     if($file = $media->getPath()){
                         if(file_exists($file)){ // check file exists
-                            if($url = $media->getFullUrl()){
-                                $emailBody .= CHtml::link($media->fileName, $media->fullUrl).
+                            if ($media->getPublicUrl()) {
+                                $emailBody .= CHtml::link($media->fileName, $media->getPublicUrl()).
                                     "<br>\n";
                             }
                         }
@@ -239,7 +238,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
 
             // Replace links with tracking links
             $url = Yii::app()->controller->createAbsoluteUrl (
-                'click', array ('uid' => $uniqueId, 'type' => 'click'));
+                '/marketing/marketing/click', array ('uid' => $uniqueId, 'type' => 'click'));
             $emailBody = StringUtil::pregReplaceCallback (
                 '/(<a[^>]*href=")([^"]*)("[^>]*>)/', 
                 function (array $matches) use ($url) {
@@ -355,6 +354,23 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                     ->queryAll(true,array(':listId'=>$listId));
     }
 
+    /**
+     * Similar to deliverableItems but only retrieves count
+     */
+    public static function deliverableItemsCount($listId,$unsent = false) {
+        $where = ' WHERE 
+            i.listId=:listId
+            AND i.unsubscribed=0
+            AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
+            AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
+        if($unsent)
+            $where .= ' AND i.sent=0';
+        return Yii::app()->db->createCommand('SELECT COUNT(*)
+            FROM x2_list_items AS i
+            LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
+                ->queryScalar(array(':listId'=>$listId));
+    }
+
     public static function recordEmailSent(Campaign $campaign, Contacts $contact){
         $action = new Actions;
         // Disable the unsightly notifications for loads of emails:
@@ -369,10 +385,30 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $action->createDate = $now;
         $action->completeDate = $now;
         $action->complete = 'Yes';
-        $action->actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"
+        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"
                 .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $contact)."\n\n".Docs::replaceVariables($campaign->content, $contact);
-        if(!$action->save())
-            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action->errors));
+
+        // Prepare action attributes for direct insertion to skip ActiveRecord overhead
+        $attr = $action->attributes;
+        $attachedAttr = array_merge(array('actionDescription'), $action->getMetaDataFieldNames());
+        $attr = array_diff_assoc($attr, array_fill_keys($attachedAttr, ''));
+        $count = Yii::app()->db->createCommand()
+            ->insert('x2_actions', $attr);
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
+        $actionId = Yii::app()->db->schema->commandBuilder
+            ->getLastInsertId('x2_actions');
+        $count = Yii::app()->db->createCommand()
+            ->insert('x2_action_text', array('actionId' => $actionId, 'text' => $actionDescription));
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
+
+        // Manually trigger since hooks won't be called
+        $contact->lastActivity = time();
+        $contact->update(array('lastActivity'));
+        X2Flow::trigger('RecordUpdateTrigger', array(
+            'model' => $contact,
+        ));
     }
 
     /////////////////////////////////
@@ -615,7 +651,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         // Update the last activity on the campaign
         $this->campaign->lastActivity = time();
         // Finally, if the campaign is totally done, mark as complete.
-        if(count(self::deliverableItems($this->campaign->list->id, true)) == 0) {
+        if(self::deliverableItemsCount($this->campaign->list->id, true) == 0) {
             $this->status['message'] = Yii::t('marketing','All emails sent.');
             $this->campaign->active = 0;
             $this->campaign->complete = 1;
@@ -652,6 +688,21 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $campaigns = Campaign::model()->findAllByAttributes(
                     array('complete' => 0, 'active' => 1, 'type' => 'Email'), 'launchdate > 0 AND launchdate < :time', array(':time' => time()));
             foreach($campaigns as $campaign){
+                if ($campaign->list->type != 'campaign') {
+                    // A campaign with a launch date but whose list is not yet a campaign type,
+                    // has not yet been launched.
+                    $newList = $campaign->list->staticDuplicate();
+                    if(!isset($newList) || empty($campaign->subject))
+                        continue;
+                    $newList->type = 'campaign';
+                    if($newList->save()) {
+                        $campaign->list = $newList;
+                        $campaign->listId = $newList->nameId;
+                        $campaign->update('listId');
+                    } else {
+                        continue;
+                    }
+                }
                 try{
                     list($sent, $errors) = self::campaignMailing($campaign);
                 }catch(CampaignMailingException $e){

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -54,10 +53,11 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
      * Replace credId token with cred id from x2_credentials-local.
      */
     public static function setUpBeforeClass () {
-        $file = 'fixtures/x2_flows.X2FlowRecordEmailTestTemplate.php';
+        $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
+        $file = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowRecordEmailTestTemplate.php';
         $content = file_get_contents ($file);
         if (self::LIVE_DELIVERY) {
-            $localCredentialFixture = require ('fixtures/x2_credentials-local.php');
+            $localCredentialFixture = require ($fixtureDir.DIRECTORY_SEPARATOR.'x2_credentials-local.php');
             $credId = $localCredentialFixture['liveDeliveryTest']['id'];
         } else {
             $credId = -1;
@@ -65,7 +65,7 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
 
         $content = preg_replace (
             '/EMAIL_CREDENTIAL_ID/', $credId, $content);
-        file_put_contents ('fixtures/x2_flows.X2FlowRecordEmailTest.php', $content);
+        file_put_contents ($fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowRecordEmailTest.php', $content);
 
         if (!YII_UNIT_TESTING || !X2_DEBUG_EMAIL) {
             X2_TEST_DEBUG_LEVEL > 1 && println (

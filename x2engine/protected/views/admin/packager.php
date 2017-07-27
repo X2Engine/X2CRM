@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,15 +29,15 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packager.css');
-
+Tours::loadTips('admin.packager');
 ?>
 
 <div class="page-title"><h2><?php 
@@ -177,12 +176,12 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
     ), 'includeContacts').'</div>';
     echo '</div><br />';
 
+    echo '<div id="export-loading"></div><br />';
     echo '<br /><div id="status-box"></div><br />';
     echo CHtml::button(Yii::t('admin', 'Export'), array(
         'class' => 'x2-button',
         'id' => 'export-button'
     ));
-    echo '<div id="export-loading"></div>';
     echo CHtml::button(Yii::t('admin', 'Download'), array(
         'class' => 'x2-button',
         'id' => 'download-link',
@@ -211,7 +210,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                 "selectedRoles": collectExportables("roles"),
                 "selectedMedia": collectExportables("media"),
                 "selectedThemes": collectExportables("themes"),
-                "includeContacts": $("#includeContacts").attr("checked")=="checked"?"true":"false",
+                "includeContacts": $("#includeContacts").is(":checked") ? "true" : "false",
                 "packageName": $("#packageName").val(),
                 "packageDescription": $("#packageDescription").val()
             }
@@ -223,7 +222,8 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                     exportComponents["selectedDocs"].length == 0 &&
                     exportComponents["selectedMedia"].length == 0 &&
                     exportComponents["selectedRoles"].length == 0 &&
-                    exportComponents["selectedThemes"].length == 0) {
+                    exportComponents["selectedThemes"].length == 0 &&
+                    exportComponents["includeContacts"] == "false") {
                 alert("'.CHtml::encode (Yii::t('admin', 'Nothing selected to package!')).'");
                 return false;
             }
@@ -256,6 +256,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                 type: "post",
                 data: exportComponents,
                 success: function(data) {
+                    auxlib.containerLoadingStop($("#export-loading"));
                     data = JSON.parse(data);
                     if (data[0] == "success") {
                         $("#status-box").append ("<br />'.Yii::t('admin', 'Export complete').'");
@@ -266,7 +267,6 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/packa
                         $("#status-box").css ("color", "red");
                         $("#export-button").show();
                     }
-                    $("#export-loading").children().remove();
                 }
             });
         });

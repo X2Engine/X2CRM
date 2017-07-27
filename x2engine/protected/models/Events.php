@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -43,6 +42,8 @@
 class Events extends X2ActiveRecord {
 
     public $photo;
+    public $audio;
+    public $video;
 
     /**
      * Returns the static model of the specified AR class.
@@ -64,6 +65,8 @@ class Events extends X2ActiveRecord {
             parent::attributeNames (), 
             array (
                 'photo',
+                'audio',
+                'video'
             )
         );
     }
@@ -83,6 +86,7 @@ class Events extends X2ActiveRecord {
             // only use this if $this->type === 'media'
             'legacyMedia' => array (
                 self::HAS_ONE, 'Media', array ('id' => 'associationId')),
+            'location' => array(self::BELONGS_TO, 'Locations', 'locationId'),
         ));
         return $relationships;
     }
@@ -106,8 +110,83 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    public function behaviors(){
+        $behaviors = array(
+            'JSONFieldsBehavior' => array (
+                'class' => 'application.components.behaviors.JSONFieldsBehavior',
+                'transformAttributes' => array (
+                    'recordLinks',
+                ),
+            ),
+        );
+        return $behaviors;
+    }
+
+    public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
+
+            // save related photo record
+            $transaction = Yii::app()->db->beginTransaction ();
+            try {
+                // save the event
+                $ret = parent::save ($runValidation, $attributes);
+                if (!$ret) {
+                    throw new CException (implode (';', $this->getAllErrorMessages ()));
+                }
+                //save the raw data to a file
+                $filename = md5(uniqid(rand(), true)) . '.png';
+                $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    'uploads',
+                    'protected',
+                    'media',
+                    $profile->username
+                ));
+                // if user folder doesn't exit, try to create it
+                if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+                    if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                        throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+                    }
+                }
+
+                // add media record for file                
+                $media = new Media;
+                $media->setAttributes (array (
+                    'fileName' => $filename,
+                    'mimetype' => 'image/png',
+                ), false);
+                $media->createDate = time();
+                $media->lastUpdated = time();
+                $media->uploadedBy = $profile->username;
+                $media->associationType = 'User';
+                $media->associationId = $profile->id;
+                $media->resolveNameConflicts();
+                $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+                $associatedMedia->create();
+                $associatedMedia->setContents($attachmentData);                
+                if (!$media->save () && !$associatedMedia->exists) {
+                    throw new CException (implode (';', $media->getAllErrorMessages ()));
+                }
+
+                // relate file to event
+                $join = new RelationshipsJoin ('insert', 'x2_events_to_media');
+                $join->eventsId = $this->id;
+                $join->mediaId = $media->id;
+                if (!$join->save ()) {
+                    throw new CException (implode (';', $join->getAllErrorMessages ()));
+                }
+
+                $transaction->commit ();
+                return $ret;
+            } catch (CException $e) {
+                $transaction->rollback ();
+                return false;
+            }
+
+    }
+    
     public function save ($runValidation=true, $attributes=null) {
-        if ($this->photo) {
+        if ($this->photo || $this->audio || $this->video) {
 
             // save related photo record
             $transaction = Yii::app()->db->beginTransaction ();
@@ -120,17 +199,35 @@ class Events extends X2ActiveRecord {
 
                 // add media record for file
                 $media = new Media; 
-                $media->setAttributes (array (
-                    'fileName' => $this->photo->getName (),
-                    'mimetype' => $this->photo->type,
-                ), false);
+                if ($this->photo) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->photo->getName (),
+                        'mimetype' => $this->photo->type,
+                    ), false);
+                } else if ($this->audio) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->audio->getName (),
+                        'mimetype' => $this->audio->type,
+                    ), false);                    
+                } else if ($this->video) {
+                    $media->setAttributes (array (
+                        'fileName' => $this->video->getName (),
+                        'mimetype' => $this->video->type,
+                    ), false);                     
+                }
                 $media->resolveNameConflicts ();
                 if (!$media->save ()) {
                     throw new CException (implode (';', $media->getAllErrorMessages ()));
                 }
 
                 // save the file
-                $tempName = $this->photo->getTempName ();
+                if ($this->photo) {
+                    $tempName = $this->photo->getTempName ();
+                } else if ($this->audio) {
+                    $tempName = $this->audio->getTempName ();
+                } else if ($this->video) {
+                    $tempName = $this->video->getTempName ();
+                }
                 $username = Yii::app()->user->getName ();
                 if (!FileUtil::ccopy(
                     $tempName, 
@@ -263,6 +360,14 @@ class Events extends X2ActiveRecord {
     }
 
     public function getText(array $params = array(), array $htmlOptions = array()) {
+        $mediaId = Yii::app()->db->createCommand()
+                ->select('mediaId')
+                ->from('x2_events_to_media')
+                ->where('eventsId=:eventsId', array(':eventsId' => $this->id))
+                ->queryScalar();
+        $params['media'] = Media::model()->findByAttributes(array('id' => $mediaId));
+        $params['recipient'] = User::model()->findByAttributes(array('id' => $this->associationId));
+        $params['profileRecipient'] = Profile::model()->findByPk($this->associationId);
         return EventTextFormatter::getText($this, $params, $htmlOptions);
     }
 
@@ -545,32 +650,34 @@ class Events extends X2ActiveRecord {
         $condition .= ' AND ('.$accessCriteria->condition.')';
 
         if (!isset($_SESSION['lastEventId'])) {
-
             $lastId = Yii::app()->db->createCommand()
                 ->select('id')
                 ->from('x2_events')
                 ->where($condition, array_merge ($params, $accessCriteria->params))
                 ->order('timestamp DESC, id DESC')
                 ->limit(1)
-                ->queryScalar();
-
+                ->queryScalar();                          
             $_SESSION['lastEventId'] = $lastId;
         } else {
             $lastId = $_SESSION['lastEventId'];
         }
-        $lastTimestamp = Yii::app()->db->createCommand()
-            ->select('MAX(timestamp)')
-            ->from('x2_events')
-            ->where($condition, array_merge ($params, $accessCriteria->params))
-            ->order('timestamp DESC, id DESC')
-            ->limit(1)
-            ->group('id')
-            ->queryScalar();
+            $lastTimestamp = Yii::app()->db->createCommand()
+                ->select('MAX(timestamp)')
+                ->from('x2_events')
+                ->where($condition, array_merge ($params, $accessCriteria->params))
+                ->order('timestamp DESC, id DESC')
+                ->limit(1)
+                ->group('id')
+                ->queryScalar();            
         if (empty($lastTimestamp)) {
             $lastTimestamp = 0;
         }
         if (isset($_SESSION['lastEventId'])) {
-            $condition.=" AND id <= :lastEventId AND sticky = 0";
+            if (!Yii::app()->params->isMobileApp) {
+                $condition.=" AND id <= :lastEventId AND sticky = 0";
+            } else {
+                $condition.=" AND id <= :lastEventId";
+            } 
             $params[':lastEventId'] = $_SESSION['lastEventId'];
         }
 
@@ -580,18 +687,18 @@ class Events extends X2ActiveRecord {
         if (Yii::app()->params->isPhoneGap) {
             $paginationClass = 'MobilePagination';
         }
-         
+
         $dataProvider = new CActiveDataProvider('Events', array(
-            'criteria' => array(
+                'criteria' => array(
                 'condition' => $condition,
-                'order' => 'timestamp DESC, id DESC',
+                'order' => 'sticky DESC, timestamp DESC, id DESC',
                 'params' => array_merge ($params, $accessCriteria->params),
-            ),
+             ),
             'pagination' => array(
                 'class' => $paginationClass,
                 'pageSize' => 20
             ),
-        ));
+        ));            
 
         return array(
             'dataProvider' => $dataProvider,
@@ -705,7 +812,7 @@ class Events extends X2ActiveRecord {
             $prefix . 'username' => $user,
             $prefix . 'maxTimestamp' => time(),
         );
-        $parameters = array('order' => 'timestamp DESC, id DESC');
+        $parameters = array('order' => 'sticky DESC, timestamp DESC, id DESC');        
         if (!is_null($limit) && is_numeric($limit)) {
             $parameters['limit'] = $limit;
         }
@@ -891,8 +998,8 @@ class Events extends X2ActiveRecord {
                 }
             }
             $img = $avatar;
-            if (file_exists(Yii::app()->theme->getBasePath() . '/images/eventIcons/' . $typeFile . '.png')) {
-                $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/' . Yii::app()->theme->getName() . '/images/eventIcons/' . $typeFile . '.png';
+            if (file_exists(Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png')) {
+                $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png';
                 $img = CHtml::image($imgFile, '',
                                 array(
                             'style' => 'width:45px;height:45px;float:left;margin-right:5px;',
@@ -964,4 +1071,21 @@ class Events extends X2ActiveRecord {
         );
     }
 
+    /**
+     * Render a list of links to associated records
+     */
+    public function renderRecordLinks($htmlOptions = array()) {
+        $modelLinks = array();
+        if (!empty($this->recordLinks) && is_array($this->recordLinks)) {
+            foreach ($this->recordLinks as $link) {
+                if (isset($link[0]) && isset($link[1])) {
+                    $model = X2Model::model($link[0])->findByPk($link[1]);
+                    if ($model) {
+                        $modelLinks[] = array('content' => $model->getLink());
+                    }
+                }
+            }
+            return X2Html::ul($modelLinks, $htmlOptions);
+        }
+    }
 }

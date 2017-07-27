@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -362,6 +361,36 @@ class EmailInboxesController extends x2base {
     }
 
     /**
+     * Saves a specific attachment as a Media object, creating relationships
+     * to the associated records
+     * @param int $uid Unique ID of the message
+     * @param float $part Multipart part number
+     */
+    public function actionAssociateAttachment($uid, $part) {
+        $mailbox = $this->getSelectedMailbox ();
+        if (!$this->checkPermissions ($mailbox, 'view')) $this->denied ();
+        $message = $mailbox->fetchMessage ($uid);
+        $contacts = $message->getAssociatedContacts (true);
+        $type = 'error';
+        if (!empty($contacts)) {
+            list($mimeType, $filename, $size, $attachment, $encoding) = $this->fetchAttachment ($uid, $part, false, true);
+            if ($this->associateAttachment($contacts, $filename, $attachment)) {
+                $result = Yii::t('emailInboxes', 'Attachment successfully associated');
+                $type = 'success';
+            } else {
+                $result = Yii::t('emailInboxes', 'Association failed: the attachment could not be saved');
+            }
+        } else {
+            $result = Yii::t('emailInboxes', 'Association failed: there are no related records');
+        }
+
+        echo CJSON::encode(array(
+            'message' => $result,
+            'type' => $type,
+        ));
+    }
+
+    /**
      * View an inline attachment
      * @param int $id Unique ID of the message
      * @param float $part Multipart part number
@@ -434,6 +463,13 @@ class EmailInboxesController extends x2base {
                 $this->_selectedMailbox = $inboxModel->myEmailInbox;
             } else {
                 $this->_selectedMailbox = null;
+            }
+
+            if ($this->_selectedMailbox !== null && $this->_selectedMailbox->credentials && $this->_selectedMailbox->credentials->auth->disableInbox) {
+                $this->render ('badCredentials', array(
+                    'error' => Yii::t('app', 'Inbox usage is disabled for these credentials. Please update the settings on the "Manage Apps" page to enable inbox access.'),
+                ));
+                Yii::app ()->end ();
             }
         }
         return $this->_selectedMailbox;
@@ -582,15 +618,64 @@ class EmailInboxesController extends x2base {
      * @param int $uid IMAP Message UID
      * @param float $part IMAP multipart message part number
      * @param boolean $inline Whether it is an inline attachment
+     * @param boolean $return
      */
-    private function fetchAttachment($uid, $part, $inline = false) {
+    private function fetchAttachment($uid, $part, $inline = false, $return = false) {
         $mailbox = $this->getSelectedMailbox ();
         if (!isset($mailbox))
             $this->redirect('index');
 
         $this->getCurrentFolder(true);
         $message = $mailbox->fetchMessage ($uid);
-        $message->downloadAttachment ($part, $inline);
+        return $message->downloadAttachment ($part, $inline, $return);
     }
 
+    /**
+     * Helper function to handle associating attachments to the related record
+     * @param array $contacts Array of related records to be associated with
+     * @param string $filename Attachment file name
+     * @param string $attachment Attachment data
+     * @return boolean success
+     */
+    private function associateAttachment(array $contacts, $filename, $attachment) {
+        if (empty($contacts)) return;
+        $username = Yii::app()->user->name;
+        $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+            Yii::app()->basePath,
+            '..',
+            'uploads',
+            'protected',
+            'media',
+            $username
+        ));
+        // if user folder doesn't exit, try to create it
+        if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+            if (!@mkdir($userFolderPath, 0777, true)) { // make dir with edit permission
+                throw new CHttpException(500, "Couldn't create user folder $userFolderPath");
+            }
+        }
+
+        $media = new Media;
+        $media->fileName = $filename;
+        $media->createDate = time();
+        $media->lastUpdated = time();
+        $media->uploadedBy = $username;
+        $media->associationType = 'Contacts';
+        $media->associationId = $contacts[0]->id;
+        $media->resolveNameConflicts();
+        $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+        $associatedMedia->create();
+        $associatedMedia->setContents($attachment);
+
+        if ($associatedMedia->exists) {
+            if ($media->save()) {
+                $createdRelationships = true;
+                foreach ($contacts as $contact) {
+                    $createdRelationships = $createdRelationships && $contact->createRelationship($media);
+                }
+                return $createdRelationships;
+            }
+        }
+        return false;
+    }
 }

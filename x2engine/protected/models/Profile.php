@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.components.behaviors.LinkableBehavior');
@@ -328,7 +327,7 @@ class Profile extends X2ActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, disableNotifPopup, allowPost', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost, defaultCalendar', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView,disablePhoneLinks,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
@@ -406,6 +405,7 @@ class Profile extends X2ActiveRecord {
             'enableFullWidth' => Yii::t('profile', 'Enable Full Width Layout'),
             'googleId' => Yii::t('profile', 'Google ID'),
             'address' => Yii::t('profile', 'Address'),
+            'enableTwoFactor' => Yii::t('profile', 'Enable Two Factor Authentication'),
         );
     }
 
@@ -861,210 +861,6 @@ class Profile extends X2ActiveRecord {
         }
     }
 
-    public function syncActionToGoogleCalendar($action, $ajax=false){
-        try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->settings;
-            if($admin->googleIntegration){
-                if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
-//                    // Google Calendar Libraries
-//                    $timezone = date_default_timezone_get();
-//                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php";
-//                    date_default_timezone_set($timezone);
-//
-//                    $client = new Google_Client();
-//                    $client->setClientId($admin->googleClientId);
-//                    $client->setClientSecret($admin->googleClientSecret);
-//                    //$client->setDeveloperKey($admin->googleAPIKey);
-//                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-//                    $googleCalendar = new Google_Service_Calendar($client);
-                    $auth = new GoogleAuthenticator();
-                    $googleCalendar = $auth->getCalendarService();
-
-                    // check if the access token needs to be refreshed
-                    // note that the google library automatically refreshes the access token if 
-                    // we need a new one,
-                    // we just need to check if this happened by calling a google api function that 
-                    // requires authorization,
-                    // and, if the access token has changed, save this new access token
-                    if(!$googleCalendar){
-                        $redirectUrl = $auth->getAuthorizationUrl('calendar');
-                        if ($ajax) {
-                            echo CJSON::encode (array ('redirect' => $redirectUrl));
-                            Yii::app()->end ();
-                        } else {
-                            Yii::app()->controller->redirect($redirectUrl);
-                        }
-                    }
-//                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
-//                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-//                        $this->update(array('syncGoogleCalendarAccessToken'));
-//                    }
-
-                    $summary = $action->actionDescription;
-                    if($action->associationType == 'contacts' || $action->associationType == 'contact')
-                        $summary = $action->associationName.' - '.$action->actionDescription;
-
-                    $event = new Google_Service_Calendar_Event();
-                    $event->setSummary($summary);
-                    if(empty($action->dueDate)){
-                        $action->dueDate = time();
-                    }
-                    if($action->allDay){
-                        $start = new Google_Service_Calendar_EventDateTime();
-                        $start->setDate(date('Y-m-d', $action->dueDate));
-                        $event->setStart($start);
-
-                        if(!$action->completeDate)
-                            $action->completeDate = $action->dueDate;
-                        $end = new Google_Service_Calendar_EventDateTime();
-                        $end->setDate(date('Y-m-d', $action->completeDate + 86400));
-                        $event->setEnd($end);
-                    } else{
-                        $start = new Google_Service_Calendar_EventDateTime();
-                        $start->setDateTime(date('c', $action->dueDate));
-                        $event->setStart($start);
-
-                        if(!$action->completeDate)
-                            $action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-                        $end = new Google_Service_Calendar_EventDateTime();
-                        $end->setDateTime(date('c', $action->completeDate));
-                        $event->setEnd($end);
-                    }
-
-                    if($action->color && $action->color != '#3366CC'){
-                        $colorTable = array(
-                            10 => 'Green',
-                            11 => 'Red',
-                            6 => 'Orange',
-                            8 => 'Black',
-                        );
-                        if(($key = array_search($action->color, $colorTable)) != false)
-                            $event->setColorId($key);
-                    }
-
-                    $newEvent = $googleCalendar->events->insert($this->syncGoogleCalendarId, $event);
-                    $action->syncGoogleCalendarEventId = $newEvent['id'];
-                    $action->save();
-                }
-            }
-        }catch(Exception $e){
-            if(isset($auth)){
-                $auth->flushCredentials();
-            }
-        }
-    }
-
-    public function updateGoogleCalendarEvent($action){
-        try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->settings;
-            if($admin->googleIntegration){
-                if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
-//                    // Google Calendar Libraries
-//                    $timezone = date_default_timezone_get();
-//                    require_once "protected/extensions/google-api-php-client/src/Google_Client.php";
-//                    require_once "protected/extensions/google-api-php-client/src/contrib/Google_Service_Calendar.php";
-//                    date_default_timezone_set($timezone);
-//
-//                    $client = new Google_Client();
-//                    $client->setClientId($admin->googleClientId);
-//                    $client->setClientSecret($admin->googleClientSecret);
-//                    //$client->setDeveloperKey($admin->googleAPIKey);
-//                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-//                    $client->setUseObjects(true); // return objects instead of arrays
-//                    $googleCalendar = new Google_Service_Calendar($client);
-                    $auth = new GoogleAuthenticator();
-                    $googleCalendar = $auth->getCalendarService();
-
-                    // check if the access token needs to be refreshed
-                    // note that the google library automatically refreshes the access token if we need a new one,
-                    // we just need to check if this happend by calling a google api function that requires authorization,
-                    // and, if the access token has changed, save this new access token
-                    $testCal = $googleCalendar->calendars->get($this->syncGoogleCalendarId);
-//                    if($this->syncGoogleCalendarAccessToken != $client->getAccessToken()){
-//                        $this->syncGoogleCalendarAccessToken = $client->getAccessToken();
-//                        $this->update(array('syncGoogleCalendarAccessToken'));
-//                    }
-
-                    $summary = $action->actionDescription;
-                    if($action->associationType == 'contacts' || $action->associationType == 'contact')
-                        $summary = $action->associationName.' - '.$action->actionDescription;
-
-                    $event = $googleCalendar->events->get($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
-                    if(is_array($event)){
-                        $event = new Google_Service_Calendar_Event($event);
-                    }
-                    $event->setSummary($summary);
-                    if(empty($action->dueDate)){
-                        $action->dueDate = time();
-                    }
-                    if($action->allDay){
-                        $start = new Google_Service_Calendar_EventDateTime();
-                        $start->setDate(date('Y-m-d', $action->dueDate));
-                        $event->setStart($start);
-
-                        if(!$action->completeDate)
-                            $action->completeDate = $action->dueDate;
-                        $end = new Google_Service_Calendar_EventDateTime();
-                        $end->setDate(date('Y-m-d', $action->completeDate + 86400));
-                        $event->setEnd($end);
-                    } else{
-                        $start = new Google_Service_Calendar_EventDateTime();
-                        $start->setDateTime(date('c', $action->dueDate));
-                        $event->setStart($start);
-
-                        if(!$action->completeDate)
-                            $action->completeDate = $action->dueDate; // if no end time specified, make event 1 hour long
-                        $end = new Google_Service_Calendar_EventDateTime();
-                        $end->setDateTime(date('c', $action->completeDate));
-                        $event->setEnd($end);
-                    }
-
-                    if($action->color && $action->color != '#3366CC'){
-                        $colorTable = array(
-                            10 => 'Green',
-                            11 => 'Red',
-                            6 => 'Orange',
-                            8 => 'Black',
-                        );
-                        if(($key = array_search($action->color, $colorTable)) != false)
-                            $event->setColorId($key);
-                    }
-
-                    $newEvent = $googleCalendar->events->update($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId, $event);
-                }
-            }
-        }catch(Exception $e){
-
-        }
-    }
-
-    public function deleteGoogleCalendarEvent($action){
-        try{ // catch google exceptions so the whole app doesn't crash if google has a problem syncing
-            $admin = Yii::app()->settings;
-            $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
-            if($admin->googleIntegration && $credentials){
-                if(isset($this->syncGoogleCalendarId) && $this->syncGoogleCalendarId){
-                    // Google Calendar Libraries
-                    $timezone = date_default_timezone_get();
-                    require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
-                    date_default_timezone_set($timezone);
-
-                    $client = new Google_Client();
-                    $client->setClientId($credentials['clientId']);
-                    $client->setClientSecret($credentials['clientSecret']);
-                    //$client->setDeveloperKey($admin->googleAPIKey);
-                    $client->setAccessToken($this->syncGoogleCalendarAccessToken);
-                    $googleCalendar = new Google_Service_Calendar($client);
-
-                    $googleCalendar->events->delete($this->syncGoogleCalendarId, $action->syncGoogleCalendarEventId);
-                }
-            }
-        }catch(Exception $e){
-            // We may want to look into handling this better, or bugs will cause silent failures.
-        }
-    }
-
     /**
      * Initializes widget layout. The layout is a set of associative arrays with the following 
      * format:
@@ -1137,6 +933,10 @@ class Profile extends X2ActiveRecord {
                 ),
                 'ChatBox' => array(
                     'title' => 'Activity Feed',
+                    'minimize' => false,
+                ),
+                'GoogleMaps' => array(
+                    'title' => 'Google Map',
                     'minimize' => false,
                 ),
                 'OnlineUsers' => array(
@@ -1438,12 +1238,17 @@ class Profile extends X2ActiveRecord {
                 'class' => 'avatar-image'
             ));
         } else {
-            return X2Html::fa ('user', array(
-                'class' => 'avatar-image default-avatar',
-                'style' => "font-size: ${dimensionLimit}px",
-            )); 
-            // echo '<img id="avatar-image" width="'.$dimensionLimit.'" height="'.$dimensionLimit.'" src='.
-                // Yii::app()->request->baseUrl."/uploads/default.png".'>';
+            if (Yii::app()->getEdition() == 'opensource') {
+                return X2Html::fa ('user', array(
+                    'class' => 'avatar-image default-avatar',
+                    'style' => "font-size: ${dimensionLimit}px",
+                ));
+            } else {
+                return '<img id="avatar-image" width="'
+                . $dimensionLimit . '" height="'.$dimensionLimit
+                . '" src='.Yii::app()->request->baseUrl
+                . "/themes/x2engine/images/eventIcons/default.png".'>';
+            }
         }
     }
 
@@ -1461,15 +1266,17 @@ class Profile extends X2ActiveRecord {
     
     public static function renderAvatarImage($id, $width, $height, array $htmlOptions = array ()){
         $model = Profile::model ()->findByPk ($id);
-        $file = Yii::app()->file->set($model->avatar);
-        if ($file->exists) {
-            return CHtml::tag ('img', X2Html::mergeHtmlOptions (array (
-                'id'=>"avatar-image",
-                'class'=>"avatar-upload", 
-                'width'=>$width, 
-                'height'=>$height,
-                'src'=>"data:image/x-icon;base64,".base64_encode($file->getContents()),
-            ), $htmlOptions));
+        if(!empty($model->avatar)){
+            $file = Yii::app()->file->set($model->avatar);
+            if ($file->exists) {
+                return CHtml::tag ('img', X2Html::mergeHtmlOptions (array (
+                    'id'=>"avatar-image",
+                    'class'=>"avatar-upload", 
+                    'width'=>$width, 
+                    'height'=>$height,
+                    'src'=>"data:image/x-icon;base64,".base64_encode($file->getContents()),
+                ), $htmlOptions));
+            }
         }
     }
 
@@ -1477,6 +1284,67 @@ class Profile extends X2ActiveRecord {
         return $this->user['lastLogin'];
     }
 
+    /**
+     * Request a two factor authentication code to be sent to the user's cell phone
+     * @param bool $init Initialize two factor auth, Profile is not required to have two factor enabled
+     * @return bool Whether the code was successfully sent
+     */
+    public function requestTwoFA($init = false) {
+        $settings = Yii::app()->settings;
+        if ($settings->twoFactorCredentialsId && ($this->enableTwoFactor || $init)) {
+            $creds = Credentials::model()->findByPk($settings->twoFactorCredentialsId);
+            if ($creds && $creds->auth) {
+                if (get_class($creds->auth) === 'X2HubConnector' && $creds->auth->hubEnabled && $creds->auth->enableTwoFactor) {
+                    $sent = false;
+                    $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+                    $code = $hub->requestTwoFA($this);
+                    if ($code) $sent = true;
+                } else if (get_class($creds->auth) === 'TwilioAccount') {
+                    // Trim hex to at most 12 digits to account for conversion to dec without exponents
+                    $rand = hexdec(substr(bin2hex(openssl_random_pseudo_bytes(12)), 0, 12));
+                    $code = sprintf('%06d', substr($rand, 0, 6)); // trim or pad to 6 digits
+                    $message = Yii::t('profile', 'Your X2CRM verification code is ').$code;
+                    $twilio = Yii::app()->controller->attachBehavior('TwilioBehavior', new TwilioBehavior);
+                    $twilio->initialize(array(
+                        'sid' => $creds->auth->sid,
+                        'token' => $creds->auth->token,
+                        'from' => $creds->auth->from,
+                    ));
+                    $sent = $twilio->sendSMSMessage($this->cellPhone, $message);
+                }
+                if (isset($code)) {
+                    Yii::app()->db->createCommand()
+                        ->delete('x2_twofactor_auth', 'userId = :id', array(
+                            ':id' => $this->id,
+                        ));
+                    $inserted = Yii::app()->db->createCommand()
+                        ->insert('x2_twofactor_auth', array(
+                            'userId' => $this->id,
+                            'requested' => time(),
+                            'code' => $code,
+                        ));
+                    return $sent && $inserted;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Verify a two factor authentication code
+     * @param string $code User submitted verification code
+     * @return bool Whether verification code is valid
+     */
+    public function verifyTwoFACode($code) {
+        $verification = Yii::app()->db->createCommand()
+            ->select('code')
+            ->from('x2_twofactor_auth')
+            ->where('userId = :id AND requested >= :requested', array(
+                ':id' => $this->id,
+                ':requested' => time() - (60 * 5), // within the past 5 minutes
+            ))->queryScalar();
+        return $code === $verification;
+    }
      
     /**
      * Checks for a valid enforced default theme and returns it if it exists. 

@@ -57,4 +57,10 @@
   'Rows & Columns' => '행 및 열',
   '{type} Report' => '{type} 보고서',
   'Rows and Columns' => '행과 열',
+  'Report Path:' => '보고서 경로 :',
+  'External Reports' => '외부 보고서',
+  'Save Changes' => '변경 사항을 저장하다',
+  'Please supply the full path to the report on the Jasper Server, e.g., /Reports/MyReport. This can be found by right clicking on your report in the Jasper Server and selecting "Properties."' => '재스퍼 서버, 예를 들어, / 보고서 / MyReport를에 보고서의 전체 경로를 제공하십시오. 이것은 재스퍼 서버 및 선택에서 보고서를 마우스 오른쪽 버튼으로 클릭하여 찾을 수 있습니다 &quot;속성.&quot;',
+  'Failed to load external report. Please check your Jasper Server credential details.' => '외부 보고서를로드하지 못했습니다. 당신의 재스퍼 서버 자격 증명 세부 사항을 확인하시기 바랍니다.',
+  'Create Contact List' => '대화 상대 목록 만들기',
 );

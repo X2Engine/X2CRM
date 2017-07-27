@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 $isGuest = Yii::app()->user->isGuest;
@@ -305,9 +304,10 @@ foreach($modules as $moduleItem){
         }
     } elseif ($moduleItem->moduleType === 'link') {
         if (isset ($moduleItem->linkHref)) {
+            $linkHref = $moduleItem->linkOpenInFrame ? $this->createUrl('site/viewEmbedded', array('id' => $moduleItem->id)) : $moduleItem->linkHref;
             $menuItems[] = array (
                 'label' => $moduleItem->title,
-                'url' => $moduleItem->linkHref,
+                'url' => $linkHref,
                 'itemOptions' => array ('class' => 'top-bar-module-link'),
                 'linkOptions' => $moduleItem->linkOpenInNewTab ? 
                     array ('target' => '_blank') : array (),
@@ -361,7 +361,7 @@ $menuItems[] = array(
 $notifCount = X2Model::model('Notification')->countByAttributes(array('user' => Yii::app()->user->getName()), 'createDate < '.time());
 
 $searchbarHtml = CHtml::beginForm(array('/search/search'), 'get')
-        .'<button class="x2-button black" type="submit"><span></span></button>'
+        .'<button class="x2-button" type="submit"><span><i class="fa fa-search"></i></span></button>'
         .CHtml::textField('term', Yii::t('app', 'Search for contact, action, deal...'), array(
             'id' => 'search-bar-box',
             'onfocus' => 'x2.forms.toggleTextResponsive(this);',
@@ -399,7 +399,8 @@ $userMenu = array(
     array(
         'label' => Yii::t('app', 'Profile'), 
         'url' => array('/profile/view',
-            'id' => Yii::app()->user->getId()),
+            'id' => Yii::app()->user->getId(),
+            'publicProfile'=>1),
         'itemOptions' => array (
             'id' => 'profile-user-menu-link',
             'class' => 'user-menu-link ' . ($isAdmin ? '' : 'x2-first'),
@@ -430,7 +431,7 @@ $userMenu = array(
 $userMenuItems = array(
     array(
         'label' => Yii::t('app', 'Profile'), 'url' => array('/profile/view',
-            'id' => Yii::app()->user->getId())),
+            'id' => Yii::app()->user->getId(), 'publicProfile'=>1)),
     array(
         'label' => Yii::t('app', 'Notifications'),
         'url' => array('/site/viewNotifications')),
@@ -470,7 +471,13 @@ $userMenuItems = array(
             'csrf' => true,
             'confirm' => 'Are you sure you want to toggle your session status?',)
     ),
-    array('label' => Yii::t('app', 'Logout'), 'url' => array('/site/logout'))
+    array(
+        'label' => Yii::t('app', 'Logout'), 
+        'itemOptions' => array (
+            'id' => 'logout',
+        ),     
+        'url' => array('/site/logout')
+    )
 );
 
 

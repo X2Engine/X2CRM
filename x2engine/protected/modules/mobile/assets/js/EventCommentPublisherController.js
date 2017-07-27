@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 x2.EventCommentPublisherController = (function () {
@@ -39,7 +38,8 @@ x2.EventCommentPublisherController = (function () {
 function EventCommentPublisherController (argsDict) {
     var argsDict = typeof argsDict === 'undefined' ? {} : argsDict;
     var defaultArgs = {
-        DEBUG: x2.DEBUG && false
+        DEBUG: x2.DEBUG && false,
+        translations: {},
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.Controller.call (this, argsDict);
@@ -59,6 +59,9 @@ EventCommentPublisherController.prototype.setUpForm = function () {
 
     var cameraButton$ = $('#footer .photo-attach-button');
     var attachmentsContainer$ = this.form$.find ('.photo-attachments-container');
+    var audioButton$ = $('#footer .audio-attach-button');
+    var videoButton$ = $('#footer .video-attach-button');
+    
     new x2.CameraButton ({
         element$: cameraButton$,
         validate: function () {
@@ -70,6 +73,111 @@ EventCommentPublisherController.prototype.setUpForm = function () {
         },
         failure: function (message) {
         }
+    });
+    
+    new x2.AudioButton ({
+        element$: audioButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeAudioAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.audioAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithAudio (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventCommentPublisherFormModel[audio]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert (that.translations['Upload failed'], that.translations['Error']);
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, that.translations['Error']);
+                }
+            );
+        }
+    });
+    
+    new x2.VideoButton ({
+        element$: videoButton$,
+        success: function (data) {
+            var attachment$ = x2.mobileForm.makeVideoAttachment (data.type,data.fullPath);
+            attachment$.hide ();
+            that.form$.find ('.' + x2.mobileForm.videoAttachmentClass).remove ();
+            that.form$.append (attachment$);
+            $.mobile.loading ('show');
+            x2.mobileForm.submitWithVideo (
+                data.type,
+                that.form$.attr ('action'), 
+                that.form$, 
+                'EventCommentPublisherFormModel[video]',
+                function (response) {
+                    if (response.responseCode == 200)  {
+                        if (that.publisherIsActive) togglePublisher$.click ();
+                        $.mobile.activePage.append ($(response.response).find ('.refresh-content'));
+                        x2.main.refreshContent ();
+                        $.mobile.loading ('hide');
+                    } else {
+                        $.mobile.loading ('hide');
+                        x2.main.alert (that.translations['Upload failed'], that.translations['Error']);
+                    }
+                },
+                function (error) {
+                    $.mobile.loading ('hide');
+                    x2.main.alert (error.body, that.translations['Error']);
+                }
+            );
+        }
+    });
+
+    this.locationButton$ = $.mobile.activePage.find ('.location-attach-button');
+    this.locationButton$.click (function () {
+        if (x2.main.isPhoneGap) {
+            x2touch.API.getCurrentPosition(function(position) {
+                var pos = {
+                   lat: position.coords.latitude,
+                   lon: position.coords.longitude
+                 };
+
+                that.form$.find ('#geoCoords').val(JSON.stringify (pos));
+                that.form$.find ('#geoLocationCoords').val("set");
+                x2.mobileForm.submitWithFiles (
+                   that.form$, 
+                   function (response) {
+                       try {
+                            var data = JSON.parse(response);
+                            var theAddress = data['results'][0]['formatted_address'];
+                            $.mobile.activePage.find.find ('.reply-box').val(
+                                $.mobile.activePage.find ('.reply-box').val()+" - "+theAddress
+                            );
+                       } catch (e) {
+                           alert(that.translations['failed to parse response from server']);
+                       }
+
+                       x2.main.refreshContent ();
+                       $.mobile.loading ('hide');
+                   }, function (jqXHR, textStatus, errorThrown) {
+                       $.mobile.loading ('hide');
+                       x2.main.alert (textStatus, that.translations['Error']);
+                   }
+               ); 
+               this.form$.find ('#geoLocationCoords').val("unset");
+            }, function (error) {
+                alert(that.translations['error code']+': ' + error.code    + '\n' +
+                      that.translations['error message']+': ' + error.message + '\n');
+            }, {});         
+        
+        } 
+        
     });
 };
 

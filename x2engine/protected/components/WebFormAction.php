@@ -1,7 +1,8 @@
 <?php
+
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,15 +30,14 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
-
 
 class WebFormAction extends CAction {
 
-    public static function sanitizeGetParams () {
+    public static function sanitizeGetParams() {
         //sanitize get params
         $whitelist = array(
             'fg', 'bgc', 'font', 'bs', 'bc', 'iframeHeight'
@@ -49,20 +48,20 @@ class WebFormAction extends CAction {
         return $_GET;
     }
 
-    private static function addTags ($model) {
+    private static function addTags($model) {
         // add tags
-        if(!empty($_POST['tags'])){
+        if (!empty($_POST['tags'])) {
             $taglist = explode(',', $_POST['tags']);
-            if($taglist !== false){
-                foreach($taglist as &$tag){
-                    if($tag === '')
+            if ($taglist !== false) {
+                foreach ($taglist as &$tag) {
+                    if ($tag === '')
                         continue;
-                    if(substr($tag, 0, 1) != '#')
-                        $tag = '#'.$tag;
+                    if (substr($tag, 0, 1) != '#')
+                        $tag = '#' . $tag;
                     $tagModel = new Tags;
                     $tagModel->taggedBy = 'API';
                     $tagModel->timestamp = time();
-                    $tagModel->type = get_class ($model);
+                    $tagModel->type = get_class($model);
                     $tagModel->itemId = $model->id;
                     $tagModel->tag = $tag;
                     $tagModel->itemName = $model->name;
@@ -77,101 +76,91 @@ class WebFormAction extends CAction {
         }
     }
 
-    
-    /*
-    Helper funtion for run ().
-    */
-    private static function formatEmailBodyAttrs ($emailBody, $model) {
-        // set the template variables
-        $matches = array();
-
-        // find all the things
-        preg_match_all('/{\w+}/', $emailBody, $matches);
-
-        if(isset($matches[0])){     // loop through the things
-            foreach($matches[0] as $match){
-                $match = substr($match, 1, -1); // remove { and }
-
-                if($model->hasAttribute($match)){
-
-                    // get the correctly formatted attribute
-                    $value = $model->renderAttribute($match, false, true);
-                    $emailBody = preg_replace(
-                        '/{'.$match.'}/', $value, $emailBody);
-                }
-            }
-        }
-        return $emailBody;
-    }
-    
-
-    
-    /**
-     * Sets tracking key of contact model. First looks for the key generated on client (this key
-     * allows the visitor to be tracked on a domain other than the one on which the crm is
-     * running) then, if no key exists, generates a new key.
-     *
-     * $model object the contact model
-     */
-    private function setNewWebleadTrackingKey ($model) {
-        if (empty($model->trackingKey)) { 
-            if(isset($_COOKIE['x2_key']) && ctype_alnum($_COOKIE['x2_key'])) { 
-                $model->trackingKey = $_COOKIE['x2_key'];
-            } else {
-                $model->trackingKey = Contacts::getNewTrackingKey();
-            }
-
-        }
-    }
-    
-
-    private function handleWebleadFormSubmission (X2Model $model, $extractedParams) {
+    private function handleWebleadFormSubmission(X2Model $model, $extractedParams) {
         $newRecord = $model->isNewRecord;
-        if(isset($_POST['Contacts'])) {
+        if (isset($_POST['Contacts'])) {
 
             $model->createEvent = false;
             $model->setX2Fields($_POST['Contacts'], true);
             // Extra sanitizing
             $p = Fields::getPurifier();
-            foreach($model->attributes as $name=>$value) {
-                if($name != $model->primaryKey() && !empty($value)) {
+            foreach ($model->attributes as $name => $value) {
+                if ($name != $model->primaryKey() && !empty($value)) {
                     $model->$name = $p->purify($value);
                 }
             }
             $now = time();
 
-            
+
             if (Yii::app()->contEd('pro')) {
-                foreach($extractedParams['fieldList'] as $field){
-                    if($field['required'] &&
-                       (!isset($model->{$field['fieldName']}) || $model->{$field['fieldName']} == '')){
+                foreach ($extractedParams['fieldList'] as $field) {
+                    if ($field['required'] &&
+                            (!isset($model->{$field['fieldName']}) || $model->{$field['fieldName']} == '')) {
 
                         $model->addError($field['fieldName'], Yii::t('app', 'Cannot be blank.'));
                     }
                 }
             }
-            
+
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                    array_key_exists('verifyCode', $_POST['Contacts'])) {
+                $model->verifyCode = $_POST['Contacts']['verifyCode'];
+            }
+
             $model->visibility = 1;
 
-            $model->validate (null, false);
-            if(!$model->hasErrors()){
+            $model->validate(null, false);
+            if (!$model->hasErrors()) {
                 $model->lastUpdated = $now;
                 $model->updatedBy = 'admin';
 
-                
-                if(Yii::app()->contEd('pro')) {
-                    $this->setNewWebleadTrackingKey ($model);
+
+                if (Yii::app()->contEd('pro')) {
+                    $this->controller->setNewWebleadTrackingKey($model);
                 }
-                
-                
-                if($model->asa('DuplicateBehavior') && $model->checkForDuplicates()){
+
+
+                if ($model->asa('DuplicateBehavior') && $model->checkForDuplicates()) {
                     $duplicates = $model->getDuplicates();
                     $oldest = $duplicates[0];
+                }
+
+                if (Yii::app()->settings->enableFingerprinting && isset($_POST['fingerprint']) &&
+                        isset($extractedParams['fingerprintDetection']) && $extractedParams['fingerprintDetection']) {
+                    $attributes = (isset($_POST['fingerprintAttributes'])) ?
+                            json_decode($_POST['fingerprintAttributes'], true) : array();
+
+                    $anonContact = AnonContact::model()
+                            ->findByFingerprint($_POST['fingerprint'], $attributes);
+
+                    // if there's not an anonyomous contact, then the fingerprint match
+                    // was for an actual contact.
+                    if ($anonContact !== null) {
+                        if ($model->isNewRecord) {
+                            // save new contact for subsequent update() when merging AnonContact
+                            $model->save();
+                        }
+                        $model->mergeWithAnonContact($anonContact);
+                    } else {
+                        $fingerprint = Fingerprint::model()->findByAttributes(array(
+                            'fingerprint' => $_POST['fingerprint'],
+                        ));
+                        if (is_null($fingerprint)) {
+                            $model->setFingerprint($_POST['fingerprint'], $attributes);
+                        } else if ($fingerprint->anonymous === '0') {
+                            $oldest = X2Model::model('Contacts')->findByAttributes(array(
+                                'fingerprintId' => $fingerprint->id,
+                            ));
+                        }
+                    }
+                }
+
+                // Merge in previous fields if an existing contact is located by duplicate
+                // detection or fingerprinting
+                if (isset($oldest) && $oldest) {
                     $fields = $model->getFields(true);
                     foreach ($fields as $field) {
-                        if (!in_array($field->fieldName,
-                                        $model->MergeableBehavior->restrictedFields)
-                                && !is_null($model->{$field->fieldName})) {
+                        if (!in_array($field->fieldName, $model->MergeableBehavior->restrictedFields) && !is_null($model->{$field->fieldName})) {
                             if ($field->type === 'text' && !empty($oldest->{$field->fieldName})) {
                                 $oldest->{$field->fieldName} .= "\n--\n" . $model->{$field->fieldName};
                             } else {
@@ -180,366 +169,270 @@ class WebFormAction extends CAction {
                         }
                     }
                     $model = $oldest;
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
+                    if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                            array_key_exists('verifyCode', $_POST['Contacts'])) {
+                        $model->verifyCode = $_POST['Contacts']['verifyCode'];
+                    }
                     $newRecord = $model->isNewRecord;
                 }
-                if($newRecord){
+
+                if ($newRecord) {
                     $model->createDate = $now;
                     $model->assignedTo = $this->controller->getNextAssignee();
                 }
-                
+
                 $success = $model->save();
-                
-                
-                if (Yii::app()->contEd('pla') && Yii::app()->settings->enableFingerprinting &&
-                    isset ($_POST['fingerprint'])) {
+                $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
 
-                    $attributes = (isset($_POST['fingerprintAttributes']))? 
-                        json_decode($_POST['fingerprintAttributes'], true) : array();
-
-                    $anonContact = AnonContact::model ()
-                        ->findByFingerprint ($_POST['fingerprint'], $attributes); 
-
-                    // if there's not an anonyomous contact, then the fingerprint match
-                    // was for an actual contact. 
-                    if ($anonContact !== null) {
-                        $model->mergeWithAnonContact ($anonContact);
-                    } else {
-                        $model->setFingerprint ($_POST['fingerprint'], $attributes);
+                $mediaLookups = $model->getMediaLookupFields();
+                if (!empty($mediaLookups)) {
+                    $uploaded = $this->controller->uploadAssociatedMedia($model);
+                    if (!is_null($uploaded)) {
+                        $success = $success && $uploaded;
                     }
-
-                    $success = $success && $model->save();
                 }
-                
 
                 //TODO: upload profile picture url from webleadfb
-                
-                if($success){
-                    if ($extractedParams['generateLead'])
-                        self::generateLead ($model, $extractedParams['leadSource']);
-                    if ($extractedParams['generateAccount'])
-                        self::generateAccount ($model);
 
-                    self::addTags ($model);
-                    $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ? 
-                        array() : explode(',',$_POST['tags']));
-                    if($newRecord) {
+                if ($success) {
+                    $location = $model->logLocation('weblead', 'POST');
+
+                    if ($extractedParams['generateLead']) {
+                        $newLead = call_user_func(array($this->controller, 'generateLead'), $model, $extractedParams['leadSource']);
+                        if ($newLead) {
+                            self::addTags($newLead);
+                        }
+                    }
+                    if ($extractedParams['generateAccount']) {
+                        $newAccount = call_user_func(array($this->controller, 'generateAccount'), $model);
+                        if ($newAccount) {
+                            self::addTags($newAccount);
+                        }
+                    }
+
+                    self::addTags($model);
+                    $tags = ((!isset($_POST['tags']) || empty($_POST['tags'])) ?
+                            array() : explode(',', $_POST['tags']));
+                    if ($newRecord) {
                         X2Flow::trigger(
-                            'WebleadTrigger', array('model' => $model, 'tags' => $tags));
+                                'WebleadTrigger', array('model' => $model, 'tags' => $tags));
                     }
 
                     //use the submitted info to create an action
-                    Actions::associateAction ($model, array (
-                        'actionDescription' => 
-                            Yii::t('contacts', 'Web Lead')
-                                ."\n\n".Yii::t('contacts', 'Name').': '.
-                                CHtml::decode($model->firstName)." ".
-                                CHtml::decode($model->lastName)."\n".Yii::t('contacts', 'Email').
-                                ": ".CHtml::decode($model->email)."\n".Yii::t('contacts', 'Phone').
-                                ": ".CHtml::decode($model->phone)."\n".
-                                Yii::t('contacts', 'Background Info').": ".
-                                CHtml::decode($model->backgroundInfo),
-                        'type' => 'note',
-                    ));
+                    $actionParams = isset($location) ? array('locationId' => $location->id) : array();
+                    $this->controller->createWebleadAction($model, $actionParams);
+                    $this->controller->createWebleadEvent($model);
 
-                    // create a notification if the record is assigned to someone
-                    $event = new Events;
-                    $event->associationType = 'Contacts';
-                    $event->associationId = $model->id;
-                    $event->user = $model->assignedTo;
-                    $event->type = 'weblead_create';
-                    $event->save();
-
-                    
                     if (Yii::app()->contEd('pro')) {
                         // email to send from
                         $emailFrom = Credentials::model()->getDefaultUserAccount(
-                            Credentials::$sysUseId['systemResponseEmail'], 'email');
-                        if($emailFrom == Credentials::LEGACY_ID)
+                                Credentials::$sysUseId['systemResponseEmail'], 'email');
+                        if ($emailFrom == Credentials::LEGACY_ID) {
                             $emailFrom = array(
                                 'name' => Yii::app()->settings->emailFromName,
                                 'address' => Yii::app()->settings->emailFromAddr
                             );
+                        }
                     }
-                    
 
-                    if($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
+                    if ($model->assignedTo != 'Anyone' && $model->assignedTo != '') {
 
-                        $notif = new Notification;
-                        $notif->user = $model->assignedTo;
-                        $notif->createdBy = 'API';
-                        $notif->createDate = time();
-                        $notif->type = 'weblead';
-                        $notif->modelType = 'Contacts';
-                        $notif->modelId = $model->id;
-                        $notif->save();
+                        $this->controller->createWebleadNotification($model);
 
                         $profile = Profile::model()->findByAttributes(
-                            array('username' => $model->assignedTo));
+                                array('username' => $model->assignedTo));
 
                         /* send user that's assigned to this weblead an email if the user's email
-                        address is set and this weblead has a user email template */
-                        if($profile !== null && !empty($profile->emailAddress)){
+                          address is set and this weblead has a user email template */
+                        if ($profile !== null && !empty($profile->emailAddress)) {
 
-                            
-                            if (Yii::app()->contEd('pro') && 
-                                $extractedParams['userEmailTemplate']) {
+
+                            if (Yii::app()->contEd('pro') &&
+                                    $extractedParams['userEmailTemplate']) {
 
                                 /* We'll be using the user's own email account to send the
-                                web lead response (since the contact has been assigned) and
-                                additionally, if no system notification account is available,
-                                as the account for sending the notification to the user of
-                                the new web lead (since $emailFrom is going to be modified,
-                                and it will be that way when this code block is exited and the
-                                time comes to send the "welcome aboard" email to the web lead)*/
+                                  web lead response (since the contact has been assigned) and
+                                  additionally, if no system notification account is available,
+                                  as the account for sending the notification to the user of
+                                  the new web lead (since $emailFrom is going to be modified,
+                                  and it will be that way when this code block is exited and the
+                                  time comes to send the "welcome aboard" email to the web lead) */
                                 $emailFrom = Credentials::model()->getDefaultUserAccount(
-                                    $profile->user->id, 'email');
-                                if($emailFrom == Credentials::LEGACY_ID)
+                                        $profile->user->id, 'email');
+                                if ($emailFrom == Credentials::LEGACY_ID) {
                                     $emailFrom = array(
                                         'name' => $profile->fullName,
                                         'address' => $profile->emailAddress
                                     );
+                                }
 
                                 /* Security Check: ensure that at least one webform is using this
-                                email template */
+                                  email template */
                                 /* if(!empty($userEmailTemplate) &&
-                                CActiveRecord::model('WebForm')->exists(
-                                    'userEmailTemplate=:template',array(
-                                        ':template'=>$userEmailTemplate))) { */
+                                  CActiveRecord::model('WebForm')->exists(
+                                  'userEmailTemplate=:template',array(
+                                  ':template'=>$userEmailTemplate))) { */
 
-                                $template = X2Model::model('Docs')->findByPk(
-                                    $extractedParams['userEmailTemplate']);
-                                if($template){
-                                    $emailBody = $template->text;
-
-                                    $subject = '';
-                                    if($template->subject){
-                                        $subject = $template->subject;
-                                    }
-
-                                    $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
-
-                                    $address = array(
-                                        'to' => array(array('', $profile->emailAddress)));
-
-                                    $notifEmailFrom = Credentials::model()->getDefaultUserAccount(
-                                        Credentials::$sysUseId['systemNotificationEmail'], 'email');
-
-                                    /* Use the same sender as web lead response if notification
-                                    emailer not available */
-                                    if($notifEmailFrom == Credentials::LEGACY_ID)
-                                        $notifEmailFrom = $emailFrom;
-
-                                    // send user template email
-                                    $status = $this->controller->sendUserEmail(
-                                        $address, $subject, $emailBody, null, $notifEmailFrom);
-
-                                    if ($status['code'] !== '200') {
-                                        /**/AuxLib::debugLog (
-                                            'Error: sendUserEmail: '.$status['message']);
-                                    }
-
-                                }
+                                //$address = array(
+                                //    'to' => array(array('', $profile->emailAddress)));
+                                $this->controller->sendUserNotificationEmail($model, $profile->emailAddress, $emailFrom, $extractedParams['userEmailTemplate']);
                                 // }
-                            } else { 
-                                $subject = Yii::t('marketing', 'New Web Lead');
-                                $message =
-                                    Yii::t('marketing',
-                                        'A new web lead has been assigned to you: ').
-                                    CHtml::link(
-                                        $model->firstName.' '.$model->lastName,
-                                        array('/contacts/contacts/view', 'id' => $model->id)).'.';
-                                $address = array('to' => array(array('', $profile->emailAddress)));
+                            } else {
                                 $emailFrom = Credentials::model()->getDefaultUserAccount(
-                                    Credentials::$sysUseId['systemNotificationEmail'], 'email');
-                                if($emailFrom == Credentials::LEGACY_ID)
+                                        Credentials::$sysUseId['systemNotificationEmail'], 'email');
+                                if ($emailFrom == Credentials::LEGACY_ID) {
                                     $emailFrom = array(
                                         'name' => $profile->fullName,
                                         'address' => $profile->emailAddress
                                     );
-
-                                $status = $this->controller->sendUserEmail(
-                                    $address, $subject, $message, null, $emailFrom);
-                            
+                                }
+                                $this->controller->sendLegacyUserNotificationEmail($model, $profile->emailAddress, $emailFrom);
                             }
-                            
                         }
-
                     }
 
-                    
+
                     /* send new weblead an email if we have their email address and this web
-                    form has a weblead email template */
-                    if(Yii::app()->contEd('pro') && $extractedParams['webleadEmailTemplate'] &&
-                       !empty($model->email)) {
+                      form has a weblead email template */
+                    if (Yii::app()->contEd('pro') && $extractedParams['webleadEmailTemplate'] &&
+                            !empty($model->email)) {
 
                         /* Security Check: ensure that at least one webform is using this
-                        email template */
+                          email template */
                         /* if(CActiveRecord::model('WebForm')->exists(
-                            'webleadEmailTemplate=:template',array(
-                                ':template'=>$webleadEmailTemplate))){ */
-                        $template = X2Model::model('Docs')->findByPk(
-                            $extractedParams['webleadEmailTemplate']);
-                        if($template !== null){
-                            $emailBody = $template->text;
-
-                            $subject = '';
-                            if($template->subject){
-                                $subject = $template->subject;
-                            }
-
-                            $emailBody = self::formatEmailBodyAttrs ($emailBody, $model);
-
-                            $address = array('to' => array(array((isset($model->firstName) ?
-                                $model->firstName : '').' '.
-                                    (isset($model->lastName) ? $model->lastName :
-                                ''), $model->email)));
-
-                            // send user template email
-                            $status = $this->controller->sendUserEmail(
-                                $address, $subject, $emailBody, null, $emailFrom);
-                            
-                            if ($status['code'] !== '200') {
-                                /**/AuxLib::debugLog (
-                                    'Error: sendUserEmail: '.$status['message']);
-                            }
-                        }
+                          'webleadEmailTemplate=:template',array(
+                          ':template'=>$webleadEmailTemplate))){ */
+                        $this->controller->sendWebleadNotificationEmail($model, $emailFrom, $extractedParams['webleadEmailTemplate']);
                         // }
                     }
 
                     if (Yii::app()->contEd('pro')) {
-                        if(class_exists('WebListenerAction') && $model->trackingKey !== null) {
+                        if (class_exists('WebListenerAction') && $model->trackingKey !== null) {
                             WebListenerAction::setKey($model->trackingKey);
                         }
 
-                        if(!empty($tags)){
+                        if (!empty($tags)) {
                             X2Flow::trigger('RecordTagAddTrigger', array(
                                 'model' => $model,
                                 'tags' => $tags,
                             ));
                         }
                     }
-                    
-                } else {
-                    $errMsg = 'Error: WebListenerAction.php: model failed to save';
-                    /**/AuxLib::debugLog ($errMsg);
-                    Yii::log ($errMsg, '', 'application.debug');
-                }
 
-                $this->controller->renderPartial('application.components.views.webFormSubmit',
-                    array (
+                    $this->controller->renderPartial('application.components.views.webFormSubmit', array(
                         'type' => 'weblead',
-                        'redirectUrl' => $extractedParams['redirectUrl']
-                    )
-                );
+                        'redirectUrl' => $extractedParams['redirectUrl'],
+                        'thankYouText' => $extractedParams['thankYouText'],
+                            )
+                    );
 
-                Yii::app()->end(); // success!
+                    return; // to commit transaction
+                } else {
+                    AuxLib::debugLog('Error: WebListenerAction.php: model failed to save');
+                }
             }
-        } elseif (Yii::app()->contEd('pro') && class_exists('WebListenerAction')){
-            if (isset ($_COOKIE['x2_key']))  {
-                if (isset ($_SERVER['HTTP_REFERER'])) {
+        } elseif (Yii::app()->contEd('pro') && class_exists('WebListenerAction')) {
+            if (isset($_COOKIE['x2_key'])) {
+                if (isset($_SERVER['HTTP_REFERER'])) {
                     // since the web tracking script passes the website url in the web request,
                     // the web listener expects the website url to be in the $_GET superglobal
                     $_GET['url'] = $_SERVER['HTTP_REFERER'];
                 }
                 WebListenerAction::track();
             }
-        } 
-
-        $sanitizedGetParams = self::sanitizeGetParams ();
-
-        
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'weblead',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css'], 
-                'header' => $extractedParams['header']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
-        
-            $this->controller->renderPartial(
-                'application.components.views.webForm', 
-                array_merge (array(
-                    'type' => 'weblead'
-                ), $sanitizedGetParams));
-        
         }
-        
 
+        $sanitizedGetParams = self::sanitizeGetParams();
+
+        $viewParams = array_merge(array(
+            'model' => $model,
+            'type' => 'weblead',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'header' => $extractedParams['header'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+                ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
+
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
+        }
     }
 
-
-    private function handleServiceFormSubmission ($model, $extractedParams) {
-        if(isset($_POST['Services'])){ // web form submitted
-            if(isset($_POST['Services']['firstName'])){
+    private function handleServiceFormSubmission($model, $extractedParams) {
+        if (isset($_POST['Services'])) { // web form submitted
+            if (isset($_POST['Services']['firstName'])) {
                 $firstName = $_POST['Services']['firstName'];
                 $fullName = $firstName;
             }
 
-            if(isset($_POST['Services']['lastName'])){
+            if (isset($_POST['Services']['lastName'])) {
                 $lastName = $_POST['Services']['lastName'];
-                if(isset($fullName)){
-                    $fullName .= ' '.$lastName;
-                }else{
+                if (isset($fullName)) {
+                    $fullName .= ' ' . $lastName;
+                } else {
                     $fullName = $lastName;
                 }
             }
 
-            if(isset($_POST['Services']['email'])){
+            if (isset($_POST['Services']['email'])) {
                 $email = $_POST['Services']['email'];
             }
-            if(isset($_POST['Services']['phone'])){
+            if (isset($_POST['Services']['phone'])) {
                 $phone = $_POST['Services']['phone'];
             }
-            if(isset($_POST['Services']['desription'])){
+            if (isset($_POST['Services']['desription'])) {
                 $description = $_POST['Services']['description'];
             }
 
-            
+
             if (Yii::app()->contEd('pro')) {
-                $model->setX2Fields($_POST['Services'],true);
+                $model->setX2Fields($_POST['Services'], true);
             }
-            
+
 
             // Extra sanitizing
             $p = Fields::getPurifier();
-            foreach($model->attributes as $name=>$value) {
-                if($name != $model->primaryKey() && !empty($value)) {
+            foreach ($model->attributes as $name => $value) {
+                if ($name != $model->primaryKey() && !empty($value)) {
                     $model->$name = $p->purify($value);
                 }
             }
 
-            if(isset($email) && $email) {
+            if (isset($email) && $email) {
                 $contact = Contacts::model()->findByAttributes(array('email' => $email));
             } else {
                 $contact = false;
             }
 
-            if($contact){
+            if ($contact) {
                 $model->contactId = $contact->nameId;
-            }else{
+            } else {
                 $model->contactId = "Unregistered";
             }
 
-            if(isset($fullName) || isset($email)){
+            if (isset($fullName) || isset($email)) {
                 $model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
                             '{name}' => isset($fullName) ? $fullName : $email,
                 ));
-            }else{
+            } else {
                 $model->subject = Yii::t('services', 'Web Form Case');
             }
 
             $model->origin = 'Web';
-            if(!isset($model->impact) || $model->impact == '')
+            if (!isset($model->impact) || $model->impact == '') {
                 $model->impact = Yii::t('services', '3 - Moderate');
-            if(!isset($model->status) || $model->status == '')
+            }
+            if (!isset($model->status) || $model->status == '') {
                 $model->status = Yii::t('services', 'New');
-            if(!isset($model->mainIssue) || $model->mainIssue == '')
+            }
+            if (!isset($model->mainIssue) || $model->mainIssue == '') {
                 $model->mainIssue = Yii::t('services', 'General Request');
-            if(!isset($model->subIssue) || $model->subIssue == '')
+            }
+            if (!isset($model->subIssue) || $model->subIssue == '') {
                 $model->subIssue = Yii::t('services', 'Other');
+            }
             $model->assignedTo = $this->controller->getNextAssignee();
             if (isset($email))
                 $model->email = CHtml::encode($email);
@@ -547,51 +440,65 @@ class WebFormAction extends CAction {
             $model->createDate = $now;
             $model->lastUpdated = $now;
             $model->updatedBy = 'admin';
-            if (isset ($description))
+            if (isset($description)) {
                 $model->description = CHtml::encode($description);
+            }
 
-            
             if (Yii::app()->contEd('pro')) {
                 $contactFields = array('firstName', 'lastName', 'email', 'phone');
-                foreach($extractedParams['fieldList'] as $field){
-                    if(in_array($field['fieldName'], $contactFields)){
-                        if($field['required'] &&
-                           (!isset($_POST['Services'][$field['fieldName']]) ||
-                            $_POST['Services'][$field['fieldName']] == '')){
+                foreach ($extractedParams['fieldList'] as $field) {
+                    if (in_array($field['fieldName'], $contactFields)) {
+                        if ($field['required'] &&
+                                (!isset($_POST['Services'][$field['fieldName']]) ||
+                                $_POST['Services'][$field['fieldName']] == '')) {
 
                             $model->addError(
-                                $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
+                                    $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
                         }
-                    }else{
-                        if($field['required'] &&
-                           (!isset($model->{$field['fieldName']}) || 
-                            $model->{$field['fieldName']} == '')) {
+                    } else {
+                        if ($field['required'] &&
+                                (!isset($model->{$field['fieldName']}) ||
+                                $model->{$field['fieldName']} == '')) {
 
                             $model->addError(
-                                $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
+                                    $field['fieldName'], Yii::t('app', 'Cannot be blank.'));
                         }
                     }
                 }
             }
-            
-            $model->validate (null, false);
 
-            if(!$model->hasErrors()){
+            if ($extractedParams['requireCaptcha'] && CCaptcha::checkRequirements() &&
+                    array_key_exists('verifyCode', $_POST['Services'])) {
+                $model->verifyCode = $_POST['Services']['verifyCode'];
+            }
 
-                if($model->save()){
+            $model->validate(null, false);
+
+            if (!$model->hasErrors()) {
+                $success = $model->save();
+
+                if ($success) {
                     $model->name = $model->id;
+                    // reset scenario for webForms after saving
+                    $model->scenario = $extractedParams['requireCaptcha'] ? 'webFormWithCaptcha' : 'webForm';
                     $model->update(array('name'));
+                    $mediaLookups = $model->getMediaLookupFields();
+                    if (!empty($mediaLookups)) {
+                        $uploaded = $this->controller->uploadAssociatedMedia($model);
+                        if (!is_null($uploaded))
+                            $success = $success && $uploaded;
+                    }
 
-                    self::addTags ($model);
+                    self::addTags($model);
 
                     //use the submitted info to create an action
                     $action = new Actions;
-                    $action->actionDescription = Yii::t('contacts', 'Web Form')."\n\n".
-                            (isset($fullName) ? (Yii::t('contacts', 'Name').': '.$fullName."\n") : '').
-                            (isset($email) ? (Yii::t('contacts', 'Email').": ".$email."\n") : '').
-                            (isset($phone) ? (Yii::t('contacts', 'Phone').": ".$phone."\n") : '').
+                    $action->actionDescription = Yii::t('contacts', 'Web Form') . "\n\n" .
+                            (isset($fullName) ? (Yii::t('contacts', 'Name') . ': ' . $fullName . "\n") : '') .
+                            (isset($email) ? (Yii::t('contacts', 'Email') . ": " . $email . "\n") : '') .
+                            (isset($phone) ? (Yii::t('contacts', 'Phone') . ": " . $phone . "\n") : '') .
                             (isset($description) ?
-                                (Yii::t('services', 'Description').": ".$description) : '');
+                            (Yii::t('services', 'Description') . ": " . $description) : '');
 
                     // create action
                     $action->type = 'note';
@@ -607,49 +514,55 @@ class WebFormAction extends CAction {
                     $action->updatedBy = 'admin';
                     $action->save();
 
-                    if(isset($email)){
+                    if ($success && isset($email)) {
 
                         //send email
-                        $emailBody = Yii::t('services', 'Hello').' '.$fullName.",<br><br>";
-                        $emailBody .= Yii::t('services',
-                            'Thank you for contacting our Technical Support '.
-                            'team. This is to verify we have received your request for Case# '.
-                            '{casenumber}. One of our Technical Analysts will contact you shortly.',
-                            array('{casenumber}' => $model->id));
+                        $emailBody = Yii::t('services', 'Hello') . ' ' . $fullName . ",<br><br>";
+                        $emailBody .= Yii::t('services', 'Thank you for contacting our Technical Support ' .
+                                        'team. This is to verify we have received your request for Case# ' .
+                                        '{casenumber}. One of our Technical Analysts will contact you shortly.', array('{casenumber}' => $model->id));
 
                         $emailBody = Yii::app()->settings->serviceCaseEmailMessage;
-                        if(isset($firstName))
+                        if (isset($firstName)) {
                             $emailBody = preg_replace('/{first}/u', $firstName, $emailBody);
-                        if(isset($lastName))
+                        }
+                        if (isset($lastName)) {
                             $emailBody = preg_replace('/{last}/u', $lastName, $emailBody);
-                        if(isset($phone))
+                        }
+                        if (isset($phone)) {
                             $emailBody = preg_replace('/{phone}/u', $phone, $emailBody);
-                        if(isset($email))
+                        }
+                        if (isset($email)) {
                             $emailBody = preg_replace('/{email}/u', $email, $emailBody);
-                        if(isset($description))
+                        }
+                        if (isset($description)) {
                             $emailBody = preg_replace('/{description}/u', $description, $emailBody);
+                        }
                         $emailBody = preg_replace('/{case}/u', $model->id, $emailBody);
                         $emailBody = preg_replace('/\n|\r\n/', "<br>", $emailBody);
 
                         $uniqueId = md5(uniqid(rand(), true));
-                        $emailBody .= '<img src="'.Yii::app()->createExternalUrl(
-                            '/actions/actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')).'"/>';
+                        $emailBody .= '<img src="' . Yii::app()->createExternalUrl(
+                                        '/actions/actions/emailOpened', array('uid' => $uniqueId, 'type' => 'open')) . '"/>';
 
                         $emailSubject = Yii::app()->settings->serviceCaseEmailSubject;
-                        if(isset($firstName))
+                        if (isset($firstName)) {
                             $emailSubject = preg_replace('/{first}/u', $firstName, $emailSubject);
-                        if(isset($lastName))
+                        }
+                        if (isset($lastName)) {
                             $emailSubject = preg_replace('/{last}/u', $lastName, $emailSubject);
-                        if(isset($phone))
+                        }
+                        if (isset($phone)) {
                             $emailSubject = preg_replace('/{phone}/u', $phone, $emailSubject);
-                        if(isset($email))
+                        }
+                        if (isset($email)) {
                             $emailSubject = preg_replace('/{email}/u', $email, $emailSubject);
-                        if(isset($description))
-                            $emailSubject = preg_replace('/{description}/u', $description,
-                                $emailSubject);
+                        }
+                        if (isset($description)) {
+                            $emailSubject = preg_replace('/{description}/u', $description, $emailSubject);
+                        }
                         $emailSubject = preg_replace('/{case}/u', $model->id, $emailSubject);
-                        if(Yii::app()->settings->serviceCaseEmailAccount != 
-                           Credentials::LEGACY_ID) {
+                        if (Yii::app()->settings->serviceCaseEmailAccount != Credentials::LEGACY_ID) {
                             $from = (int) Yii::app()->settings->serviceCaseEmailAccount;
                         } else {
                             $from = array(
@@ -658,16 +571,16 @@ class WebFormAction extends CAction {
                             );
                         }
                         $useremail = array('to' => array(array(isset($fullName) ?
-                            $fullName : '', $email)));
+                                    $fullName : '', $email)));
 
                         $status = $this->controller->sendUserEmail(
-                            $useremail, $emailSubject, $emailBody, null, $from);
+                                $useremail, $emailSubject, $emailBody, null, $from);
 
-                        if($status['code'] == 200){
-                            if($model->assignedTo != 'Anyone'){
+                        if ($status['code'] == 200) {
+                            if ($model->assignedTo != 'Anyone') {
                                 $profile = X2Model::model('Profile')->findByAttributes(
-                                    array('username' => $model->assignedTo));
-                                if(isset($profile)){
+                                        array('username' => $model->assignedTo));
+                                if (isset($profile)) {
                                     $useremail['to'] = array(
                                         array(
                                             $profile->fullName,
@@ -675,11 +588,11 @@ class WebFormAction extends CAction {
                                         ),
                                     );
                                     $emailSubject = 'Service Case Created';
-                                    $emailBody = "A new service case, #".$model->id.
-                                        ", has been created in X2Engine. To view the case, click ".
-                                        "this link: ".$model->getLink();
+                                    $emailBody = "A new service case, #" . $model->id .
+                                            ", has been created in X2Engine. To view the case, click " .
+                                            "this link: " . $model->getLink();
                                     $status = $this->controller->sendUserEmail(
-                                        $useremail, $emailSubject, $emailBody, null, $from);
+                                            $useremail, $emailSubject, $emailBody, null, $from);
                                 }
                             }
                             //email action
@@ -695,9 +608,9 @@ class WebFormAction extends CAction {
                             $action->createDate = time();
                             $action->dueDate = time();
                             $action->completeDate = time();
-                            $action->actionDescription = '<b>'.$model->subject."</b>\n\n".
-                                $emailBody;
-                            if($action->save()){
+                            $action->actionDescription = '<b>' . $model->subject . "</b>\n\n" .
+                                    $emailBody;
+                            if ($action->save()) {
                                 $track = new TrackEmail;
                                 $track->actionId = $action->id;
                                 $track->uniqueId = $uniqueId;
@@ -705,42 +618,39 @@ class WebFormAction extends CAction {
                             }
                         } else {
                             $errMsg = 'Error: actionWebForm.php: sendUserEmail failed';
-                            /**/AuxLib::debugLog ($errMsg);
-                            Yii::log ($errMsg, '', 'application.debug');
+                            /**/AuxLib::debugLog($errMsg);
+                            Yii::log($errMsg, '', 'application.debug');
                         }
                     }
-                    $this->controller->renderPartial('application.components.views.webFormSubmit',
-                        array('type' => 'service', 'caseNumber' => $model->id));
+                    if ($success) {
+                        $this->controller->renderPartial('application.components.views.webFormSubmit', array(
+                            'type' => 'service',
+                            'caseNumber' => $model->id,
+                            'thankYouText' => $extractedParams['thankYouText'],
+                        ));
 
-                    Yii::app()->end(); // success!
+                        return; // to commit transaction
+                    }
                 }
             }
         }
 
-        $sanitizedGetParams = self::sanitizeGetParams ();
+        $sanitizedGetParams = self::sanitizeGetParams();
 
-        
-        if (Yii::app()->contEd('pro')) {
-            $viewParams = array_merge (array (
-                'model' => $model,
-                'type' => 'service',
-                'fieldList' => $extractedParams['fieldList'],
-                'css' => $extractedParams['css']
-            ), $sanitizedGetParams);
-            $this->controller->renderPartial('application.components.views.webForm', $viewParams);
-        } else {
-        
-            $this->controller->renderPartial (
-                'application.components.views.webForm',
-                array_merge (array(
-                    'model' => $model, 'type' => 'service'
-                ), $sanitizedGetParams));
-        
+
+        $viewParams = array_merge(array(
+            'model' => $model,
+            'type' => 'service',
+            'fieldList' => $extractedParams['fieldList'],
+            'css' => $extractedParams['css'],
+            'requireCaptcha' => $extractedParams['requireCaptcha'],
+                ), $sanitizedGetParams);
+        $this->controller->renderPartial('application.components.views.webForm', $viewParams);
+
+        if (isset($success) && $success === false) {
+            throw new WebFormException;
         }
-        
     }
-
-
 
     /**
      * Create a web lead form with a custom style
@@ -758,61 +668,82 @@ class WebFormAction extends CAction {
      * the form that posts for weblist type
      *
      */
-    public function run(){
+    public function run() {
         $modelClass = $this->controller->modelClass;
-        if ($modelClass === 'Campaign') $modelClass = 'Contacts';
+        if ($modelClass === 'Campaign') {
+            $modelClass = 'Contacts';
+        }
 
-        if ($modelClass === 'Contacts')
-            $model = new Contacts ('webForm');
-        elseif ($modelClass === 'Services')
-            $model = new Services ('webForm');
+        if ($modelClass === 'Contacts') {
+            $model = new Contacts('webForm');
+        } elseif ($modelClass === 'Services') {
+            $model = new Services('webForm');
+        }
 
-        $extractedParams = array ();
+        $extractedParams = array();
 
-        if (isset ($_GET['webFormId'])) { 
+        if (isset($_GET['webFormId'])) {
             $webForm = WebForm::model()->findByPk($_GET['webFormId']);
-        } 
+        }
         $extractedParams['leadSource'] = null;
         $extractedParams['generateLead'] = false;
         $extractedParams['generateAccount'] = false;
         $extractedParams['redirectUrl'] = null;
-        if (isset ($webForm)) { // new method
-            if (!empty ($webForm->leadSource)) 
+        $extractedParams['requireCaptcha'] = false;
+        $extractedParams['thankYouText'] = false;
+        if (isset($webForm)) { // new method
+            if (!empty($webForm->leadSource)) {
                 $extractedParams['leadSource'] = $webForm->leadSource;
-            if (!empty ($webForm->generateLead)) 
+            }
+            if (!empty($webForm->generateLead)) {
                 $extractedParams['generateLead'] = $webForm->generateLead;
-            if (!empty ($webForm->generateAccount)) 
+            }
+            if (!empty($webForm->generateAccount)) {
                 $extractedParams['generateAccount'] = $webForm->generateAccount;
-            if (!empty ($webForm->redirectUrl)) 
+            }
+            if (!empty($webForm->requireCaptcha)) {
+                $extractedParams['requireCaptcha'] = $webForm->requireCaptcha;
+                if ($webForm->requireCaptcha) {
+                    $model->scenario = 'webFormWithCaptcha';
+                }
+            }
+            if (!empty($webForm->redirectUrl)) {
                 $extractedParams['redirectUrl'] = $webForm->redirectUrl;
+            }
+            if (!empty($webForm->thankYouText)) {
+                $extractedParams['thankYouText'] = $webForm->thankYouText;
+            }
         }
 
-        
+
         if (Yii::app()->contEd('pro')) {
 
             // retrieve list of fields (if any)
-            $fieldList = array ();
-            if (isset ($webForm))
-                $fieldList = CJSON::decode ($webForm->fields);
+            $fieldList = array();
+            if (isset($webForm)) {
+                $fieldList = CJSON::decode($webForm->fields);
+            }
 
             // purify fields
             $purifier = new CHtmlPurifier ();
-            if (is_array ($fieldList) && sizeof ($fieldList) > 0) {
-                foreach($fieldList as &$field){
+            if (is_array($fieldList) && sizeof($fieldList) > 0) {
+                foreach ($fieldList as &$field) {
                     $tempField = array();
-                    foreach($field as $key => $val){
-                        $key=$purifier->purify($key);
+                    foreach ($field as $key => $val) {
+                        $key = $purifier->purify($key);
                         $tempField[$key] = $purifier->purify($val);
                     }
                     $field = $tempField;
                 }
             }
 
-            if (!is_array($fieldList)) $fieldList = array ();
+            if (!is_array($fieldList)) {
+                $fieldList = array();
+            }
             $extractedParams['fieldList'] = $fieldList;
 
             $css = '';
-            if(isset($_GET['css'])){
+            if (isset($_GET['css'])) {
                 $css = $purifier->purify($_GET['css']);
             }
             $extractedParams['css'] = $css;
@@ -821,66 +752,49 @@ class WebFormAction extends CAction {
                 $extractedParams['header'] = '';
                 $extractedParams['userEmailTemplate'] = null;
                 $extractedParams['webleadEmailTemplate'] = null;
+                $extractedParams['fingerprintDetection'] = true;
 
-                if (isset ($webForm)) { // new method
-                    if (!empty ($webForm->header)) 
+                if (isset($webForm)) { // new method
+                    if (!empty($webForm->header))
                         $extractedParams['header'] = $webForm->header;
-                    if (!empty ($webForm->userEmailTemplate)) 
+                    if (!empty($webForm->userEmailTemplate))
                         $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
-                    if (!empty ($webForm->webleadEmailTemplate)) 
+                    if (!empty($webForm->webleadEmailTemplate))
                         $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
+                    if (empty($webForm->fingerprintDetection))
+                        $extractedParams['fingerprintDetection'] = $webForm->fingerprintDetection;
                 } else { // legacy method
-                    if(isset($_GET['header'])){ 
+                    if (isset($_GET['header'])) {
                         $webFormLegacy = WebForm::model()->findByPk($_GET['header']);
-                        if($webFormLegacy){
+                        if ($webFormLegacy) {
                             $extractedParams['header'] = $webFormLegacy->header;
                         }
                     }
                 }
             }
         }
-        
 
-        if ($modelClass === 'Contacts') {
-            $this->handleWebleadFormSubmission ($model, $extractedParams);
-        } else if ($modelClass === 'Services') {
-            $this->handleServiceFormSubmission ($model, $extractedParams);
-        }
 
-    }
-
-    /**
-     * Creates a new lead and associates it with the contact
-     * @param Contacts $contact
-     * @param null|string $leadSource
-     */
-    private static function generateLead (Contacts $contact, $leadSource=null) {
-        $lead = new X2Leads ('webForm');
-        $lead->firstName = $contact->firstName;
-        $lead->lastName = $contact->lastName;
-        $lead->leadSource = $leadSource;
-        // disable validation to prevent saving from failing if leadSource isn't set
-        if ($lead->save (false)) {
-            $lead->createRelationship($contact);
-        }
-
-    }
-
-    /**
-     * Generates an account from the contact's company field, if that field has a value 
-     */
-    private static function generateAccount (Contacts $contact) {
-        if (isset ($contact->company)) {
-            $account = new Accounts ();
-            $account->name = $contact->company;
-            if ($account->save ()) {
-                $account->refresh ();
-                $contact->company = $account->nameId;
-                $contact->update ();
+        $transaction = Yii::app()->db->beginTransaction();
+        try {
+            if ($modelClass === 'Contacts') {
+                $this->handleWebleadFormSubmission($model, $extractedParams);
+            } else if ($modelClass === 'Services') {
+                $this->handleServiceFormSubmission($model, $extractedParams);
             }
+            $transaction->commit();
+        } catch (WebFormException $e) {
+            AuxLib::debugLog('Failed to save webform, rolling back transaction');
+            $transaction->rollback();
         }
+        Yii::app()->end();
     }
 
+}
+
+// Exception for triggering transaction rollback
+class WebFormException extends CException {
+    
 }
 
 ?>

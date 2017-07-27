@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,14 +29,16 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import ('application.modules.accounts.models.*');
 
 /**
+ * Tests X2FlowRecordCreateAction action
+ *
  * @package application.tests.unit.components.x2flow.actions
  */
 class X2FlowRecordCreateActionTest extends X2FlowTestBase {
@@ -45,103 +46,62 @@ class X2FlowRecordCreateActionTest extends X2FlowTestBase {
     public $fixtures = array (
         'x2flow' => array ('X2Flow', '.X2FlowRecordCreateAction'),
         'accounts' => array ('Accounts', '_1'),
+        'campaigns' => 'Campaign',
         'contacts' => 'Contacts',
+        'opportunities' => 'Opportunity',
         'x2leads' => 'X2Leads',
     );
 
     /**
-     * The flow creates a contact with a company field pointing to the account that
-     * triggered the flow.
+     * These flows ensure that an action can be created for different record types,
+     * including those with singular/plural mismatches
      */
-    public function testCreateContactWithLinkTypeFieldSet () {
+    public function testCreateActionForRecord () {
         TestingAuxLib::suLogin ('admin');
-        $flow = $this->getFlow ($this,'flow1');
-        $account = $this->accounts ('account1');
-        $params = array (
-            'model' => $account,
-            'modelClass' => 'Accounts',
-        );
-        $retVal = $this->executeFlow ($this->x2flow ('flow1'), $params);
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
 
-        // assert flow executed without errors
-        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+        // Test create action for Contacts
+        $contact = $this->contacts('testUser');
+        $this->executeCreateActionForRecordFlow('flow4', $contact);
+        $this->assertRecordsActionCreated($contact, 'contacts');
 
-        $createdContact = Contacts::model ()->findByAttributes (array (
-                'firstName' => 'test',
-                'lastName' => 'test'
-            ));
+        // Test create action for Opportunities
+        $opportunity = $this->opportunities('ddp');
+        $this->executeCreateActionForRecordFlow('flow5', $opportunity);
+        $this->assertRecordsActionCreated($opportunity, 'opportunities');
 
-        // assert that contact with correct first name and last name was created by flow
-        $this->assertTrue ($createdContact !== null);
+        // Test create action for X2Leads
+        $lead = $this->x2leads('0');
+        $this->executeCreateActionForRecordFlow('flow6', $lead);
+        $this->assertRecordsActionCreated($lead, 'x2leads');
 
-        /*
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($createdContact->getAttributes ());
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($account->getAttributes ());*/
-
-        $relatedX2Models = $createdContact->getRelatedX2Models ();
-
-        // assert that relationship was created from link type field
-        $this->assertTrue (sizeof ($relatedX2Models) !== 0);
-
-        // assert that correct relationship was created from link type field
-        $this->assertTrue (in_array ($account->id, array_map (function ($elem) {
-            return $elem->id; 
-        }, $relatedX2Models)));
-
+        // Test create action for Campaigns
+        $campaign = $this->campaigns('testUser');
+        $this->executeCreateActionForRecordFlow('flow7', $campaign);
+        $this->assertRecordsActionCreated($campaign, 'marketing');
     }
 
-    /**
-     * Tests the create relationship option 
-     */
-    public function testCreateRelationship () {
+    private function executeCreateActionForRecordFlow($flowName, X2Model $model) {
+        $flow = $this->x2flow ($flowName);
         $params = array (
-            'user' => 'admin'
+            'model' => $model,
+            'modelClass' => get_class($model),
         );
-        $account = $this->accounts ('account1');
-        $params = array (
-            'model' => $account,
-            'modelClass' => 'Accounts',
-        );
-        $retVal = $this->executeFlow ($this->x2flow ('flow2'), $params);
-
+        $retVal = $this->executeFlow ($flow, $params);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
-        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
-        $lead = X2Leads::model()->findByAttributes (array (
-            'firstName' => 'test',
-            'lastName' => 'test'
+        // assert flow executed without errors and action was created
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
+    }
+
+    private function assertRecordsActionCreated(X2Model $model, $associationType) {
+        $createdAction = Actions::model ()->findByAttributes (array (
+            'associationType' => $associationType,
+            'associationId' => $model->id,
+            'subject' => 'take action',
         ));
-        $this->assertTrue ($lead !== null);
 
-        // assert that lead is related to account
-        $relatedModels = $lead->getRelatedX2Models ();
-        $this->assertTrue (in_array ($account->id, array_map (function ($elem) {
-            return $elem->id; 
-        }, $relatedModels)));
-    }
-
-    /**
-     * Tests record attribute replacement tokens 
-     */
-    public function testTokenReplacement () {
-        $contact = $this->contacts ('testAnyone');
-        $params = array (
-            'model' => $contact,
-            'modelClass' => 'Contacts',
-        );
-        $retVal = $this->executeFlow ($this->x2flow ('flow3'), $params);
-
-        $date = Formatter::formatDate(time(), "long", false);
-
-        X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal['trace']);
-        $this->assertTrue ($this->checkTrace ($retVal['trace']));
-
-        $this->assertTrue (Contacts::model ()->findByAttributes (array (
-            'firstName' => 'Test '.$date,
-            'lastName' => '1'.$date,
-            'city' => $contact->firstName.' TEST',
-        )) instanceof Contacts);
+        // assert that a related action was created
+        $this->assertTrue ($createdAction !== null);
     }
 }
 

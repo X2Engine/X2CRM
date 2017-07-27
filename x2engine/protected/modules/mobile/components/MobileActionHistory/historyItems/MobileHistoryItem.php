@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 class MobileHistoryItem extends CComponent {
@@ -46,7 +45,7 @@ class MobileHistoryItem extends CComponent {
                 </div>
                 <div class="history-item-content-container-outer">
                     <div class="history-item-date-line"> 
-                        {dateLine}
+                        {dateLine} {deleteItem}
                     </div>
                     <div class="history-item-content"> 
                         {content}
@@ -70,13 +69,27 @@ class MobileHistoryItem extends CComponent {
         );
     }
 
+    public function renderDeleteItem () {
+        return '<a class="delete-button requires-confirmation" '
+            . 'href="'.Yii::app()->createAbsoluteUrl ('actions/mobileDelete',
+            array('id'=>$this->action->id,)).'">'.X2Html::fa ("fa-trash").'</a>'
+            .            '<div class="confirmation-text" style="display: none;">
+
+                Are you sure you want to delete this?
+            </div>';
+    }
+    
     public function renderDateLine () {
         return Yii::app()->dateFormatter->formatDateTime (
             $this->action->createDate, 'medium', 'short');
     }
 
     public function renderAuthor () {
-        return $this->action->renderAttribute ('completedBy', true, false, false);
+        if($this->action->complete == 'Yes'){
+            return $this->action->renderAttribute ('completedBy', true, false, false);
+        } else {
+            return $this->action->renderAttribute ('assignedTo', true, false, false);
+        }
     }
 
     public function renderContent () {
@@ -84,8 +97,21 @@ class MobileHistoryItem extends CComponent {
     }
 
     public function renderIcon () {
+        if (empty($this->action->type)) {
+            if ($this->action->complete == 'Yes') {
+                $type = 'complete';
+            } else {
+                $type = 'action';
+            }
+        } else {
+            if ($this->action->type === 'emailFrom') {
+                $type = 'email';
+            } else {
+                $type = $this->action->type;
+            }
+        }
         return '
-            <div class="icon '.$this->action->type.'">
+            <div class="icon '.$type.'">
             <div class="stacked-icon"></div></div>';
     }
 

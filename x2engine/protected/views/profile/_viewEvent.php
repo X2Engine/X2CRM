@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 if (class_exists($data->associationType)) {
@@ -162,9 +161,9 @@ $important = $data->important ? 'important-action' : '';
         }
         ?>
         <?php
-        if ($data->isTypeFeed ()) {
+        /*if ($data->isTypeFeed ()) {
             echo Profile::renderFullSizeAvatar($profId, 35);
-        }
+        }*/
         ?>
         <div class='stacked-icon'></div>
     </div>
@@ -182,18 +181,16 @@ $important = $data->important ? 'important-action' : '';
             <?php
             echo Formatter::convertLineBreaks(x2base::convertUrls($data->getText()));
             ?>
+
+                <?php
+                    $location = $data->location;
+                    if ($location) {          
+                ?>
+                    <a target="_blank" href='<?php echo $location->getLocationLink(X2Html::fa('crosshairs'),true); ?>'><?php echo X2Html::fa('fa-location-arrow'); ?></a>  
+                <?php
+                    }
+                ?>
         </span>
-        <div class='event-attachments'>
-        <?php
-            foreach ($data->media as $media) {
-            ?>
-            <div class='photo-attachment-container'>
-                <?php echo $media->getImage (false, array ('photo-attachment')); ?>
-            </div>
-            <?php
-            }
-        ?>
-        </div>
         <div class='event-bottom-row'>
             <span class="comment-age x2-hint" id="<?php echo $data->id . "-" . $data->timestamp; ?>" 
                   style="<?php echo $style; ?>"
@@ -320,6 +317,13 @@ $important = $data->important ? 'important-action' : '';
                     'class' => 'broadcast-button',
                         )
                 );
+
+                if (Yii::app()->settings->enableMaps && ($data->location || (isset($associatedModel) && $associatedModel instanceof Actions && $associatedModel->location))) {
+                    $location = $data->location ? $data->location : $associatedModel->location;
+                    echo '<span style="margin: 10px;">';
+                    echo $location->getLocationLink(X2Html::fa('crosshairs'));
+                    echo '</span>';
+                }
                 ?>
             </span>
         </div>

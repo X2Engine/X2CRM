@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 class MobilePublisherAction extends MobileAction {
@@ -41,39 +40,127 @@ class MobilePublisherAction extends MobileAction {
     public function run () {
         $model = new EventPublisherFormModel;
         $profile = Yii::app()->params->profile;
+        $settings = Yii::app()->settings;
+        $creds = Credentials::model()->findByPk($settings->googleCredentialsId);
+        $key = null;
+        if($creds && $creds->auth && $creds->auth->apiKey){
+            $key = $creds->auth->apiKey;
+        }
+        if (isset ($_POST['geoCoords']) && isset ($_POST['geoLocationCoords'])) {
+            $decodedResponse = $_POST['geoLocationCoords'];
+            if ($key && $decodedResponse === 'set'){
+                $decodedResponse = json_decode($_POST['geoCoords'],true);
+                //https://davidwalsh.name/curl-post
+                //extract data from the post
+                //set POST variables
+                $url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' .
+                    $decodedResponse['lat'] . ',' . $decodedResponse['lon'] . 
+                    '&key=' . $key;
+                //open connection
+                $ch = curl_init();
+
+                //set the url, number of POST vars, POST data
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch,CURLOPT_URL, $url);
+
+                //execute post
+                $result = curl_exec($ch);
+                //close connection
+                echo $result;
+                curl_close($ch);
+
+                Yii::app()->end ();
+            }        
+        }
 
         if (isset ($_POST['EventPublisherFormModel'])) {
+            $location = Yii::app()->params->profile->user->logLocation('mobileCheckIn', 'POST');
+            $decodedResult = $location ? $location->generateStaticMap() : null;
+            
             $model->setAttributes ($_POST['EventPublisherFormModel']);
             if (isset ($_FILES['EventPublisherFormModel'])) {
-                $model->photo = CUploadedFile::getInstance ($model, 'photo');
+                if ($decodedResult) {
+                    $model->photo = CUploadedFile::getInstance ($model, 'photo');
+                }
+                //$model->audio = CUploadedFile::getInstance ($model, 'audio');
+                //$model->video = CUploadedFile::getInstance ($model, 'video');
+                
             }
+            
             //AuxLib::debugLogR ('validating');
             if ($model->validate ()) {
                 //AuxLib::debugLogR ('valid');
                 $event = new Events;
-                $event->setAttributes (array (
-                    'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
-                    'user' => $profile->username,
-                    'type' => 'structured-feed',
-                    'text' => $model->text,
-                    'photo' => $model->photo
-                ), false);
-                if ($event->save ()) {
-                    if (!isset ($_FILES['EventPublisherFormModel'])) {
-                        //AuxLib::debugLogR ('saved');
-                        $this->controller->redirect (
-                            $this->controller->createAbsoluteUrl (
-                                '/profile/mobileActivity'));
+                $eventTextLocation = '';
+                if (!empty($model->textLocation)) {
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$' . 
+                              $model->textLocation . ' | '. 
+                              Formatter::formatDateTime(time());
+                } else {
+                    $eventTextLocation = $model->text . '$|&|$' . ' ' . '$|&|$';
+                }
+                    
+                if ($model->photo || $model->audio) {
+                    $event->setAttributes (array (
+                        'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
+                        'user' => $profile->username,
+                        'type' => 'media',
+                        'text' => $eventTextLocation,
+                        'photo' => $model->photo,
+                        'audio' => $model->audio
+                        //'video' => $model->video
+                    ), false);
+                } else {
+                    $event->setAttributes (array (
+                        'visibility' => X2PermissionsBehavior::VISIBILITY_PUBLIC,
+                        'user' => $profile->username,
+                        'type' => 'feed',
+                        'text' => $eventTextLocation,
+                        'photo' => $model->photo,
+                        'audio' => $model->audio
+                        //'video' => $model->video
+                    ), false);                    
+                }
+                
+                if ($location) {
+                    $event->locationId = $location->id;
+                }
+                if ($key && !empty($decodedResult) && !empty($model->textLocation)) {
+                    if ($event->saveRaw ($profile,$decodedResult)) {
+                        if (!isset ($_FILES['EventPublisherFormModel'])) {
+                            //AuxLib::debugLogR ('saved');
+                            $this->controller->redirect (
+                                $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'));
+                        } else {
+                            echo CJSON::encode (array ( 
+                                'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'),
+                            ));
+                            Yii::app()->end ();
+                        }
                     } else {
-                        echo CJSON::encode (array ( 
-                            'redirectUrl' => $this->controller->createAbsoluteUrl (
-                                '/profile/mobileActivity'),
-                        ));
-                        Yii::app()->end ();
+                        //AuxLib::debugLogR ('invalid');
+                        throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
                     }
                 } else {
-                    //AuxLib::debugLogR ('invalid');
-                    throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                    if ($event->save ()) {
+                        if (!isset ($_FILES['EventPublisherFormModel'])) {
+                            //AuxLib::debugLogR ('saved');
+                            $this->controller->redirect (
+                                $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'));
+                        } else {
+                            echo CJSON::encode (array ( 
+                                'redirectUrl' => $this->controller->createAbsoluteUrl (
+                                    '/profile/mobileActivity'),
+                            ));
+                            Yii::app()->end ();
+                        }
+                    } else {
+                        //AuxLib::debugLogR ('invalid');
+                        throw new CHttpException (500, implode (';', $event->getAllErrorMessages ()));
+                    }
                 }
             } else {
                 if (isset ($_FILES['EventPublisherFormModel'])) {

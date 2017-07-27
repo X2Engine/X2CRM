@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
@@ -53,10 +52,19 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
      
     /**
-     *  @var string Used for Google+ integration
+     *  @var string Used for Google+ and Google APIs integration
      */
     public $apiKey = '';
-     
+    
+    /**
+     *  @var string the path for the Service Account key file used for Google+ and Google APIs integration
+     */
+    public $serviceAccountKeyFileContents = '';
+    
+    /**
+     *  @var string project id used for Google+ and Google APIs integration
+     */
+    public $projectId = '';
 
     // pseudo-attributes which belong to Admin. These don't get enrypted with the other attributes,
     // but do get rendered in the same form
@@ -64,7 +72,7 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     private $_gaTracking_public;
 
     public function getProtectedFields () {
-        return array ('clientId', 'clientSecret', 'apiKey');
+        return array ('clientId', 'clientSecret', 'apiKey', 'serviceAccountKeyFileContents', 'projectId');
     }
 
     public function renderForm () {
@@ -83,10 +91,10 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
     }
 
     public function rules(){
-        return array(
-             
-            array('apiKey', 'safe'),
-             
+        return array(      
+            array('apiKey', 'safe'),          
+            array('projectId', 'safe'),         
+            array ('serviceAccountKeyFileContents', 'safe'),          
             array('clientId,clientSecret', 'safe'),
         );
     }
@@ -133,6 +141,8 @@ class GoogleProject extends JSONEmbeddedModel implements AdminOwnedCredentials {
             'clientSecret' => Yii::t('app','Client Secret'),
              
             'apiKey' => Yii::t('app','API Key'),
+            'serviceAccountKeyFileContents' => Yii::t('app','Service Account File Key'),
+            'projectId' => Yii::t('app','Google API Project ID'),
              
             'gaTracking_public' => Yii::t('app','Google Analytics Property ID (public)'),
             'gaTracking_internal' => Yii::t('app','Google Analytics Property ID (internal)'),

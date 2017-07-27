@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::app()->clientScript->registerPackage ('X2CSS');
@@ -63,8 +62,19 @@ $passVariablesToClientScript = "
     x2.profileSettings.translations = {
         themeImportDialogTitle: '".Yii::t('profile', 'Import a Theme')."',
         close: '".Yii::t('app', 'close')."',
+        enableTwoFAMessage: '".Yii::t('profile', 'Are you sure you want to enable two factor authentication?')."',
+        disableTwoFAMessage: '".Yii::t('profile', 'Are you sure you want to disable two factor authentication?')."',
+        twoFACodeSentMessage: '".Yii::t('profile', 'A verification code has been sent to your phone number ').$model->cellPhone."',
+        enableTwoFASuccessMessage: '".Yii::t('profile', 'Two factor authentication had been enabled')."',
+        disableTwoFASuccessMessage: '".Yii::t('profile', 'Two factor authentication had been disabled')."',
     };
     x2.profileSettings.uploadedByAttrs = {};
+    x2.profileSettings.beginTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/beginTwoFactorActivation"))."';
+    x2.profileSettings.completeTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/completeTwoFactorActivation"))."';
+    x2.profileSettings.disableTwoFAUrl = '".
+        CHtml::normalizeUrl(array("/profile/disableTwoFactor"))."';
 ";
 
 // pass array of predefined theme uploadedBy attributes to client
@@ -131,7 +141,7 @@ $form = $this->beginWidget('X2ActiveForm', array(
         </div>
     </div>
     <?php } ?>
-     <div class="row" style="margin-bottom:10px;">
+     <div class="row">
         <div class="cell">
             <?php
             echo $form->checkBox(
@@ -140,6 +150,32 @@ $form = $this->beginWidget('X2ActiveForm', array(
             <?php
             echo $form->labelEx(
                     $model, 'disableNotifPopup', array('style' => 'display:inline;'));
+            ?>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom:10px;">
+        <div class="cell">
+            <?php
+            if (Yii::app()->settings->twoFactorCredentialsId && !empty($model->cellPhone)) {
+                echo $form->checkBox(
+                        $model, 'enableTwoFactor', array('onchange' => 'js:x2.profileSettings.initiateTwoFAActivation(this);'));
+                echo $form->labelEx(
+                        $model, 'enableTwoFactor', array('style' => 'display:inline;'));
+                echo X2Html::hint2 (
+                    Yii::t('app', 'Enable two factor authentication to require a verification code on login'));
+                echo CHtml::textField('code', '', array('class' => 'twofa-activation', 'style' => 'display: none', 'placeholder' => Yii::t('profile', 'Verification Code'), 'autocomplete' => 'off'));
+                echo CHtml::button(Yii::t('profile', 'Activate'), array('class' => 'twofa-activation', 'style' => 'display: none'));
+            } else {
+                // Two factor auth is not yet configured
+                if (empty($model->cellPhone))
+                    $twoFactorTip = Yii::t('profile', 'Please add your cell phone number to enable two factor authentication');
+                else
+                    $twoFactorTip = Yii::t('profile', 'Please configure credentials in the security settings page to enable two factor authentication');
+                echo $form->checkBox(
+                        $model, 'enableTwoFactor', array('disabled' => 'disabled','style' => 'display:inline;opacity:0.5;'));
+                echo $form->labelEx(
+                        $model, 'enableTwoFactor', array('title' => $twoFactorTip, 'style' => 'display:inline;opacity:0.5;'));
+            }
             ?>
         </div>
     </div>
@@ -240,6 +276,15 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 'class' => 'icon-button-min',
                 'title' => Yii::t('profile', 'Upload Notification Sound')
             ));
+            ?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'defaultCalendar'); ?>
+            <?php
+            echo $form->dropDownList(
+                $model, 'defaultCalendar', X2CalendarPermissions::getEditableUserCalendarNames());
             ?>
         </div>
     </div>

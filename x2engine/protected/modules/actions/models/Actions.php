@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.models.X2Model');
@@ -81,6 +80,9 @@ class Actions extends X2Model {
         'emailInboxId' => null,
         'emailFolderName' => null,
         'emailUidValidity' => null,
+        
+        'etag'=> null,
+        'remoteCalendarUrl' => null,
         
     );
 
@@ -148,8 +150,7 @@ class Actions extends X2Model {
     }
 
     public function behaviors(){
-        $that = $this;
-        return array(
+        $behaviors =  array(
             'LinkableBehavior' => array(
                 'class' => 'LinkableBehavior',
                 'module' => 'actions'
@@ -168,6 +169,18 @@ class Actions extends X2Model {
                 'fileAttribute' => 'upload'
             ),
         );
+        if(!$this->isNewRecord && $this->type==='event'){
+            $emailAddresses = Yii::app()->db->createCommand()
+                ->select('email')
+                ->from('x2_calendar_invites')
+                ->where('actionId = :id',array(':id' => $this->id))
+                ->queryColumn();
+            $behaviors['CalendarInviteBehavior'] = array(
+                'class' => 'CalendarInviteBehavior',
+                'emailAddresses' => $emailAddresses,
+            );
+        }
+        return $behaviors;
     }
 
     /**
@@ -179,7 +192,7 @@ class Actions extends X2Model {
             array(
                 array('allDay', 'boolean'),
                 array('associationId,associationType','requiredAssoc'),
-                array('createDate, completeDate, lastUpdated', 'numerical', 'integerOnly' => true),
+                array('createDate, completeDate, lastUpdated, calendarId', 'numerical', 'integerOnly' => true),
                 array(
                     'id,assignedTo,actionDescription,visibility,associationId,associationType,'.
                     'associationName,dueDate,priority,type,createDate,complete,reminder,'.
@@ -209,6 +222,8 @@ class Actions extends X2Model {
             'timers' => array(self::HAS_MANY,'ActionTimer','actionId'),
             'media' => array (
                 self::MANY_MANY, 'Media', 'x2_actions_to_media(actionsId, mediaId)'),
+            'location' => array(self::BELONGS_TO, 'Locations', 'locationId'),
+            'invites' => array(self::HAS_MANY,'CalendarInvites','actionId'),
             //'assignee' => array(self::BELONGS_TO,'User',array('assignedTo'=>'username')),
         ));
     }
@@ -292,6 +307,10 @@ class Actions extends X2Model {
         return $success;
     }
 
+    public function getMetaDataFieldNames() {
+        return array_keys($this->metaDataTemp);
+    }
+
     /**
      * Retrieve a list of model links, indexed by model name
      * @return array
@@ -300,7 +319,11 @@ class Actions extends X2Model {
         $multiAssociationLinks = array();
         foreach ($this->getMultiassociations() as $type => $models) {
             foreach ($models as $model) {
-                $multiAssociationLinks[$type][] = X2Model::getModelLink($model->id, $type);
+                if ($model) {
+                    $link = X2Model::getModelLink($model->id, $type);
+                    if ($link)
+                        $multiAssociationLinks[$type][] = $link;
+                }
             }
         }
         return $multiAssociationLinks;
@@ -408,6 +431,94 @@ class Actions extends X2Model {
     public function getAssociation () {
         return self::getAssociationModel($this->associationType, $this->associationId);
     }
+    
+    /**
+     * Includes text to an action or creates one if it doesn't already exist
+     * @param string $textToBeIncluded the text to be included in the action description
+     * @return 
+     */
+    public function includeTextToAction($textToBeIncluded){
+        // No action text exists for this yet
+        if(!($this->actionText instanceof ActionText)){
+            $actionText = new ActionText; // Create new one
+            $actionText->actionId = $this->id;
+            $actionText->text = $textToBeIncluded; // A magic setter sets actionDescriptionTemp value
+            $actionText->save();
+        }else{ // We have an action text
+            if($this->actionText->text != $textToBeIncluded){ // Only update if different
+                $this->actionText->text = $textToBeIncluded;
+                $this->actionText->save();
+            }
+        }
+        return;
+
+    }
+
+    /**
+     * Creates a photo (.png) under uploads/protected/media/[USER] given the raw data 
+     * and relates it to an action. The relationship is stored in 'x2_actions_to_media'
+     * @param User $profile the profile of the user that did the action
+     * @param string $attachmentData raw image data (format png)
+     * @param Bool $runValidation used to enable/disable X2Flow record update trigger
+     * @param Array $attributes attributes for enabling/disabling X2Flow record update trigger
+     * @return Bool
+     */
+    public function saveRaw ($profile, $attachmentData, $runValidation=true, $attributes=null) {
+
+            // save related photo record
+            $transaction = Yii::app()->db->beginTransaction ();
+            try {
+                // save the event
+                $ret = parent::save ($runValidation, $attributes);
+                if (!$ret) {
+                    throw new CException (implode (';', $this->getAllErrorMessages ()));
+                }
+                //save the raw data to a file
+                $filename = md5(uniqid(rand(), true)) . '.png';
+                $fileType = 'image/png';
+                $userFolderPath = implode(DIRECTORY_SEPARATOR, array(
+                    Yii::app()->basePath,
+                    '..',
+                    'uploads',
+                    'protected',
+                    'media',
+                    $profile->username
+                ));
+                // add media record for file                
+                $media = new Media;
+                $media->setAttributes (array (
+                    'fileName' => $filename,
+                    'mimetype' => $fileType,
+                ), false);
+                $media->createDate = time();
+                $media->lastUpdated = time();
+                $media->uploadedBy = $profile->username;
+                $media->associationType = 'User';
+                $media->associationId = $profile->id;
+                $media->resolveNameConflicts();
+                $associatedMedia = Yii::app()->file->set($userFolderPath.DIRECTORY_SEPARATOR.$media->fileName);
+                $associatedMedia->create();
+                $associatedMedia->setContents($attachmentData);  
+                
+                if (!$media->save () && !$associatedMedia->exists) {
+                    throw new CException (implode (';', $media->getAllErrorMessages ()));
+                }
+                
+                // relate file to action
+                $join = new RelationshipsJoin ('insert', 'x2_actions_to_media');
+                $join->actionsId = $this->id;
+                $join->mediaId = $media->id;
+                if (!$join->save ()) {
+                    throw new CException (implode (';', $join->getAllErrorMessages ()));
+                }
+                $transaction->commit ();
+                return $ret;
+            } catch (CException $e) {
+                $transaction->rollback ();
+                return false;
+            }
+
+    }
 
     /**
      * Fixes up record association, parses dates (since this doesn't use 
@@ -479,12 +590,24 @@ class Actions extends X2Model {
                 X2Model::model('Actions')->deleteByPk($lastModifiedId);
             }
         }
-        
+
+        // Adjust pluralization on required models
+        if ($this->isNewRecord && !empty($this->associationType) &&
+            in_array($this->associationType, array('Opportunity', 'Product', 'Quote'))) {
+                $this->associationType = X2Model::getAssociationType($this->associationType);
+        }
 
         return parent::beforeSave();
     }
 
     public function beforeDelete() {
+        
+        if($this->type === 'event' && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)){
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if($calendar){
+                $calendar->deleteAction($this);
+            }
+        }
         
         ActionTimer::model()->deleteAllByAttributes(array('actionId'=>$this->id));
         
@@ -492,19 +615,7 @@ class Actions extends X2Model {
     }
 
     private function saveMetaData () {
-        // No action text exists for this yet
-        if(!($this->actionText instanceof ActionText)){
-            $actionText = new ActionText; // Create new oen
-            $actionText->actionId = $this->id;
-            $actionText->text = $this->actionDescriptionTemp; // A magic setter sets actionDescriptionTemp value
-            $actionText->save();
-        }else{ // We have an action text
-            if($this->actionText->text != $this->actionDescriptionTemp){ // Only update if different
-                $this->actionText->text = $this->actionDescriptionTemp;
-                $this->actionText->save();
-            }
-        }
-
+        $this->includeTextToAction ($this->actionDescriptionTemp);
 
         if (!$this->actionMetaData instanceof ActionMetaData) {
             $metaData = new ActionMetaData;
@@ -560,9 +671,11 @@ class Actions extends X2Model {
         if ($this->reminder) {
             if (!$this->isNewRecord)
                 $this->deleteOldNotifications ($this->notificationUsers);
-            $this->createNotifications (
-                $this->notificationUsers,
-                $this->dueDate - ($this->notificationTime * 60), 'action_reminder');
+            $notifTime = $this->dueDate - ($this->notificationTime * 60);
+            if ($this->complete !== 'Yes' && $notifTime >= time()) {
+                // Only recreate the reminder if it hasn't happened yet or the Action is incomplete
+                $this->createNotifications($this->notificationUsers, $notifTime, 'action_reminder');
+            }
         }
 
         
@@ -624,7 +737,7 @@ class Actions extends X2Model {
         $assignees = $this->getAssignees ();
         foreach ($assignees as $assignee) {
             $event = new Events;
-            $event->timestamp = $this->createDate;
+            $event->timestamp = $timestamp;
             $event->visibility = $this->visibility;
             $event->type = $eventType;
             $event->associationType = 'Actions';
@@ -700,8 +813,13 @@ class Actions extends X2Model {
      * Fires the onAfterCreate event in {@link X2Model::afterCreate}
      */
     public function afterCreate(){
-        if($this->type === 'event') {
+        if($this->type === 'event')
             $this->createCalendarFeedEvent ();
+        if(($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && empty($this->remoteCalendarUrl)){
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if($calendar && $calendar->asa('syncBehavior')){
+                $calendar->syncActionToCalendar($this);
+            }
         }
         if(empty ($this->type) || in_array($this->type, array('call','time','note'))){
             $this->createEvents ('record_create', $this->createDate);
@@ -750,6 +868,16 @@ class Actions extends X2Model {
 
         parent::afterCreate();
     }
+    
+    public function afterUpdate() {
+        if (($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
+            $calendar = X2Calendar::model()->findByPk($this->calendarId);
+            if ($calendar && $calendar->asa('syncBehavior')) {
+                $calendar->syncActionToCalendar($this);
+            }
+        }
+        parent::afterUpdate();
+    }
 
     /**
      * Deletes the action reminder event, if any
@@ -757,7 +885,6 @@ class Actions extends X2Model {
      */
     public function afterDelete(){
         X2Model::model('Events')->deleteAllByAttributes(array('associationType' => 'Actions', 'associationId' => $this->id, 'type' => 'action_reminder'));
-        X2Model::model('ActionText')->deleteByPk($this->id);
          
         if ($this->quoteId && $this->type === 'products') 
             Quote::model()->deleteByPk ($this->quoteId);
@@ -792,7 +919,18 @@ class Actions extends X2Model {
     public function setEmailUidValidity ($value) {
         $this->metaDataTemp['emailUidValidity'] = $value;
     }
-     
+    
+    public function setEtag ($value) {
+        $this->metaDataTemp['etag'] = $value;
+    }
+    
+    public function setRemoteCalendarUrl ($value) {
+        $this->metaDataTemp['remoteCalendarUrl'] = $value;
+    }
+    
+    public function setRemoteSource ($value) {
+        $this->metaDataTemp['remoteSource'] = $value;
+    }
 
     public function setActionDescription($value){
         // Magic setter stores value in actionDescriptionTemp until saved
@@ -822,6 +960,16 @@ class Actions extends X2Model {
 
     public function getEmailUidValidity() {
         return $this->metaDataTemp['emailUidValidity'];
+    }
+    
+    public function getEtag () {
+        return $this->metaDataTemp['etag'];
+    }
+    public function getRemoteCalendarUrl () {
+        return $this->metaDataTemp['remoteCalendarUrl'];
+    }
+    public function getRemoteSource () {
+        return $this->metaDataTemp['remoteSource'];
     }
      
 
@@ -1333,28 +1481,6 @@ class Actions extends X2Model {
     }
 
     /**
-     * TODO: unit test 
-     */
-    public function syncGoogleCalendar($operation, $ajax=false){
-        $profiles = $this->getProfilesOfAssignees ();
-
-        foreach($profiles as &$profile){
-            if($profile !== null){
-                if($operation === 'create') {
-                    // create action to Google Calendar
-                    $profile->syncActionToGoogleCalendar($this, $ajax); 
-                } elseif($operation === 'update') {
-                    // update action to Google Calendar
-                    $profile->updateGoogleCalendarEvent($this, $ajax); 
-                } elseif($operation === 'delete') {
-                    // delete action in Google Calendar
-                    $profile->deleteGoogleCalendarEvent($this, $ajax); 
-                }
-            }
-        }
-    }
-
-    /**
      * Returns a link which opens an action view dialog. Event bound in actionFrames.js. 
      * @param string $linkText The text to display in the <a> tag.
      */
@@ -1612,50 +1738,101 @@ class Actions extends X2Model {
                     array ('calendar' => Yii::t('app', 'Select an option')) +
                         X2Model::getAssociationTypeOptions ());
             case 'reminder':
-                $reminderInput = parent::renderInput (
+                /*$reminderInput = parent::renderInput (
                     $fieldName, array (
                         'class' => 'reminder-checkbox',
-                    ));
-                $reminderInput .= 
-                    X2Html::openTag ('div', X2Html::mergeHtmlOptions ($htmlOptions, array (
-                        'class' => 'reminder-config',
-                    ))).
-                    Yii::t(
-                        'actions',
-                        'Create a notification reminder for {user} {time} before this {action} '.
-                            'is due',
-                        array(
-                            '{user}' => CHtml::activeDropDownList(
-                                $this,
-                                'notificationUsers', 
-                                array(
-                                    'me' => Yii::t('actions', 'me'),
-                                    'assigned' => Yii::t('actions', 'the assigned user'),
-                                    'both' => Yii::t('actions', 'me and the assigned user'),
-                                )
-                            ),
-                            '{time}' => CHtml::activeDropDownList(
-                                $this, 'notificationTime', 
-                                array(
-                                    1 => Yii::t('actions','1 minute'),
-                                    5 => Yii::t('actions','5 minutes'),
-                                    10 => Yii::t('actions','10 minutes'),
-                                    15 => Yii::t('actions','15 minutes'),
-                                    30 => Yii::t('actions','30 minutes'),
-                                    60 => Yii::t('actions','1 hour'),
-                                    1440 => Yii::t('actions','1 day'),
-                                    10080 => Yii::t('actions','1 week')
-                                )),
-                            '{action}' => lcfirst(Modules::displayName(false, 'Actions')),
-                        )).'</div>';
+                    ));*/
+                $reminderInput = $this->renderReminderConfig($htmlOptions);
                 return $reminderInput;
             default:
                 return parent::renderInput($fieldName, $htmlOptions);
         }
     }
 
+    public function renderReminderConfig($htmlOptions = array(), $model = null) {
+        if (is_null($model)) $model = $this;
+        $reminderConfig =
+            X2Html::openTag ('div', X2Html::mergeHtmlOptions ($htmlOptions, array (
+                'class' => 'reminder-config',
+            ))).
+            Yii::t(
+                'actions',
+                'Create a notification reminder for {user} {time} before this {action} '.
+                    'is due',
+                array(
+                    '{user}' => CHtml::activeDropDownList(
+                        $model,
+                        'notificationUsers',
+                        array(
+                            'me' => Yii::t('actions', 'me'),
+                            'assigned' => Yii::t('actions', 'the assigned user'),
+                            'both' => Yii::t('actions', 'me and the assigned user'),
+                        )
+                    ),
+                    '{time}' => CHtml::activeDropDownList(
+                        $model, 'notificationTime',
+                        array(
+                            1 => Yii::t('actions','1 minute'),
+                            5 => Yii::t('actions','5 minutes'),
+                            10 => Yii::t('actions','10 minutes'),
+                            15 => Yii::t('actions','15 minutes'),
+                            30 => Yii::t('actions','30 minutes'),
+                            60 => Yii::t('actions','1 hour'),
+                            1440 => Yii::t('actions','1 day'),
+                            10080 => Yii::t('actions','1 week')
+                        )),
+                    '{action}' => lcfirst(Modules::displayName(false, 'Actions')),
+                )).'</div>';
+        return $reminderConfig;
+    }
+
     public function isMultiassociated() {
         return $this->associationType === self::ASSOCIATION_TYPE_MULTI;
+    }
+    
+    /**
+     * Renders the action associated model fields (e.g., contacts).
+     * @param type $fieldName - type of field you want to render, an identifier
+     * @param type $action - the action model being passed in
+     * @param type $htmlOptions
+     */
+    public function renderAssociationField($fieldName, $action, $htmlOptions = array()){
+        $model = NULL;
+        if ($action->associationType == 'contacts') {
+            $model = Contacts::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'accounts') {
+            $model = Accounts::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'users') {
+            $model = User::model()->findByPk($action->associationId);
+        } else if ($action->associationType == 'services') {
+            $model = Services::model()->findByPk($action->associationId);
+        }
+        
+        if ($model) {
+            switch ($fieldName) {
+                case 'name':
+                    if (isset($model->firstName) && isset($model->lastName)) {
+                        return $model->firstName . ' ' . $model->lastName;
+                    } else if ($model->name) {
+                        return $model->name;
+                    }
+                case 'email':
+                    if (isset($model->email)) {
+                        return $model->email;
+                    }
+                case 'phoneNumber':
+                    if (isset($model->phone)) {
+                        return $model->phone;
+                    } else if (isset($model->phone2)) {
+                        return $model->phone2;
+                    }
+                default:
+                    return "";
+            }   
+        } else {
+            return "";
+        }
+        return "";
     }
 
     public function renderMultiassociations($makeLinks = true) {

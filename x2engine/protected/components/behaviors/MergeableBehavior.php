@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -108,16 +107,13 @@ class MergeableBehavior extends CActiveRecordBehavior {
                 //Maintain ID of model used to set this value in case of unique fields
                 $oldModelId = $oldModel->id;
             }
-        }
-        $this->owner->{$field->fieldName} = $value;
-        if ($field->uniqueConstraint) {
-            //If there is a unique constraint, we need to set the value of the model that was used to null
-            $tmpModel = X2Model::model(get_class($this->owner))->findByPk($oldModelId);
-            if($tmpModel){
-                $tmpModel->{$field->fieldName} = null;
-                $tmpModel->update(array($field->fieldName));
+            if ($field->uniqueConstraint) {
+                //If there is a unique constraint, we need to set the value of the model that was used to null
+                $oldModel->{$field->fieldName} = null;
+                $oldModel->update(array($field->fieldName));
             }
         }
+        $this->owner->{$field->fieldName} = $value;
     }
 
     /**
@@ -164,6 +160,11 @@ class MergeableBehavior extends CActiveRecordBehavior {
     public function mergeRelatedRecords(X2Model $model, $logMerge = false) {
 
         $mergeData = array();
+
+        $ret = $this->owner->mergeWorkflowActions($model, $logMerge);
+        if ($logMerge && !empty($ret)) {
+            $mergeData['data']['workflowActions'] = $ret;
+        }
         
         $ret = $this->owner->mergeActions($model, $logMerge);
         if ($logMerge && !empty($ret)) {
@@ -347,6 +348,67 @@ class MergeableBehavior extends CActiveRecordBehavior {
     }
 
     /**
+     * Merge associated workflow actions to prevent constraint violation
+     */
+    public function mergeWorkflowActions(X2Model $model, $logMerge = false) {
+        $ret = array();
+        $associationType = X2Model::getAssociationType(get_class($model));
+        $tartgetAssociationType = X2Model::getAssociationType(get_class($this->owner));
+
+        if ($logMerge) {
+            $ret = Yii::app()->db->createCommand()
+                    ->select('associationId, associationType, workflowId, stageNumber')
+                    ->from('x2_actions')
+                    ->where(
+                            'type = "workflow" AND associationType = :type AND associationId = :id', array(':type' => $associationType, ':id' => $model->id))
+                    ->queryAll();
+        }
+
+        $workflowActionsSql = 'SELECT * FROM x2_actions '.
+            'WHERE associationType = :type AND associationId = :id '.
+            'AND type = "workflow" AND workflowId IS NOT NULL AND stageNumber IS NOT NULL';
+        $workflowActions = X2Model::model('Actions')->findAllBySql($workflowActionsSql, array(
+            ':type' => $associationType,
+            ':id' => $model->id,
+        ));
+        foreach ($workflowActions as $action) {
+            // Check for existing workflow action for new merged model
+            $existingAction = X2Model::model('Actions')->findByAttributes(array(
+                'associationType' => $tartgetAssociationType,
+                'associationId' => $this->owner->id,
+                'stageNumber' => $action->stageNumber,
+                'workflowId' => $action->workflowId,
+            ));
+            if (!$existingAction) {
+                // Migrate Action to new record
+                $action->associationType = $tartgetAssociationType;
+                $action->associationId = $this->owner->id;
+                $action->save();
+            } else {
+                // Otherwise merge descriptions to prevent comment data loss
+                $comment = $action->getActionDescription();
+                $existingComment = $existingAction->getActionDescription();
+                if (!empty($comment)) {
+                    if (empty($existingComment))
+                        $existingAction->actionDescription = $comment;
+                    else
+                        $existingAction->actionDescription = $existingComment.' - '.$comment;
+                }
+                if ($action->complete === 'Yes') { // Maintain earliest completed date and user
+                    if ($existingAction->complete === 'No' || ($action->completeDate < $existingAction->completeDate)) {
+                        $existingAction->complete = $action->complete;
+                        $existingAction->completeDate = $action->completeDate;
+                        $existingAction->completedBy = $action->completedBy;
+                    }
+                }
+                $existingAction->save();
+                $action->delete();
+            }
+        }
+        return $ret;
+    }
+
+    /**
      * Transfers link fields pointing to $model to $htis->owner
      */
     public function mergeLinkFields(X2Model $model, $logMerge = false) {
@@ -398,6 +460,8 @@ class MergeableBehavior extends CActiveRecordBehavior {
                     $model->visibility = $mergeData['visibility'];
                     $model->save();
                     if (isset($mergeData['data']) && !empty($mergeData['data'])) {
+                        if (!empty($mergeData['data']['workflowActions']))
+                            $this->owner->unmergeWorkflowActions($mergeData['data']['workflowActions']);
                         foreach ($mergeData['data'] as $key => $data) {
                             switch ($key) {
                                 case 'actions':
@@ -441,6 +505,27 @@ class MergeableBehavior extends CActiveRecordBehavior {
 
     public function unmergeNotifications($id, $notifIds) {
         X2Model::model('Notification')->updateByPk($notifIds, array('modelId' => $id));
+    }
+
+    public function unmergeWorkflowActions($mergeData) {
+        foreach ($mergeData as $record) {
+            $wfAction = X2Model::model('Actions')->findByAttributes(array(
+                'associationType' => $record['associationType'],
+                'associationId' => $this->owner->id,
+                'type' => 'workflow',
+                'workflowId' => $record['workflowId'],
+                'stageNumber' => $record['stageNumber'],
+            ));
+            if ($wfAction) {
+                $action = new Actions;
+                $action->attributes = $wfAction->attributes;
+                $action->id = null;
+                $action->associationId = $record['associationId'];
+                $action->stageNumber = $record['stageNumber'];
+                $action->workflowId = $record['workflowId'];
+                $action->save();
+            }
+        }
     }
 
     public function unmergeTags($id, $tags) {

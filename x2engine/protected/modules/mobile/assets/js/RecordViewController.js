@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 if (typeof x2 === 'undefined') x2 = {};
@@ -44,6 +43,7 @@ function RecordViewController (argsDict) {
         DEBUG: x2.DEBUG && false,
         hasSettingsMenu: true,
         modelName: null,
+        modelEmail: null,
         modelId: null,
         myProfileId: null,
         supportsActionHistory: false
@@ -54,6 +54,13 @@ function RecordViewController (argsDict) {
 
 RecordViewController.prototype = auxlib.create (x2.Controller.prototype);
 
+RecordViewController.prototype.setUpMail = function () {
+    var that = this;
+    var mailButton$ = $('#header .mail-button');
+    mailButton$.click (function () {
+        x2touch.API.setEmail (that.modelEmail);
+    });
+};
 
 RecordViewController.prototype.setUpEdit = function () {
     var editButton$ = $('#header .edit-button');
@@ -182,16 +189,66 @@ RecordViewController.prototype.setUpTabs = function () {
 
 };
 
+RecordViewController.prototype.setUpHistoryPagination = function () {
+    var that = this;
+    this.listView$ = x2.main.activePage$.find ('.record-index-list-view');
+    this.moreButton$ = {};
+    
+    this.listView$.each(function(index){
+        var moreButton = $(this).find ('.more-button');
+        if(moreButton.length > 0){
+            that.moreButton$[index] = moreButton;
+            moreButton.unbind ('click.setUpHistoryPagination').bind ('click.setUpHistoryPagination', function () {
+                that.fetchHistoryPage (index, $(this).attr ('href'));
+                return false;
+            });
+        }
+    });
+
+    if (x2.main.platform === 'iOS') {
+        var homeButton$ = $.mobile.activePage.find('#home-btn');
+        homeButton$.hide();
+    }
+    
+    
+};
+
+/**
+ * Fetch next page of records and append to the list view. Also replace the more button and rebind
+ * its click event handler.
+ */
+RecordViewController.prototype.fetchHistoryPage = function (index, url) {
+    var that = this;
+    var listView$;
+    
+    $.mobile.loading ('show');
+    $.ajax ({
+        method: 'GET', 
+        url: url,
+        success: function (data) {
+            $.mobile.loading ('hide');
+            if (listView$ = $(data).find ('.record-index-list-view').eq(index)) {
+                that.listView$.eq(index).find ('.items').append (listView$.find ('.items'));
+                that.moreButton$[index].replaceWith (listView$.find ('.more-button'));
+                that.setUpHistoryPagination ();
+            }
+        }
+    });
+};
+
+
 RecordViewController.prototype.init = function () {
     var that = this;
     this.documentEvents.push (x2.main.onPageShow (function () {
         that.setUpEdit ();
+        that.setUpMail ();
         that.setUpDelete ();
         if (that.modelName === 'Profile') {
             that.setUpProfile ();
         }
         if (that.supportsActionHistory) {
             that.setUpTabs ();
+            that.setUpHistoryPagination ();
         }
     }, this.constructor.name));
 };

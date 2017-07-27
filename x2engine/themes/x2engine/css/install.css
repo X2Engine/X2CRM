@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/body{background:#fff}h2{clear:left}h2#title{clear:none}#installer-box{width:600px;min-height:0;margin:25px auto 25px auto;padding:20px 40px 0 40px;position:relative;background:#eaeaea;color:black;border-radius:6px;-moz-border-radius:6px;-webkit-border-radius:6px;-o-border-radius:6px;-moz-box-shadow:0 3px 10px rgba(0,0,0,0.5);-webkit-box-shadow:0 3px 10px rgba(0,0,0,0.5);box-shadow:0 3px 10px rgba(0,0,0,0.5)}#installer-box a{text-decoration:none}#installer-logo{display:block;margin:0 10px 10px 0;float:left;height:auto;position:relative;top:14px;margin-right:10px}#installer-box h1,#installer-box h3{text-align:center}#install-form,#db-test-box #response-box,#error-box,#status-box{border:none;overflow:hidden;background:#f8f8f8;border:1px solid #F5F5F5;-moz-border-radius:4px;-o-border-radius:4px;-webkit-border-radius:4px;border-radius:4px}#install-form,#error-box{background:#f8f8f8;margin-top:10px}#install-form.wide.form label{display:inline;float:left;margin-right:10px;position:relative;text-align:right;width:160px}#install-form #button{display:block;width:125px;margin:10px 0 5px 170px}#install-form #lang{width:120px}#db-test-box{float:left;margin-right:10px;width:200px}#db-test-box #response-box{margin-top:5px;padding:5px;width:200px;height:100px}#response-box img{margin:0 5px 0 0;vertical-align:middle}#db-form-box{width:350px;float:left}#error-box,#noscript-error{margin-top:5px;font-weight:bold;color:#990000}#footer{padding:0 0 10px 0;color:black;text-align:center;font-size:10px}#status-box{display:none}#install-button{display:block;margin-left:auto;margin-right:auto;padding:15px 40px}div#menu_items>div.checkbox-grid-cell{display:inline-block}div#menu_items>div.checkbox-grid-cell>label{width:100px !important}

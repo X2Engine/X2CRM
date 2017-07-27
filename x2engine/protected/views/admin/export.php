@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/importexport.css');
@@ -47,10 +46,15 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
     echo Yii::t('admin', 'Available Models')."</h2>";
 
     foreach($modelList as $model => $array){
-        echo "<div><label style='display:inline-block;'>".$array['name']." ".Yii::t('admin','({n} records)',array('{n}'=>$array['count']))."</label>";
-        echo CHtml::checkBox("$model", true, array('class' => 'model-checkbox','style'=>'margin-left:5px;'));
+        echo "<div>";
+        echo CHtml::checkBox("$model", true, array('class' => 'model-checkbox','style'=>'margin-right:5px;'));
+        echo "<label style='display:inline-block;'>".$array['name']." ".Yii::t('admin','({n} records)',array('{n}'=>$array['count']))."</label>";
         echo "</div>";
     }
+
+    echo "<br />";
+    echo CHtml::checkBox('select-all', true, array('id' => 'toggle-checkbox', 'style'=>'margin-right:5px;'));
+    echo CHtml::label(Yii::t("admin", "Select All"), 'select-all', array('style'=>'display:inline-block;'));
 ?>
 
     <h3><?php echo Yii::t('admin', 'Customize CSV') .
@@ -156,6 +160,8 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
                     // satisfy constraints when the data is imported
                     models.unshift('WorkflowStage');
                     models.unshift('Workflow');
+                } else if ($(this).attr('name')=='X2Calendar'){
+                    models.unshift('X2Calendar');
                 } else {
                     models.push($(this).attr('name'));
                     if($(this).attr('name')=='User'){
@@ -166,6 +172,18 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/impor
         });
         return models;
     }
+
+    x2.export.toggleAll = function (elem) {
+        if ($(elem).is(':checked')) {
+            $('.model-checkbox').attr('checked', 'checked');
+        } else {
+            $('.model-checkbox').removeAttr('checked');
+        }
+    }
+
+    $('#toggle-checkbox').change (function(){
+        x2.export.toggleAll($(this));
+    });
 
     $('#export-button').click (function(){
         $(this).hide();

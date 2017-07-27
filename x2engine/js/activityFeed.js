@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 x2.ActivityFeed = (function () {
@@ -64,6 +63,8 @@ function ActivityFeed (argsDict) {
 
     // used to prevent text field expansion if already expanded
     that.editorIsExpanded = false; 
+    
+    that.postType = "";
 
     this._init ();
 
@@ -163,18 +164,30 @@ ActivityFeed.prototype.publishPost = function  () {
 
     that.initMinimizeEditor ();
 
+    var associatedId = $("#Events_associationId").val();
+    if (window.location.href.includes("profile/view")) {
+        var re = new RegExp('/');
+        associatedId = window.location.href.split(re);
+        associatedId = associatedId[associatedId.length-1];
+    }
+    var editedString = window.location.href.replace("view/","");
+    window.history.pushState(window.location.href, "Title", editedString);
     $.ajax({
-        url:"publishPost",
+        url: "publishPost",
         type:"POST",
         data:{
             //"text":window.newPostEditor.getData(),
             "text":editorText,
-            "associationId":$("#Events_associationId").val(),
+            "associationId":associatedId,
             "visibility":$("#Events_visibility").val(),
-            "subtype":$("#Events_subtype").val()
+            "subtype":$("#Events_subtype").val(),
+            "recordLinks":$("#Events_recordLinks").val(),
+            "geoCoords":$("#geoCoords").val()
         },
         success:function(){
             that.finishMinimizeEditor ();
+            $("#Events_recordLinks").val(''); // clear out associated record links
+            $("#feed_record_links").html('');
         },
         failure:function(){
             window.newPostEditor.focusManager.unlock ();
@@ -310,23 +323,29 @@ ActivityFeed.prototype.setupAndroidPublisher = function  () {
 
 ActivityFeed.prototype.minimizePosts = function (){
     var that = this;
-    $('.items').find ('.event-text').each (function (index, element) {
-        if($(element).html().length>200){
-            var text=element;
-            var oldText=$(element).html();
-            $.ajax({
-                url:"minimizePosts",
-                type:"GET",
-                data:{"minimize":"minimize"},
-                success:function(){
-                    if ($(text).find ('.expandable-details').is (':visible')) {
-                        $(text).find ('.read-less').find ('a').click ();
+    $('.items').find ('.view,.top-level,.activity-feed').each (function (index, element) {
+        var thisItem = element;
+        $(thisItem).find ('.img-box,.test,.feed').each (function (index, element) {
+            that.postType = $(element).attr("title");
+        });
+        $(thisItem).find ('.event-text').each (function (index, element) {
+            if($(element).html().length>200 && that.postType !== "Social Posts"){
+                var text=this.element;
+                var oldText=$(this.element).html();
+                $.ajax({
+                    url:"minimizePosts",
+                    type:"GET",
+                    data:{"minimize":"minimize"},
+                    success:function(){
+                        if ($(text).find ('.expandable-details').is (':visible')) {
+                            $(text).find ('.read-less').find ('a').click ();
+                        }
                     }
-                }
-            });
-        }else{
+                });
+            }else{
 
-        }
+            }
+        });
     });
 }
 
@@ -423,6 +442,9 @@ ActivityFeed.prototype.setupEditorBehavior = function  () {
         // Only submits if there are files queued
         if (typeof that.fileUploader !== 'undefined' && that.fileUploader.filesQueued()) {
             that.fileUploader.mediaParams.attachmentText = window.newPostEditor.getData ();
+            that.fileUploader.mediaParams.private = $("#file-uploader-private:checked").length > 0;
+            that.fileUploader.mediaParams.associationId = $("#Events_associationId").val();
+            that.fileUploader.mediaParams.geoCoords = $("#geoCoords").val();
             that.fileUploader.upload();
             return;
         }
@@ -1160,6 +1182,11 @@ ActivityFeed.prototype.updateEventList = function  () {
                     $newElem = $(text).hide().prependTo("#new-events");
                     that.makePostExpandable ($newElem.find ('.event-text-box').children ('.event-text'));
                     $newElem.fadeIn(1000);
+                    $('.attachment-img').each (function () {
+                        new x2.EnlargeableImage ({
+                            elem: $(this)
+                        });                                       
+                    });
                 }
                 if(data[2]){
                     var comments=data[2];
@@ -1321,6 +1348,9 @@ ActivityFeed.prototype._setUpFilters = function () {
         var eventTypes=auxlib.filter (function (a) {
             return a !== '';
         }, auxlib.getUnselected ($('#simpleEventTypes')));
+        var eventTypesExpansion=auxlib.filter (function (a) {
+            return a !== '';
+        }, auxlib.getUnselected ($('#simpleEventTypesExpansion')));
         var subtypes=[];
         var defaultFilters=[];
         var linkId=$(link).attr("id");
@@ -1329,7 +1359,7 @@ ActivityFeed.prototype._setUpFilters = function () {
         var str2=pieces[0];
         pieces2=str2.split("#");
         window.location = pieces2[0] + "?filters=true&visibility=" + visibility + 
-            "&users=" + users + "&types=" + eventTypes + "&subtypes=" + subtypes + 
+            "&users=" + users + "&typesExpansion="+ eventTypesExpansion + "&types=" + eventTypes +"&subtypes=" + subtypes + 
             "&default=" + defaultFilters;
         return false;
     });

@@ -43,4 +43,10 @@
   'Delete {user}' => '删除{user}',
   'Check your email at {email} for further instructions to finish resetting your password.' => '检查你的电子邮件在{email}进行进一步说明完成重置密码。',
   'You should now have access as "{user}" with the new password specified.' => '你现在应该有机会为{user} ”使用指定的新密码。',
+  'View {users} Map' => '查看{users}地图',
+  'User Location Map' => '用户地图定位',
+  'Inactive' => '待用',
+  'Are you sure you want to deactivate this users two factor auth requirement?' => '你确定要停用这个用户两个要素的认证要求吗？',
+  'Successfully deactivated two factor auth' => '成功停用了两个因素认证',
+  'Sorry, we are not creating anymore user accounts at this time.' => '很抱歉，我们目前还没有创建任何用户帐户。',
 );

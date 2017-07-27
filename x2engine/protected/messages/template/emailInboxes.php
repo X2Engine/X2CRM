@@ -62,8 +62,12 @@
   'Auto-log inbound emails' => '',
   'From' => '',
   'Copy to Sent Folder' => '',
-  'Disabled' => '',
   'Failed to associate message "{subject}" with {type} {model}' => '',
   'Message "{subject}" already associated with {type} {model}' => '',
   'Disable Quota Operations' => '',
+  'Manage your application credentials' => '',
+  'Associate attachment with related record' => '',
+  'Attachment successfully associated' => '',
+  'Association failed: the attachment could not be saved' => '',
+  'Association failed: there are no related records' => '',
 );

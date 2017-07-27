@@ -1,8 +1,8 @@
 <?php
 
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -21,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -31,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.models.embedded.JSONEmbeddedModel');
@@ -48,6 +47,7 @@ Yii::import('application.models.embedded.JSONEmbeddedModel');
 class EmailAccount extends JSONEmbeddedModel {
 
     public $email = '';
+    public $smtpNoValidate = false;
     public $imapNoValidate = false;
     public $imapPort = 143;
     public $imapSecurity = '';
@@ -59,6 +59,7 @@ class EmailAccount extends JSONEmbeddedModel {
     public $server = '';
     public $user = '';
     public $enableVerification = true;
+    public $disableInbox = false;
 
     public function attributeLabels(){
         return array(
@@ -69,10 +70,12 @@ class EmailAccount extends JSONEmbeddedModel {
             'security' => Yii::t('app', 'Security type'),
             'user' => Yii::t('app', 'User name (if different from email address)'),
             'password' => Yii::t('app', 'Password'),
+            'smtpNoValidate' => Yii::t('app','Disable SSL Validation'),
             'imapPort' => Yii::t('app','IMAP Port'),
             'imapServer' => Yii::t('app','IMAP Server'),
             'imapSecurity' => Yii::t('app','IMAP Security'),
             'imapNoValidate' => Yii::t('app','Disable SSL Validation'),
+            'disableInbox' => Yii::t('app','Disable Email Inbox'),
         );
     }
 
@@ -113,6 +116,12 @@ class EmailAccount extends JSONEmbeddedModel {
             case 'imapNoValidate':
                 echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
                 break;
+            case 'smtpNoValidate':
+                echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
+                break;
+            case 'disableInbox':
+                echo CHtml::activeCheckBox($this, $attr, $this->htmlOptions($attr));
+                break;
             case 'user':
                 echo CHtml::activeTextField($this, $attr, $this->htmlOptions($attr));
                 break;
@@ -120,6 +129,16 @@ class EmailAccount extends JSONEmbeddedModel {
                 echo X2Html::x2ActivePasswordField ($this, $attr, $this->htmlOptions ($attr), true);
                 break;
         }
+    }
+
+    /**
+     * Renders a label and input for disabling SMTP SSL Validation
+     * This can be overridden in child classes to hide the controls
+     * and require SSL validation, e.g., for provider-specific accounts
+     */
+    public function renderSmtpSslValidation() {
+        echo CHtml::activeLabel($this, 'smtpNoValidate');
+        $this->renderInput ('smtpNoValidate');
     }
 
     /**
@@ -141,6 +160,7 @@ class EmailAccount extends JSONEmbeddedModel {
         $this->renderInput ('user');
         echo CHtml::activeLabel ($this, 'password');
         $this->renderInput ('password');
+        $this->renderSmtpSslValidation();
         echo '<br/>';
         echo '<br/>';
 		echo CHtml::tag ('h3', array (), Yii::t('app', 'IMAP Configuration'));
@@ -153,6 +173,8 @@ class EmailAccount extends JSONEmbeddedModel {
         $this->renderInput ('imapNoValidate');
         echo CHtml::activeLabel($this, 'imapServer');
         $this->renderInput ('imapServer');
+        echo CHtml::activeLabel($this, 'disableInbox');
+        $this->renderInput ('disableInbox');
         echo CHtml::errorSummary($this);
     }
 
@@ -173,7 +195,7 @@ class EmailAccount extends JSONEmbeddedModel {
             array('user','emailUser'),
             array('server,user,email','length','min'=>1,'max'=>500,'allowEmpty'=>0),
             array('password','required'),
-            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,imapNoValidate','safe'),
+            array('senderName,server,port,security,user,email,password,imapPort,imapServer,imapSecurity,smtpNoValidate,imapNoValidate,disableInbox','safe'),
         );
     }
 

@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
  
 
@@ -74,7 +73,8 @@
     width: 30px;
     margin: 0;
 
-    color: white;
+    color: $appBlue;
+    
     text-decoration: none;
 }
 
@@ -120,6 +120,11 @@ li.special.leadrouting-indicator {
     padding-left: 10px;
 }
 
+#main-menu > li.active a {
+    padding-left: 10px;
+    color: white;
+}
+
 #user-menu {
     float: right;
 }
@@ -141,9 +146,11 @@ li.special.leadrouting-indicator {
         font-weight: bold;
         text-decoration: none;
     }
-    > li > {
+
+    li {
         a, span {
-            color: white;
+            color: $appBlue;
+            
             line-height: 32px;
             height: 32px;
             text-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
@@ -167,23 +174,90 @@ li.special.leadrouting-indicator {
     box-shadow: none;
 }
 
-.main-menu > li {
+.main-menu > li.dropdown {
     &:hover, &.active {
         /* background:url(../images/black_15.png); */
-        background: rgba(0, 0, 0, 0.2);
+        background: lighten($appBlue, 7.5%);
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
     }
 }
 
-#header.defaultBg .main-menu > li {
+#header.defaultBg #main-menu > li {
     &:hover, &.active {
         background: lighten($appBlue, 7.5%);
-        /* background:rgba(255,255,255,0.15); */
+        
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
+    }
+}   
+
+#admin-users-user-menu-link {
+    &:hover, &.active {
+        background: lighten($appBlue, 7.5%);
+        
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
     }
 }
 
+#profile-user-menu-link {
+    &:hover, &.active {
+        background: lighten($appBlue, 7.5%);
+        
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
+    }
+}
+
+#admin-user-menu-link {
+    &:hover, &.active {
+        background: lighten($appBlue, 7.5%);
+        
+        span, a {
+            color: white;
+        }
+        .open {
+            a {
+                color: black;
+            }
+        }
+    }
+}
+
+
+#header.defaultBg #user-menu > li#search-bar.special:hover {
+     background: white;
+}
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
     background: none;
 }
+
+
 
 #main-menu-bar {
     #x2-logo {
@@ -224,18 +298,21 @@ li.special.leadrouting-indicator {
          margin: 2px 0 0 0;
          padding: 0;
          @include border-radius (0 3px 3px 0);
+         
          span {
              display: block;
              margin: 0;
              padding: 0;
              height: 25px;
              width: 30px;
-             color: white;
-             @include fa-icon('search');
+             color: $appBlue;
+             //@include fa-icon('search'); 
              /* @theme color smart_text */
              
              // background: url(../images/search-icon.png) 8px 5px no-repeat;
          }
+         
      }
  }
 
+ 

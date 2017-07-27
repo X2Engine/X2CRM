@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
 /**
@@ -45,36 +44,88 @@ class CommonSiteControllerBehavior extends CBehavior {
     /**
      * Displays the login page
      * @param object $formModel
-     * @param bool $isMobile Whether this was called from mobile site controller
      */
     public function login (LoginForm $model, $isMobile=false){
-            
-        $model->attributes = $_POST['LoginForm']; // get user input data
+        ob_start();
+        if(SessionToken::cleanSessionTokenCookie()) {
+            unset(Yii::app()->request->cookies['sessionToken']);
+            setcookie("sessionToken", "", time() - 3600);
+           echo "<script type=\"text/javascript\">
+                window.localStorage.removeItem(\"sessionToken\");
+                </script>";
+        }
         Session::cleanUpSessions();
-
+        SessionToken::cleanUpSessions();
         $ip = $this->owner->getRealIp();
-        
         $this->verifyIpAccess ($ip);
-        
-        $userModel = $model->getUser();
-        $isRealUser = $userModel instanceof User;
-        $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
-        $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
-        /* increment count on every session with this user/IP, to prevent brute force attacks 
-           using session_id spoofing or whatever */
-        Yii::app()->db->createCommand(
-            'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
-            CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                ->bindValues(
-                    array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
-                ->execute();
+        $activeUser = null;
+        $sessionToken = null;
+        $sessionIdToken = null;
+        if(empty(Yii::app()->request->cookies['sessionToken']->value)){
+            if(isset($_POST['LoginForm']))
+                $model->attributes = $_POST['LoginForm']; // get user input data
 
-        $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                ->select('username')
-                ->from('x2_users')
-                ->where('username=:name AND status=1', array(':name' => $model->username))
-                ->limit(1)
-                ->queryScalar(); // get the correctly capitalized username
+            $userModel = $model->getUser();
+            $isRealUser = $userModel instanceof User;
+            $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
+            Yii::app()->db->createCommand(
+                'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                    ->bindValues(
+                        array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
+                    ->execute();
+
+            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                    ->select('username')
+                    ->from('x2_users')
+                    ->where('username=:name AND status=1', array(':name' => $model->username))
+                    ->limit(1)
+                    ->queryScalar(); // get the correctly capitalized username  
+
+            //create new sessionToken and save to server
+            $sessionIdToken = PasswordUtil::getToken(32);
+
+            $sessionToken = new SessionToken;
+            $sessionToken->id = $sessionIdToken;
+            $sessionToken->user = $model->getSessionUserName();
+            $sessionToken->lastUpdated = time();
+            $sessionToken->status = 0;
+            $sessionToken->IP = $ip;
+            $sessionToken->save();
+
+        } else {
+
+            $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+
+            $userModel =  User::model()->findByAlias($sessionTokenModel->user);
+            $isRealUser = $userModel instanceof User;
+            $effectiveUsername = $isRealUser ? $userModel->username : null;
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
+            if($sessionTokenModel !== null){
+                Yii::app()->db->createCommand(
+                    'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
+                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                        ->bindValues(
+                            array(':name' => $sessionTokenModel->user, ':ip' => $ip))
+                        ->execute();
+            }
+
+            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                    ->select('username')
+                    ->from('x2_users')
+                    ->where('username=:name AND status=1', array(':name' => $sessionTokenModel->user))
+                    ->limit(1)
+                    ->queryScalar(); // get the correctly capitalized username 
+
+        }
+
 
         if(isset($_SESSION['sessionId']))
             $sessionId = $_SESSION['sessionId'];
@@ -113,98 +164,124 @@ class CommonSiteControllerBehavior extends CBehavior {
             $session->IP = $ip;
         } else {
             $session->lastUpdated = time();
-            $session->user = $model->getSessionUserName();
+            if($model->getSessionUserName() !== null)
+                $session->user = $model->getSessionUserName();
         }
 
-        if($isActiveUser === false){
+        if($model->validate() && $model->login() && $isActiveUser){  // user successfully logged in
+                
+            $this->recordSuccessfulLogin ($activeUser, $ip);
+            $userModel->logLocation('login', 'POST');
+
+            $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
+            $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
+            Yii::app()->request->cookies['sessionToken'] = $cookie;
+            echo "<script type=\"text/javascript\">
+                    window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
+                    </script>";
+
+            if($model->rememberMe){
+                foreach(array('username','rememberMe') as $attr) {
+                    $cookieName = CHtml::resolveName ($model, $attr);
+                    $cookie = new CHttpCookie(
+                        $cookieName, $model->$attr);
+                    $cookie->expire = time () + 2592000; //60*60*24*30 = 30 days
+                    Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
+                }
+            }else{
+                foreach(array('username','rememberMe') as $attr) {
+                    // Remove the cookie if they unchecked the box
+                    AuxLib::clearCookie(CHtml::resolveName($model, $attr));
+                }
+            }
+
+            // We're not using the isAdmin parameter of the application
+            // here because isAdmin in this context hasn't been set yet.
+            $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
+            if($isAdmin) {
+                $this->owner->attachBehavior('updaterBehavior', new UpdaterBehavior);
+                $this->owner->checkUpdates();   // check for updates if admin
+            } else
+                Yii::app()->session['versionCheck'] = true; // ...or don't
+
+            $session->status = 1;
+            $session->save();            
+            
+            SessionLog::logSession($model->username, $sessionId, 'login');
+            $_SESSION['playLoginSound'] = true;
+
+            if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)
+                Yii::app()->session['debugEmailWarning'] = 1;
+
+            LoginThemeHelper::login();
+            
+            if ($isMobile) {
+                $this->owner->redirect($this->owner->createUrl('/mobile/home'));
+            } else {
+                if(Yii::app()->user->returnUrl == '/site/index') {
+                    $this->owner->redirect(array('/site/index'));
+                } else {
+                    // after login, redirect to wherever
+                    $this->owner->redirect(Yii::app()->user->returnUrl); 
+                }
+            }
+
+            $model->rememberMe = false;
+        } else if ($model->loginSessionToken() && $isActiveUser){ 
+                
+            //refresh the number of tokens a user owns
+            SessionToken::cleanUpUserTokens (Yii::app()->user->name);
+            $this->recordSuccessfulLogin ($activeUser, $ip);
+            $userModel->logLocation('login', 'POST');
+
+            // We're not using the isAdmin parameter of the application
+            // here because isAdmin in this context hasn't been set yet.
+            $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
+            if($isAdmin) {
+                $this->owner->attachBehavior('updaterBehavior', new UpdaterBehavior);
+                $this->owner->checkUpdates();   // check for updates if admin
+            } else
+                Yii::app()->session['versionCheck'] = true; // ...or don't
+
+            $session->status = 1;
+            $session->save();
+            if(Yii::app()->request->cookies['sessionToken']->value != null){
+                SessionLog::logSession(Yii::app()->user->name, Yii::app()->request->cookies['sessionToken']->value, 'login');
+            }
+            $_SESSION['playLoginSound'] = true;
+
+            if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)
+                Yii::app()->session['debugEmailWarning'] = 1;      
+
+            LoginThemeHelper::login();
+
+            if ($isMobile) {
+                $this->owner->redirect($this->owner->createUrl('/mobile/home'));
+            } else {
+                if(Yii::app()->user->returnUrl == '/site/index') {
+                    $this->owner->redirect(array('/site/index'));
+                } else {
+                    // after login, redirect to wherever
+                    $this->owner->redirect(Yii::app()->user->returnUrl); 
+                }
+            }
+        } else{ // login failed
             $model->verifyCode = ''; // clear captcha code
-            $model->validate (); // validate captcha if it's being used
             $this->recordFailedLogin ($ip);
             $session->save();
+
             if ($badAttemptsWithThisIp + 1 >= $maxFailedLoginAttemptsPerIP) {
                 throw new CHttpException (403, Yii::t('app',
                     'You are not authorized to use this application'));
             } else if ($badAttemptsWithThisIp >= $maxLoginsBeforeCaptcha - 1) {
                 $model->useCaptcha = true;
                 $model->setScenario('loginWithCaptcha');
-                $session->status = -2;
-            }
-        }else{
-            if($model->validate() && $model->login()){  // user successfully logged in
-                
-                $this->recordSuccessfulLogin ($activeUser, $ip);
-                
-                if($model->rememberMe){
-                    foreach(array('username','rememberMe') as $attr) {
-                        $cookieName = CHtml::resolveName ($model, $attr);
-                        $cookie = new CHttpCookie(
-                            $cookieName, $model->$attr);
-                        $cookie->expire = time () + 2592000; // expire in 30 days
-                        Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
-                    }
-                }else{
-                    foreach(array('username','rememberMe') as $attr) {
-                        // Remove the cookie if they unchecked the box
-                        AuxLib::clearCookie(CHtml::resolveName($model, $attr));
-                    }
-                }
-
-                // We're not using the isAdmin parameter of the application
-                // here because isAdmin in this context hasn't been set yet.
-                $isAdmin = Yii::app()->user->checkAccess('AdminIndex');
-                if($isAdmin && !$isMobile) {
-                    $this->owner->attachBehavior('updaterBehavior', new UpdaterBehavior);
-                    $this->owner->checkUpdates();   // check for updates if admin
-                } else
-                    Yii::app()->session['versionCheck'] = true; // ...or don't
-
-                $session->status = 1;
-                $session->save();
-                SessionLog::logSession($model->username, $sessionId, 'login');
-                $_SESSION['playLoginSound'] = true;
-
-                if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL)
-                    Yii::app()->session['debugEmailWarning'] = 1;
-
-                // if ( isset($_POST['themeName']) ) {
-                //     $profile = X2Model::model('Profile')->findByPk(Yii::app()->user->id);
-                //     $profile->theme = array_merge( 
-                //         $profile->theme, 
-                //         ThemeGenerator::loadDefault( $_POST['themeName'])
-                //     );
-                //     $profile->save();
-                // }
-
-                LoginThemeHelper::login();
-
-                if ($isMobile) {
-                    $this->owner->redirect($this->owner->createUrl('/mobile/home'));
-                } else {
-                    if(Yii::app()->user->returnUrl == '/site/index') {
-                        $this->owner->redirect(array('/site/index'));
-                    } else {
-                        // after login, redirect to wherever
-                        $this->owner->redirect(Yii::app()->user->returnUrl); 
-                    }
-                }
-
-
-            } else{ // login failed
-                $model->verifyCode = ''; // clear captcha code
-                $this->recordFailedLogin ($ip);
-                $session->save();
-
-                if ($badAttemptsWithThisIp + 1 >= $maxFailedLoginAttemptsPerIP) {
-                    throw new CHttpException (403, Yii::t('app',
-                        'You are not authorized to use this application'));
-                } else if ($badAttemptsWithThisIp >= $maxLoginsBeforeCaptcha - 1) {
-                    $model->useCaptcha = true;
-                    $model->setScenario('loginWithCaptcha');
                     $session->status = -2;
-                }
             }
+            $model->rememberMe = false;
         }
-        $model->rememberMe = false;
+        
+       
     }
 
     /**
@@ -287,8 +364,9 @@ class CommonSiteControllerBehavior extends CBehavior {
     public function isBannedIp($ip) {
         $admin = Yii::app()->settings;
         $bannedIps = $admin->ipBlacklist;
-        if (!$bannedIps)
+        if (!$bannedIps || !is_array($bannedIps)){
             return false;
+        }
 
         return $this->checkIpList($bannedIps, $ip);
     }
@@ -302,8 +380,9 @@ class CommonSiteControllerBehavior extends CBehavior {
         $admin = Yii::app()->settings;
         $allowedIps = $admin->ipWhitelist;
         // No whitelist available: allow connections to prevent lockout
-        if (!$allowedIps)
+        if (!$allowedIps || !is_array($allowedIps)){
             return true;
+        }
 
         return $this->checkIpList($allowedIps, $ip);
     }

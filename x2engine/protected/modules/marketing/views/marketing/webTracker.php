@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -57,9 +56,11 @@ Yii::app()->clientScript->registerCss('webTrackerCss',"
 
 ");
 
-$this->pageTitle = Yii::t('marketing','Web Lead Form');
+$this->pageTitle = Yii::t('marketing','Web Tracker Settings');
 $menuOptions = array(
-    'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
+    'all', 'create', 'lists', 'newsletters', 'weblead',
+    
+    'webtracker', 'x2flow',
 );
 
 $plaOptions = array(
@@ -108,6 +109,7 @@ $modTitles = array(
     'contacts' => Modules::displayName(true, "Contacts"),
 );
 
+Tours::loadTips('marketing.webTracker');
 ?>
 <div class="page-title icon marketing">
     <h2><?php echo Yii::t('marketing','Web Tracker Code'); ?></h2>
@@ -131,10 +133,16 @@ $modTitles = array(
 <?php echo Yii::t('marketing','Paste this code into the body section of every page of your '.
     'website.'); ?><br>
 
+<?php
+// Append a slash to the external base URL if one is not already present
+$absBaseUrl = Yii::app()->getExternalAbsoluteBaseUrl ();
+if ($absBaseUrl[strlen($absBaseUrl)-1] !== '/')
+    $absBaseUrl .= '/';
+?>
 <textarea id="embedcode" style="background:#eee" class='x2-extra-wide-input'>
 <script src="<?php 
     //echo Yii::app()->request->getHostInfo (),Yii::app()->getBaseUrl (); 
-    echo Yii::app()->getExternalAbsoluteBaseUrl ();
+    echo $absBaseUrl;
     ?>webTracker.php"></script>
 </textarea>
 <?php
@@ -199,6 +207,14 @@ $modTitles = array(
         ?>
     </div>
 </div><br>
+<div class="row">
+    <div class="cell" style="width:120px;">
+        <?php echo CHtml::activeLabel($admin,'enableGeolocation'); ?>
+        <?php echo CHtml::activeDropDownList(
+            $admin,'enableGeolocation',array(1=>Yii::t('app','Enable'),0=>Yii::t('app','Disable')),
+            array('id'=>'enableGeolocation','style'=>'')); ?>
+    </div>
+</div><br>
 <?php 
 if (Yii::app()->contEd('pla')) { ?>
 <h4><b><?php echo Yii::t('marketing','X2Identity Settings'); ?></b></h4>
@@ -259,6 +275,22 @@ if (Yii::app()->contEd('pla')) { ?>
                     'id'=>'performHostnameLookups',
             ));
             echo X2Html::hint($hostnameLookupHint, false, null, true);
+        ?>
+    </div>
+</div>
+<div class="row">
+    <div class="cell">
+        <?php
+            $disableAnonNotifsHint = Yii::t('marketing',
+                "This will filter notifications for AnonContact web activity without affecting "
+                ."the total number of notifications. These can be reenabled at any time to reveal "
+                ."past web activity visits in your notifications.");
+            echo CHtml::activeLabel($admin, 'disableAnonContactNotifs');
+            echo CHtml::activeCheckBox(
+                $admin,'disableAnonContactNotifs',array(
+                    'id'=>'disableAnonContactNotifs',
+            ));
+            echo X2Html::hint($disableAnonNotifsHint, false, null, true);
         ?>
     </div>
 </div>

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 Yii::import('application.extensions.NLSClientScript');
@@ -880,15 +879,15 @@ class X2ClientScript extends NLSClientScript {
     private function registerDateFormats () {
         $this->registerScript('registerDateFormats',"
             x2.dateFormats = {
-                dateFormat: '".Formatter::formatDatePicker()."',
-                timeFormat: '".Formatter::formatTimePicker()."',
-                ampm: '".Formatter::formatAMPM()."'
+                dateFormat: ".CJSON::encode(Formatter::formatDatePicker()).",
+                timeFormat: ".CJSON::encode(Formatter::formatTimePicker()).",
+                ampm: ".CJSON::encode(Formatter::formatAMPM())."
             };
         ", CClientScript::POS_END);
     }
 
     private function registerAuxLibTranslationsScript () {
-        $this->registerScript('registerDateFormats',"
+        $this->registerScript('registerAuxLibTranslations',"
             auxlib.translations = ".CJSON::encode (array (
                 'Are you sure you want to delete this item?' => 
                     Yii::t('app', 'Are you sure you want to delete this item?'), 
@@ -938,6 +937,135 @@ class X2ClientScript extends NLSClientScript {
                 }
             }) ();
             ", self::POS_HEAD);
+        }
+    }
+
+    /**
+     * Register the geolocation JavaScript
+     * @param bool $onLocationButton Whether to register the geolocation on the location button
+     * @param bool $multiple whether to operate on multiple geoCoords inputs
+     * @param const $pos CClientScript position
+     */
+    public function registerGeolocationScript($onLocationButton = false, $multiple = false, $pos = CClientScript::POS_READY) {
+        $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
+        $enableGeolocation = Yii::app()->settings->enableGeolocation;
+        $noDNT = (!isset ($_SERVER['HTTP_DNT']) || $_SERVER['HTTP_DNT'] != 1);
+        if ($onLocationButton) {
+            if (Yii::app()->settings->enableMaps) {
+                $key = Yii::app()->settings->getGoogleApiKey('geocoding');
+                $assetUrl = 'https://maps.googleapis.com/maps/api/js';
+                if (!empty($key))
+                    $assetUrl .= '?key='.$key;
+                Yii::app()->clientScript->registerScriptFile($assetUrl, CClientScript::POS_END);
+            }
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                $("#toggle-location-button").click(function (evt) {
+                    evt.preventDefault();
+                    if ($("#toggle-location-button").data("location-enabled") === true) {
+                        // Clear geoCoords field and reset style
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").slideUp().css("color", "");
+                        $("'.$selector.'").val("");
+                        $("#toggle-location-button")
+                            .data("location-enabled", false)
+                            .css("color", "");
+                    } else {
+                        // Populate geoCoords field and highlight blue
+                        $("#toggle-location-comment-button").slideDown();
+                        $("#toggle-location-button")
+                            .data("location-enabled", true)
+                            .css("color", "blue");'.
+                        (($enableGeolocation && isset($_SERVER['HTTPS']) && $noDNT) ?
+                        'if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                            var pos = {
+                              lat: position.coords.latitude,
+                              lon: position.coords.longitude,
+                              locationEnabled: true
+                            };
+                            $("'.$selector.'").val(JSON.stringify (pos));
+
+                            if (typeof google !== "undefined") {
+                                var latLng = {
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude
+                                }
+                                var geocoder = new google.maps.Geocoder();
+                                geocoder.geocode( {"location": latLng}, function(results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK) {
+                                        var pos = JSON.parse($("'.$selector.'").val());
+                                        pos.address = results[0].formatted_address;
+                                        $("'.$selector.'").val(JSON.stringify (pos));
+                                    }
+                                });
+                            }
+                          }, function() {
+                            console.log("error fetching geolocation data");
+                          });
+                        }' : '$("'.$selector.'").val(JSON.stringify ({locationEnabled: true}));').
+                    '}
+                });
+                $("#toggle-location-comment-button").click(function(evt) {
+                    evt.preventDefault();
+                    if ($("#checkInComment").is(":visible")) {
+                        $("#checkInComment").slideUp();
+                        $("#toggle-location-comment-button").css("color", "");
+                    } else {
+                        $("#toggle-location-comment-button").css("color", "blue");
+                        $("#checkInComment").slideDown();
+                    }
+                });
+            ', $pos);
+        } else if ($enableGeolocation && isset($_SERVER['HTTPS']) && $noDNT) {
+            Yii::app()->clientScript->registerScript('geolocationJs', '
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                    var pos = {
+                      lat: position.coords.latitude,
+                      lon: position.coords.longitude
+                    };
+
+                    $("'.$selector.'").val(JSON.stringify (pos));
+                  }, function() {
+                    console.log("error fetching geolocation data");
+                  });
+                };
+            ', $pos);
+        }
+    }
+
+    /**
+     * Register the check-in JavaScript
+     * @param string $submitSelector CSS selector of the associated submit button
+     * @param bool $multiple whether to operate on multiple geoCoords inputs
+     * @param const $pos CClientScript position
+     */
+    public function registerCheckinScript($submitSelector, $onByDefault = false, $multiple = false, $pos = CClientScript::POS_READY) {
+        $selector = $multiple ? "input[name=geoCoords]" : "#geoCoords";
+        Yii::app()->clientScript->registerScript('checkInJs', '
+            $("#checkInComment").on("blur", function() {
+                var comment = $(this).val();
+                var coordsVal = $("'.$selector.'").val();
+                var coords = {};
+                if (coordsVal) {
+                    coords = JSON.parse(coordsVal);
+                    if (!coords) {
+                        coords = {};
+                    }
+                }
+                coords.comment = comment;
+                $("'.$selector.'").val(JSON.stringify(coords));
+            });
+            $("'.$submitSelector.'").click(function () {
+                $("#checkInComment")
+                    .blur()
+                    .val("");
+            });
+        ', $pos);
+        if ($onByDefault) {
+            Yii::app()->clientScript->registerScript('startCheckInJs', '
+                $("#toggle-location-button").click();
+            ', CClientScript::POS_READY);
         }
     }
 
