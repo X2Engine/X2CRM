@@ -1,7 +1,8 @@
 <?php
+
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -46,31 +46,86 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * $var string the type of notification to create
      */
     public $notifType = '';
+
     /**
      * $var string the type of event to create
      */
     public $eventType = '';
 
     /**
+     * Gets array of triggers that pass certain model
+     * 
+     * @var type 
+     */
+    private static $anyModelTriggers = array(
+        "Newsletter Email Clicked", "Newsletter Email Opened", "Splitter",
+        "Unsubscribed from Newsletter", "Periodic Trigger", "Conditional Switch",
+        "Campaign Web Activity (no contact available)", 
+        "Macro Executed", "User Signed In", "User Signed Out"
+    );
+    private static $actionModelTriggers = array(
+        "Action Completed", "Action Overdue", "Action Marked Incomplete"
+    );
+    private static $userModelTriggers = array(
+        "Macro Executed", "User Signed In", "User Signed Out"
+    );
+    private static $processModelTriggers = array(
+        "Process Stage Completed", "Process Completed", "Process Stage Reverted",
+        "Process Stage Started", "Process Started"
+    );
+    private static $recordModelTriggers = array(
+        "Campaign Email Clicked", "Campaign Email Opened", "Email Opened",
+        "Unsubscribed from Campaign", "Campaign Web Activity", "Inbound Email",
+        "Outbound Email", "Record Created", "Record Deleted", "Tag Added",
+        "Tag Removed", "Record Updated", "Record Viewed", "New Web Lead",
+        "Targeted Content Requested", "Contact Web Activity", "Voip Inbound"
+    );
+
+    /**
+     * Gets array of trigger text that pass specific model
+     * 
+     * @return type
+     */
+    public static function getAnyModelTriggers() {
+        return self::$anyModelTriggers;
+    }
+    
+    public static function getActionModelTriggers() {
+        return self::$actionModelTriggers;
+    }
+
+    public static function getUserModelTriggers() {
+        return self::$userModelTriggers;
+    }
+
+    public static function getProcessModelTriggers() {
+        return self::$processModelTriggers;
+    }
+
+    public static function getRecordModelTriggers() {
+        return self::$recordModelTriggers;
+    }
+
+    /**
      * @return array all standard comparison operators
      */
-    public static function getFieldComparisonOptions () {
+    public static function getFieldComparisonOptions() {
         return array(
-            '=' => Yii::t('app','equals'),
-            '>' => Yii::t('app','greater than'),
-            '<' => Yii::t('app','less than'),
-            '>=' => Yii::t('app','greater than or equal to'),
-            '<=' => Yii::t('app','less than or equal to'),
-            '<>' => Yii::t('app','not equal to'),
-            'list' => Yii::t('app','in list'),
-            'notList' => Yii::t('app','not in list'),
-            'empty' => Yii::t('app','empty'),
-            'notEmpty' => Yii::t('app','not empty'),
-            'contains' => Yii::t('app','contains'),
-            'noContains' => Yii::t('app','does not contain'),
-            'changed' => Yii::t('app','changed'),
-            'before' => Yii::t('app','before'),
-            'after' => Yii::t('app','after'),
+            '=' => Yii::t('app', 'equals'),
+            '>' => Yii::t('app', 'greater than'),
+            '<' => Yii::t('app', 'less than'),
+            '>=' => Yii::t('app', 'greater than or equal to'),
+            '<=' => Yii::t('app', 'less than or equal to'),
+            '<>' => Yii::t('app', 'not equal to'),
+            'list' => Yii::t('app', 'in list'),
+            'notList' => Yii::t('app', 'not in list'),
+            'empty' => Yii::t('app', 'empty'),
+            'notEmpty' => Yii::t('app', 'not empty'),
+            'contains' => Yii::t('app', 'contains'),
+            'noContains' => Yii::t('app', 'does not contain'),
+            'changed' => Yii::t('app', 'changed'),
+            'before' => Yii::t('app', 'before'),
+            'after' => Yii::t('app', 'after'),
         );
     }
 
@@ -90,83 +145,83 @@ abstract class X2FlowTrigger extends X2FlowItem {
     );
 
     public static function getGenericConditions() {
-        return array_map(function($term){
-            return Yii::t('studio',$term);
-        },self::$genericConditions);
+        return array_map(function($term) {
+            return Yii::t('studio', $term);
+        }, self::$genericConditions);
     }
 
     public static function getGenericCondition($type) {
-        switch($type) {
+        switch ($type) {
             case 'current_user':
                 return array(
                     'name' => 'user',
-                    'label' => Yii::t('studio','Current User'),
+                    'label' => Yii::t('studio', 'Current User'),
                     'type' => 'dropdown',
                     'multiple' => 1,
-                    'options' => X2Model::getAssignmentOptions(false,false),
-                    'operators'=>array('=','<>','list','notList')
+                    'options' => X2Model::getAssignmentOptions(false, false),
+                    'operators' => array('=', '<>', 'list', 'notList')
                 );
 
             case 'month':
                 return array(
-                    'label'=>Yii::t('studio','Current Month'),
+                    'label' => Yii::t('studio', 'Current Month'),
                     'type' => 'dropdown',
                     'multiple' => 1,
                     'options' => Yii::app()->locale->monthNames,
-                    'operators'=>array('=','<>','list','notList')
+                    'operators' => array('=', '<>', 'list', 'notList')
                 );
 
             case 'day_of_week':
                 return array(
-                    'label' => Yii::t('studio','Day of Week'),
+                    'label' => Yii::t('studio', 'Day of Week'),
                     'type' => 'dropdown',
                     'multiple' => 1,
                     'options' => Yii::app()->locale->weekDayNames,
-                    'operators'=>array('=','<>','list','notList')
+                    'operators' => array('=', '<>', 'list', 'notList')
                 );
 
             case 'day_of_month':
-                $days = array_keys(array_fill(1,31,1));
+                $days = array_keys(array_fill(1, 31, 1));
                 return array(
-                    'label' => Yii::t('studio','Day of Month'),
+                    'label' => Yii::t('studio', 'Day of Month'),
                     'type' => 'dropdown',
                     'multiple' => 1,
-                    'options' => array_combine($days,$days),
-                    'operators'=>array('=','<>','list','notList')
+                    'options' => array_combine($days, $days),
+                    'operators' => array('=', '<>', 'list', 'notList')
                 );
 
             case 'time_of_day':
                 return array(
-                    'label' => Yii::t('studio','Time of Day'),
+                    'label' => Yii::t('studio', 'Time of Day'),
                     'type' => 'time',
-                    'operators'=>array('before','after')
+                    'operators' => array('before', 'after')
                 );
 
             case 'current_time':
                 return array(
-                    'label' => Yii::t('studio','Current Time'),
+                    'label' => Yii::t('studio', 'Current Time'),
                     'type' => 'dateTime',
-                    'operators'=>array('before','after')
+                    'operators' => array('before', 'after')
                 );
 
             case 'user_active':
                 return array(
-                    'label' => Yii::t('studio','User Logged In'),
+                    'label' => Yii::t('studio', 'User Logged In'),
                     'type' => 'dropdown',
-                    'options' => X2Model::getAssignmentOptions(false,false)
+                    'options' => X2Model::getAssignmentOptions(false, false)
                 );
 
             case 'on_list':
                 return array(
-                    'label' => Yii::t('studio','On List'),
+                    'label' => Yii::t('studio', 'On List'),
                     'type' => 'link',
-                    'linkType'=>'X2List',
-                    'linkSource'=>Yii::app()->controller->createUrl(
-                        CActiveRecord::model('X2List')->autoCompleteSource)
+                    'linkType' => 'X2List',
+                    'linkSource' => Yii::app()->controller->createUrl(
+                            CActiveRecord::model('X2List')->autoCompleteSource)
                 );
             case 'has_tags':
                 return array(
-                    'label' => Yii::t('studio','Has Tags'),
+                    'label' => Yii::t('studio', 'Has Tags'),
                     'type' => 'tags',
                 );
             case 'email_open':
@@ -183,98 +238,105 @@ abstract class X2FlowTrigger extends X2FlowItem {
     /**
      * Can be overridden in child class to give flow a default return value
      */
-    public function getDefaultReturnVal ($flowId) { return null; }
+    public function getDefaultReturnVal($flowId) {
+        return null;
+    }
 
     /**
      * Can be overridden in child class to extend behavior of validate method
      */
-    public function afterValidate (&$params, $defaultErrMsg='', $flowId) { 
-        return array (false, Yii::t('studio', $defaultErrMsg)); 
+    public function afterValidate(&$params, $defaultErrMsg = '', $flowId) {
+        return array(false, Yii::t('studio', $defaultErrMsg));
     }
 
     /**
      * Checks if all all the params are ship-shape
      */
-    public function validate(&$params=array(), $flowId=null) {
+    public function validate(&$params = array(), $flowId = null) {
         $paramRules = $this->paramRules();
-        if(!isset($paramRules['options'],$this->config['options'])) {
-            return $this->afterValidate (
-                $params, YII_DEBUG ? 
-                    'invalid rules/params: trigger passed options when it specifies none' :
-                    'invalid rules/params', $flowId);
+        if (!isset($paramRules['options'], $this->config['options'])) {
+            return $this->afterValidate(
+                            $params, YII_DEBUG ?
+                            'invalid rules/params: trigger passed options when it specifies none' :
+                            'invalid rules/params', $flowId);
         }
         $config = &$this->config['options'];
 
-        if(isset($paramRules['modelClass'])) {
+        if (isset($paramRules['modelClass'])) {
             $modelClass = $paramRules['modelClass'];
-            if($modelClass === 'modelClass') {
-                if(isset($config['modelClass'],$config['modelClass']['value'])) {
+            if ($modelClass === 'modelClass') {
+                if (isset($config['modelClass'], $config['modelClass']['value'])) {
                     $modelClass = $config['modelClass']['value'];
                 } else {
-                    return $this->afterValidate (
-                        $params, YII_DEBUG ? 
-                            'invalid rules/params: '.
-                            'trigger requires model class option but given none' : 
-                            'invalid rules/params', $flowId);
+                    return $this->afterValidate(
+                                    $params, YII_DEBUG ?
+                                    'invalid rules/params: ' .
+                                    'trigger requires model class option but given none' :
+                                    'invalid rules/params', $flowId);
                 }
             }
-            if(!isset($params['model'])) {
-                return $this->afterValidate (
-                    $params, YII_DEBUG ? 
-                        'invalid rules/params: trigger requires a model but passed none' :
-                        'invalid rules/params', $flowId);
+            if (!isset($params['model'])) {
+                return $this->afterValidate(
+                                $params, YII_DEBUG ?
+                                'invalid rules/params: trigger requires a model but passed none' :
+                                'invalid rules/params', $flowId);
             }
-            if($modelClass !== get_class($params['model'])) {
-                return $this->afterValidate (
-                    $params, YII_DEBUG ? 
-                        'invalid rules/params: required model class does not match model passed ' .
-                        'to trigger' :
-                        'invalid rules/params', $flowId);
+            if ($modelClass !== get_class($params['model'])) {
+                return $this->afterValidate(
+                                $params, YII_DEBUG ?
+                                'invalid rules/params: required model class does not match model passed ' .
+                                'to trigger' :
+                                'invalid rules/params', $flowId);
             }
         }
-        return $this->validateOptions($paramRules,$params);
+        return $this->validateOptions($paramRules, $params);
     }
 
     /**
      * Default condition processor for main config panel. Checks each option against the key in 
      * $params of the same name, using an operator if provided (defaults to "=")
+     * 
      * @return array (error status, message)
      */
     public function check(&$params) {
-        foreach($this->config['options'] as $name => &$option) {
+        foreach ($this->config['options'] as $name => &$option) {
             // modelClass is a special case, ignore it
-            if($name === 'modelClass')    
-                continue;
-
-            // if it's optional and blank, forget about it
-            if($option['optional'] && ($option['value'] === null || $option['value'] === ''))    
-                continue;
-
-            $value = $option['value'];
-
-            if(isset($option['type']))
-                $value = X2Flow::parseValue($value,$option['type'],$params);
-
-            if (isset ($option['comparison']) && !$option['comparison']) {
+            if ($name === 'modelClass') {
                 continue;
             }
 
-            if(!static::evalComparison($params[$name], $option['operator'], $value)) {
-                if (is_string ($value) && is_string ($params[$name]) && 
-                    is_string ($option['operator'])) {
+            // if it's optional and blank, forget about it
+            if ($option['optional'] && ($option['value'] === null ||
+                    $option['value'] === '')) {
+                continue;
+            }
 
-                    return array (
-                        false, 
+            $value = $option['value'];
+
+            if (isset($option['type'])) {
+                $value = X2Flow::parseValue($value, $option['type'], $params);
+            }
+
+            if (isset($option['comparison']) && !$option['comparison']) {
+                continue;
+            }
+
+            if (!static::evalComparison($params[$name], $option['operator'], $value)) {
+                if (is_string($value) && is_string($params[$name]) &&
+                        is_string($option['operator'])) {
+
+                    return array(
+                        false,
                         Yii::t('studio', 'The following condition did not pass: ' .
-                            '{name} {operator} {value}', array (
-                                '{name}' => $params[$name],
-                                '{operator}' => $option['operator'],
-                                '{value}' => (string) $value,
-                            ))
+                                '{name} {operator} {value}', array(
+                            '{name}' => $params[$name],
+                            '{operator}' => $option['operator'],
+                            '{value}' => (string) $value,
+                        ))
                     );
                 } else {
-                    return array (
-                        false, 
+                    return array(
+                        false,
                         Yii::t('studio', 'Condition failed')
                     );
                 }
@@ -283,37 +345,38 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
         return $this->checkConditions($params);
     }
+
     /**
      * Tests this trigger's conditions against the provided params.
      * @return array (error status, message)
      */
     public function checkConditions(&$params) {
-        if(isset($this->config['conditions'])){
-            foreach($this->config['conditions'] as &$condition) {
-                if(!isset($condition['type']))
+        if (isset($this->config['conditions'])) {
+            foreach ($this->config['conditions'] as &$condition) {
+                if (!isset($condition['type'])) {
                     $condition['type'] = '';
-                    // continue;
+                }
                 $required = isset($condition['required']) && $condition['required'];
 
                 // required param missing
-                if(isset($condition['name']) && $required && !isset($params[$condition['name']])) {
+                if (isset($condition['name']) && $required && !isset($params[$condition['name']])) {
                     if (YII_DEBUG) {
-                        return array (false, Yii::t('studio', 'a required parameter is missing'));
+                        return array(false, Yii::t('studio', 'a required parameter is missing'));
                     } else {
-                        return array (false, Yii::t('studio', 'conditions not passed'));
+                        return array(false, Yii::t('studio', 'conditions not passed'));
                     }
                 }
 
-                if(array_key_exists($condition['type'],self::$genericConditions)) {
-                    if(!self::checkCondition($condition,$params))
-                        return array (
-                            false, 
+                if (array_key_exists($condition['type'], self::$genericConditions)) {
+                    if (!self::checkCondition($condition, $params))
+                        return array(
+                            false,
                             Yii::t('studio', 'conditions not passed')
                         );
                 }
             }
         }
-        return array (true, '');
+        return array(true, '');
     }
 
     /**
@@ -322,12 +385,12 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param Array $params
      * @return bool true for success, false otherwise
      */
-    public static function checkWorkflowStatusCondition ($condition, &$params) {
-        if (!isset ($params['model']) || 
-            !isset ($condition['workflowId']) ||
-            !isset ($condition['stageNumber']) ||
-            !isset ($condition['stageState'])) {
-            
+    public static function checkWorkflowStatusCondition($condition, &$params) {
+        if (!isset($params['model']) ||
+                !isset($condition['workflowId']) ||
+                !isset($condition['stageNumber']) ||
+                !isset($condition['stageState'])) {
+
             return false;
         }
 
@@ -336,29 +399,28 @@ abstract class X2FlowTrigger extends X2FlowItem {
         $stageNumber = $condition['stageNumber'];
         $stageState = $condition['stageState'];
         $modelId = $model->id;
-        $type = lcfirst (X2Model::getModuleName (get_class ($model)));
+        $type = lcfirst(X2Model::getModuleName(get_class($model)));
 
-        $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
-        $stages = $workflowStatus['stages'];
-        if (!isset ($workflowStatus['stages'][$stageNumber])) return false;
-
-        $stage = $workflowStatus['stages'][$stageNumber];
+        $workflowStatus = Workflow::getWorkflowStatus($workflowId, $modelId, $type);
+        if (!isset($workflowStatus['stages'][$stageNumber])) {
+            return false;
+        }
 
         $passed = false;
         switch ($stageState) {
             case 'completed':
-                $passed = Workflow::isCompleted ($workflowStatus, $stageNumber);
+                $passed = Workflow::isCompleted($workflowStatus, $stageNumber);
                 break;
             case 'started':
-                $passed = Workflow::isStarted ($workflowStatus, $stageNumber);
+                $passed = Workflow::isStarted($workflowStatus, $stageNumber);
                 break;
             case 'notCompleted':
-                $passed = !Workflow::isCompleted ($workflowStatus, $stageNumber);
+                $passed = !Workflow::isCompleted($workflowStatus, $stageNumber);
                 break;
             case 'notStarted':
-                $passed = !Workflow::isStarted ($workflowStatus, $stageNumber);
+                $passed = !Workflow::isStarted($workflowStatus, $stageNumber);
                 break;
-            default: 
+            default:
                 return false;
         }
         return $passed;
@@ -369,125 +431,120 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param Array $params
      * @return bool true for success, false otherwise
      */
-    public static function checkCondition($condition,&$params) {
-        if ($condition['type'] === 'workflow_status') 
-            return self::checkWorkflowStatusCondition ($condition, $params);
-
-        $model = isset($params['model'])? $params['model'] : null;
-        $operator = isset($condition['operator'])? $condition['operator'] : '=';
-        // $type = isset($condition['type'])? $condition['type'] : null;
-        $value = isset($condition['value'])? $condition['value'] : null;
-
-        // default to a doing basic value comparison
-        if(isset($condition['name']) && $condition['type'] === '') {    
-            if(!isset($params[$condition['name']]))
-                return false;
-
-            return self::evalComparison($params[$condition['name']],$operator,$value);
+    public static function checkCondition($condition, &$params) {
+        if ($condition['type'] === 'workflow_status') {
+            return self::checkWorkflowStatusCondition($condition, $params);
         }
 
-        switch($condition['type']) {
-            case 'attribute':
-                if(!isset($condition['name'],$model))
-                    return false;
-                $attr = &$condition['name'];
-                if(null === $field = $model->getField($attr))
-                    return false;
+        $model = isset($params['model']) ? $params['model'] : null;
+        $operator = isset($condition['operator']) ? $condition['operator'] : '=';
+        // $type = isset($condition['type'])? $condition['type'] : null;
+        $value = isset($condition['value']) ? $condition['value'] : null;
 
-                if($operator === 'changed') {
-                    return $model->attributeChanged ($attr);
+        // default to a doing basic value comparison
+        if (isset($condition['name']) && $condition['type'] === '') {
+            if (!isset($params[$condition['name']])) {
+                return false;
+            }
+
+            return self::evalComparison($params[$condition['name']], $operator, $value);
+        }
+
+        switch ($condition['type']) {
+            case 'attribute':
+                if (!isset($condition['name'], $model)) {
+                    return false;
+                }
+                $attr = &$condition['name'];
+                if (null === $field = $model->getField($attr)) {
+                    return false;
+                }
+
+                if ($operator === 'changed') {
+                    return $model->attributeChanged($attr);
                 }
 
                 if ($field->type === 'link') {
-                    list ($attrVal, $id) = Fields::nameAndId ($model->getAttribute ($attr));
+                    list ($attrVal, $id) = Fields::nameAndId($model->getAttribute($attr));
                 } else {
-                    $attrVal = $model->getAttribute ($attr);
+                    $attrVal = $model->getAttribute($attr);
                 }
 
                 return self::evalComparison(
-                    $attrVal,$operator, X2Flow::parseValue($value,$field->type,$params), $field);
+                                $attrVal, $operator, X2Flow::parseValue($value, $field->type, $params), $field);
 
             case 'current_user':
-                return self::evalComparison(
-                    Yii::app()->user->getName(),$operator,
-                    X2Flow::parseValue($value,'assignment',$params));
-
+                return self::evalComparison(Yii::app()->user->getName(), $operator, X2Flow::parseValue($value, 'assignment', $params));
             case 'month':
-                return self::evalComparison((int)date('n'),$operator,$value);    // jan = 1, dec = 12
-
+                return self::evalComparison((int) date('n'), $operator, $value);    // jan = 1, dec = 12
             case 'day_of_month':
-                return self::evalComparison((int)date('j'),$operator,$value);    // 1 through 31
-
+                return self::evalComparison((int) date('j'), $operator, $value); // 1 through 31
             case 'day_of_week':
-                return self::evalComparison((int)date('N'),$operator,$value);    // monday = 1, sunday = 7
-
+                return self::evalComparison((int) date('N'), $operator, $value); // monday = 1, sunday = 7
             case 'time_of_day':    // - mktime(0,0,0)
-                return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'time',$params));    // seconds since midnight
-
-            // case 'current_local_time':
-
+                return self::evalComparison(time(), $operator, X2Flow::parseValue($value, 'time', $params)); // seconds since midnight
             case 'current_time':
-                return self::evalComparison(time(),$operator,X2Flow::parseValue($value,'dateTime',$params));
-
+                return self::evalComparison(time(), $operator, X2Flow::parseValue($value, 'dateTime', $params));
             case 'user_active':
-                return CActiveRecord::model('Session')->exists('user=:user AND status=1',array(':user'=>X2Flow::parseValue($value,'assignment',$params)));
-
-
+                return CActiveRecord::model('Session')->exists(
+                                'user=:user AND status=1', array(
+                            ':user' => X2Flow::parseValue($value, 'assignment', $params)));
             case 'on_list':
-                if(!isset($model,$value))
+                if (!isset($model, $value)) {
                     return false;
-                $value = X2Flow::parseValue ($value, 'link');
+                }
+                $value = X2Flow::parseValue($value, 'link');
 
                 // look up specified list
-                if(is_numeric($value)){
+                if (is_numeric($value)) {
                     $list = CActiveRecord::model('X2List')->findByPk($value);
-                }else{
+                } else {
                     $list = CActiveRecord::model('X2List')->findByAttributes(
-                        array('name'=>$value));
+                            array('name' => $value));
                 }
 
-                return ($list !== null && $list->hasRecord ($model));
+                return ($list !== null && $list->hasRecord($model));
             case 'has_tags':
-                if(!isset($model,$value))
+                if (!isset($model, $value))
                     return false;
-                $tags = X2Flow::parseValue ($value, 'tags');
-                return $model->hasTags ($tags, 'AND');
+                $tags = X2Flow::parseValue($value, 'tags');
+                return $model->hasTags($tags, 'AND');
             case 'workflow_status':
-                if(!isset($model,$condition['workflowId'],$condition['stageNumber']))
+                if (!isset($model, $condition['workflowId'], $condition['stageNumber']))
                     return false;
 
-                switch($operator) {
+                switch ($operator) {
                     case 'started_workflow':
                         return CActiveRecord::model('Actions')->exists(
-                            'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow',array(
-                                ':type' => get_class($model),
-                                ':modelId' => $model->id,
-                                ':workflow' => $condition['workflowId'],
-                            ));
+                                        'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow', array(
+                                    ':type' => get_class($model),
+                                    ':modelId' => $model->id,
+                                    ':workflow' => $condition['workflowId'],
+                        ));
                     case 'started_stage':
                         return CActiveRecord::model('Actions')->exists(
-                            'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow AND stageNumber=:stage AND (completeDate IS NULL OR completeDate=0)',array(
-                                ':type' => get_class($model),
-                                ':modelId' => $model->id,
-                                ':workflow' => $condition['workflowId'],
-                                ':stageNumber' => $condition['stageNumber'],
-                            ));
+                                        'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow AND stageNumber=:stage AND (completeDate IS NULL OR completeDate=0)', array(
+                                    ':type' => get_class($model),
+                                    ':modelId' => $model->id,
+                                    ':workflow' => $condition['workflowId'],
+                                    ':stageNumber' => $condition['stageNumber'],
+                        ));
                     case 'completed_stage':
                         return CActiveRecord::model('Actions')->exists(
-                            'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow AND stageNumber=:stage AND completeDate > 0',array(
-                                ':type' => get_class($model),
-                                ':modelId' => $model->id,
-                                ':workflow' => $condition['workflowId'],
-                                ':stageNumber' => $condition['stageNumber'],
-                            ));
+                                        'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow AND stageNumber=:stage AND completeDate > 0', array(
+                                    ':type' => get_class($model),
+                                    ':modelId' => $model->id,
+                                    ':workflow' => $condition['workflowId'],
+                                    ':stageNumber' => $condition['stageNumber'],
+                        ));
                     case 'completed_workflow':
-                        $stageCount = CActiveRecord::model('WorkflowStage')->count('workflowId=:id',array(':id'=>$condition['workflowId']));
+                        $stageCount = CActiveRecord::model('WorkflowStage')->count('workflowId=:id', array(':id' => $condition['workflowId']));
                         $actionCount = CActiveRecord::model('Actions')->count(
-                            'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow',array(
-                                ':type' => get_class($model),
-                                ':modelId' => $model->id,
-                                ':workflow' => $condition['workflowId'],
-                            ));
+                                'associationType=:type AND associationId=:modelId AND type="workflow" AND workflowId=:workflow', array(
+                            ':type' => get_class($model),
+                            ':modelId' => $model->id,
+                            ':workflow' => $condition['workflowId'],
+                        ));
                         return $actionCount >= $stageCount;
                 }
                 return false;
@@ -501,30 +558,27 @@ abstract class X2FlowTrigger extends X2FlowItem {
         return false;
 
         // foreach($condition as $key = >$value) {
-
-
-            // Record attribute (=, <, >, <>, in list, not in list, empty, not empty, contains)
-            // Linked record attribute (eg. a contact's account has > 30 employees)
-            // Current user
-            // Current time (day of week, hours, etc)
-            // Current time in record's timezone
-            // Is user X logged in
-            // Workflow status (in workflow X, started stage Y, completed Y, completed all)
-
+        // Record attribute (=, <, >, <>, in list, not in list, empty, not empty, contains)
+        // Linked record attribute (eg. a contact's account has > 30 employees)
+        // Current user
+        // Current time (day of week, hours, etc)
+        // Current time in record's timezone
+        // Is user X logged in
+        // Workflow status (in workflow X, started stage Y, completed Y, completed all)
         // }
     }
 
-    protected static function parseArray ($operator, $value) {
-        $expectsArray = array ('list', 'notList', 'between');
+    protected static function parseArray($operator, $value) {
+        $expectsArray = array('list', 'notList', 'between');
 
         // $value needs to be a comma separated list
-        if(in_array($operator, $expectsArray, true) && !is_array($value)) {    
-            $value = explode(',',$value);
+        if (in_array($operator, $expectsArray, true) && !is_array($value)) {
+            $value = explode(',', $value);
 
             $len = count($value);
-            for($i=0;$i<$len; $i++) {
+            for ($i = 0; $i < $len; $i++) {
                 // loop through the values, trim and remove empty strings
-                if(($value[$i] = trim($value[$i])) === '')        
+                if (($value[$i] = trim($value[$i])) === '')
                     unset($value[$i]);
             }
         }
@@ -538,42 +592,35 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param mixed $value the value being analyzed (specified in config menu)
      * @return boolean
      */
-    public static function evalComparison($subject,$operator,$value=null, Fields $field = null) {
-        $value = self::parseArray ($operator, $value);
-//        if (!in_array ($operator, $expectsArray, true) && is_array ($value)) {
-//            if (count ($value) > 1) {
-//                return false;
-//            } else {
-//                $value = array_pop ($value);
-//            }
-//        }
+    public static function evalComparison($subject, $operator, $value = null, Fields $field = null) {
+        $value = self::parseArray($operator, $value);
 
-        switch($operator) {
+        switch ($operator) {
             case '=':
                 // check for multiselect dropdown
                 if ($field && $field->type === 'dropdown') {
-                    $dropdown = $field->getDropdown (); 
+                    $dropdown = $field->getDropdown();
                     if ($dropdown && $dropdown->multi) {
-                        $subject = StringUtil::jsonDecode ($subject, false);
-                        AuxLib::coerceToArray ($subject);
-                        AuxLib::coerceToArray ($value);
+                        $subject = StringUtil::jsonDecode($subject, false);
+                        AuxLib::coerceToArray($subject);
+                        AuxLib::coerceToArray($value);
                         return $subject === $value;
                     }
-                // check for muti-assignment field
-                } else if ($field && $field->type === 'assignment' && 
-                    $field->linkType === 'multiple') {
+                    // check for muti-assignment field
+                } else if ($field && $field->type === 'assignment' &&
+                        $field->linkType === 'multiple') {
 
-                    $subject = explode (Fields::MULTI_ASSIGNMENT_DELIM, $subject); 
-                    AuxLib::coerceToArray ($subject);
-                    AuxLib::coerceToArray ($value);
+                    $subject = explode(Fields::MULTI_ASSIGNMENT_DELIM, $subject);
+                    AuxLib::coerceToArray($subject);
+                    AuxLib::coerceToArray($value);
                     return $subject === $value;
-                } 
+                }
 
                 // this case occurs when dropdown or assignment fields are changed from multiple
                 // to single selection, and flow conditions are left over from before the change 
                 // was made
-                if (is_array ($value)) { 
-                    AuxLib::coerceToArray ($subject);
+                if (is_array($value)) {
+                    AuxLib::coerceToArray($subject);
                 }
                 return $subject == $value;
 
@@ -590,7 +637,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 return $subject <= $value;
 
             case 'between':
-                if(count($value) !== 2)
+                if (count($value) !== 2)
                     return false;
                 return $subject >= min($value) && $subject <= max($value);
 
@@ -605,45 +652,31 @@ abstract class X2FlowTrigger extends X2FlowItem {
                 return $subject === null || trim($subject) === '';
 
             case 'list':
-                if(count($value) === 0)    // if the list is empty,
+                if (count($value) === 0)    // if the list is empty,
                     return false;                                // A isn't in it
-                foreach($value as &$val)
-                    if($subject == $val)
+                foreach ($value as &$val)
+                    if ($subject == $val)
                         return true;
 
                 return false;
 
             case 'notList':
-                if(count($value) === 0)    // if the list is empty,
+                if (count($value) === 0)    // if the list is empty,
                     return true;                                // A isn't *not* in it
-                foreach($value as &$val)
-                    if($subject == $val)
+                foreach ($value as &$val)
+                    if ($subject == $val)
                         return false;
 
                 return true;
 
             case 'noContains':
-                return stripos($subject,$value) === false;
+                return stripos($subject, $value) === false;
 
             case 'contains':
             default:
-                return stripos($subject,$value) !== false;
+                return stripos($subject, $value) !== false;
         }
     }
-
-    // const T_VAR = 0;
-    // const T_SPACE = 1;
-    // const T_COMMA = 2;
-    // const T_OPEN_BRACKET = 3;
-    // const T_CLOSE_BRACKET = 4;
-    // const T_PLUS = 5;
-    // const T_MINUS = 6;
-    // const T_TIMES = 7;
-    // const T_DIVIDE = 8;
-    // const T_OPEN_PAREN = 9;
-    // const T_CLOSE_PAREN = 10;
-    // const T_NUMBER = 11;
-    // const T_ERROR = 12;
 
     protected static $_tokenChars = array(
         ',' => 'COMMA',
@@ -654,9 +687,10 @@ abstract class X2FlowTrigger extends X2FlowItem {
         '*' => 'MULTIPLY',
         '/' => 'DIVIDE',
         '%' => 'MOD',
-        // '(' => 'OPEN_PAREN',
-        // ')' => 'CLOSE_PAREN',
+            // '(' => 'OPEN_PAREN',
+            // ')' => 'CLOSE_PAREN',
     );
+    
     protected static $_tokenRegex = array(
         '\d+\.\d+\b|^\.?\d+\b' => 'NUMBER',
         '[a-zA-Z]\w*\.[a-zA-Z]\w*' => 'VAR_COMPLEX',
@@ -674,22 +708,22 @@ abstract class X2FlowTrigger extends X2FlowItem {
     protected static function tokenize($str) {
         $tokens = array();
         $offset = 0;
-        while($offset < mb_strlen($str)) {
+        while ($offset < mb_strlen($str)) {
             $token = array();
 
-            $substr = mb_substr($str,$offset);    // remaining string starting at $offset
+            $substr = mb_substr($str, $offset);    // remaining string starting at $offset
 
-            foreach(self::$_tokenChars as $char => &$name) {    // scan single-character patterns first
-                if(mb_substr($substr,0,1) === $char) {
+            foreach (self::$_tokenChars as $char => &$name) {    // scan single-character patterns first
+                if (mb_substr($substr, 0, 1) === $char) {
                     $tokens[] = array($name);    // add it to $tokens
                     $offset++;
                     continue 2;
                 }
             }
-            foreach(self::$_tokenRegex as $regex => &$name) {    // now loop through regex patterns
+            foreach (self::$_tokenRegex as $regex => &$name) {    // now loop through regex patterns
                 $matches = array();
-                if(preg_match('/^'.$regex.'/u',$substr,$matches) === 1) {
-                    $tokens[] = array($name,$matches[0]);    // add it to $tokens
+                if (preg_match('/^' . $regex . '/u', $substr, $matches) === 1) {
+                    $tokens[] = array($name, $matches[0]);    // add it to $tokens
                     $offset += mb_strlen($matches[0]);
                     continue 2;
                 }
@@ -705,9 +739,9 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param array $nodePath array of branch indeces leading to the target branch
      * @value array an array containing the new node's type and value
      */
-    protected static function addNode(&$tree,$nodePath,$value) {
-        if(count($nodePath) > 0)
-            return self::addNode($tree[array_shift($nodePath)],$nodePath,$value);
+    protected static function addNode(&$tree, $nodePath, $value) {
+        if (count($nodePath) > 0)
+            return self::addNode($tree[array_shift($nodePath)], $nodePath, $value);
 
         $tree[] = $value;
         return count($tree) - 1;
@@ -718,85 +752,17 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param array &$tree the tree object
      * @param array $nodePath array of branch indeces leading to the target node
      */
-    protected static function simplifyNode(&$tree,$nodePath) {
-        if(count($nodePath) > 0)                                                    // before doing anything, recurse down the tree using $nodePath
-            return self::simplifyNode($tree[array_shift($nodePath)],$nodePath);        // to get to the targeted node
+    protected static function simplifyNode(&$tree, $nodePath) {
+        if (count($nodePath) > 0)                                                    // before doing anything, recurse down the tree using $nodePath
+            return self::simplifyNode($tree[array_shift($nodePath)], $nodePath);        // to get to the targeted node
 
         $last = count($tree) - 1;
 
-        if(empty($tree[$last][1]))
+        if (empty($tree[$last][1]))
             array_pop($tree);
-        elseif(count($tree[$last][1]) === 1)
+        elseif (count($tree[$last][1]) === 1)
             $tree[$last] = $tree[$last][1][0];
     }
-
-    /**
-     * Processes the expression tree and attempts to evaluate it
-     * @param array &$tree the tree object
-     * @param boolean $expression
-     * @return mixed the value, or false if the tree was invalid
-     */
-/*     protected static function parseExpression(&$tree,$expression=false) {
-
-        $answer = 0;
-
-        // echo '1';
-        for($i=0;$i<count($tree);$i++) {
-            $prev = isset($tree[$i+1])? $tree[$i+1] : false;
-            $next = isset($tree[$i+1])? $tree[$i+1] : false;
-
-
-            switch($tree[$i][0]) {
-
-                case 'VAR':
-                case 'VAR_COMPLEX':
-                    continue 2;
-
-                case 'EXPRESSION':    // please
-                    $subresult = self::parseExpression($tree[$i][1],true);    // the expression itself must be valid
-                    if($subresult === false)
-                        return $subresult;
-
-                    // if($next !== false)
-                    break;
-
-                case 'EXPONENT':    // excuse
-                    break;
-
-                case 'MULTIPLY':    // my
-                    break;
-
-                case 'DIVIDE':    // dear
-                    break;
-
-                case 'MOD':
-                    break;
-
-
-                case 'ADD':    // aunt
-                    break;
-
-                case 'SUBTRACT':    // sally
-                    break;
-
-                case 'COMMA':
-
-                    break;
-                case 'NUMBER':
-                    break;
-
-
-                case 'SPACE':
-
-                case 'UNKNOWN':
-                    return 'Unrecognized entity: "'.$tree[$i][1].'"';
-
-                default:
-                    return 'Unknown entity type: "'.$tree[$i][0].'"';
-            }
-        }
-        return true;
-    } */
 
     /**
      * @param String $str string to be parsed into an expression tree
@@ -811,17 +777,16 @@ abstract class X2FlowTrigger extends X2FlowItem {
         $nodePath = array();
         $error = false;
 
-        for($i=0;$i<count($tokens);$i++) {
-            switch($tokens[$i][0]) {
+        for ($i = 0; $i < count($tokens); $i++) {
+            switch ($tokens[$i][0]) {
                 case 'OPEN_BRACKET':
-                    $nodePath[] = self::addNode($tree,$nodePath,array('EXPRESSION',array()));    // add a new expression node, get its offset in the current branch,
+                    $nodePath[] = self::addNode($tree, $nodePath, array('EXPRESSION', array()));    // add a new expression node, get its offset in the current branch,
                     $nodePath[] = 1;    // then move down to its 2nd element (1st element is the type, i.e. 'EXPRESSION')
                     break;
                 case 'CLOSE_BRACKET':
-                    if(count($nodePath) > 1) {
-                        $nodePath = array_slice($nodePath,0,-2);    // set node path to one level higher
-                        self::simplifyNode($tree,$nodePath);        // we're closing an expression node; check to see if its empty or only contains one thing
-
+                    if (count($nodePath) > 1) {
+                        $nodePath = array_slice($nodePath, 0, -2);    // set node path to one level higher
+                        self::simplifyNode($tree, $nodePath);        // we're closing an expression node; check to see if its empty or only contains one thing
                     } else {
                         $error = 'unbalanced brackets';
                     }
@@ -829,15 +794,15 @@ abstract class X2FlowTrigger extends X2FlowItem {
 
                 case 'SPACE': break;
                 default:
-                    self::addNode($tree,$nodePath,$tokens[$i]);
+                    self::addNode($tree, $nodePath, $tokens[$i]);
             }
         }
 
-        if(count($nodePath) !== 0)
+        if (count($nodePath) !== 0)
             $error = 'unbalanced brackets';
 
-        if($error !== false)
-            return 'ERROR: '.$error;
+        if ($error !== false)
+            return 'ERROR: ' . $error;
         else
             return $tree;
     }
@@ -849,14 +814,14 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param string $queryProperty The property of each trigger to test
      * @param mixed $queryValue The value to match trigger against
      */
-    public static function getTriggerTypes($queryProperty = False,$queryValue = False) {
+    public static function getTriggerTypes($queryProperty = False, $queryValue = False) {
         $types = array();
-        foreach(self::getTriggerInstances() as $class) {
+        foreach (self::getTriggerInstances() as $class) {
             $include = true;
-            if($queryProperty)
+            if ($queryProperty)
                 $include = $class->$queryProperty == $queryValue;
-            if($include)
-              $types[get_class($class)] = Yii::t('studio',$class->title);
+            if ($include)
+                $types[get_class($class)] = Yii::t('studio', $class->title);
         }
         return $types;
     }
@@ -867,16 +832,17 @@ abstract class X2FlowTrigger extends X2FlowItem {
      * @param string $triggerType The trigger class name
      * @return string the empty string or the title of the trigger with the given class name
      */
-    public static function getTriggerTitle ($triggerType) {
-        foreach(self::getTriggerInstances() as $class) {
-            if (get_class ($class) === $triggerType) {
+    public static function getTriggerTitle($triggerType) {
+        foreach (self::getTriggerInstances() as $class) {
+            if (get_class($class) === $triggerType) {
                 return Yii::t('studio', $class->title);
             }
         }
         return '';
     }
 
-    public static function getTriggerInstances(){
-        return self::getInstances('triggers',array(__CLASS__,'X2FlowSwitch','X2FlowSplitter','BaseTagTrigger','BaseWorkflowStageTrigger', 'BaseWorkflowTrigger', 'BaseUserTrigger', 'MultiChildNode'));
+    public static function getTriggerInstances() {
+        return self::getInstances('triggers', array(__CLASS__, 'X2FlowSwitch', 'X2FlowSplitter', 'BaseTagTrigger', 'BaseWorkflowStageTrigger', 'BaseWorkflowTrigger', 'BaseUserTrigger', 'MultiChildNode'));
     }
+
 }

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,10 +29,11 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
@@ -85,7 +85,8 @@ class ApplicationConfigBehavior extends CBehavior {
      */
     private static $_logoHashes = array(
         'pro'=> '0e666bd65d6204fa76ea1aec2a0f3217',
-        'pla'=> '1d4ffaf4d1f7af03f294217214a63fd2'
+        'pla'=> '1d4ffaf4d1f7af03f294217214a63fd2',
+        'ent'=> '1d4ffaf4d1f7af03f294217214a63fd2'
     );
 
     private $_absoluteBaseUrl;
@@ -532,7 +533,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @return boolean
      */
     public function contEd($edition) {
-        return true;
+        return (bool) $this->editionHierarchy[$this->getEdition()][$edition];
     }
 
     /**
@@ -653,7 +654,36 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
      * @return string
      */
     public function getEdition() {
-        return 'opensource';
+        if(!isset($this->_edition)){
+            if(YII_DEBUG){
+                switch(PRO_VERSION) {
+                    case 1:
+                        $this->_edition = 'pro';
+                        break;
+                    case 2:
+                        $this->_edition = 'pla';
+                        break;
+                    case 3:
+                        $this->_edition = 'ent';
+                        break;
+                    default:
+                        $this->_edition = 'opensource';
+                }
+            }else{
+                $this->_edition = 'opensource';
+                $logo = "images/x2engine_crm_ent.png";
+                $logoPath = implode(DIRECTORY_SEPARATOR, array(
+                    $this->owner->basePath,
+                    '..',
+                    FileUtil::rpath($logo)
+                ));
+                if(file_exists($logoPath)){
+                    if(md5_file($logoPath) == self::$_logoHashes['ent'])
+                        $this->_edition = 'ent';
+                }
+            }
+        }
+        return $this->_edition;
     }
 
     /**
@@ -692,7 +722,8 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         return array(
             'opensource' => $prefix.'Open Source Edition',
             'pro' => $prefix.'Professional Edition',
-            'pla' => $prefix.'Platinum Edition'
+            'pla' => $prefix.'Platinum Edition',
+            'ent' => $prefix.'Enterprise Edition'
         );
     }
 

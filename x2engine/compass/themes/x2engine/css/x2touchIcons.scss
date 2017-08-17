@@ -1,6 +1,6 @@
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,14 +28,149 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
 @import "x2-icons";
 @import "icons";
+
+@mixin x2-icon($name, $placing: 'before'){
+  &:#{$placing} {
+    text-decoration: none;
+
+    @extend .icon-#{$name} !optional;
+    @content;
+  }
+}
+
+/**************************************************
+* Class to add to a container that has a stacked icon
+* These are the icons displayed on the activity feed
+**************************************************/
+.stacked-icon {
+    display: none;
+    position: absolute;
+
+    top: 23px;
+    left: 28px;
+
+    width: 11px;
+    height: 11px;
+
+    border-radius: 50%;
+    border: 2px solid $darkBlue;
+    background: white;
+
+    /* @theme border-color lighter_link */
+    /* @theme background content */
+
+    text-align: center;
+
+    &:before {
+    	width:100%;
+        font-size: 10px;
+        position: relative;
+    }
+}
+
+/****************************************
+* Mixin to aid with the stacked icon
+*****************************************/
+@mixin stacked-icon($icon) {
+
+    // Specific corrections / positioning can go here
+    %default {top: 0px; left: 0px;}
+    %plus {top: 1.0px; left: 0px;}
+    %check {top: 1px; left: 0px;}
+    %exclamation{top: 1px; left: 0px;}
+    %arrow-right{top: 0.5px; left: 1px;}
+    %star{top: 1px; left: 0px;}
+    %undo{top: 1px}
+    %arrow-up {}
+
+    .stacked-icon {
+        display: inline-block;
+        @include fa-icon($icon);
+    }
+
+    .stacked-icon:before {
+        position: absolute;
+        font-size: 10px;
+        @extend %default;
+
+        // optional settings for individual icons
+        @extend #{$icon} !optional;
+    }
+}
+
+/****************************************************
+* Mixin to generate a mapping of classes to icons
+* $list:  A multidimensional array
+: $type: which icon font to use ("fa" or "x2")
+: @content: extra rules to insert into each icon
+* Example: 
+*   $map: (
+*   	("email" "envelope" "check") 
+*       ("process" "funnel")
+*   );
+* Will create the rule for '.email' to have the icon 
+* 'envelope' with a stacked icon of 'check'
+* and a rule for '.process' to have the icon 'funnel'
+* with no stacked icon. 
+*
+* These icons are currently used in activity feed, publisher, and page titles
+*******************************************************/
+@mixin generate-icons($list, $type:"fa") {
+	@each $entry in $list {
+	    $selector: nth($entry, 1);
+	    $icon: nth($entry, 2);
+
+	    &.#{$selector} { 
+	    	@if $type == "fa" {
+		        @include fa-icon ($icon) { @content };
+	    	} 
+	    	@else {
+		        @include x2-icon ($icon) { @content };
+	    	}
+
+	        @if length($entry) == 3 {
+	            @include stacked-icon (nth($entry, 3));
+	        }
+	    }
+	}
+}
+
+$icon-list-fa: (
+    ("emailInboxes" "envelope")
+    ("profile" "user")
+    ("actions" "play-circle")
+    ("accounts" "building")
+    ("opportunities" "bullseye")
+    ("marketing" "bullhorn")
+    ("x2flow" "sitemap, %fa-rotate-270")
+    ("x2Leads" "star")
+    ("docs" "file-text")
+    ("groups" "users")
+    ("media" "music")
+    ("users" "users")
+    ("charts" "bar-chart")
+    ("topics" "comments")
+    ("bugReports" "bug")
+    ("reports" "file-o" "bar-chart")
+    ("custom-module" "folder")
+);
+$icon-list-x2: (
+    ("x2Activity" "activity")
+    ("quotes" "quotes")
+    ("services" "service")
+    ("workflow" "funnel")
+    ("products" "package")
+    ("contacts" "contact")
+);
+
 
 $x2touch-icon-list-fa: (
     ("settings" "cog")
@@ -72,9 +206,18 @@ $x2touch-icon-list-fa: (
         ("workflow" "funnel")
         ("time" "stopwatch")
         ("quotes" "quotes")
+        ("contacts" "contact")
+        ("x2Activity" "activity")
+        ("accounts" "building")
+        ("opportunities" "bullseye")
+        ("x2Leads" "star")
+        ("products" "package")
         ("campaignEmailOpened" "open-envelope")
         ("emailOpened" "open-envelope")
     );
+.icon-activity:before { content: "\f113"; }
+.icon-contact:before { content: "\f10c"; }
+.icon-quotes:before { content: "\f11c"; }
 
     $iconContainerWidth: 50px;
     .action-history {
@@ -86,4 +229,24 @@ $x2touch-icon-list-fa: (
         }
     }
 
+}
+
+remote-page div.x2touch-panel ul > li > a > i.accounts:before {
+    content: "\f1ad";
+}
+
+remote-page div.x2touch-panel ul > li > a > i.x2Leads:before {
+    content: "\f005";
+}
+
+remote-page div.x2touch-panel ul > li > a > i.opportunities:before {
+    content: "\f140";
+}
+
+.icon-package:before, .x2-remote-page div.x2touch-panel ul > li > a > i.products:before, .x2-remote-page .action-history .record-list-item .icon.products:before {
+    content: "\f112";
+}
+
+.icon-service:before, .x2-remote-page div.x2touch-panel ul > li > a > i.services:before {
+    content: "\f111";
 }

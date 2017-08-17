@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/#stage-member-list-container-top-scrollbar{width:100%;margin-top:-1px;overflow-x:scroll}#stage-member-list-container-top-scrollbar>div{height:1px}#workflow-filters-container.pipeline-view #process-status-container{width:auto !important;margin:0 !important}#workflow-filters-container.pipeline-view #data-summary-box{display:none !important}.stage-member-info{line-height:9px;color:#888888}.stage-title-row{height:0}.total-projected-stage-value{clear:both;float:left;height:0;font-weight:bold;color:#252525;font-size:15px}.total-stage-deals{font-weight:bold;color:#252525;font-size:15px}.stage-member-value{font-weight:bold;color:#252525}.total-stage-deals{float:right;margin-right:40px;height:0}.stage-member-staging-area{width:246px;position:fixed;top:30px;background-color:white;overflow:hidden;z-index:100}.stage-member-staging-area .stage-member-button-container>a{display:none !important}#stage-member-lists-container .yiiPager{display:none}#add-a-deal-button{margin-top:5px}#workflow-filters-container .row{float:left;clear:none}#workflow-filters-container form{width:auto !important}#workflow-filters-container form .x2-button{margin:11px 0px 0 7px !important;padding:2px 15px !important}#workflow-filters-container #process-status-container{border-left:1px solid #C2C2C2;border-right:1px solid #C2C2C2;border-radius:0}#workflow-filters{margin:5px 5px 0 0}.stage-member-button-container{width:91px;left:153px;position:relative;height:30px}.stage-icon-container{height:18px;width:18px;margin-top:13px;float:left;margin-right:4px}.stage-member-type-icon{opacity:0.4;height:18px;margin-right:5px}.stage-members{float:left;width:246px}#stage-member-lists-container{overflow-x:auto;background-color:#ebebeb;min-height:790px}.list-view .items{border:none !important;border-radius:0 !important}.list-view .pager{height:40px;float:right;line-height:40px;margin:0;border:0;border-radius:0;padding:0;background:none}.stage-member-container:hover,.stage-member-container.stage-highlight{background-color:#f3f3f3}#stage-member-lists-container .record-stage-change-pending{background-color:#e6e6e6 !important}#stage-member-lists-container .record-stage-change-pending:hover{background-color:#dfdfdf !important}.list-view .items .empty{margin:0 !important}.stage-member-container,.list-view .items .empty{height:45px;line-height:36px;border-bottom:1px solid #e2e2e2;padding-left:3px}#stage-member-lists-container-inner{width:999999px}.stage-list-title{border-top:1px solid #c2c2c2;border-bottom:1px solid #dadada;background-image:url('".Yii::app()->theme->getBaseUrl ()."/images/workflowStageArrow.png');padding-left:8px;height:68px;line-height:40px}#content h2{float:left}#content .responsive-menu-items{float:right}.stage-list-title h2{line-height:47px;margin:0;width:200px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;height:41px;display:block}.total-stage-deals,.total-projected-stage-value{margin-top:-15px}.workflow-stage-arrow{pointer-events:none;position:relative;top:-41px;margin-bottom:-31px;right:8px;margin-right:-8px}#stage-member-lists-container .stage-member-name{white-space:nowrap;text-overflow:ellipsis;width:135px;overflow:hidden;height:30px;float:left}.stage-member-button{position:absolute}#stage-member-lists-container .edit-details-button{right:59px}#stage-member-lists-container .undo-stage-button{right:29px}#stage-member-lists-container .complete-stage-button{right:0px;margin:11px 5px 0 0}#stage-member-lists-container .undo-stage-button{margin:11px 5px 0 0}#stage-member-lists-container .edit-details-button{margin:11px -1px 0 0;vertical-align:middle;padding:0 5px}#stage-member-lists-container .edit-details-button span{cursor:pointer;opacity:0.3;display:block;height:24px;width:24px}#stage-member-lists-container .edit-details-button span:hover{opacity:0.4}#stage-member-lists-container .complete-stage-button,#stage-member-lists-container .undo-stage-button{cursor:pointer;color:#b4b4b4;border-radius:15px;width:8px}

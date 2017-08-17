@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 $this->pageTitle=Yii::app()->name . ' - Login';
@@ -85,6 +84,12 @@ document.getElementById('LoginForm_username').focus (); // for when autofocus is
 var mobileLoginUrl = '".Yii::app()->getBaseUrl().'/index.php/mobile/login'."';
 $('#mobile-signin-button').click (function () {
     $('#login-form-outer').attr ('action', mobileLoginUrl);
+});
+$('#LoginForm_rememberMe').click (function () {
+    document.cookie = 'sessionToken=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;';
+});
+$('.change-user').click (function () {
+    document.cookie = 'sessionToken=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;';
 });
 
 $('#login-form-outer').submit(function(evt) {
@@ -272,7 +277,7 @@ Yii::app()->clientScript->registerGeolocationScript();
                             echo $form->hiddenField($model, 'rememberMe', array('value' => 1));
                         ?>
                         <a href="<?php echo Yii::app()->createUrl ('/site/site/forgetMe'); ?>"
-                         class="x2-link x2-minimal-link text-link">
+                         class="x2-link x2-minimal-link text-link change-user">
                             <?php echo Yii::t('app', 'Change User'); ?>
                         </a>
                         <?php
@@ -322,6 +327,7 @@ Yii::app()->clientScript->registerGeolocationScript();
                 <div id="login-version">
                     <a href='#' id='dark-theme-button' class='fa fa-adjust text-link'></a>
                     <span>X2CRM Version <?php echo Yii::app()->params->version; ?>, <a href="https://www.x2crm.com">X2Engine, Inc.</a></span>
+                    <span><?php echo Yii::app()->getEditionLabel(true); ?>
                 </div>
                 <div style='display:none' class="row theme-selection">
                     <span class="switch" >

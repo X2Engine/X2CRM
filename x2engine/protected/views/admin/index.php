@@ -1,7 +1,7 @@
 <?php
-/* * *********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,10 +29,10 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- * ******************************************************************************** */
+ * "Powered by X2 Engine".
+ **********************************************************************************/
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/views/admin/index.css');
 
@@ -71,12 +70,46 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
     <div class="form x2-layout-island license-info-section">
         <div class="row" style="margin-left: 0px;">
             <div class='cell span-10'>
-                <b>X2CRM | X2Engine - Enterprise CRM for Small Business</b><br>
+                <b><?php echo Yii::app()->getEditionLabel(true); ?></b><br>
             </div>
             <div class='cell span-9'>
                 <b><?php echo Yii::t('app', 'Version') . " " . Yii::app()->params->version; ?></b><br>
             </div>
         </div>
+<?php
+if (Yii::app()->contEd ('ent')) {
+?>
+        <div class="row">
+            <div class='cell span-9'>
+                <?php
+                echo '<strong>'.Yii::t('app','License').'</strong>:&nbsp;<tt>'.
+                    Yii::app()->settings->unique_id.'</tt><br />';
+                ?>
+            </div>
+            <div class='cell span-9'>
+                <?php
+                echo Yii::app()->settings->renderMaxUsers ();
+                ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class='cell span-18'>
+                <?php
+                echo Yii::app()->settings->renderProductKeyExpirationDate ();
+                ?>
+            </div>
+        </div>
+<?php
+}
+
+?>
+        <?php if (Yii::app()->edition != 'ent' && !preg_match("/.*.x2vps.com.*/", Yii::app()->request->serverName)) { ?>
+        <div class="row">
+            <div class="cell span-9" title="<?php echo CHtml::encode (Yii::t('admin','Upgrade X2CRM to get exclusive features and service. License key and registration info required.')); ?>"><?php echo CHtml::link(Yii::t('admin','Upgrade X2CRM'),array('/admin/updater','scenario'=>'upgrade')); ?>
+            </div>
+        </div>
+    <?php } ?>
+  
         <div class="row">
             <?php
             echo Yii::t('app', 'Web: {website}',
@@ -464,6 +497,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin',
                             'Configure and embed visitor tracking on your website');
                     ?></div>
+                <?php  ?>
 
             </div>
             <div id="tabs-6">
@@ -720,6 +754,7 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins',
                     echo Yii::t('admin', 'Manage dropdowns for custom fields');
                     ?></div>
 
+                <?php  ?>
             </div>
             <div id="tabs-10">
 

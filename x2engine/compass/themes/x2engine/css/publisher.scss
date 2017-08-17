@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,11 +28,16 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
+/*
+ * Styling page for publishers (e.g., Action history publisher).
+ * Most of the icons are generated here.
+ *
+ */
 @import "x2-icons";
 @import "icons";
 
@@ -178,76 +182,5 @@ $x2-map: (
     ("campaignEmailOpened" "open-envelope")
     ("emailOpened" "open-envelope")
 );
+ #publisher .icon,.action.list-view .icon {@include generate-icons($fa-map);@include generate-icons($x2-map, 'x2');}
 
-#publisher .icon,
-.action.list-view .icon {
-    @include generate-icons($fa-map);
-    @include generate-icons($x2-map, 'x2');
-}
-
-// Old Icons
-
-// #publisher .icon,
-// .action.list-view .icon {
-//         &.action {
-//                 background: url(../images/actions.png) no-repeat center center;
-//         }
-//         &.attachment {
-//                 background: url(../images/action_attachment.png) no-repeat center center;
-//         }
-//         &.complete {
-//                 @include stacked-icon('check');
-//                 background: url(../images/eventIcons/action_complete.png) no-repeat center center;
-//         }
-//         &.workflow {
-//                 background: url(../images/action_workflow.png) no-repeat center center;
-//         }
-//         &.email {
-//                 background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-//         }
-//         &.email_quote {
-//                 background: url(../images/action_email_quote.png) no-repeat center center;
-//         }
-//         &.email_invoice {
-//                 background: url(../images/action_email_invoice.png) no-repeat center center;
-//         }
-//         &.campaignEmailOpened, &.emailOpened {
-//                 background: url(../images/eventIcons/email_opened.png) no-repeat center center;
-//         }
-//         &.note {
-//                 background: url(../images/x2flow/X2FlowRecordComment.png) no-repeat center center;
-//         }
-//         &.emailOpened_quote {
-//                 background: url(../images/eventIcons/email_opened_quote.png) no-repeat center center;
-//         }
-//         &.emailOpened_invoice {
-//                 background: url(../images/eventIcons/email_opened_invoice.png) no-repeat center center;
-//         }
-//         &.call {
-//                 background: url(../images/action_call.png) no-repeat center center;
-//         }
-//         &.marketing {
-//                 background: url(../images/action_marketing.png) no-repeat center center;
-//         }
-//         &.event {
-//                 background: url(../images/calendar.png) no-repeat center center;
-//         }
-//         &.emailFrom {
-//                 background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-//         }
-//         &.quotes {
-//                 background: url(../images/quotes.png) no-repeat center center;
-//         }
-//         &.webactivity {
-//                 background: url(../images/action_webactivity.png) no-repeat center center;
-//         }
-//         &.overdue {
-//                 background: url(../images/actions.png) no-repeat center center;
-//         }
-//         &.time {
-//                 background: url(../images/action_time.png) no-repeat center center;
-//         }
-//         &.products {
-//                 background: url(../images/quotes.png) no-repeat center center;
-//         }
-// }

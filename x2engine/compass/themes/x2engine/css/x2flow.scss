@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,16 +28,20 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
 
 $edgeColor: #CCCCCC;
 
-.x2flow-main, .x2flow-start {
+#x2flow-start {
+    padding: 19px;
+}
+
+.x2flow-main {
     border: 1px solid #c5c5c5;
 }
 
@@ -72,36 +75,26 @@ $edgeColor: #CCCCCC;
     padding: 0;
 }
 
-#item-box {
-    /* width:122px; */
-    /* height:500px; */
-    /* overflow-y:scroll; */
-    /* float:left; */
-    /* padding-left:8px;
-    text-align:center; */
-    /* padding:10px; */
-    /*min-height:476px; */
-    /*height:476px; */
-    /*overflow:auto;*/
-    overflow-y: hidden;
-    .x2flow-placeholder {
-        display: none;
-    }
+#delete-actions {
+    width:99%;
+    height:40px;
+    position:relative;
 }
-
-/* #item-box .x2flow-node:hover {opacity:1.0;} */
 
 .form {
     &.x2flow-trash {
         height: 40px;
-        width: 60px;
-        float: right;
+        width: 99%;
+        position:relative;
+        border: 2px solid #eee;
         padding: 0;
         background: url(../images/x2flow/trashcan.png) center 6px no-repeat white;
         &.x2flow-active {
+            border: 2px solid #cc0000;
             background-position: center -30px;
         }
         &.x2flow-hover {
+            border: 2px solid #ff4d4d;
             background-position: center -66px;
         }
     }
@@ -141,7 +134,6 @@ $edgeColor: #CCCCCC;
 /* .x2flow-node:last-child {margin-bottom:0;} */
 
 .x2flow-action, .x2flow-empty, .x2flow-trigger {
-    /* float:left; */
     height: 32px;
     width: 40px;
     border: 2px solid #999;
@@ -153,11 +145,19 @@ $edgeColor: #CCCCCC;
     cursor: pointer;
 }
 
+#x2flow-stage {
+    border: 0px solid #C2C2C2;
+    border-width: 1px 0px 1px 0px;
+    overflow-x: auto;
+    background: url(../images/x2flow/grid.gif) left center;
+}
+
 #x2flow-main {
     overflow-x: auto;
     white-space: nowrap;
     font-size: 0;
-    background: url(../images/x2flow/grid.gif) left center;
+    background-color: transparent;
+    border-color: transparent;
     .x2flow-action::after {
         content: "";
         width: 24px;
@@ -200,8 +200,6 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* #x2flow-main .x2flow-action.x2flow-placeholder:after {left:58px;top:5px;} */
-
 .X2FlowSwitch, .X2FlowSplitter {
     &:before, &:after {
         display: none;
@@ -229,9 +227,6 @@ $edgeColor: #CCCCCC;
         background-color: #1862bd;
     }
 }
-
-/* #13427f */
-/* #1153a3 */
 
 /* placeholder elements with striped backgrounds */
 
@@ -264,14 +259,12 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* .x2flow-branch.x2flow-hover {background-color:#ffeeee;} */
-
 .X2FlowSwitch, .X2FlowSplitter {
     position: relative;
     /* background:#fff; */
 }
 
-#item-box {
+.actions {
     .X2FlowSwitch,
     .X2FlowSplitter {
         .icon {
@@ -283,7 +276,31 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* .X2FlowSwitch-valign {display:block-cell;} */
+#all {
+    .x2flow-placeholder {
+        display: none;
+    }
+}
+
+#actions-bank {
+    overflow-y: hidden;
+    
+}
+
+.shortcodes {
+    padding: 0px 5px 0px 5px;
+    position: absolute;
+    background: white;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    max-height: 100px;
+    min-width: 200px;
+    overflow-y: auto;
+}
+
+.shortcode {
+    margin: 5px 0px 5px 0px;
+}
 
 .X2FlowSwitch, .X2FlowSplitter {
     .icon {
@@ -357,13 +374,10 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/switch-placeholder.png) !important;
 }
 
-/* container for the switch's 2 sub-branches */
-
 .x2flow-branch-wrapper {
     display: inline-block;
     vertical-align: middle;
     margin-left: -27px;
-    /* background:#fff; */
     .x2flow-branch {
         &:first-child {
             margin-bottom: 46px;
@@ -373,8 +387,6 @@ $edgeColor: #CCCCCC;
         }
     }
 }
-
-/*.x2flow-branch-wrapper .x2flow-branch:first-child {margin-bottom:33px;}*/
 
 #item-delete {
     display: none;
@@ -389,8 +401,6 @@ $edgeColor: #CCCCCC;
     }
 }
 
-/* helpers: hide flow lines when a node is being dragged */
-
 .X2FlowSwitch.x2flow-helper,
 .X2FlowSplitter.x2flow-helper {
     background: none;
@@ -402,20 +412,11 @@ $edgeColor: #CCCCCC;
     }
 }
 
-.x2flow-node.x2flow-helper {
-    /* cursor:move; */
-    /* opacity:0.5; */
-    /* -moz-box-shadow:        0 5px 20px 0 rgba(0,0,0,0.5);
-    -webkit-box-shadow:        0 5px 20px 0 rgba(0,0,0,0.5);
-    box-shadow:                        0 5px 20px 0 rgba(0,0,0,0.5); */
-}
-
 .X2FlowSwitch .x2flow-branch,
 .X2FlowSplitter .x2flow-branch {
     clear: both;
     padding-left: 36px;
     position: relative;
-    /* margin-top:-16px; */
 }
 
 .x2flow-branch .bracket {
@@ -427,7 +428,6 @@ $edgeColor: #CCCCCC;
 .X2FlowSplitter .x2flow-branch .bracket {
     background-position: left center;
     background-repeat: no-repeat;
-    /* background:red; */
     width: 36px;
     height: 100%;
     position: absolute;
@@ -436,8 +436,6 @@ $edgeColor: #CCCCCC;
     margin: -33px 0;
     padding: 33px 0;
     background-image: url(../images/x2flow/bracket-bottom2.gif);
-    /* top:0; */
-    /* margin:0 -20px 10px -20px; */
 }
 
 .x2flow-branch-wrapper .x2flow-branch:first-child > .bracket {
@@ -445,10 +443,9 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/bracket-top2.gif);
 }
 
-/* .x2flow-branch-wrapper .x2flow-branch:last-child > .bracket {top:0;background-image:url(../images/x2flow/bracket-bottom.gif);} */
-
-/* placeholders (for dragging in non-clone mode) are just grey outlines */
-
+/**
+ * Workflow placeholder
+ */
 .x2flow-placeholder {
     background: #fff;
     border-color: #ccc;
@@ -464,157 +461,244 @@ $edgeColor: #CCCCCC;
 }
 
 .x2flow-action.x2flow-placeholder, .x2flow-trigger.x2flow-placeholder {
-    /*         width:49px;
-            height:39px; */
     border: 2px solid #ccc;
     border-color: #ccc;
 }
 
+/**
+ * Wait Stage Action
+ */
 .X2FlowWait {
     background-image: url(../images/x2flow/X2FlowWait2.png);
 }
 
+/**
+ * Api Stage Action
+ */
 .X2FlowApiCall {
     background-image: url(../images/x2flow/X2FlowApiCall.png);
 }
 
+/**
+ * Launch Campaign Stage Action
+ */
 .X2FlowCampaignLaunch {
     background-image: url(../images/x2flow/X2FlowCampaignLaunch.png);
 }
 
+/**
+ * Create Action Stage Action
+ */
 .X2FlowCreateAction {
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
+/**
+ * Create Activity Post Stage Action
+ */
 .X2FlowCreateEvent {
     background-image: url(../images/x2flow/X2FlowCreateEvent.png);
 }
 
+/**
+ * Create Notification Stage Action
+ */
 .X2FlowCreateNotif {
     background-image: url(../images/x2flow/X2FlowCreateNotif.png);
 }
 
+/**
+ * Create Reminder Stage Action
+ */
 .X2FlowCreateReminder {
     background-image: url(../images/x2flow/X2FlowCreateReminder.png);
 }
 
+/**
+ * Create Email Stage Action
+ */
 .X2FlowEmail {
     background-image: url(../images/x2flow/X2FlowEmail.png);
 }
 
-.X2FlowLocationActivityFeed {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-.X2FlowLocationNotification {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-.X2FlowLocationEmail {
-    background-image: url(../images/x2flow/X2FlowLocation.png);
-}
-
-.X2FlowLocationText {
-    background-image: url(../images/x2flow/X2FlowRecordComment.png);
-}
-
+/**
+ * Create SMS Stage Action
+ */
 .X2FlowSms {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+/**
+ * Email Open Stage Trigger
+ */
 .EmailOpenTrigger {
     background-image: url(../images/x2flow/NewsletterEmailOpenTrigger.png);
 }
 
+/**
+ * Outbound Email Stage Trigger
+ */
 .OutboundEmailTrigger {
     background-image: url(../images/x2flow/X2FlowOutboundEmail.png);
 }
 
+/**
+ * Inbound Email Stage Trigger
+ */
 .InboundEmailTrigger {
     background-image: url(../images/x2flow/X2FlowInboundEmail.png);
 }
 
+/**
+ * Record Change Stage Action
+ */
 .X2FlowRecordChange {
     background-image: url(../images/x2flow/X2FlowRecordReassign.png);
 }
 
+/**
+ * Record Comment Stage Action
+ */
 .X2FlowRecordComment {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
 }
 
+/**
+ * Record Create Stage Action
+ */
 .X2FlowRecordCreate {
     background-image: url(../images/x2flow/X2FlowRecordCreate.png);
 }
 
+/**
+ * Record Create Action Stage Action
+ */
 .X2FlowRecordCreateAction {
     background-image: url(../images/x2flow/X2FlowCreateAction.png);
 }
 
+/**
+ * Record Change Stage Action
+ */
 .X2FlowRecordChange {
     background-image: url(../images/x2flow/X2FlowRecordUpdate.png);
 }
 
+/**
+ * Record Delete Stage Action
+ */
 .X2FlowRecordDelete {
     background-image: url(../images/x2flow/X2FlowRecordDelete.png);
 }
 
+/**
+ * Record Email Stage Action
+ */
 .X2FlowRecordEmail {
     background-image: url(../images/x2flow/X2FlowEmail.png);
 }
 
+/**
+ * Record List Add Stage Action
+ */
 .X2FlowRecordListAdd {
     background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
+/**
+ * Record List Remove Stage Action
+ */
 .X2FlowRecordListRemove {
     background-image: url(../images/x2flow/X2FlowRecordListRemove.png);
 }
 
+/**
+ * Record Newsletter Add Stage Action
+ */
 .X2FlowRecordNewsletterAdd {
     background-image: url(../images/x2flow/X2FlowRecordListAdd.png);
 }
 
+/**
+ * Record Reassign Stage Action
+ */
 .X2FlowRecordReassign {
     background-image: url(../images/x2flow/X2FlowRecordReassign.png);
 }
 
+/**
+ * Record Tag Stage Action
+ */
 .X2FlowRecordTag {
     background-image: url(../images/x2flow/X2FlowRecordTag.png);
 }
 
+/**
+ * Record Update Stage Action
+ */
 .X2FlowRecordUpdate {
     background-image: url(../images/x2flow/X2FlowRecordUpdate.png);
 }
 
+/**
+ * Process Complete Stage Action
+ */
 .X2FlowWorkflowComplete {
     background-image: url(../images/x2flow/X2FlowWorkflowComplete.png);
 }
 
+/**
+ * Process Revert Stage Action
+ */
 .X2FlowWorkflowRevert {
     background-image: url(../images/x2flow/X2FlowWorkflowRevert.png);
 }
 
+/**
+ * Process Start Stage Action
+ */
 .X2FlowWorkflowStart {
     background-image: url(../images/x2flow/X2FlowWorkflowStart.png);
 }
 
+/**
+ * Process Start Stage Stage Action
+ */
 .X2FlowWorkflowStartStage {
     background-image: url(../images/x2flow/X2FlowWorkflowStartStage.png);
 }
 
+/**
+ * Process Complete Stage Stage Action
+ */
 .X2FlowWorkflowCompleteStage {
     background-image: url(../images/x2flow/X2FlowWorkflowCompleteStage.png);
 }
 
+/**
+ * Process Revert Stage Stage action
+ */
 .X2FlowWorkflowRevertStage {
     background-image: url(../images/x2flow/X2FlowWorkflowRevertStage.png);
 }
 
+/**
+ * Push Web Content Stage Action
+ */
 .X2FlowPushWebContent {
     background-image: url(../images/x2flow/X2FlowPushWebContent.png);
 }
 
-#item-box {
+/**
+ * Workflow action draggable
+ */
+.actions {
+    
+    overflow-y: hidden;
+
+    .x2flow-placeholder {
+        display: none;
+    }
     .x2flow-branch-wrapper {
         display: none;
     }
@@ -622,20 +706,26 @@ $edgeColor: #CCCCCC;
         background-repeat: no-repeat;
         height: auto;
         min-height: 22px;
-        padding: 2px 0 2px 26px;
+        background-color: #eee;
+        background-position: 3px center;
+        cursor: pointer;
+
+	padding: 2px 0 2px 26px;
         width: 124px;
         margin: 0;
         border: 1px solid #999;
         border-width: 1px 0 0 0;
-        background-color: #eee;
-        background-position: 3px center;
         -moz-border-radius: 0;
         -o-border-radius: 0;
         -webkit-border-radius: 0;
         border-radius: 0;
-        cursor: pointer;
+
+	
+
         &:hover {
             background-color: #fff;
+
+	    
         }
         span {
             display: block;
@@ -670,18 +760,6 @@ $edgeColor: #CCCCCC;
     }
     .X2FlowEmail {
         background-image: url(../images/x2flow/small/X2FlowEmail.png);
-    }
-    .X2FlowLocationActivityFeed {
-        background-image: url(../images/x2flow/small/X2FlowLocation.png);
-    }
-    .X2FlowLocationNotification {
-        background-image: url(../images/x2flow/small/X2FlowLocation.png);
-    }
-    .X2FlowLocationEmail {
-        background-image: url(../images/x2flow/small/X2FlowLocation.png);
-    }
-    .X2FlowLocationText {
-        background-image: url(../images/x2flow/small/X2FlowRecordComment.png);
     }
     .X2FlowSms {
         background-image: url(../images/x2flow/small/X2FlowRecordComment.png);
@@ -731,6 +809,9 @@ $edgeColor: #CCCCCC;
     .X2FlowWorkflowStart {
         background-image: url(../images/x2flow/small/X2FlowWorkflowStart.png);
     }
+
+    //TODO: Change Process Image Names
+
     .X2FlowWorkflowRevertStage {
         background-image: url(../images/x2flow/small/X2FlowWorkflowRevertStage.png);
     }
@@ -744,10 +825,6 @@ $edgeColor: #CCCCCC;
         background-image: url(../images/x2flow/small/X2FlowPushWebContent.png);
     }
 }
-
-/* X2FlowRecordCreateAction.png */
-
-/* X2FlowRecordEmail.png */
 
 .ActionCompleteTrigger {
     background-image: url(../images/x2flow/ActionCompleteTrigger.png);
@@ -865,6 +942,10 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/TimerTrigger.png);
 }
 
+.VoipInboundTrigger {
+    background-image: url(../images/x2flow/X2FlowRecordReassign.png);
+}
+
 .WorkflowCompleteStageTrigger {
     background-image: url(../images/x2flow/WorkflowCompleteStageTrigger.png);
 }
@@ -890,8 +971,10 @@ $edgeColor: #CCCCCC;
 }
 
 #x2flow-config-box {
-    /* height:120px; */
-    padding: 5px 19px;
+    padding-top: 25px;
+    padding-right: 19px;
+    padding-bottom: 5px;
+    padding-left: 19px;
     min-height: 150px;
 }
 
@@ -900,14 +983,18 @@ $edgeColor: #CCCCCC;
         background: url(../images/loading.gif) right 10px top 10px no-repeat white;
     }
     fieldset {
-        margin: 0 0 0 40px;
+        margin: 0px 0px 0px 0px;
         padding: 0;
         border: none;
     }
 }
 
+#x2flow-conditions {
+    margin: 10px 10px;
+}
+
 #x2flow-conditions fieldset {
-    margin: 0 0 0 40px;
+    margin: 10px;
 }
 
 #x2flow-main-config {
@@ -923,11 +1010,7 @@ $edgeColor: #CCCCCC;
             margin-left: 5px;
         }
     }
-    .x2flow-config-info {
-        margin-bottom: 9px;
-    }
     label {
-        float: left;
         width: 160px;
         margin-top: 5px;
         margin-right: 14px;
@@ -938,6 +1021,11 @@ $edgeColor: #CCCCCC;
     .row {
         overflow: hidden;
     }
+}
+
+.x2-flow-config-info {
+    margin-top: 9px;
+    margin-bottom: 9px;
 }
 
 #x2flow-add-condition {
@@ -997,7 +1085,7 @@ div.x2flow-placeholder div {
     }
 }
 
-#item-box .x2flow-node > div.x2flow-icon-label, .x2flow-node.x2flow-placeholder > div.x2flow-icon-label {
+.actions .x2flow-node > div.x2flow-icon-label, .x2flow-node.x2flow-placeholder > div.x2flow-icon-label {
     display: none;
 }
 
@@ -1031,7 +1119,6 @@ label toggle checkbox
     vertical-align: middle;
     display: inline;
     margin-top: 14px;
-    margin-right: 20px;
 }
 
 /* 
@@ -1059,12 +1146,17 @@ trigger logs
 }
 
 #x2flow-trace-box {
-        padding: 0;
+    padding: 0;
 }
 
 #trigger-log-dialog {
     max-height: "500px";
     overflow-x: "hidden";
+}
+
+#x2flow-main-config {
+    input, textarea {
+    }
 }
 
 #trigger-log-fmt a {

@@ -20,6 +20,7 @@ CKEDITOR.editorConfig = function(config)
 	config.removePlugins = 'autogrow,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
 	config.extraPlugins = 'insertattributes,confighelper,mediaSelector';
+    
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker
 	config.resize_dir = 'vertical';
     config.toolbarCanCollapse = true;
@@ -64,5 +65,6 @@ CKEDITOR.editorConfig = function(config)
 		{name: 'styles',items: ['Font','FontSize']},
 		{name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
 	];
+    
 	
 };

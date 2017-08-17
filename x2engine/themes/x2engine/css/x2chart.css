@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/.chart-container{border:none !important;padding-bottom:0px !important;padding-left:6px !important;padding-right:6px !important;overflow:hidden !important}.chart-container .chart{width:98%;height:200px;text-align:center;margin:0 auto}.chart-container .date-range-selector{transition:opacity .2s;border-top-left-radius:0px;border-bottom-left-radius:0px;margin-left:-5px !important}.chart-container .date-range-type-selector{transition:border-radius 0.5s;border-top-right-radius:0px;border-bottom-right-radius:0px;margin-right:0px !important}.chart-container .date-range-type-selector.rounded{border-radius:3px}.jqplot-pie-series.jqplot-data-label{color:#ffffff}.chart-container .chart.pie{height:235px !important}.chart-container .chart-legend.pie{margin-top:-15px}.chart-container .bin-size-button-set.pie{display:none}.chart-container .top-button-row.pie{display:none}.chart-container .ui-multiselect.pie{display:none}.chart-container .predefined-settings.pie{position:relative;z-index:100}.chart-container .rel-chart-data-checkbox-container{margin-top:4px;height:20px}.chart-container .rel-chart-data-checkbox-container>input{margin:0 0 0 3px}.chart-container .rel-chart-data-checkbox-container>label{margin:0 0 0 0}.chart-setting-name-input-container{margin-top:9px !important;margin-bottom:0px !important}.create-chart-setting-dialog input{margin-top:0px !important}.chart-setting-name{width:170px !important;margin-left:4px !important;margin-bottom:4px !important}.chart-legend{padding-top:7px;padding-left:15px;table-layout:fixed;width:80%;border-spacing:4px}.chart-legend .chart-color-label{font-size:12px;color:#505050}.chart-legend .chart-color-swatch{width:10px;height:10px;margin-right:4px;float:left;-moz-border-radius:5px;-o-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;margin-top:2px}.chart-tooltip{padding:4px;min-width:100px;background:white;border:1px solid #ccc}.chart-tooltip .chart-tooltip-date{font-weight:bold;color:.424242}.chart-container .delete-setting-button{margin-top:6px;margin-left:-2px;margin-right:11px}.chart-container .create-setting-button{margin-bottom:0;margin-top:2px}.chart-container .predefined-settings{width:100px;margin-top:4px;margin-right:4px}.chart-container .bin-size-button-set{margin-top:1px}.chart-container a{text-decoration:none}.chart-container button.selected{border:1px solid black}.chart-container a.x2-button{margin:0px -4px 0 0}.chart-container .datepicker-row{margin-top:-0px}.chart-container .datepicker-row button{margin-right:0}.chart-container .chart-filters-container{height:30px;display:block}.chart-container .chart-filters-container button.ui-multiselect{margin-right:5px;margin-bottom:2px}.chart-container button.show-chart-filters-button,.chart-container button.hide-chart-filters-button{margin:1px 0 0 5px}.chart-container button.ui-multiselect{float:left;margin-top:2px}.chart-container button.x2-small-button{font-size:80%}.chart-container .chart-datepicker-to,.chart-container .chart-datepicker-from{width:100px}.pie-chart-count-container{display:inline;margin-left:67%;bottom:50px;background:#E6E6E6;padding:3px 4px;position:relative}.x2-chart-multiselect{max-width:225px;width:30%;min-width:150px}@media (max-width: 543px){.chart-legend{width:100%}}@media (max-width: 470px){#actionHistoryChart-bin-size-button-set{margin:auto;left:0;right:0;position:absolute;text-align:center}body.show-left-bar #actionHistoryChart-bin-size-button-set{left:161px;width:300px}.x2-chart-multiselect{margin-top:33px !important}}

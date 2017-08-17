@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}#page-title{margin-top:0px}#model-title{margin-top:5px;margin-bottom:5px}.x2-layout{min-width:598px;-webkit-border-radius:0px 0px 0px 0px !important;-moz-border-radius:0px 0px 0px 0px !important;-ms-border-radius:0px 0px 0px 0px !important;-o-border-radius:0px 0px 0px 0px !important;border-radius:0px 0px 0px 0px !important;max-width:900px !important}.x2-layout a{color:black !important}.x2-layout table{border-spacing:0 !important;width:100% !important;max-width:900px !important;border-right:1px solid #D9D9D9;border-bottom:1px solid #D9D9D9}.x2-layout div.tableWrapper{border-left:1px solid #D9D9D9;border-right:1px solid #D9D9D9;border-bottom:1px solid rgba(255,255,255,0);border-top:none !important}.x2-layout Item.topLabel,.x2-layout Item.leftLabel{border-bottom:none !important}.x2-layout label{color:#000000 !important;background:none !important}.x2-layout td div.leftLabel:last-child{border-bottom:1px solid #D9D9D9}div.x2-layout{background:#fff !important}div.x2-layout .formSection.showSection a.formSectionShow,div.x2-layout .formSection.showSection a.formSectionHide{display:none !important}div.x2-layout .formSection:first-child,div.x2-layout .formSection:last-child{-webkit-border-radius:0px 0 0 0 !important;-moz-border-radius:0px 0 0 0 !important;-ms-border-radius:0px 0 0 0 !important;-o-border-radius:0px 0 0 0 !important;border-radius:0px 0 0 0 !important}div.x2-layout .formSectionHeader{border-top:1px solid #D9D9D9 !important;border-left:1px solid #D9D9D9;border-right:1px solid #D9D9D9;-webkit-border-radius:0px 0 0 0 !important;-moz-border-radius:0px 0 0 0 !important;-ms-border-radius:0px 0 0 0 !important;-o-border-radius:0px 0 0 0 !important;border-radius:0px 0 0 0 !important;background:#D9D9D9;font-family:Montserrat;height:auto;margin-top:15px}div.x2-layout .formSectionHeader .sectionTitle{font-style:normal;padding:5px}div.x2-layout td{border-right:1px solid #D9D9D9 !important}div.x2-layout .formItem{border:1px solid #D9D9D9 !important}div.x2-layout .formItem.topLabel label{border-bottom:1px solid #D9D9D9 !important}div.x2-layout .formItem.leftLabel label{border-right:1px solid #D9D9D9 !important}div.x2-layout .formItem input[type="text"],div.x2-layout .formItem textarea{-webkit-border-radius:0px 0 0 0 !important;-moz-border-radius:0px 0 0 0 !important;-ms-border-radius:0px 0 0 0 !important;-o-border-radius:0px 0 0 0 !important;border-radius:0px 0 0 0 !important;background:#fff !important}div.x2-layout .formInputBox{font-weight:normal}input[type="text"].record-name-autocomplete{-webkit-border-radius:0px 0 0 0 !important;-moz-border-radius:0px 0 0 0 !important;-ms-border-radius:0px 0 0 0 !important;-o-border-radius:0px 0 0 0 !important;border-radius:0px 0 0 0 !important;background:#fff !important}.edit-icon,.confirm-icon,.cancel-icon{display:none}

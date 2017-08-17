@@ -1,6 +1,6 @@
-/*!*******************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+/*!*********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- ********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}#top-container{padding:10px;background:#F4F4F4}#bottom-container{padding:10px}#bottom-container>div{margin:10px 0px}#bottom-container input.x2-button{margin:0px}#campaign-basic-form{padding:5px;border:1px solid #dbdbdb;border-radius:2px}#campaign-basic-form>.row{line-height:200%}#campaign-basic-form>.row>input,#campaign-basic-form>.row>select{box-sizing:border-box;width:200px}#campaign-basic-form .row>label{display:inline-block;min-width:120px;padding-right:10px;text-align:right}#campaign-basic-form #quick-create-list{display:inline-block;vertical-align:middle;font-size:120%;color:#01b701;width:10px;cursor:pointer;opacity:0.8}#campaign-basic-form #quick-create-list:hover{opacity:1}#quick-create-list-form{margin:10px;padding:10px;background:rgba(197,197,197,0.1);border:3px dashed rgba(0,75,175,0.5)}#quick-create-list-form h3{font-weight:bold;margin-top:0}#quick-create-list-form .form{background:transparent}#quick-create-list-form .form em{display:none}
+ * "Powered by X2 Engine".
+ **********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}#top-container{padding:10px;background:#F9F9F9}#bottom-container{padding:10px}#bottom-container>div{margin:10px 0px}#bottom-container input.x2-button{margin:0px}#campaign-basic-form{padding:5px;border:1px solid #e0e0e0;border-radius:2px}#campaign-basic-form>.row{line-height:200%}#campaign-basic-form>.row>input,#campaign-basic-form>.row>select{box-sizing:border-box;width:200px}#campaign-basic-form .row>label{display:inline-block;min-width:120px;padding-right:10px;text-align:right}#campaign-basic-form #quick-create-list{display:inline-block;vertical-align:middle;font-size:120%;color:#01b701;width:10px;cursor:pointer;opacity:0.8}#campaign-basic-form #quick-create-list:hover{opacity:1}#quick-create-list-form{margin:10px;padding:10px;background:rgba(197,197,197,0.1);border:3px dashed rgba(0,75,175,0.5)}#quick-create-list-form h3{font-weight:bold;margin-top:0}#quick-create-list-form .form{background:transparent}#quick-create-list-form .form em{display:none}

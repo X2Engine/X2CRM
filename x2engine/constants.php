@@ -19,7 +19,7 @@ if (!YII_DEBUG) {
 // 0 for opensource
 // 1 for pro
 // 2 for pla (superset)
-defined('PRO_VERSION') or define('PRO_VERSION',0);
+defined('PRO_VERSION') or define('PRO_VERSION',2);
 
 // specify how many levels of call stack should be shown in each log message
 defined('YII_TRACE_LEVEL') or define('YII_TRACE_LEVEL',3);
