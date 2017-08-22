@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +29,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -76,7 +75,7 @@ abstract class X2FlowFunctionalTestBase extends X2WebTestCase {
     protected function getActionLabel ($actionClassName) {
         // get the label for the action
         $this->storeEval (
-            "window.document.querySelector ('#item-box .$actionClassName > span').innerHTML", 
+            "window.document.querySelector ('#all .$actionClassName > span').innerHTML", 
             'actionLabel');
         return $this->getExpression ('${actionLabel}');
     }
@@ -100,12 +99,12 @@ abstract class X2FlowFunctionalTestBase extends X2WebTestCase {
     private function getOffsetBetweenItemBoxAndEmptyNode ($actionClassName) {
         $this->storeEval (
             "window.$('.x2flow-node.x2flow-empty').last ().offset ().left - 
-                window.$('#item-box .$actionClassName').offset ().left", 
+                window.$('#all .$actionClassName').offset ().left", 
             'offsetX');
         $offsetX = $this->getExpression ('${offsetX}');
         $this->storeEval (
             "window.$('.x2flow-node.x2flow-empty').last ().offset ().top - 
-                window.$('#item-box .$actionClassName').offset ().top", 
+                window.$('#all .$actionClassName').offset ().top", 
             'offsetY');
         $offsetX = $this->getExpression ('${offsetX}');
         $offsetY = $this->getExpression ('${offsetY}');
@@ -121,20 +120,20 @@ abstract class X2FlowFunctionalTestBase extends X2WebTestCase {
      *  be dragged into the flow
      */
     protected function appendActionToFlow ($actionClassName) {
-        $this->waitForCondition ("window.document.querySelector ('#item-box .$actionClassName')");
-        $this->assertElementPresent ('css=#item-box');
-        $this->assertElementPresent ("css=#item-box .$actionClassName");
+        $this->waitForCondition ("window.document.querySelector ('#all .$actionClassName')");
+        $this->assertElementPresent ('css=#all');
+        $this->assertElementPresent ("css=#all .$actionClassName");
         $this->assertElementPresent ("css=.x2flow-node.x2flow-empty");
 
         //$this->setMouseSpeed (1);
         $offset = $this->getOffsetBetweenItemBoxAndEmptyNode ($actionClassName);
 
         // simulate drag from action menu to empty node
-        $this->mouseDown ("dom=document.querySelector ('#item-box .$actionClassName')");
+        $this->mouseDown ("dom=document.querySelector ('#all .$actionClassName')");
         //sleep (1);
-        $this->mouseMoveAt ("dom=document.querySelector ('#item-box .$actionClassName')", $offset);
+        $this->mouseMoveAt ("dom=document.querySelector ('#all .$actionClassName')", $offset);
         sleep (1); 
-        $this->mouseUpAt ("dom=document.querySelector ('#item-box .$actionClassName')", $offset);
+        $this->mouseUpAt ("dom=document.querySelector ('#all .$actionClassName')", $offset);
         sleep (1);
 
         $actionLabel = $this->getActionLabel ($actionClassName);

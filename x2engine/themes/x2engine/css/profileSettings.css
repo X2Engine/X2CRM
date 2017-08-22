@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/#profile-settings label+.x2-hint{margin-left:4px}#theme-attributes .right-label{display:inline;margin-left:4px}#theme-attributes select,#theme-attributes button,#prefs-create-theme-hint{display:inline-block}#profile-settings input[type='checkbox']{margin-left:2px !important}.preferences-section{border-bottom:1px solid #C2C2C2 !important}.tag{-moz-border-radius:4px;-o-border-radius:4px;-webkit-border-radius:4px;border-radius:4px;border-style:solid;border-width:1px;border-color:gray;margin:2px 2px;display:block;float:left;padding:2px;background-color:#f0f0f0}.tag a{text-decoration:none;color:black}#settings-form .prefs-hint{height:28px;color:#06c;margin-right:4px}.sp-replacer{padding:0px !important}.sp-dd{height:13px !important}.sp-preview{width:20px !important;height:17px !important;margin-right:5px !important}#settings-form .form{margin:0 0 0 0;border-radius:0;-webkit-border-radius:0}#settings-form .color-picker-input{margin-right:6px}#settings-form #theme-attributes-body .row{margin-top:5px;margin-bottom:5px;overflow:hidden}#settings-form .x2-small-button{padding:0 4px 0 4px !important;margin:2px 4px 0 0}#settings-form .x2-button-group .x2-small-button{padding:0 4px 0 4px !important;float:left;margin-right:0px}#profile-settings{border-top:0}#profile-settings,#theme-attributes,#prefs-tags{border-bottom:0}#theme-attributes,.upload-box{border-top:1px solid #C2C2C2 !important}#theme-attributes .minimize-arrows,#prefs-tags .minimize-arrows{margin-top:15px;width:20px;height:20px;text-align:center}.theme-name-input-container{margin-top:9px;margin-bottom:0px}#create-theme-box input.error{background:#FEE;border-color:#C00 !important}#create-theme-box input{margin-top:0px}#new-theme-name{width:170px;margin-left:4px;margin-bottom:4px}#save-changes{margin-bottom:5px}#upload-login-sound-button{margin-right:10px}#prefs-save-theme-button,#prefs-create-theme-button,#upload-theme-button,#export-theme-button,#upload-background-img-button,#upload-background-img-submit-button,#upload-login-sound-button,#upload-login-sound-submit-button,#upload-notification-sound-button,#upload-notification-sound-submit-button{margin-top:2px}#prefs-save-theme-button+.cancel-upload,#prefs-create-theme-button+.cancel-upload,#upload-theme-button+.cancel-upload,#export-theme-button+.cancel-upload,#upload-background-img-button+.cancel-upload,#upload-background-img-submit-button+.cancel-upload,#upload-login-sound-button+.cancel-upload,#upload-login-sound-submit-button+.cancel-upload,#upload-notification-sound-button+.cancel-upload,#upload-notification-sound-submit-button+.cancel-upload{margin:2px 0 5px 5px}.no-theme-editor{display:none}.no-theme-editor+#prefs-tags{border-top:1px solid #C2C2C2}#theme-attributes .theme-color-selector{display:inline-block;margin-right:15px}

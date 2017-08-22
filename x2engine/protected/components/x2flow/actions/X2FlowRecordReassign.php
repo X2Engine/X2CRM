@@ -1,7 +1,8 @@
 <?php
+
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -42,84 +42,89 @@
  */
 class X2FlowRecordReassign extends X2FlowAction {
 
-    public $title = 'Reassign Record';
-    public $info = 'Assign the record to a user or group, or automatically using lead routing.';
+    /**
+     * Fields
+     */
+    public $title = 'Assign Record';
+    public $info = 'Assigns associated record to a user, group, or automatically using lead routing.';
 
-    public function __construct(){
+    public function __construct() {
         $this->attachBehavior('LeadRoutingBehavior', array('class' => 'LeadRoutingBehavior'));
     }
 
-    public function paramRules(){
-        $leadRoutingModes = array(
-            '' => 'Free For All',
-            'roundRobin' => 'Round Robin Distribution',
-            'roundRobin' => 'Sequential Distribution',
-            'singleUser' => 'Direct User Assignment'
-        );
-        return array_merge (parent::paramRules (), array (
+    /**
+     * Parameter rules
+     * 
+     * @return array
+     */
+    public function paramRules() {
+        return array_merge(parent::paramRules(), array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
             'modelRequired' => 1,
             'options' => array(
-                // array('name'=>'routeMode','label'=>'Routing Method','type'=>'dropdown','options'=>$leadRoutingModes),
                 array(
                     'name' => 'user',
                     'label' => 'User',
                     'type' => 'dropdown',
                     //'multiple' => 1,
                     'options' => array(
-                        'auto' => Yii::t('studio', 'Use Lead Routing')) + 
-                            X2Model::getAssignmentOptions(true, true)
+                'auto' => Yii::t('studio', 'Use Lead Routing')) +
+                    X2Model::getAssignmentOptions(true, true)
                 ),
-            // array('name'=>'onlineOnly','label'=>'Online Only?','optional'=>1,'type'=>'boolean','defaultVal'=>false),
             )
         ));
     }
-
-    public function execute(&$params){
+    
+    /**
+     * Executes action
+     * 
+     * @param array $params
+     * @return array
+     */
+    public function execute(&$params) {
         $model = $params['model'];
-        if(!$model->hasAttribute('assignedTo')){
+        if (!$model->hasAttribute('assignedTo')) {
             return array(
                 false,
-                Yii::t('studio', get_class($model).' records have no attribute "assignedTo"')
+                Yii::t('studio', get_class($model) . ' records have no attribute "assignedTo"')
             );
         }
 
         $user = $this->parseOption('user', $params);
-        if (!is_scalar ($user)) {
+        if (!is_scalar($user)) {
             return array(
                 false,
                 Yii::t('studio', 'Invalid value for field "User"')
             );
         }
-        if($user === 'auto'){
-            if (get_class ($model) === 'Contacts') {
+        if ($user === 'auto') {
+            if (get_class($model) === 'Contacts') {
                 $assignedTo = $this->getNextAssignee($model);
             } else {
                 return array(
-                    false, Yii::t('studio', 'Lead routing rules cannot be used with {type} records',
-                        array ('{type}' => get_class ($model))));
+                    false, Yii::t('studio', 'Lead routing rules cannot be used with {type} records', array('{type}' => get_class($model))));
             }
-        }elseif(CActiveRecord::model('User')->exists('username=?', array($user)) || 
-                CActiveRecord::model('Groups')->exists('id=?', array($user))){ 
+        } elseif (CActiveRecord::model('User')->exists('username=?', array($user)) ||
+                CActiveRecord::model('Groups')->exists('id=?', array($user))) {
             // make sure the user exists
 
             $assignedTo = $user;
-        }else{
-            return array(false, Yii::t('studio', 'User '.$user.' does not exist'));
+        } else {
+            return array(false, Yii::t('studio', 'User ' . $user . ' does not exist'));
         }
 
         $model->assignedTo = $assignedTo;
-        if($model->save ()){
-            if(is_subclass_of($model, 'X2Model')){
+        if ($model->save()) {
+            if (is_subclass_of($model, 'X2Model')) {
                 return array(
                     true,
-                    Yii::t('studio', 'View updated record: ').$model->getLink()
+                    Yii::t('studio', 'View updated record: ') . $model->getLink()
                 );
-            }else{
+            } else {
                 return array(true, "");
             }
-        }else{
+        } else {
             return array(false, "Failed to reassign the record");
         }
     }

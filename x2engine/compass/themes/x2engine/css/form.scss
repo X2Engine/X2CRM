@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,9 +28,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 
@@ -429,6 +428,18 @@ div.form .background-row {
     }
 }
 
+/*
+ * styles admin panel tabs according to window width
+ **/
+.admin-screen .ui-tabs-vertical .ui-tabs-nav li a div .admin-tab-word  {
+    @media screen and (max-width: 1200px) {
+      display:none;
+    }
+    @media screen and (max-width: 800px) {
+      display:none;
+    }        
+}
+    
 .admin-screen {
     div.x2-layout-island h2 {
         background-repeat: no-repeat;
@@ -448,57 +459,8 @@ div.form .background-row {
             vertical-align: middle;
 
         }
-
-        &#admin-ui-settings {
-            @include fa-icon('desktop', 'before');
-            @include fa-icon('paint-brush', 'after');
-            &::after {
-                float: left;
-                width: 0;
-                font-size: 23px !important;
-                position: relative;
-                left: 29px;
-                top: -6px;
-            }
-        }
-        &#admin-import-export {
-            @include fa-icon('download');
-        }
-        &#admin-lead-capture {
-            @include fa-icon('check-square-o');
-        }
-        &#admin-doc-and-videos {
-            @include fa-icon('book');
-        }
-        &#admin-email {
-            @include fa-icon('envelope-o');
-        }
-        &#admin-settings {
-            @include fa-icon('gears');
-        }
-        &#admin-x2studio {
-            @include fa-icon('pencil');
-        }
-        &#admin-support {
-            @include x2-icon('service');
-        }
-        &#admin-users {
-            @include fa-icon('users');
-        }
-        &#admin-utilities {
-            @include fa-icon('wrench');
-        }
-        &#admin-workflow {
-            @include fa-icon('refresh');
-        }
-        &#admin-security {
-            @include fa-icon('shield');
-        }
-        &#admin-hub {
-            @include fa-icon('cloud');
-        }
     }
-    
+
     div {
         
         padding-top: 5px;
@@ -510,7 +472,11 @@ div.form .background-row {
             vertical-align: middle;
             float: left;
         }
-
+        
+    }
+    
+    h2, div {
+       
         &#admin-ui-settings {
             @include fa-icon('desktop', 'before');
             //@include fa-icon('paint-brush', 'after');
@@ -542,10 +508,10 @@ div.form .background-row {
             @include fa-icon('pencil');
         }
         &#admin-support {
-            @include x2-icon('service');
+            @include fa-icon('users');
         }
         &#admin-users {
-            @include fa-icon('users');
+            @include fa-icon('user', 'before');
         }
         &#admin-utilities {
             @include fa-icon('wrench');

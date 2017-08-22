@@ -1,7 +1,8 @@
 <?php
+
 /***********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +21,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,9 +30,9 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/
 
 /**
@@ -40,74 +40,107 @@
  * @package application.models
  */
 class PhoneNumber extends CActiveRecord {
-	/**
-	 * Returns the static model of the specified AR class.
-	 * @return Tags the static model class
-	 */
-	public static function model($className=__CLASS__) 	{
-		return parent::model($className);
-	}
 
-	/**
-	 * @return string the associated database table name
-	 */
-	public function tableName() {
-		return 'x2_phone_numbers';
-	}
+    /**
+     * Returns the static model of the specified AR class.
+     * @return Tags the static model class
+     */
+    public static function model($className = __CLASS__) {
+        return parent::model($className);
+    }
 
-	/**
-	 * @return array validation rules for model attributes.
-	 */
-	public function rules() {
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
-		return array(
-			array('modelType, modelId, number', 'required'),
-			array('modelId', 'numerical', 'integerOnly'=>true),
-			array('number', 'length', 'max'=>40),
-			array('modelType', 'length', 'max'=>100),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
-			array('modelType, modelId, number', 'safe', 'on'=>'search'),
-		);
-	}
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName() {
+        return 'x2_phone_numbers';
+    }
 
-	/**
-	 * @return array relational rules.
-	 */
-	public function relations() {
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
-		return array();
-	}
+    /**
+     * @return array validation rules for model attributes.
+     */
+    public function rules() {
+        // NOTE: you should only define rules for those attributes that
+        // will receive user inputs.
+        return array(
+            array('modelType, modelId, number', 'required'),
+            array('modelId', 'numerical', 'integerOnly' => true),
+            array('number', 'length', 'max' => 40),
+            array('modelType', 'length', 'max' => 100),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('modelType, modelId, number', 'safe', 'on' => 'search'),
+        );
+    }
 
-	/**
-	 * @return array customized attribute labels (name=>label)
-	 */
-	public function attributeLabels() {
-		return array(
-			'modelId' => 'Model ID',
-			'modelType' => 'Model Type',
-			'number' => 'Number',
-		);
-	}
+    /**
+     * @return array relational rules.
+     */
+    public function relations() {
+        // NOTE: you may need to adjust the relation name and the related
+        // class name for the relations automatically generated below.
+        return array();
+    }
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search() {
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    /**
+     * @return array customized attribute labels (name=>label)
+     */
+    public function attributeLabels() {
+        return array(
+            'modelId' => 'Model ID',
+            'modelType' => 'Model Type',
+            'number' => 'Number',
+        );
+    }
 
-		$criteria=new CDbCriteria;
-		
-		$criteria->compare('modelType',$this->modelType,true);
-		$criteria->compare('modelId',$this->modelId);
-		$criteria->compare('number',$this->number,true);
+    /**
+     * Formats phone number string to readable phone number
+     * 
+     * eg. 15555555555 --> 1-555-555-5555
+     * 
+     * @param type $numberStr
+     * @return string
+     */
+    public function formatPhoneNumber($numberStr) {
+        // Gets length of string provided
+        $numberLen = strlen($numberStr);
+        
+        // Format phone number
+        $formattedNumber = substr($numberStr, $numberLen - 4, $numberLen);
+        $formattedNumber = substr($numberStr, $numberLen - 7, 3) .
+                "-$formattedNumber";
+        
+        // Format area code
+        if ($numberLen >= 10) {
+            $formattedNumber = substr($numberStr, $numberLen - 10, 3) .
+                    "-$formattedNumber";
+            
+            // Format country code
+            if ($numberLen > 10) {
+                $formattedNumber = substr($numberStr, 0, $numberLen - 10) .
+                        "-$formattedNumber";
+            }
+        }
+        return $formattedNumber;
+    }
 
-		return new CActiveDataProvider(get_class($this), array(
-			'criteria'=>$criteria,
-		));
-	}
+    /**
+     * Retrieves a list of models based on the current search/filter conditions.
+     * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+     */
+    public function search() {
+        // Warning: Please modify the following code to remove attributes that
+        // should not be searched.
+
+        $criteria = new CDbCriteria;
+
+        $criteria->compare('modelType', $this->modelType, true);
+        $criteria->compare('modelId', $this->modelId);
+        $criteria->compare('number', $this->number, true);
+
+        return new CActiveDataProvider(get_class($this), array(
+            'criteria' => $criteria,
+        ));
+    }
+
 }

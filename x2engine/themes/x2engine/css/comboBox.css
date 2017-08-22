@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,7 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
+ * "Powered by X2 Engine".
  **********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}button.x2-button.x2-combo-box-button{-webkit-border-radius:0px 4px 4px 0px;-moz-border-radius:0px 4px 4px 0px;-ms-border-radius:0px 4px 4px 0px;-o-border-radius:0px 4px 4px 0px;border-radius:0px 4px 4px 0px;height:20px;width:10%;max-width:20px;padding:0 0 0 0 !important;margin:0 0 0 0;border-left:none}button.x2-button.x2-combo-box-button>img{margin:0 -3px 0 0;width:10px;height:10px}.x2-combo-box-dropdown{position:absolute;background:white;border:1px solid #999;max-height:135px;min-width:120px;overflow-y:auto;z-index:100}.x2-combo-box-dropdown>ul{list-style-type:none;padding-left:0;margin:0}.x2-combo-box-dropdown>ul>li{line-height:17px;padding:0 6px 0 6px;cursor:default;border:1px solid transparent;border-left:none;border-right:none}.x2-combo-box-dropdown>ul>li:hover{border:1px solid #999999;border-left:none;border-right:none;background:#eee}.x2-combo-box-dropdown>ul>li:hover:first-child,.x2-combo-box-dropdown>ul>li:hover:last-child{border:1px solid transparent;border-left:none;border-right:none}

@@ -1,7 +1,7 @@
 <?php
-/* * *********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -20,9 +20,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -30,10 +29,10 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- * ******************************************************************************** */
+ * "Powered by X2 Engine".
+ **********************************************************************************/
 
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/about-page.css');
@@ -63,16 +62,18 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
 
 <div class='center-column-container form left' >
     <b style="font-size:16px"><?php echo Yii::t('app',
-        'X2CRM | X2Engine Inc.'); ?></b><br>
+        'X2CRM | X2 Engine Inc.'); ?></b><br>
     <b><?php echo Yii::t('app', 'Version') . " " . Yii::app()->params->version; ?></b><br>
     <?php
-    echo Yii::t('app', 'Open Source License: {link}',
-            array(
-        '{link}' => CHtml::link(Yii::t('app', 'GNU Affero GPL v3'),
-                Yii::app()->getBaseUrl() . '/LICENSE.txt',
-                array('title' => Yii::t('app',
-                    'GNU Affero General Public License version 3')
-    ))));
+    if (Yii::app()->getEdition() === 'opensource') {
+        echo Yii::t('app', 'Enterprise License: {link}',
+                array(
+                    '{link}' => CHtml::link(Yii::t('app', 'GNU Affero GPL v3'),
+                    Yii::app()->getBaseUrl() . '/LICENSE.txt',
+                    array('title' => Yii::t('app',
+                        'GNU Affero General Public License version 3')
+        ))));
+    }
     ?><br>
     <?php
     echo Yii::app()->dateFormatter->formatDateTime(Yii::app()->params->buildDate,
@@ -91,16 +92,16 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
     ?><br><br>
     <div style="clear:both">
         <a href="https://x2crm.com" target="_blank">X2Engine Inc.</a><br>
-        PO Box 66752<br>
-        Scotts Valley, California 95067 USA<br>
+        PO Box 610121<br>
+        Redwood City, California 94061 USA<br>
     </div>
     <div id="about-intro">
         <?php
         echo Yii::t('app',
-                'X2CRM | X2Engine was founded in Scotts Valley, '
-                . 'California in 2011 by John Roberts with the mission to develop '
-                . 'a new open source CRM platform with enterprise capabilities '
-                . 'but designed for small businesses. What makes X2CRM powerful '
+                'X2CRM | X2 Engine was designed in Santa Cruz, '
+                . 'California by John Roberts with the mission to develop '
+                . 'a new generation fast and compact CRM platform CRM platform '
+                . 'with enterprise capabilities. What makes X2CRM powerful '
                 . 'is in addition to providing an enterprise scale CRM platform, '
                 . 'X2CRM also includes both a marketing workflow automation tool '
                 . 'and a structured sales and service process tool in one '
@@ -110,10 +111,9 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
         ?><br><br>
         <?php
         echo Yii::t('app',
-                'All X2CRM source code is fully open source under'
-                . ' the {license}. X2CRM has taken years of dedicated work by '
+                'X2CRM has taken years of dedicated work by '
                 . 'many talented software developers to create. The funding for '
-                . 'this software development is provided by {website} If you '
+                . 'this software development is provided by  X2 Engine Inc. in Redwood City, California. If you '
                 . 'would like to use X2CRM under a commercial license or other '
                 . 'terms please contact X2Engine Inc. at {contact}.',
                 array(
@@ -121,8 +121,6 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
                     Yii::app()->getBaseUrl() . '/LICENSE.txt',
                     array('title' => Yii::t('app',
                         'GNU Affero General Public License version 3'))),
-            '{website}' => CHtml::link('X2Engine Inc.', 'https://www.x2crm.com',
-                    array('target' => '_blank')),
             '{contact}' => CHtml::link('contact@x2engine.com',
                     'mailto:contact@x2engine.com')
         ));
@@ -143,24 +141,17 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
         echo implode(', ',
                 array(
             'John Roberts',
+            'David Buchanan',
             'Raymond Colebaugh',
             'Josef Bustamante',
             'Isaiah Solomon',
+            'Peter Czupil',
             'Jake Houser',
             'Steve Lance',
             'Derek Mueller',
             'Matthew Pearson',
-            'Demitri Morgan',
-            'Alex Rowe'
         ));
         ?><br><br>
-        <b><?php echo Yii::t('app','Release Contributors');?></b><br>
-        <?php 
-        echo implode('<br>',array(
-            'Michael Zhang -- Chinese Language Translations',
-            'Pomazan Bogdan -- Russian Language Translations',
-        ));
-        ?>
     </div>
     <hr>
     <div id="about-credits">
@@ -241,6 +232,7 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             echo Yii::t('app', 'Powered by X2Engine');
         ?></a>. Copyright &copy; 2011-<?php echo date('Y'); ?> X2Engine Inc.<br>
         <br>
+        <?php if(Yii::app()->getEdition() === 'opensource'): ?>
         <?php
         echo Yii::t('app', 'Released as free software under the');
         ?> <a href="<?php echo Yii::app()->getBaseUrl(); ?>/LICENSE.txt" title="GNU Affero General Public License version 3">GNU Affero GPL v3</a>.<br><br>
@@ -253,11 +245,19 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
             logo. If the display of the logo is not reasonably feasible for technical reasons,
             the Appropriate Legal Notices must display the words "Powered by X2Engine".
             X2Engine and X2Engine are trademarks of X2Engine Inc.<br><br>
+        <?php else: ?>
+        <b>X2Engine Inc. grants you a perpetual, non-exclusive, non-transferable license
+           to install and use this Software for your internal business purposes only
+           for the number of users purchased by you. Your use of this Software for
+           additional users is not covered by this license and requires a separate
+           license purchase for such users. You shall not distribute, license, or
+           sublicense the Software. Title, ownership, and all intellectual property
+           rights in the Software belong exclusively to X2Engine.<br><br>
+        <?php endif; ?>
 
-
-            THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
-            EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
-            MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
+           THIS SOFTWARE IS PROVIDED "AS IS" AND WITHOUT WARRANTIES OF ANY KIND, EITHER
+           EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED WARRANTIES OF
+           MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT.
         </b>
     </div><br>
 </div>

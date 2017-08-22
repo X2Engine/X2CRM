@@ -1,6 +1,6 @@
 /*!*********************************************************************************
- * X2CRM is a customer relationship management program developed by
- * X2Engine, Inc. Copyright (C) 2011-2016 X2Engine Inc.
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -19,9 +19,8 @@
  * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  * 
- * You can contact X2Engine, Inc. P.O. Box 66752, Scotts Valley,
- * California 95067, USA. on our website at www.x2crm.com, or at our
- * email address: contact@x2engine.com.
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
  * 
  * The interactive user interfaces in modified source and object code versions
  * of this program must display Appropriate Legal Notices, as required under
@@ -29,92 +28,7 @@
  * 
  * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
  * these Appropriate Legal Notices must retain the display of the "Powered by
- * X2Engine" logo. If the display of the logo is not reasonably feasible for
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
- * "Powered by X2Engine".
- **********************************************************************************/
-.form.x2-layout-island {
-  padding-bottom: 10px !important; }
-
-#content {
-  border: none;
-  background: none;
-  max-width: 1920px; }
-  #content .cell {
-    margin-right: 15px;
-    margin-bottom: 0px; }
-
-.admin-screen {
-  max-width: 1920px; }
-  .admin-screen .license-info-section {
-    padding-top: 10px; }
-  .admin-screen .page-title {
-    margin-bottom: 5px; }
-  .admin-screen .ui-widget-content .cell a {
-    color: #004BAF; }
-  .admin-screen .cell a {
-    text-decoration: none; }
-  .admin-screen .ui-tabs-vertical .ui-tabs-nav {
-    padding: .2em .1em .2em .2em;
-    float: left;
-    width: 25%;
-    background: #FFFFFF; }
-    .admin-screen .ui-tabs-vertical .ui-tabs-nav li {
-      background: #FFF;
-      font-size: 14.6px;
-      margin: 0 2px 0 0;
-      font-family: Verdana,Arial,sans-serif;
-      border-color: #FFF !important;
-      height: 3.2em;
-      clear: left;
-      width: 100%;
-      border-bottom-width: 1px !important;
-      border-right-width: 0 !important;
-      margin: 0 -1px .2em 0; }
-      .admin-screen .ui-tabs-vertical .ui-tabs-nav li div {
-        position: relative;
-        top: 15%;
-        transform: translateY(-50%); }
-      .admin-screen .ui-tabs-vertical .ui-tabs-nav li a {
-        display: block;
-        width: 80%;
-        height: 60%; }
-      .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:focus, .admin-screen .ui-tabs-vertical .ui-tabs-nav li a:hover {
-        color: #006CFC; }
-      .admin-screen .ui-tabs-vertical .ui-tabs-nav li .ui-tabs-active {
-        padding-bottom: 0;
-        padding-right: .1em;
-        border-right-width: 1px; }
-  .admin-screen .ui-tabs-vertical .ui-tabs-panel {
-    padding: 1em;
-    margin-left: 1em;
-    float: left;
-    height: 35em;
-    width: 70%; }
-    .admin-screen .ui-tabs-vertical .ui-tabs-panel .cell {
-      padding: 10px;
-      height: 100px; }
-
-.spanMax {
-  height: 600px; }
-
-.ui-tabs-vertical {
-  width: 55em; }
-
-.ui-tabs .ui-tabs-nav > li {
-  background: #FFF;
-  font-size: 12.5px;
-  margin: 0 2px 0 0;
-  font-family: Verdana,Arial,sans-serif;
-  border-color: #FFF !important; }
-.ui-tabs .ui-tabs-nav li.ui-tabs-active a {
-  color: #007fff; }
-
-#tabs .ui-tabs-active {
-  background: #F1F1F1; }
-
-.page-title h2 {
-  line-height: 36px !important;
-  margin-top: 0px; }
-
-/*# sourceMappingURL=index.css.map */
+ * "Powered by X2 Engine".
+ **********************************************************************************/.form.x2-layout-island{padding-bottom:10px !important}#content{border:none;background:none;max-width:1920px}#content .cell{margin-right:15px;margin-bottom:0px}.admin-screen{max-width:1920px}.admin-screen .license-info-section{padding-top:10px}.admin-screen .page-title{margin-bottom:5px}.admin-screen .ui-widget-content .cell a{color:#004BAF}.admin-screen .cell a{text-decoration:none}.admin-screen .ui-tabs-vertical .ui-tabs-nav{padding:.2em .1em .2em .2em;float:left;width:25%;background:#FFFFFF}.admin-screen .ui-tabs-vertical .ui-tabs-nav li{background:#FFF;font-size:14.6px;margin:0 2px 0 0;font-family:Verdana,Arial,sans-serif;border-color:#FFF !important;height:3.2em;clear:left;width:100%;border-bottom-width:1px !important;border-right-width:0 !important;margin:0 -1px .2em 0}.admin-screen .ui-tabs-vertical .ui-tabs-nav li div{position:relative;top:15%;transform:translateY(-50%)}.admin-screen .ui-tabs-vertical .ui-tabs-nav li a{display:block;width:80%;height:60%}.admin-screen .ui-tabs-vertical .ui-tabs-nav li a:focus,.admin-screen .ui-tabs-vertical .ui-tabs-nav li a:hover{color:#006CFC}.admin-screen .ui-tabs-vertical .ui-tabs-nav li .ui-tabs-active{padding-bottom:0;padding-right:.1em;border-right-width:1px}.admin-screen .ui-tabs-vertical .ui-tabs-panel{padding:1em;margin-left:1em;float:left;height:35em;width:70%}.admin-screen .ui-tabs-vertical .ui-tabs-panel .cell{padding:10px;height:100px}.spanMax{height:620px}.ui-tabs-vertical{width:55em}.ui-tabs .ui-tabs-nav>li{background:#FFF;font-size:12.5px;margin:0 2px 0 0;font-family:Verdana,Arial,sans-serif;border-color:#FFF !important}.ui-tabs .ui-tabs-nav li.ui-tabs-active a{color:#007fff}#tabs .ui-tabs-active{background:#F1F1F1}.page-title h2{line-height:36px !important;margin-top:0px}

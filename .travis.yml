@@ -1,16 +1,25 @@
 language: php
-matrix:
-  include: 
-    - php: 5.3
-      env: COVERAGE='--coverage-clover build/logs/clover.xml'
-    - php: 5.4
-      env: COVERAGE=''
-    - php: 5.5
-      env: COVERAGE=''
-    - php: 5.6
-      env: COVERAGE=''
-    - php: 7.0
-      env: COVERAGE=''
+php:
+    - 5.3
+    - 5.4
+    - 5.5
+    - 5.6
+    - 7.0
+env:
+    matrix:
+        - COVERAGE='--coverage-clover build/logs/clover.xml'
+        - FUNC_TEST=components
+        - FUNC_TEST=models
+        - FUNC_TEST=controllers
+        - FUNC_TEST=permissionsTests
+        - FUNC_TEST=pageCrawlersAsAdminUser
+        - FUNC_TEST=pageCrawlersAsGuest
+        - FUNC_TEST=pageCrawlersAsTestUser
+        - FUNC_TEST=pageCrawlersWithInjections
+        - FUNC_TEST=webTrackingTests
+
+services:
+  - mysql
 
 # blacklist
 branches:
@@ -18,12 +27,35 @@ branches:
     - DemoServer
     - TrialServer
 
+# For functional tests: webTrackingTests
+addons:
+  hosts:
+    - www.x2enginetestdomain.com
+    - www2.x2enginetestdomain.com
+    - www.x2enginetestdomain2.com
+
 before_script:
   - sudo apt-get update
-  - sudo apt-get install apache2 libapache2-mod-fastcgi
-  # install phpunit 4.8
-  - curl -s -o $HOME/.phpenv/versions/$(phpenv version-name)/bin/phpunit https://phar.phpunit.de/phpunit-4.8.9.phar
-  - chmod +x $HOME/.phpenv/versions/$(phpenv version-name)/bin/phpunit
+  # xvfb is used for functional tests
+  - sudo apt-get install -y apache2 libapache2-mod-fastcgi xvfb chromium-browser
+
+  # start xvfb for functional tests
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+
+  # pretend chromium is chrome
+  - sudo ln -s /usr/bin/chromium-browser /usr/local/bin/google-chrome
+
+  # install phpunit and associated packages
+  - cd x2engine/protected/tests
+  - composer global require phpunit/phpunit '4.8.0'
+  - composer global require phpunit/phpunit-selenium '~1.2'
+  - composer global require phpunit/phpunit-story
+  - composer global require phpunit/dbunit '~1.2'
+  - composer global require phpunit/php-invoker
+  - export PATH=~/.composer/vendor/bin:$PATH
+  - cd ../../..
+
   # enable php-fpm
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.conf
   - sudo cp ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf.default ~/.phpenv/versions/$(phpenv version-name)/etc/php-fpm.d/www.conf 2>/dev/null || true
@@ -42,30 +74,48 @@ before_script:
   - composer require satooshi/php-coveralls '~1.0'
   - mkdir -p build/logs
 
-  # create mysql database
+  # create mysql database and prevent 'mysql has gone away' during functional tests
   - mysql -e "DROP DATABASE IF EXISTS x2engine; CREATE DATABASE x2engine;" -u root;
+  - mysql -e "SET GLOBAL max_allowed_packet = 1073741824;" -u root;
+  - mysql -e "SET GLOBAL connect_timeout = 10800;" -u root;
+  - mysql -e "SET GLOBAL wait_timeout = 10800;" -u root;
+  - mysql -e "SHOW VARIABLES LIKE 'max_allowed_packet';" -u root;
+  - mysql -e "SHOW VARIABLES LIKE 'connect_timeout';" -u root;
+  - mysql -e "SHOW VARIABLES LIKE 'wait_timeout';" -u root;
 
-  #install x2crm
+  # install and run selenium in the background, wait to ensure selenium is running
+  - wget http://selenium-release.storage.googleapis.com/2.48/selenium-server-standalone-2.48.2.jar -O /tmp/selenium-server-standalone-2.48.2.jar
+  - DISPLAY=:99.0 java -jar /tmp/selenium-server-standalone-2.48.2.jar -browserSessionReuse -log /tmp/selenium.log &
+  - sleep 10 
+
+  # install x2crm
   - cp build/constants.php x2engine/constants.php
   - cp build/installConfig.php x2engine/installConfig.php
   - cd x2engine && php initialize.php silent && cd ..
 
-  #configure tests
+  # configure tests
   - cp build/WebTestConfig.php x2engine/protected/tests/WebTestConfig.php
+
+  # move functional test config closer to tests
+  - cp build/phpunit_functional.xml x2engine/protected/tests/phpunit_functional.xml
 
 # run tests
 script: 
   # unit tests
-  - phpunit --configuration build/phpunit_unit.xml $COVERAGE x2engine/protected/tests/unit
+  - if [[ -v COVERAGE ]]; then phpunit --configuration build/phpunit_unit.xml $COVERAGE x2engine/protected/tests/unit; fi
+
   # functional tests
-  #- phpunit --configuration build/phpunit_functional.xml x2engine/protected/tests/functional
+  - if [[ -v FUNC_TEST ]]; then chmod +x build/functional_tests.sh; echo "Running functional tests..."; ./build/functional_tests.sh; fi
 
 after_failure:
   # capture apache error log
   - sudo cat /var/log/apache2/error.log
+  - sudo cat /var/log/mysql/error.log
+  - sudo cat /tmp/selenium.log
 
 after_success:
   - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.3" ]]; then php vendor/bin/coveralls -v; fi
+  - if [[ -v FUNC_TEST ]]; then sudo cat /tmp/report-$FUNC_TEST; fi
 
 notifications:
   slack:
