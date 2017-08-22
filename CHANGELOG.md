@@ -1,3 +1,12 @@
+# 6.9 #
+08/22/2017
+* General Changelog / Developer Notes
+  * Miscellaneous UI enhancements
+    * Green login logo
+  * Miscellaneous bug fixes
+    * Login token bug fix
+    * UI bug fixes
+
 # 6.6 #
 5/17/2017
 * General Changelog / Developer Notes
