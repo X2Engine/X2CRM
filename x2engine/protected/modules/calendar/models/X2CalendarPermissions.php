@@ -90,8 +90,17 @@ class X2CalendarPermissions extends CActiveRecord
         }
         $calendars = $calendarQuery->queryAll();
         $ret = array();
-        foreach($calendars as $arr){
-            $ret[$arr['id']] = $arr['name'];
+        if (isset($calendars) && isset($usersCalendar) && $calendars->rowCount !== 0 && $usersCalendar->rowCount !== 0) {
+            foreach($calendars as $arr){
+                if ($usersCalendar[0]['id'] !==  $arr['id']) {
+                    $ret[$arr['id']] = $arr['name'];
+                }
+            }
+            return array($usersCalendar[0]['id'] => $usersCalendar[0]['name']) + $ret;
+        } else {
+            foreach($calendars as $arr){
+                $ret[$arr['id']] = $arr['name'];
+            }            
         }
         return $ret;
     }

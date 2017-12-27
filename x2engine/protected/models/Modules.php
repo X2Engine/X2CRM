@@ -314,8 +314,19 @@ class Modules extends CActiveRecord {
 
         if (Yii::app()->locale->id === 'en') {
             // Handle silly English pluralization
+            $isVowelTrue = false;
+            if (preg_match('/y$/', $moduleTitle)) {
+                $moduleTitleExploded = explode('y', $moduleTitle);
+                // Get 'a' in 'days'
+                $isVowel = substr($moduleTitleExploded[count($moduleTitleExploded) - 2], -1);
+                if ($isVowel === 'a' || $isVowel === 'e' ||
+                        $isVowel === 'i' || $isVowel === 'o' ||
+                        $isVowel === 'u') {
+                    $isVowelTrue = true;
+                }
+            }
             if ($plural === false) {
-                if (preg_match('/ies$/', $moduleTitle)) {
+                if (preg_match('/ies$/', $moduleTitle) && !$isVowelTrue) {
                     $moduleTitle = preg_replace('/ies$/', 'y', $moduleTitle);
                 } else if (preg_match('/ses$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/es$/', '', $moduleTitle);
@@ -324,7 +335,7 @@ class Modules extends CActiveRecord {
                     $moduleTitle = trim($moduleTitle, 's');
                 }
             } elseif ($plural === 'optional') {
-                if (preg_match('/y$/', $moduleTitle)) {
+                if (preg_match('/y$/', $moduleTitle) && !$isVowelTrue) {
                     $moduleTitle = preg_replace('/y$/', '(ies)', $moduleTitle);
                 } else if (preg_match('/ss$/', $moduleTitle)) {
                     $moduleTitle .= '(es)';
@@ -334,7 +345,7 @@ class Modules extends CActiveRecord {
                     $moduleTitle = preg_replace('/s$/', '(s)', $moduleTitle);
                 }
             } else {
-                if (preg_match('/y$/', $moduleTitle)) {
+                if (preg_match('/y$/', $moduleTitle) && !$isVowelTrue) {
                     $moduleTitle = preg_replace('/y$/', 'ies', $moduleTitle);
                 } else if (preg_match('/ss$/', $moduleTitle)) {
                     $moduleTitle .= 'es';

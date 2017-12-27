@@ -54,10 +54,13 @@ class WebFormAction extends CAction {
             $taglist = explode(',', $_POST['tags']);
             if ($taglist !== false) {
                 foreach ($taglist as &$tag) {
-                    if ($tag === '')
+                    $tag = trim($tag);
+                    if ($tag === '') {
                         continue;
-                    if (substr($tag, 0, 1) != '#')
+                    }
+                    if (substr($tag, 0, 1) !== '#') {
                         $tag = '#' . $tag;
+                    }
                     $tagModel = new Tags;
                     $tagModel->taggedBy = 'API';
                     $tagModel->timestamp = time();
@@ -761,7 +764,7 @@ class WebFormAction extends CAction {
                         $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
                     if (!empty($webForm->webleadEmailTemplate))
                         $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
-                    if (empty($webForm->fingerprintDetection))
+                    if (!empty($webForm->fingerprintDetection))
                         $extractedParams['fingerprintDetection'] = $webForm->fingerprintDetection;
                 } else { // legacy method
                     if (isset($_GET['header'])) {

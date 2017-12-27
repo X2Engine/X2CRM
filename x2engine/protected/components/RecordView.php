@@ -343,6 +343,12 @@ abstract class RecordView extends X2Widget {
             'class' => 'formSectionHeader'
         ));
 
+        $html .= X2Html::tag('span', array(
+            'class' => 'sectionTitle',
+            'title' => addslashes($section['title'])
+            ), Yii::t(strtolower(Yii::app()->controller->id), $section['title'])
+        );
+
         // Add the collapse Icon
         if ($section['collapsible']) {
             $html .= X2Html::link (
@@ -361,12 +367,6 @@ abstract class RecordView extends X2Widget {
                 )
             );
         }
-
-        $html .= X2Html::tag('span', array(
-            'class' => 'sectionTitle',
-            'title' => addslashes($section['title'])
-            ), Yii::t(strtolower(Yii::app()->controller->id), $section['title'])
-        );
 
         $html .= '</div>';
         return $html;

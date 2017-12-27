@@ -100,3 +100,8 @@
 .icon-x2-logo:before { content: "\f117"; }
 .icon-x2-logo-square:before { content: "\f116"; }
 
+/* override with a blank content with fa-fw properties to fill in the space */
+.icon-activity:before { content: ""; width: 1.28571429em; text-align: center; }
+.icon-contact:before { content: ""; width: 1.28571429em; text-align: center;}
+.icon-quotes:before { content: ""; width: 1.28571429em; text-align: center;}
+.icon-service:before { content: ""; width: 1.28571429em; text-align: center;}

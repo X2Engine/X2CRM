@@ -76,7 +76,7 @@
         float: right;
     }
     .description {
-        color: #000;
+        color: #555555;
         padding: 0 0 5px 0;
     }
     .footer {
@@ -85,10 +85,9 @@
         padding-left: 0;
         font-size: 11px;
     }
-    .icon { 
-        content: "\f144";
+    .icon {
+        content: "";
     }
-    
     .icon {
         position: relative;
         display: block;
@@ -106,6 +105,7 @@
 
         &:before {
             font-size: 30px !important;
+            visibility: hidden;
         }
 
         &.action-index {

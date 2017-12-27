@@ -182,7 +182,7 @@ class SessionToken extends CActiveRecord {
                     ->queryScalar();
             return empty($activeUser);
         }
-        return false;
+        return true;
     }
     
     /**

@@ -58,7 +58,4 @@ $('body').bind('ajaxSuccess', function(event, request, settings) {
 
 jQuery(document).ready(function () {
     $('.only-in-edition a').removeAttr('href');
-    $('#logout').click (function () {
-        document.cookie = 'sessionToken=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;';
-    });
 });

@@ -37,7 +37,7 @@ DROP TABLE IF EXISTS x2_admin;
 CREATE TABLE x2_admin(
 	id                              INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout                         INT,
-    maxUserCount                   INT                             DEFAULT 100000,
+        maxUserCount                    INT                             DEFAULT 200,
         loginCredsTimeout               INT                             DEFAULT 30,
         tokenPersist                    TINYINT         DEFAULT 1,
 	webLeadEmail			VARCHAR(255),
@@ -123,7 +123,11 @@ CREATE TABLE x2_admin(
     doNotEmailLinkText          VARCHAR(255) DEFAULT NULL,
     enableUnsubscribeHeader     TINYINT DEFAULT 0,
     twitterCredentialsId        INT UNSIGNED,
+    dropboxCredentialsId        INT UNSIGNED,
+    linkedInCredentialsId       INT UNSIGNED,
     twitterRateLimits           TEXT DEFAULT NULL,
+    linkedInRateLimits          TEXT DEFAULT NULL,
+    dropboxRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
     jasperCredentialsId         INT UNSIGNED,
@@ -182,6 +186,10 @@ CREATE TABLE x2_credentials(
 ) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`twitterCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
+/*&*/
+ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`linkedInCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
+/*&*/
+ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`dropboxCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`googleCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/

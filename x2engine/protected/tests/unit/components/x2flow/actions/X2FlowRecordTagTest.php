@@ -64,9 +64,8 @@ class X2FlowRecordTagTest extends X2FlowTestBase {
         $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         $tags = $this->contacts ('contact935')->getTags ();
-        // will work after 6.9.1
-	//$this->assertTrue (in_array ('#test1', $tags));
-        //$this->assertTrue (in_array ('#test2', $tags));
+        $this->assertTrue (in_array ('#test1', $tags));
+        $this->assertTrue (in_array ('#test2', $tags));
     }
 
     public function testRemoveTags () {
@@ -78,18 +77,17 @@ class X2FlowRecordTagTest extends X2FlowTestBase {
         $tags = $this->contacts ('contact935')->getTags ();
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($tags);
         $this->assertEmpty ($tags);
+
         $tags = $this->contacts ('contact935')->addTags (array ('test1', 'test2'));
         $retVal = $this->executeFlow ($flow, $params);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal);
         $trace = $this->flattenTrace ($retVal['trace']);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($trace);
-	// will work after 6.9.1
-        //$this->assertTrue ($this->checkTrace ($retVal['trace']));
+        $this->assertTrue ($this->checkTrace ($retVal['trace']));
 
         $tags = $this->contacts ('contact935')->getTags ();
- 	// will work after 6.9.1
-	//$this->assertTrue (!in_array ('#test1', $tags));
-        //$this->assertTrue (!in_array ('#test2', $tags));
+        $this->assertTrue (!in_array ('#test1', $tags));
+        $this->assertTrue (!in_array ('#test2', $tags));
     }
 
     public function testClearTags () {

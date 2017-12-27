@@ -115,6 +115,10 @@ class X2ActiveForm extends CActiveForm {
         return X2Html::activeRichTextArea ($model, $attribute, $htmlOptions);
     }
 
+    public function codeEditor (CModel $model, $attribute, array $htmlOptions = array ()) {
+        return X2Html::activeCodeEditor ($model, $attribute, $htmlOptions);
+    }
+
     public function resolveHtmlOptions (CModel $model, $attribute, array $htmlOptions = array ()) {
         CHtml::resolveNameID ($model, $attribute, $htmlOptions);
         $htmlOptions['id'] = $this->resolveId ($htmlOptions['id']);

@@ -48,18 +48,18 @@
  * @property string $editingUsername Username of the user who is performing the save operation.
  * @property string $viewRoute The default action to view this model
  */
-class ChangeLogBehavior extends CActiveRecordBehavior  {
-
-    public function events() {
-        return array_merge(parent::events(),array(
-            'onAfterCreate'=>'afterCreate',
-            'onAfterUpdate'=>'afterUpdate',
-        ));
-    }
+class ChangeLogBehavior extends CActiveRecordBehavior {
 
     private $_editingUsername;
     public $createEvent = true;
     protected $validated = false;
+
+    public function events() {
+        return array_merge(parent::events(), array(
+            'onAfterCreate' => 'afterCreate',
+            'onAfterUpdate' => 'afterUpdate',
+        ));
+    }
 
     /**
      * Magic getter for {@link editingUsername} that returns a username regardless of context.
@@ -71,55 +71,46 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
      * @return type
      */
     public function getEditingUsername() {
-        if (!isset($this->_editingUsername))
-            $this->_editingUsername = Yii::app()->getSuName();
-        return $this->_editingUsername;
+        return !isset($this->_editingUsername) ? Yii::app()->getSuName() : $this->_editingUsername;
     }
 
     /**
      * Sets username fields of a model
      */
-    public static function usernameFieldsSet(CActiveRecord $model,$username){
-        if($model->hasAttribute('updatedBy')){
+    public static function usernameFieldsSet(CActiveRecord $model, $username) {
+        if ($model->hasAttribute('updatedBy')) {
             $model->updatedBy = $username;
         }
-        if($model->hasAttribute('createdBy') && $model->isNewRecord)
+        if ($model->hasAttribute('createdBy') && $model->isNewRecord) {
             $model->createdBy = $username;
+        }
     }
 
-    public function beforeSave($event){
-        $model=$this->getOwner();
-        self::usernameFieldsSet($model,$this->editingUsername);
+    public function beforeSave($event) {
+        $model = $this->getOwner();
+        self::usernameFieldsSet($model, $this->editingUsername);
         return parent::beforeSave($event);
     }
 
     public function afterCreate($event) {
-
         $model = $this->getOwner();
 
-        //$api = 0;    // FIX THIS
-
-        if($this->createEvent){
+        if ($this->createEvent) {
             $event = new Events;
-            $event->visibility = $model->hasAttribute('visibility')? $model->visibility : 1;
+            $event->visibility = $model->hasAttribute('visibility') ? $model->visibility : 1;
             $event->associationType = get_class($model);
             $event->associationId = $model->id;
             $event->user = $this->editingUsername;
             $event->type = 'record_create';
-            
-            // Event creation already handled by web lead.
-            // if(!$model instanceof Contacts || $api==0) 
-
             $event->save();
         }
 
-        if($model->hasAttribute('assignedTo')) {
-            if(!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername && 
-                $model->assignedTo != 'Anyone') {
+        if ($model->hasAttribute('assignedTo')) {
+            if (!empty($model->assignedTo) && $model->assignedTo != $this->editingUsername &&
+                    $model->assignedTo != 'Anyone') {
 
                 $notif = new Notification;
                 $notif->user = $model->assignedTo;
-                //$notif->createdBy = ($api == 1) ? 'API' : $this->editingUsername;
                 $notif->createdBy = $this->editingUsername;
                 $notif->createDate = time();
                 $notif->type = 'create';
@@ -141,11 +132,13 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
      * Triggers record_updated, runs changelog calculations and checks notification criteria (soon to be removed)
      */
     public function afterUpdate($event) {
-        if($this->validated) {
+        if ($this->validated) {
             $changes = $this->getChanges();
             $this->updateChangelog($changes);
         }
-        $this->validated = false;    // reset in case CActiveRecord::update() is called after CActiveRecord::save()
+
+        // reset in case CActiveRecord::update() is called after CActiveRecord::save()
+        $this->validated = false;
     }
 
     /**
@@ -153,15 +146,20 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
      */
     public function afterDelete($event) {
         $modelClass = get_class($this->getOwner());
-        if($modelClass === 'Actions' && $this->getOwner()->workflowId !== null)        // no deletion events for workflow actions, that's somebody else's problem
+
+        // No deletion events for workflow actions, that's somebody else's problem
+        if ($modelClass === 'Actions' && $this->getOwner()->workflowId !== null) {
             return;
-        if($this->createEvent){
+        }
+
+        // If creating event
+        if ($this->createEvent) {
             $event = new Events();
-            $event->type='record_deleted';
+            $event->type = 'record_deleted';
             $event->associationType = $modelClass;
             $event->associationId = $this->getOwner()->id;
-            if($this->getOwner()->hasAttribute('visibility')){
-                $event->visibility=$this->getOwner()->visibility;
+            if ($this->getOwner()->hasAttribute('visibility')) {
+                $event->visibility = $this->getOwner()->visibility;
             }
             $event->text = $this->getOwner()->name;
             $event->user = $this->editingUsername;
@@ -173,14 +171,12 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
         $log->itemId = $this->getOwner()->id;
         $log->recordName = $this->getOwner()->name;
         $log->changed = 'delete';
-
         $log->changedBy = $this->editingUsername;
         $log->timestamp = time();
-
         $log->save();
 
-        X2Flow::trigger('RecordDeleteTrigger',array(
-            'model'=>$this->getOwner()
+        X2Flow::trigger('RecordDeleteTrigger', array(
+            'model' => $this->getOwner()
         ));
     }
 
@@ -197,52 +193,23 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
         $newAttributes = $this->getOwner()->getAttributes();
 
         // compare old and new
-        foreach($newAttributes as $fieldName => $new) {
-            if(isset($oldAttributes[$fieldName])) {
+        foreach ($newAttributes as $fieldName => $new) {
+            if (isset($oldAttributes[$fieldName])) {
                 $old = $oldAttributes[$fieldName];
-                if(is_array($old))
-                    $old = implode(', ',$old);    // convert arrays to a string with commas in it (for example multiple assignedTo)
+                if (is_array($old)) {
+                    $old = implode(', ', $old);    // convert arrays to a string with commas in it (for example multiple assignedTo)
+                }
 
-                if($new != $old)
-                    $changes[$fieldName] = array($old,$new);
-            }elseif(!is_null($new)){
-                $changes[$fieldName]=array(null,$new);
+                if ($new != $old) {
+                    $changes[$fieldName] = array($old, $new);
+                }
+            } else if (!is_null($new)) {
+                $changes[$fieldName] = array(null, $new);
             }
         }
 
         return $changes;
     }
-
-
-/*     public function writeChangelog($changes) {
-        for($i=0;$i<count($changes); $i++) {
-            $old = &$changes[$i][0];
-            $new = &$changes[$i][1];
-
-            if($new != $old) {
-                $log = new Changelog;
-                $log->type = get_class($this->getOwner());
-
-                $log->itemId = $this->getOwner()->id;
-                $log->changedBy = $this->editingUsername;
-                $log->fieldName = $field;
-                // $log->oldValue = $old;
-                $log->timestamp = time();
-
-                if(empty($old)) {
-                    $log->diff = false;
-                    $log->newValue = $new;
-                } else {
-                    $diff = FineDiff::getDiffOpcodes($old,$new,FineDiff::$wordGranularity);
-
-                    $log->diff = strlen($diff) > strlen($old);
-                    $log->newValue = $log->diff? $diff : $new;
-                }
-
-                $log->save();
-            }
-        }
-    } */
 
     /**
      * Writes field changes to the changelog. Calls {@link checkNotificationCriteria()} for each change
@@ -251,78 +218,64 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
     public function updateChangelog($changes = null) {
         $model = $this->getOwner();
 
-        if($changes === null)
+        if ($changes === null) {
             $changes = $this->getChanges();
+        }
+        
+        if (array_key_exists('lastFieldModified', $changes)) {
+            return;
+        }
 
-        // $model->lastUpdated = time();
-        // $model->updatedBy = Yii::app()->user->getName();
-        // $model->save();
         $type = get_class($model);
 
         // Handle special types
         $pluralize = array('Quote', 'Product');
-        if (in_array($type, $pluralize))
+        if (in_array($type, $pluralize)) {
             $type .= "s";
-        else if ($type == 'Campaign')
+        } else if ($type == 'Campaign') {
             $type = "Marketing";
-        else if ($type == 'bugreports')
+        } else if ($type == 'bugreports') {
             $type = 'BugReports';
+        }
 
-        $excludeFields=array(
+        $excludeFields = array(
             'lastUpdated',
             'createDate',
             'lastActivity',
             'updatedBy',
             'trackingKey',
+            'lastFieldModified',
         );
-        if(is_array($changes)) {
-
-            foreach($changes as $fieldName => $change){
-                if(!in_array($fieldName,$excludeFields)){
+        if (is_array($changes)) {
+            foreach ($changes as $fieldName => $change) {
+                if (!in_array($fieldName, $excludeFields)) {
                     $changelog = new Changelog;
                     $changelog->type = $type;
                     if (!isset($model->id)) {
-                        if ($model->save()) {
-
-                        }
+                        $model->save();
                     }
                     $changelog->itemId = $model->id;
                     if ($model->hasAttribute('name')) {
-                        $changelog->recordName=$model->name;
+                        $changelog->recordName = $model->name;
                     } else {
-                        $changelog->recordName=$type;
+                        $changelog->recordName = $type;
                     }
                     $changelog->changedBy = $this->editingUsername;
                     $changelog->fieldName = $fieldName;
                     $changelog->oldValue = $change[0];
                     $changelog->newValue = $change[1];
                     $changelog->timestamp = time();
-
                     $changelog->save();
+                    
+                    if ($type === 'Contacts') {
+                        $model->lastFieldModified = $fieldName;
+                        $model->save();
+                    }
 
-                    $this->checkNotificationCriteria($fieldName,$change[0],$change[1]);
+                    $this->checkNotificationCriteria($fieldName, $change[0], $change[1]);
                 }
             }
         }
-        // } elseif($changes == 'Create' || $changes == 'Edited') {
-            // if($model instanceof Contacts)
-                // $change = $model->backgroundInfo;
-            // else if($model instanceof Actions)
-                // $change = $model->actionDescription;
-            // else if($model instanceof Docs)
-                // $change = $model->text;
-            // else
-                // $change = $model->name;
-        // } elseif($changes != '' && $changes != 'Completed') {
-            // $pieces = explode("<br />", $change);
-            // foreach($pieces as $piece) {
-                // $newPieces = explode("TO:", $piece);
-                // $forDeletion = $newPieces[0];
-                // if(isset($newPieces[1]) && preg_match('/<b>' . Yii::t('actions', 'color') . '<\/b>/', $piece) == false) {
-                    // $changes[] = $newPieces[1];
-                // }
-            // }
-        // }
     }
 
     /**
@@ -334,26 +287,23 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
      * @param string $old the old value
      * @param string $new the new value
      */
-    public function checkNotificationCriteria($fieldName,$old,$new) {
+    public function checkNotificationCriteria($fieldName, $old, $new) {
 
         $model = $this->getOwner();
         $modelClass = get_class($model);
 
         $allCriteria = Criteria::model()->findAllByAttributes(array('modelType' => $modelClass, 'modelField' => $fieldName));
         foreach ($allCriteria as $criteria) {
-            if (($criteria->comparisonOperator == "=" && $new == $criteria->modelValue)
-                    || ($criteria->comparisonOperator == ">" && $new >= $criteria->modelValue)
-                    || ($criteria->comparisonOperator == "<" && $new <= $criteria->modelValue)
-                    || ($criteria->comparisonOperator == "change" && $new != $old)) {
+            if (($criteria->comparisonOperator == "=" && $new == $criteria->modelValue) || ($criteria->comparisonOperator == ">" && $new >= $criteria->modelValue) || ($criteria->comparisonOperator == "<" && $new <= $criteria->modelValue) || ($criteria->comparisonOperator == "change" && $new != $old)) {
 
-                $users = preg_split('/[\s,]+/',$criteria->users,null,PREG_SPLIT_NO_EMPTY);
+                $users = preg_split('/[\s,]+/', $criteria->users, null, PREG_SPLIT_NO_EMPTY);
 
-                if($criteria->type == 'notification') {
-                    foreach($users as $user) {
-                        $event=new Events;
-                        $event->user=$user;
-                        $event->associationType='Notification';
-                        $event->type='notif';
+                if ($criteria->type == 'notification') {
+                    foreach ($users as $user) {
+                        $event = new Events;
+                        $event->user = $user;
+                        $event->associationType = 'Notification';
+                        $event->type = 'notif';
 
                         $notif = new Notification;
                         $notif->type = 'change';
@@ -361,7 +311,7 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
                         $notif->modelType = get_class($model);
                         $notif->modelId = $model->id;
 
-                        if($criteria->comparisonOperator == 'change') {
+                        if ($criteria->comparisonOperator == 'change') {
                             $notif->comparison = 'change';    // if the criteria is just 'changed'
                             $notif->value = $new;            // record the new value
                         } else {
@@ -372,13 +322,13 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
                         $notif->createdBy = $this->editingUsername;
                         $notif->createDate = time();
 
-                        if($notif->save()) {
+                        if ($notif->save()) {
                             $event->associationId = $notif->id;
                             $event->save();
                         }
                     }
-                } elseif($criteria->type == 'action') {
-                    foreach($users as $user) {
+                } elseif ($criteria->type == 'action') {
+                    foreach ($users as $user) {
                         $action = new Actions;
                         $action->assignedTo = $user;
                         if ($criteria->comparisonOperator == "=") {
@@ -388,7 +338,7 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
                         } else if ($criteria->comparisonOperator == "<") {
                             $action->actionDescription = "A record of type " . $modelClass . " has been modified to meet $criteria->modelField $criteria->comparisonOperator $criteria->modelValue" . " by " . $this->editingUsername;
                         } else if ($criteria->comparisonOperator == "change") {
-                            $action->actionDescription = "A record of type " . $modelClass . " has had its $criteria->modelField field changed from ".$old.' to '.$new.' by '.$this->editingUsername;
+                            $action->actionDescription = "A record of type " . $modelClass . " has had its $criteria->modelField field changed from " . $old . ' to ' . $new . ' by ' . $this->editingUsername;
                         }
                         $action->dueDate = mktime('23', '59', '59');
                         $action->createDate = time();
@@ -404,10 +354,10 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
                     $model->assignedTo = $criteria->users;
 
                     if ($model->save()) {
-                        $event=new Events;
-                        $event->type='notif';
-                        $event->user=$model->assignedTo;
-                        $event->associationType='Notification';
+                        $event = new Events;
+                        $event->type = 'notif';
+                        $event->user = $model->assignedTo;
+                        $event->associationType = 'Notification';
 
                         $notif = new Notification;
                         $notif->user = $model->assignedTo;
@@ -415,9 +365,9 @@ class ChangeLogBehavior extends CActiveRecordBehavior  {
                         $notif->type = 'assignment';
                         $notif->modelType = $modelClass;
                         $notif->modelId = $model->id;
-                        if($notif->save()){
+                        if ($notif->save()) {
                             $event->associationId = $notif->id;
-                            if($this->createEvent){
+                            if ($this->createEvent) {
                                 $event->save();
                             }
                         }

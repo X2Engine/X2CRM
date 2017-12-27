@@ -148,6 +148,7 @@ table {
       }
       td:first-child {
         border-left: none;
+        border-top: none;
       }
       &:first-child td {
         &:first-child {
@@ -213,8 +214,7 @@ table {
       /* @theme background: content */
       /* @theme color: text */
       /* @theme border-color: border */
-
-      border-top: 1px solid #dfdfdf;
+      
       border-left: 1px solid #dfdfdf;
       vertical-align: top;
       font-family: sans-serif;
@@ -225,6 +225,8 @@ table {
         background: white;
         text-align: right;
       }
+      
+      border-left: 1px solid #e0e0e0;
     }
     a {
       text-decoration: none;

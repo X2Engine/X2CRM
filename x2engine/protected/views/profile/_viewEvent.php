@@ -103,7 +103,7 @@ $likedPost = Yii::app()->db->createCommand()
 if ($data->sticky) {
     if (!isset($_SESSION['stickyFlag']) || !$_SESSION['stickyFlag']) {
         $_SESSION['stickyFlag'] = true;
-        echo "<div class='view top-level date-break sticky-section-headert'>- ".Yii::t('app','Sticky')." -</div>";
+        echo "<div class='view top-level date-break sticky-section-headert'>".Yii::t('app','Sticky')."</div>";
     }
 } else {
     if (!isset($noDateBreak) || !$noDateBreak) {
@@ -111,12 +111,12 @@ if ($data->sticky) {
             echo
             "<div class='view top-level date-break" . ($_SESSION['firstFlag'] ? " first" : "") . "'
                   id='" . "date-break-" . ($data->timestamp) . "'>
-                    - " . (date("M j", time()) == date("M j", $data->timestamp) ?
+                    " . (date("M j", time()) == date("M j", $data->timestamp) ?
                     Yii::t('app', "Today") :
                     Yii::app()->locale->dateFormatter->format(
                             'EEEE', $data->timestamp) . ', ' .
                     Yii::app()->locale->dateFormatter->formatDateTime(
-                            $data->timestamp, 'long', null)) . " -
+                            $data->timestamp, 'long', null)) . "
                 </div>";
             $_SESSION['lastDate'] = date("M j", $data->timestamp);
             $_SESSION['firstFlag'] = false;
@@ -142,31 +142,28 @@ $important = $data->important ? 'important-action' : '';
 
 
 <div class="view top-level activity-feed <?php echo $important ?>" style="<?php echo $style; ?>" id="<?php echo $data->id; ?>-feed-box">
-    <div class="img-box test <?php echo CHtml::encode($typeFile) . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo CHtml::encode($data->parseType($data->type)); ?>" style="width:45px;float:left;margin-right:5px;">
-        <?php
-        if ($data->type == 'record_create') {
-            $fileName = strtolower($data->associationType);
-            if ($fileName == 'opportunity')
-                $fileName = 'opportunities';
-            if ($fileName == 'product')
-                $fileName = 'products';
-            if ($fileName == 'quote')
-                $fileName = 'quotes';
-            if (file_exists('themes/' . Yii::app()->theme->name . '/images/' . $fileName . '.png')) {
-                // echo "<div class='img-box plus-sign'></div>";
+        <div class="img-box test <?php 
+        if (!$data->isTypeFeed()) echo CHtml::encode($typeFile) . " " . (($data->type == 'record_create') ? $data->associationType . '-create' : ""); ?>" title="<?php echo CHtml::encode($data->parseType($data->type)); ?>" style="width:45px;float:left;margin-right:5px;">
+            <?php
+            if ($data->isTypeFeed()) {
+                echo Profile::renderFullSizeAvatar($profId, 35);
+            } if ($data->type == 'record_create') {
+                $fileName = strtolower($data->associationType);
+                if ($fileName == 'opportunity')
+                    $fileName = 'opportunities';
+                if ($fileName == 'product')
+                    $fileName = 'products';
+                if ($fileName == 'quote')
+                    $fileName = 'quotes';
+                if (file_exists('themes/' . Yii::app()->theme->name . '/images/' . $fileName . '.png')) {
+                    // echo "<div class='img-box plus-sign'></div>";
+                }
+            } else if ($data->type == 'calendar_event') {
+                echo X2DateUtil::actionDate($data->timestamp, 1);
             }
-        }
-        if ($data->type == 'calendar_event') {
-            echo X2DateUtil::actionDate($data->timestamp, 1);
-        }
-        ?>
-        <?php
-        /*if ($data->isTypeFeed ()) {
-            echo Profile::renderFullSizeAvatar($profId, 35);
-        }*/
-        ?>
-        <div class='stacked-icon'></div>
-    </div>
+            ?>
+            <!--<div class='stacked-icon'></div>-->
+        </div>
     <div class="event-text-box">
         <div class="deleteButton">
             <?php
@@ -337,9 +334,9 @@ $important = $data->important ? 'important-action' : '';
          style="display:none;clear:both;">
         <div id="<?php echo $data->id ?>-comments" ></div>
 <?php
-echo "<div style='margin-left:10px;margin-top:5px;'>" .
+echo "<div style='margin-left:70px;margin-top:5px;'>" .
  CHtml::link(
-        '<span class="fa fa-plus"></span>&nbsp;' .
+        '<span class="fa fa-plus"></span>' .
         Yii::t('app', "Add Comment"), '#', array(
     'onclick' =>
     '$(this).toggle();
@@ -355,7 +352,7 @@ echo CHtml::beginForm(
 ));
 echo CHtml::textArea($data->id . '-comment', '', array('class' => 'comment-textbox x2-textarea'));
 echo CHtml::submitButton(
-        Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit'));
+        Yii::t('app', 'Submit'), array('class' => 'x2-button comment-submit', 'style' => 'margin-left: 60px;'));
 echo CHtml::endForm();
 
 echo "</div>";

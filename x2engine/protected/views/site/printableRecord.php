@@ -38,64 +38,80 @@
 
 <meta charset="UTF-8">
 <link rel='stylesheet' type='text/css' 
- href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/x2forms.css'; ?>'/>
+      href='<?php echo Yii::app()->getTheme()->getBaseUrl() . '/css/x2forms.css'; ?>'/>
 <link rel='stylesheet' type='text/css' 
- href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/printableRecord.css'; ?>'/>
+      href='<?php echo Yii::app()->getTheme()->getBaseUrl() . '/css/printableRecord.css'; ?>'/>
 <!--<link rel='stylesheet' type='text/css' 
- href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css'; ?>'/>-->
+ href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css';    ?>'/>-->
 <link rel='stylesheet' type='text/css' 
- href='<?php echo Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css'; ?>'/>
-<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
- '/jquery.js'; ?>'></script>
-<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
- '/jquery.metadata.js'; ?>'></script>
-<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
- '/jquery.rating.js'; ?>'></script>
+      href='<?php echo Yii::app()->theme->getBaseUrl() . '/css/rating/jquery.rating.css'; ?>'/>
+<script src='<?php
+echo Yii::app()->getClientScript()->getCoreScriptUrl() .
+ '/jquery.js';
+?>'></script>
+<script src='<?php
+echo Yii::app()->getClientScript()->getCoreScriptUrl() .
+ '/jquery.metadata.js';
+?>'></script>
+<script src='<?php
+echo Yii::app()->getClientScript()->getCoreScriptUrl() .
+ '/jquery.rating.js';
+?>'></script>
 
 <div class='config-panel-content'>
 </div>
 
-<h1 id='page-title'><?php echo addslashes ($pageTitle); ?></h1>
-<h3 id='model-title'><?php echo addslashes ($modelTitle); ?></h3>
+<h1 id='page-title'><?php echo addslashes($pageTitle); ?></h1>
+<h3 id='model-title'><?php echo addslashes($modelTitle); ?></h3>
 
-<?php //echo X2Html::divider(); ?>
-
-<?php 
-$this->widget ('DetailView', array(
+<?php
+$this->widget('DetailView', array(
     'model' => $model,
     'modelName' => $modelClass
 ));
 
-//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => $modelClass));
+$actions = Actions::model()->findAll('associationId=' . $model->id);
+$notes = array();
+
+echo '<h3 style="margin-top: 100px;">Notes</h3>';
+echo '<div style="width: 100%; min-height: 200px; list-style: none;">';
+foreach ($actions as $action) {
+    $note = ActionText::model()->find('actionId=' . $action->id)->text;
+
+    if ($note && trim($note) !== '') {
+        $notes[] = $note;
+        echo '<div style="padding: 20px 0px;">' . $note . '</div>';
+    }
+}
+echo '</div>';
 ?>
 
 <script>
-	$('title').html("<?php echo $pageTitle ?>");
+    $('title').html("<?php echo $pageTitle ?>");
 
-	// replace stars with textual representation
-	$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
-		var stars = $(this).find ('[checked="checked"]').val ();
+    // replace stars with textual representation
+    $('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each(function () {
+        var stars = $(this).find('[checked="checked"]').val();
         stars = stars ? stars : 0;
-		$(this).children ().remove ();
-		$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
-	});
+        $(this).children().remove();
+        $(this).html(stars + '/5 <?php echo addslashes(Yii::t('app', 'Stars')); ?>');
+    });
 
-	var sections = 1;
-	$('.sectionTitle').each(function(){
-		var title = $(this).html();
-		if (!title) {
-			title = 'Section ' + sections++;
-		}
-		var row = $('<div class="row"></div>').appendTo($('.config-panel-content'));
-		$('<span class="label"></span>').appendTo(row).html(title)
-		var check = $('<input type="checkbox" checked />').appendTo(row);
+    var sections = 1;
+    $('.sectionTitle').each(function () {
+        var title = $(this).html();
+        if (!title) {
+            title = 'Section ' + sections++;
+        }
+        var row = $('<div class="row"></div>').appendTo($('.config-panel-content'));
+        $('<span class="label"></span>').appendTo(row).html(title)
+        var check = $('<input type="checkbox" checked />').appendTo(row);
 
-		var that = this;
-		check.change(function(){
-			$(that).closest('.formSection').toggle();
-		});
-	});
-
+        var that = this;
+        check.change(function () {
+            $(that).closest('.formSection').toggle();
+        });
+    });
 </script>
 
 

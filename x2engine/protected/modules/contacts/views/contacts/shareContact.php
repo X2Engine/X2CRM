@@ -40,46 +40,42 @@ $menuOptions = array(
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
-Yii::app()->clientScript->registerPackage ('emailEditor');
-Yii::app()->clientScript->registerScript('editorSetup','createCKEditor("input");',CClientScript::POS_READY);
+Yii::app()->clientScript->registerPackage('emailEditor');
+Yii::app()->clientScript->registerScript('editorSetup', 'createCKEditor("input");', CClientScript::POS_READY);
+
+
+
 ?>
-<div class="page-title icon contacts"><h2><span class="no-bold"><?php echo Yii::t('contacts','Share {module}', array('{module}'=>Modules::displayName(false)));?>:</span> <?php echo CHtml::encode($model->firstName." ".$model->lastName);?></h2></div>
-<?php
-if(!empty($status)) {
-	$index = array_search('200',$status);
-	if($index !== false) {
-		unset($status[$index]);
-		$email = '';
-		$subject = '';
-	}
-	echo '<div class="form">';
-	foreach($status as &$status_msg) echo $status_msg." \n";
-	echo '</div>';
-}
-// echo var_dump($errors);
-?>
-<div class="form">
-<form method="POST" name="share-contact-form">
-<?php
-echo X2Html::getFlashes ();
-?>
-	<b><span<?php if(in_array('email',$errors)) echo ' class="error"'; ?>><?php echo Yii::t('contacts','E-Mail');?></span></b><br /><input type="text" name="email" size="50"<?php if(in_array('email',$errors)) echo ' class="error"'; ?> value="<?php if(!empty($email)) echo $email; ?>"><br />
-	<b><span<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo Yii::t('app','Message Body');?></span></b><br /><textarea name="body" id="input" style="height:200px;width:558px;"<?php if(in_array('body',$errors)) echo ' class="error"'; ?>><?php echo $body; ?></textarea><br />
-	<input type="submit" class="x2-button" value="<?php echo Yii::t('app','Share');?>" />
-	<?php echo X2Html::csrfToken(); ?>
-</form>
+<div class="page-title icon contacts">
+    <h2><span class="no-bold"><?php echo Yii::t('contacts', 'Share {module}', array('{module}' => Modules::displayName(false))); ?>:</span> <?php echo CHtml::encode($model->firstName . " " . $model->lastName); ?></h2>
 </div>
 <?php
-$form = $this->beginWidget('CActiveForm', array(
-	'id'=>'contacts-form',
-	'enableAjaxValidation'=>false,
-	'action'=>array('saveChanges','id'=>$model->id),
-));
+if (!empty($status)) {
+    $index = array_search('200', $status);
+    if ($index !== false) {
+        unset($status[$index]);
+        $email = '';
+        $subject = '';
+    }
+    echo '<div class="form">';
+    foreach ($status as &$status_msg) {
+        echo $status_msg . " \n";
+    }
+    echo '</div>';
+}
 ?>
-<h2><?php echo Yii::t('contacts','{module}:', array('{module}'=>Modules::displayName(false))); ?> <b><?php echo CHtml::encode($model->firstName.' '.$model->lastName); ?></b></h2>
-<?php
-$this->widget('DetailView', array(
-    'model'   => $model,
-));
-// $this->renderPartial('application.components.views.@DETAILVIEW',array('model'=>$model,'modelName'=>'contacts'));
-$this->endWidget(); ?>
+
+<div class="form" style="padding: 20px;">
+    <h4 style="margin-top: 0px;"><?php echo Yii::t('marketing', 'Share Url'); ?></h4>
+    <?php  ?>
+    <form method="POST" name="share-contact-form">
+        <?php
+        echo X2Html::getFlashes();
+        ?>
+        <h4<?php if (in_array('email', $errors)) echo ' class="error"'; ?>><?php echo Yii::t('contacts', 'E-Mail'); ?></h4>
+        <input type="text" name="email" placeholder="Email Subject" size="50"<?php if (in_array('email', $errors)) echo ' class="error"'; ?> value="<?php if (!empty($email)) echo $email; ?>">
+        <textarea name="body" id="input" style="height:200px;width:558px;"<?php if (in_array('body', $errors)) echo ' class="error"'; ?>><?php echo $body; ?></textarea>
+        <input type="submit" class="x2-button" value="<?php echo Yii::t('app', 'Share'); ?>" />
+        <?php echo X2Html::csrfToken(); ?>
+    </form>
+</div>

@@ -273,7 +273,9 @@ class EmailDeliveryBehavior extends CBehavior {
 
         try{
             $this->addEmailAddresses($phpMail, $addresses);
-
+            $phpMail->SetFrom($cred->auth->email, $cred->auth->senderName);
+            $this->from = array(
+                'address' => $cred->auth->email, 'name' => $cred->auth->senderName);
             $phpMail->Subject = $subject;
             // $phpMail->AltBody = $message;
             $phpMail->MsgHTML($message);
@@ -391,12 +393,12 @@ class EmailDeliveryBehavior extends CBehavior {
      */
     public function getFrom(){
         if(!isset($this->_from)) {
-			if($this->credentials) {
-				$this->_from = array(
-					'name' => $this->credentials->auth->senderName,
-					'address' => $this->credentials->auth->email
-				);
-			} else {
+            if($this->credentials) {
+                $this->_from = array(
+                        'name' => $this->credentials->auth->senderName,
+                        'address' => $this->credentials->auth->email
+                );
+            } else {
                 if(empty($this->userProfile) ||
                         $this->userProfile->username === Profile::GUEST_PROFILE_USERNAME) {
                     // The application:
@@ -411,8 +413,8 @@ class EmailDeliveryBehavior extends CBehavior {
                         'address' => $this->userProfile->emailAddress
                     );
                 }
-            }
-		}
+            }  
+        }
         return $this->_from;
     }
 
@@ -471,9 +473,13 @@ class EmailDeliveryBehavior extends CBehavior {
                     case 'mail':
                     default:
                         $phpMail->IsMail();
-                }
-                // Use sender specified in attributes/system (legacy method):
+                } 
                 $from = $this->from;
+                // Use sender specified in attributes/system (legacy method):
+                if (empty($cred->auth->email) || empty($cred->auth->senderName))
+                    $from = array('address' => Yii::app()->settings->emailFromAddr, 'name' => Yii::app()->settings->emailFromName);
+                else
+                    $from = array('address' => $cred->auth->email, 'name' => $cred->auth->senderName);
                 if($from == null){ // if no from address (or not formatted properly)
                     if(empty($this->userProfile->emailAddress))
                         throw new Exception('Your profile doesn\'t have a valid email address.');

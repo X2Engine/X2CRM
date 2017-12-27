@@ -102,7 +102,7 @@ x2.activityFeed = new x2.ActivityFeed ({
 <div id='activity-feed-container' class='x2-layout-island'>
 <div id='page-title-container'>
     <div class="page-title icon rounded-top activity-feed x2Activity">
-        <h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
+        <h2 style="padding-left: 5px;"><?php echo Yii::t('app','Activity Feed'); ?></h2>
         <span title='<?php echo Yii::t('app', 'Feed Settings'); ?>'>
         <?php
         echo X2Html::settingsButton (Yii::t('app', 'Feed Settings'), 

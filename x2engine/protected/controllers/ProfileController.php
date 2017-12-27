@@ -55,7 +55,7 @@ class ProfileController extends x2base {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array(
-                    'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto',
+                    'testPage', 'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto',
                     'getEvents', 'getEventsBetween', 'broadcastEvent', 'loadComments',
                     'loadLikeHistory', 'likePost', 'flagPost', 'stickyPost', 'minimizePosts',
                     'publishPost', 'createChartSetting', 'ajaxExportTheme',
@@ -89,6 +89,11 @@ class ProfileController extends x2base {
                     'application.modules.mobile.components.behaviors.'.
                         'MobileProfileControllerBehavior'
             ),
+            'LinkedInBehavior' => array(
+                'class' => 
+                    'application.components.behaviors.'.
+                        'LinkedInBehavior'
+            ),
             'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
                 )
         );
@@ -99,6 +104,10 @@ class ProfileController extends x2base {
             'accessControl',
             'setPortlets',
         ));
+    }
+
+    public function actionTestPage() {
+        $this->render('testPage');
     }
 
     public function actionHideTag($tag) {
@@ -765,7 +774,9 @@ class ProfileController extends x2base {
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
-        if ($id == Yii::app()->user->getId() || Yii::app()->params->isAdmin) {
+        $currentProfile = CActiveRecord::model('Profile')->findByAttributes(array('id'=>$id));
+        $currentUser = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
+        if ($currentProfile->username == $currentUser->username || Yii::app()->params->isAdmin) {
             $model = $this->loadModel($id);
             $users = User::getNames();
 
@@ -774,6 +785,9 @@ class ProfileController extends x2base {
                 foreach ($_POST['Profile'] as $name => $value) {
                     if ($value == $model->getAttributeLabel($name)) {
                         $_POST['Profile'][$name] = '';
+                    }
+                    if ($name == 'photo') {
+                        printR($value,True);
                     }
                     $model->$name = $value;
                 }
@@ -1370,9 +1384,17 @@ class ProfileController extends x2base {
 
     public function getActivityFeedViewParams($id, $publicProfile) {
         Events::deleteOldEvents();
+        
+        if ($id !== Yii::app()->params->profile->id) {
+            $userModel =  CActiveRecord::model('User')->findByAttributes(array('id'=>$id));
+            $profileModel = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$userModel->username));
+            $id = $profileModel->id;
+        }
 
-        $isMyProfile = !$publicProfile && $id === Yii::app()->params->profile->id;
         $profile = $this->loadModel($id);
+
+        $userModel = User::model()->findByPk(Yii::app()->user->id);
+        $isMyProfile = !$publicProfile && $profile->username === $userModel->username;
 
         if (!Yii::app()->request->isAjaxRequest || Yii::app()->params->isMobileApp) {
             $_SESSION['lastDate'] = 0;
@@ -1442,8 +1464,6 @@ class ProfileController extends x2base {
             'userModels' => $userModels
         );
     }
-
-    
 
     public function actionManageEmailReports() {
         $dataProvider = new CActiveDataProvider('EmailReport', array(
@@ -1606,7 +1626,7 @@ class ProfileController extends x2base {
      * Displays a feed of new records that have been created since the last
      * login of the current web user.
      */
-    public function actionView($id, $publicProfile = false) {
+    public function actionView($id, $clicked = null,$publicProfile = false) {
         if (isset($_GET['ajax'])) { // ajax request from grid view widget
             if (!isset ($_POST['widgetClass']) && !isset ($_POST['widgetType'])) {
                 $_POST['widgetClass'] = $_GET['ajax'];

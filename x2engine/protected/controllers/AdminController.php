@@ -132,10 +132,11 @@ class AdminController extends X2Controller {
                 'class' => 'application.components.actions.Api2SettingsAction',
             ),
             
-            
             'viewLog' => array(
                 'class' => 'LogViewerAction',
             ),
+
+            
             
         ));
     }
@@ -2640,28 +2641,27 @@ class AdminController extends X2Controller {
         ));
     }
 
-    /**
-     * Render a page with options for activity feed settings.
-     *
-     * The administrator is allowed to configure what sort of information should
-     * be displayed in the activity feed and for how long. This page sets options
-     * for automated deletion of any chosen types after a set time period to help
-     * keep the database cleaner.
-     */    
     public function actionManageUserCount() {
-        $admin = &Yii::app()->settings;
-        if (isset($_POST['Admin'])) {
-            $admin->attributes = $_POST['Admin'];
+        /*$admin = &Yii::app()->settings;
+        if (isset($_POST['Admin']) && isset($_POST['Admin']['maxUserCount'])) 
+        {
+            $userCountLimit = json_decode($_POST['Admin']['maxUserCount']);
+            if ($userCountLimit != null) {
+                if ($userCountLimit > 200) {
+                    $this->render('userLimit',array());
+                } else {
+                    $admin->attributes = $_POST['Admin'];
 
-            if ($admin->save()) {
-                $this->redirect('manageUserCount');
+                    if ($admin->save()) {
+                        $this->redirect('manageUserCount');
+                    }        
+                }
             }
         }
         $this->render('manageUserCount', array(
             'model' => $admin,
-        ));
+        ));*/    
     }
-
     /**
      * Control general settings for the software.
      *
@@ -6792,6 +6792,93 @@ class AdminController extends X2Controller {
         echo 1;
     }
 
-    
-    
+    /**
+     * Display the log analyzer
+     */
+    public function actionLogAnalyzer() {
+        $this->render('logAnalyzer', array('fileNames' => $this->getLogNames()));
+    }
+
+    public function actionListProcesses() {
+        $this->render('listProcesses', array('processList' => $this->getProcessList()));
+    }
+
+    public function getProcessList() {
+        $rawData = array();
+        $cmd = "ps ux";
+
+        exec($cmd, $rawData);
+
+        array_pop($rawData); // Remove 'ps ux' from processList
+        array_pop($rawData); // Remove 'sh -c ps ux' from processList
+        array_shift($rawData);// Remove header
+
+        $processList = $this->formatPsOutput($rawData);
+
+        $dataProvider = new CArrayDataProvider($processList, array(
+            'keyField' => 'pid',
+        ));
+
+        return $dataProvider;
+    }
+
+    private function formatPsOutput($rawData) {
+        $processList = array();
+        foreach ($rawData as $rawLine) {
+            $chunks = preg_split('/\s+/', $rawLine);
+            $process['user'] = $chunks[0];
+            $process['pid'] = $chunks[1];
+            $process['cpu'] = $chunks[2];
+            $process['mem'] = $chunks[3];
+            $process['start'] = $chunks[8];
+            $process['time'] = $chunks[9];
+            $process['command'] = implode(" ", array_slice($chunks, 10));
+            $processList[] = $process; 
+        }
+        return $processList;
+    } 
+
+    public function getLogNames() {
+        $fileNames = array();
+        foreach (glob(Yii::app()->basePath . "/runtime/*.log") as $filePath) {
+            $fileNames[] = basename($filePath);
+        }
+        return $fileNames;
+    }
+
+    /* Misc functions used by the Admin Dashboard */
+    public function actionGetDashboardMetrics() {
+        $metrics = array(
+            'cpu' => $this->getCpuUsage(),
+            'mem' => $this->getUsedMem(),
+            'disk' => $this->getUsedDiskSpace(),
+        );
+      
+        echo CJSON::encode($metrics);
+    }
+
+    public function getNumberOfCores() {
+        return  (int) shell_exec("cat /proc/cpuinfo | grep processor | wc -l");
+    }
+
+    public function getCpuUsage() {
+        $loadAverage = sys_getloadavg();
+        return $loadAverage[0]; 
+    }
+
+    public function getTotalMem() {
+        return (int) shell_exec("free -m | grep -i 'mem' | awk '{print $2;}'");
+    }
+
+    public function getUsedMem() {
+        return (int) shell_exec("free -m | grep -i 'mem' | awk '{print $3;}'");
+    }
+
+    public function getUsedDiskSpace() {
+        return round((disk_total_space(Yii::app()->basePath) - disk_free_space(Yii::app()->basePath)) / pow(1024, 3));
+    }
+
+    public function getTotalDiskSpace() {
+        return round(disk_total_space(Yii::app()->basePath) / pow(1024, 3));
+    }
 }

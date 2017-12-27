@@ -118,18 +118,16 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $curlOutput = curl_exec ($ch);
         $contact->refresh ();
-	//fixed after 6.9.1
-        /* $this->assertEquals (1, $contact->doNotEmail);
+        $this->assertEquals (1, $contact->doNotEmail);
         $this->assertTrue (
-            (bool) preg_match ('/test/', $emailMessage));*/
+            (bool) preg_match ('/test/', $emailMessage));
 
         // now trigger the flow again and ensure that the email doesn't get sent since the
         // contact followed the "Do Not Email" link
         $retVal = $this->executeFlow ($this->x2flow ('flow1'), $params);
         $trace = $retVal['trace'];
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($trace);
-        //fixed after 6.9.1
-	//$this->assertFalse ($this->checkTrace ($trace));
+        $this->assertFalse ($this->checkTrace ($trace));
     }
 
     /**

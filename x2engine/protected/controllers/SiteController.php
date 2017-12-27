@@ -58,9 +58,9 @@ class SiteController extends x2base {
     public function behaviors() {
         return array_merge(parent::behaviors(), array(
             'MobileControllerBehavior' => array(
-                'class' => 
-                    'application.modules.mobile.components.behaviors.'.
-                        'MobileSiteControllerBehavior'
+                'class' =>
+                'application.modules.mobile.components.behaviors.' .
+                'MobileSiteControllerBehavior'
             ),
             'CommonSiteControllerBehavior' => array(
                 'class' => 'application.components.behaviors.CommonSiteControllerBehavior'),
@@ -68,7 +68,7 @@ class SiteController extends x2base {
     }
 
     protected function beforeAction($action = null) {
-        $this->validateMobileRequest ($action);
+        $this->validateMobileRequest($action);
         if (is_int(Yii::app()->locked) &&
                 !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') &&
                 !(in_array($this->action->id, array('login', 'logout')) ||
@@ -76,7 +76,7 @@ class SiteController extends x2base {
 
             $this->appLockout();
         }
-        return $this->runBehaviorBeforeActionHandlers ($action);
+        return $this->runBehaviorBeforeActionHandlers($action);
     }
 
     public function accessRules() {
@@ -105,7 +105,7 @@ class SiteController extends x2base {
                     'stickyPost', 'getEventsBetween', 'mediaWidgetToggle', 'createChartSetting',
                     'deleteChartSetting', 'GetActionsBetweenAction', 'DeleteURL', 'widgetSetting',
                     'removeTmpUpload', 'duplicateCheck', 'resolveDuplicates', 'getSkypeLink',
-                    'mergeRecords', 'ajaxSave', 'layoutPreview','tourSeen', 'viewEmbedded'),
+                    'mergeRecords', 'ajaxSave', 'layoutPreview', 'tourSeen', 'viewEmbedded'),
                 'users' => array('@'),
             ),
             array('allow',
@@ -119,7 +119,7 @@ class SiteController extends x2base {
     }
 
     public function actions() {
-        return array_merge ($this->getBehaviorActions (), array (
+        return array_merge($this->getBehaviorActions(), array(
             // captcha action renders the CAPTCHA image displayed on the contact page
             'captcha' => array(
                 'class' => 'CCaptchaAction',
@@ -142,26 +142,6 @@ class SiteController extends x2base {
             ),
         ));
     }
-
-//    /**
-//     * Obtain the widget list for the current web user.
-//     *
-//     * @param CFilterChain $filterChain
-//     */
-//    public function filterSetPortletsq($filterChain){
-//        if(!Yii::app()->user->isGuest){
-//            $this->portlets=array();
-//            $this->portlets = Profile::getWidgets();
-//            // $this->portlets=array();
-//            // $arr=Profile::getWidgets(Yii::app()->user->getId());
-//
-//            // foreach($arr as $key=>$value){
-//                // $config=Profile::parseWidget($value,$key);
-//                // $this->portlets[$key]=$config;
-//            // }
-//        }
-//        $filterChain->run();
-//    }
 
     public function actionSendErrorReport() {
         if (isset($_POST['report'])) {
@@ -598,8 +578,8 @@ class SiteController extends x2base {
                 } else {
                     $vis = 1;
                 }
-                $str.=$item . ":";
-                $visStr.=$vis . ":";
+                $str .= $item . ":";
+                $visStr .= $vis . ":";
             }
             $str = substr($str, 0, -1);
             $visStr = substr($visStr, 0, -1);
@@ -634,10 +614,11 @@ class SiteController extends x2base {
             if (isset($gvSettings))
                 $result = Profile::setGridviewSettings($gvSettings, $_POST['viewName']);
         }
-        if ($result)
+        if ($result) {
             echo '200 Success';
-        else
+        } else {
             echo '400 Failure';
+        }
     }
 
     /**
@@ -650,13 +631,15 @@ class SiteController extends x2base {
         if (isset($_GET['formSettings']) && isset($_GET['formName'])) {
             $formSettings = json_decode($_GET['formSettings'], true);
 
-            if (isset($formSettings))
+            if (isset($formSettings)) {
                 $result = Profile::setFormSettings($formSettings, $_GET['formName']);
+            }
         }
-        if ($result)
+        if ($result) {
             echo 'success';
-        else
+        } else {
             throw new CHttpException(400, 'Invalid request. Probabaly something wrong with the JSON string.');
+        }
     }
 
     /**
@@ -689,16 +672,14 @@ class SiteController extends x2base {
             $upload = CUploadedFile::getInstanceByName('upload');
 
             if ($upload) {
-
-                $name = $upload->getName();
-                $name = str_replace(' ', '_', $name);
-
+                $name = str_replace(' ', '_', $upload->getName());
                 $temp = TempFile::createTempFile($name);
 
-                if ($temp && $upload->saveAs($temp->fullpath())) // temp file saved
+                if ($temp && $upload->saveAs($temp->fullpath())) { // temp file saved
                     echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
-                else
+                } else {
                     echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+                }
             } else {
                 echo json_encode(array('status' => 'notsent', 'message' => Yii::t('media', 'File was not sent to server.')));
             }
@@ -726,8 +707,9 @@ class SiteController extends x2base {
         $note->associationType = $_POST['associationType'];
 
         $association = $this->getAssociation($note->associationType, $note->associationId);
-        if ($association != null)
+        if ($association != null) {
             $note->associationName = $association->name;
+        }
 
         $note->actionDescription = $model->fileName . ':' . $model->id;
         if ($note->save()) {
@@ -735,8 +717,9 @@ class SiteController extends x2base {
         } else {
             unlink('uploads/protected/' . $name);
         }
-        if ($model->associationType == 'product')
+        if ($model->associationType == 'product') {
             $this->redirect(array('/products/products/view', 'id' => $model->associationId));
+        }
         $this->redirect(array($model->associationType . '/' . $model->associationType . '/view', 'id' => $model->associationId));
     }
 
@@ -745,14 +728,13 @@ class SiteController extends x2base {
      * @param string $name
      */
     private function handleFeedTypeUpload($model, $name) {
-        $newEventIdTimestamp = 0;
         $event = new Events;
         $event->user = Yii::app()->user->getName();
         if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
             $event->text = $_POST['attachmentText'];
-        } /*else {
-            $event->text = Yii::t('app', 'Attached file: ');
-        }*/
+        } /* else {
+          $event->text = Yii::t('app', 'Attached file: ');
+          } */
         $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
         $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords'], true) : null;
         $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
@@ -769,34 +751,37 @@ class SiteController extends x2base {
         $event->lastUpdated = time();
         $event->associationId = $model->associationId;
         $event->associationType = 'User';
-        if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+        if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true))) {
             $event->recordLinks = $decodedLinks;
-        $newEventIdTimestamp = $event->timestamp;
-        if ($model->private) 
+        }
+        $newEventIdTimestamp = $event->timestamp ? $event->timestamp : 0;
+        if ($model->private) {
             $event->visibility = 0;
+        }
         $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
-        if ($location)
+        if ($location) {
             $event->locationId = $location->id;
+        }
         if ($event->save()) {
             //$this->redirect('profile');
             if (!empty($staticMap)) {
-                if (!empty($geocodedAddress)) { 
-                    $event->text .= Yii::t('app', 'Checking in at ').$geocodedAddress.' | '.
-                        Formatter::formatDateTime(time());
+                if (!empty($geocodedAddress)) {
+                    $event->text .= Yii::t('app', 'Checking in at ') . $geocodedAddress . ' | ' .
+                            Formatter::formatDateTime(time());
                 }
                 $event->saveRaw(Yii::app()->params->profile, $staticMap);
             }
         } else {
             unlink('uploads/protected/' . $name);
         }
-        
+
         $event = X2Model::model('Events')->findByAttributes(array('timestamp' => $newEventIdTimestamp));
         // relate file to event
-        $join = new RelationshipsJoin ('insert', 'x2_events_to_media');
+        $join = new RelationshipsJoin('insert', 'x2_events_to_media');
         $join->eventsId = $event->id;
         $join->mediaId = $model->id;
-        if (!$join->save ()) {
-            throw new CException (implode (';', $join->getAllErrorMessages ()));
+        if (!$join->save()) {
+            throw new CException(implode(';', $join->getAllErrorMessages()));
         }
 
         if (isset($_POST['profileId'])) {
@@ -804,27 +789,26 @@ class SiteController extends x2base {
         } else {
             $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
         }
-
     }
-    
-    private function handleTopicReplyUpload($model, $name){
+
+    private function handleTopicReplyUpload($model, $name) {
         $topicReply = new TopicReplies;
 
-        if (isset ($_POST['TopicReplies'])) {
-            $topicReply->setAttributes ($_POST['TopicReplies']);
-            if($topicReply->save()){
+        if (isset($_POST['TopicReplies'])) {
+            $topicReply->setAttributes($_POST['TopicReplies']);
+            if ($topicReply->save()) {
                 $model->associationId = $topicReply->id;
                 $model->update(array('associationId'));
                 echo $topicReply->id;
-            }else{
-                file_exists ('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
-                echo CJSON::encode (array (
-                    'message' => $topicReply->getAllErrorMessages (),
+            } else {
+                file_exists('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
+                echo CJSON::encode(array(
+                    'message' => $topicReply->getAllErrorMessages(),
                 ));
             }
-        }else{
-            file_exists ('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
-            echo CJSON::encode (array (
+        } else {
+            file_exists('uploads/protected/' . $name) && unlink('uploads/protected/' . $name);
+            echo CJSON::encode(array(
                 'message' => Yii::t('app', 'Reply '),
             ));
         }
@@ -903,12 +887,15 @@ class SiteController extends x2base {
                         $model = new Media;
                         $model->fileName = $createdFile['id'];
                         $model->name = $createdFile['title'];
-                        if (isset($_POST['associationId']))
+                        if (isset($_POST['associationId'])) {
                             $model->associationId = $_POST['associationId'];
-                        if (isset($_POST['associationType']))
+                        }
+                        if (isset($_POST['associationType'])) {
                             $model->associationType = $_POST['associationType'];
-                        if (isset($_POST['private']))
+                        }
+                        if (isset($_POST['private'])) {
                             $model->private = $_POST['private'];
+                        }
                         $model->uploadedBy = Yii::app()->user->getName();
                         $model->mimetype = $createdFile['mimeType'];
                         $model->filesize = $createdFile['fileSize'];
@@ -919,21 +906,26 @@ class SiteController extends x2base {
                             $event->user = Yii::app()->user->getName();
                             if (isset($_POST['attachmentText']) && !empty($_POST['attachmentText'])) {
                                 $event->text = $_POST['attachmentText'];
-                            } /*else {
-                                $event->text = Yii::t('app', 'Attached file: ');
-                            }*/
+                            } /* else {
+                              $event->text = Yii::t('app', 'Attached file: ');
+                              } */
                             $event->type = 'media';
                             $event->timestamp = time();
                             $event->lastUpdated = time();
                             $event->associationId = $model->id;
                             $event->associationType = 'Media';
-                            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true)))
+                            if (isset($_POST['recordLinks']) && ($decodedLinks = CJSON::decode($_POST['recordLinks'], true))) {
                                 $event->recordLinks = $decodedLinks;
+                            }
                             $event->save();
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
                         } elseif ($model->associationType == 'docs') {
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             $this->redirect(array('/docs/docs/index'));
                         } elseif (!empty($model->associationType) && !empty($model->associationId)) {
                             $note = new Actions;
@@ -954,16 +946,21 @@ class SiteController extends x2base {
                             $note->associationType = $_POST['associationType'];
 
                             $association = $this->getAssociation($note->associationType, $note->associationId);
-                            if ($association != null)
+                            if ($association != null) {
                                 $note->associationName = $association->name;
+                            }
 
                             $note->actionDescription = $model->fileName . ':' . $model->id;
                             if ($note->save()) {
-                                if (Auxlib::isAjax()) return print("success");
+                                if (Auxlib::isAjax()) {
+                                    return print("success");
+                                }
                                 $this->redirect(array($model->associationType . '/' . $model->associationId));
                             }
                         } else {
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             $this->redirect('/media/media/view', array('id' => $model->id));
                         }
                     } else {
@@ -977,7 +974,9 @@ class SiteController extends x2base {
                 }
             } else {
                 if (isset($_SERVER['HTTP_REFERER'])) {
-                    if (Auxlib::isAjax()) return print("success");
+                    if (Auxlib::isAjax()) {
+                        return print("success");
+                    }
                     $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
                     throw new CHttpException('400', 'Invalid request');
@@ -987,21 +986,21 @@ class SiteController extends x2base {
             $model = new Media;
             $temp = CUploadedFile::getInstanceByName('upload'); // file uploaded through form
             if ($temp && ($tempName = $temp->getTempName()) && !empty($tempName)) {
-                $name = $temp->getName();
-                $name = str_replace(' ', '_', $name);
+                $name = str_replace(' ', '_', $temp->getName());
                 $model->fileName = $name;
-                $model->resolveNameConflicts ();
+                $model->resolveNameConflicts();
 
                 $username = Yii::app()->user->name;
                 // copy file to user's media uploads directory
-                if (FileUtil::ccopy(
-                    $tempName, "uploads/protected/media/$username/$model->fileName")) {
+                if (FileUtil::ccopy($tempName, "uploads/protected/media/$username/$model->fileName")) {
 
-                    if (isset($_POST['associationId']))
+                    if (isset($_POST['associationId'])) {
                         $model->associationId = $_POST['associationId'];
-                    if (isset($_POST['associationType']))
+                    }
+                    if (isset($_POST['associationType'])) {
                         $model->associationType = $_POST['associationType'];
-                    if (isset($_POST['private']) && !strcmp($_POST['private'],'true')) {
+                    }
+                    if (isset($_POST['private']) && !strcmp($_POST['private'], 'true')) {
                         $model->private = 1;
                     } else {
                         $model->private = 0;
@@ -1012,19 +1011,21 @@ class SiteController extends x2base {
                     $model->mimetype = $temp->type;
 
                     if (!$model->save()) {
-                        $errors = $model->getErrors ();
-                        $error = ArrayUtil::pop (ArrayUtil::pop ($errors));
+                        $errors = $model->getErrors();
+                        $error = ArrayUtil::pop(ArrayUtil::pop($errors));
                         Yii::app()->user->setFlash(
-                            'top-error', Yii::t('app', 'Attachment failed. '.$error));
-                        if (Auxlib::isAjax()) return print("success");
+                                'top-error', Yii::t('app', 'Attachment failed. ' . $error));
+                        if (Auxlib::isAjax()) {
+                            return print("success");
+                        }
                         $this->redirect(
-                            array(
-                                $model->associationType . '/' . $model->associationType . 
-                                    '/view', 
-                                'id' => $model->associationId
-                            ));  
-                        Yii::app()->end ();
-                    } else {   
+                                array(
+                                    $model->associationType . '/' . $model->associationType .
+                                    '/view',
+                                    'id' => $model->associationId
+                        ));
+                        Yii::app()->end();
+                    } else {
                         $relatedModel = X2Model::getModelOfTypeWithId($model->associationType, $model->associationId, true);
                         $model->createRelationship($relatedModel);
                     }
@@ -1035,26 +1036,32 @@ class SiteController extends x2base {
                             $this->handleFeedTypeUpload($model, $name);
                             break;
                         case 'docs':
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             $this->redirect(array('/docs/docs/index'));
                             break;
                         case 'loginSound':
                         case 'notificationSound':
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             $this->redirect(
                                     array('/profile/settings', 'id' => Yii::app()->user->getId()));
                             break;
                         case 'bg':
                         case 'bg-private':
                             $this->redirect(
-                                array(
-                                    '/profile/settings',
-                                    'bgId' => $model->id
-                                )
+                                    array(
+                                        '/profile/settings',
+                                        'bgId' => $model->id
+                                    )
                             );
                             break;
                         case 'none':
-                            if (Auxlib::isAjax()) return print("success");
+                            if (Auxlib::isAjax()) {
+                                return print("success");
+                            }
                             break;
                         case 'topicReply':
                             $this->handleTopicReplyUpload($model, $name);
@@ -1066,17 +1073,22 @@ class SiteController extends x2base {
                 }
             } else {
                 if (isset($_SERVER['HTTP_REFERER'])) {
-                    if (Auxlib::isAjax()) return print("success");
+                    if (Auxlib::isAjax()) {
+                        return print("success");
+                    }
                     $this->redirect($_SERVER['HTTP_REFERER']);
                 } else {
                     throw new CHttpException('400', 'Invalid request');
                 }
             }
-            if (isset ($_GET['redirect'])) $this->redirect ($_SERVER['HTTP_REFERER']);
+            if (isset($_GET['redirect'])) {
+                $this->redirect($_SERVER['HTTP_REFERER']);
+            }
         }
     }
 
-    public function actionUploadFeedPostPicture () {
+    public function actionUploadFeedPostPicture() {
+        
     }
 
     /**
@@ -1146,31 +1158,41 @@ class SiteController extends x2base {
     public function actionIndex() {
         // renders the view file 'protected/views/site/index.php'
         // using the default layout 'protected/views/layouts/main.php'
-
         if (Yii::app()->user->isGuest) {
-            $this->redirectToLogin ();
+            $this->redirectToLogin();
         } else {
             $profile = Yii::app()->params->profile;
             if (Yii::app()->params->isAdmin) {
                 $admin = &Yii::app()->settings;
-                if (Yii::app()->session['versionCheck'] == false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time()))
+                if (Yii::app()->session['versionCheck'] == false && $admin->updateInterval > -1 && ($admin->updateDate + $admin->updateInterval < time())) {
                     Yii::app()->session['alertUpdate'] = true;
-                else
+                } else {
                     Yii::app()->session['alertUpdate'] = false;
-            }else {
+                }
+            } else {
                 Yii::app()->session['alertUpdate'] = false;
             }
-
+            if (isset($_GET['code']) && isset($_GET['state'])) {
+                if ($_GET['redirectedFrom'] === 'dropbox'){
+                    Yii::app()->session['dropbox_code'] = $_GET['code'];
+                    Yii::app()->session['dropbox_status'] = $_GET['state'];
+                } else if ($_GET['redirectedFrom'] === 'linkedIn'){
+                    Yii::app()->session['linkedIn_code'] = $_GET['code'];
+                    Yii::app()->session['linkedIn_status'] = $_GET['state'];
+                }
+            }
             if (empty($profile->startPage)) {
                 $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
             } else {
                 $controller = Yii::app()->file->set('protected/controllers/' . ucfirst($profile->startPage) . 'Controller.php');
                 $module = Yii::app()->file->set('protected/modules/' . $profile->startPage . '/controllers/' . ucfirst($profile->startPage) . 'Controller.php');
                 if ($controller->exists || $module->exists) {
-                    if ($controller->exists)
+                    if ($controller->exists) {
                         $this->redirect(array($profile->startPage . '/index'));
-                    if ($module->exists)
+                    }
+                    if ($module->exists) {
                         $this->redirect(array($profile->startPage . '/' . $profile->startPage . '/index'));
+                    }
                 } else {
                     $page = CActiveRecord::model('Docs')->findByAttributes(array('name' => ucfirst($profile->startPage)));
                     if (isset($page)) {
@@ -1211,12 +1233,14 @@ class SiteController extends x2base {
             $n = substr($section, 0, strpos($section, '</h2>'));
             preg_match_all(
                     '#%S%(?:<td>(.*?)</td>)?(?:<td>(.*?)</td>)?(?:<td>(.*?)</td>)?%E%#', $section, $askapache, PREG_SET_ORDER);
-            foreach ($askapache as $m)
+            foreach ($askapache as $m) {
                 if (is_array($m) && count($m) == 4) {
-                    if (empty($p[$n]))
+                    if (empty($p[$n])) {
                         $p[$n] = array();
+                    }
                     $pi[$n][$m[1]] = (!isset($m[3]) || $m[2] == $m[3]) ? $m[2] : array_slice($m, 2);
                 }
+            }
         }
 
         return ($return === false) ? print_r($pi) : $pi;
@@ -1239,10 +1263,10 @@ class SiteController extends x2base {
         function _var_dump_to_string($var, &$output, $prefix = "") {
             foreach ($var as $key => $value) {
                 if (is_array($value)) {
-                    $output.= $prefix . $key . ": \n";
+                    $output .= $prefix . $key . ": \n";
                     _var_dump_to_string($value, $output, "  " . $prefix);
                 } else {
-                    $output.= $prefix . $key . ": " . $value . "\n";
+                    $output .= $prefix . $key . ": " . $value . "\n";
                 }
             }
         }
@@ -1253,7 +1277,7 @@ class SiteController extends x2base {
         }
 
         if ($error = Yii::app()->errorHandler->error) {
-            if ($this->isAjaxRequest ()) {
+            if ($this->isAjaxRequest()) {
                 echo $error['message'];
             } else {
                 $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
@@ -1279,10 +1303,7 @@ class SiteController extends x2base {
                 } else {
                     $info = '';
                 }
-                if (!empty(Yii::app()->settings->emailFromAddr))
-                    $email = Yii::app()->settings->emailFromAddr;
-                else
-                    $email = "";
+                $email = !empty(Yii::app()->settings->emailFromAddr) ? Yii::app()->settings->emailFromAddr : "";
                 $get = var_dump_to_string($_GET);
                 $post = var_dump_to_string($_POST);
                 $phpversion = phpversion();
@@ -1333,12 +1354,8 @@ class SiteController extends x2base {
     }
 
     public function actionBugReport() {
-
         $info = $this->phpinfo_array(true);
-        if (!empty(Yii::app()->settings->emailFromAddr))
-            $email = Yii::app()->settings->emailFromAddr;
-        else
-            $email = "";
+        $email = !empty(Yii::app()->settings->emailFromAddr) ? Yii::app()->settings->emailFromAddr : "";
         $phpversion = phpversion();
         $x2version = Yii::app()->params->version;
         $userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
@@ -1394,7 +1411,6 @@ class SiteController extends x2base {
      * @return mixed
      */
     protected function getAssociation($type, $id) {
-
         $classes = array(
             'actions' => 'Actions',
             'contacts' => 'Contacts',
@@ -1407,10 +1423,7 @@ class SiteController extends x2base {
             'opportunities' => 'Opportunity',
         );
 
-        if (array_key_exists($type, $classes) && $id != 0)
-            return X2Model::model($classes[$type])->findByPk($id);
-        else
-            return null;
+        return (array_key_exists($type, $classes) && $id != 0) ? X2Model::model($classes[$type])->findByPk($id) : null;
     }
 
     /**
@@ -1418,8 +1431,9 @@ class SiteController extends x2base {
      */
     public function actionViewEmbedded($id) {
         $model = Modules::model()->findByPk($id);
-        if (!$model || !$model->linkOpenInFrame)
+        if (!$model || !$model->linkOpenInFrame) {
             throw new CHttpException('400', 'Invalid request.');
+        }
         $this->render('viewEmbedded', array(
             'title' => $model->title,
             'url' => $model->linkHref,
@@ -1452,8 +1466,9 @@ class SiteController extends x2base {
     public function actionWarning() {
         header("Content-type: image/gif");
         $img = 'R0lGODlhZABQAPcAANgAAP///w';
-        for ($i = 0; $i < 203; $i++)
+        for ($i = 0; $i < 203; $i++) {
             $img .= 'AAAAA';
+        }
         $img .= 'CwAAAAAZABQAAAI/wABCBxIsKDBgwgTKlzIsKHDhxAjSpxIsaLFixgzatzIsaPHjwkDiBS5cKRAkiBTKkQJIMBKlwNZqpxJUOZJkzdNjiS5s+VOnDph9qT5EqbPmzGNHk3acilSny6jClVK1CDQqUyzIpUKFaXMn1SrWuXq9CtVnmS9KrUptqBRtE+dLsUKd+7at23dDu2aFCdUpmrB+t2bt7Dhw4gTK57pV+viqmwfG7ZJ+GfOqYOHEn4cmaVnu1vTipYct+bbs5aPovWcWmPYiJ/jUg5bl29kjLcfxi6LNzZctWU3NpYItmvg04GNZ85NfDjptrWfiwUuHfrp6pDvTryKNaRzvWNdo//e3l33a9Mp2TL3HtqsWdPHMd+N/5KvXN0n0T9lfZC6ftCqnXdcafg1pZV/7vl3YHfR6bfXev01xh9vWSkoG4NkgXeZY+ZpCCCFAF63H12vsfYebMhxJ198mF024F/DJfgfdhlJGON5NDan12w54jabejj22FBnJQYpZFERIgShcS5eJ1VqKq5oZHhJVskQXgYaSFd+TWHpZUwQfXffjCGB2WVNSqLJ5ZdTUqnjlWbeeJaaWsa5JHxKijnmWJ8JSGeW8oHZJpnw4QihUGammSigay7qkJ6beahonWsiuuiXjXJ55aD1eZciUHLZ2GKTbeoZJqfY3bnpkZ4K5uqrrbHwWiistAom6624klchizC+aFlQtiKGKaVaWoqlpnNpiupHUfWXn3bEuuXgs5KV2BeazWYpraDFLpueVdiGa+xuZyLqLbPazilttseme6a2iQ1rKaVeXapmvcjmxd+v/Ga43GoBRprrwAQXbPDBCOMqZ6HXtvrkX/f1VNyfPDm60rbEzmukdl/RqTHG5XGqbrTKloRenxZnS/GkJnucL6MXc9tbyurtiHHLiY6r8sbicltps7SxPKixcRb98s1eamY0uM5arOjHMLfbdMlRL73WtE7zaSKeDecJrHIQR3m1oCMnjDPLZsdcZtpst+22QQEBADs=';
         echo base64_decode($img);
     }
@@ -1463,84 +1478,100 @@ class SiteController extends x2base {
      */
     public function actionForgetMe() {
         $loginForm = new LoginForm;
-        foreach (array('username', 'rememberMe') as $attr) {
+        foreach (array('username', 'rememberMe','sessionToken') as $attr) {
             // Remove the cookie if they unchecked the box
-
             $cookieName = CHtml::resolveName($loginForm, $attr);
-            $cookie = new CHttpCookie(
-                $cookieName, '');
-            $cookie->expire = time () - 3600; // expire cookie
+            $cookie = new CHttpCookie($cookieName, '');
+            $cookie->expire = time() - 3600; // expire cookie
             Yii::app()->request->cookies[$cookieName] = $cookie;
         }
-        $this->redirectToLogin ();
+        $this->redirectToLogin();
     }
 
     /**
      * Displays the login page
      */
     public function actionLogin() {
-        if (Yii::app()->isMobileApp ()) $this->redirect ('/mobile/login');
+        // Checks if app is requested from mobile
+        if (Yii::app()->isMobileApp()) {
+            $this->redirect('/mobile/login');
+        }
 
-        
-        $this->verifyIpAccess ($this->getRealIp());
-        
+        // Verifies ip
+        $this->verifyIpAccess($this->getRealIp());
+
+        // Create new login form
         $model = new LoginForm;
         $model->useCaptcha = false;
         if ($this->loginRequiresCaptcha()) {
             $model->useCaptcha = true;
-            $model->setScenario ('loginWithCaptcha');
+            $model->setScenario('loginWithCaptcha');
         }
 
+        // Fills login form if cookie is still present
         $profile = null;
-        if(isset($_COOKIE['LoginForm'])) {
+        if (isset($_COOKIE['LoginForm'])) {
             $model->setAttributes($_COOKIE['LoginForm']);
-            if (is_array ($_COOKIE['LoginForm']) &&
-                in_array ('username', array_keys ($_COOKIE['LoginForm']))) {
+            if (is_array($_COOKIE['LoginForm']) &&
+                    in_array('username', array_keys($_COOKIE['LoginForm']))) {
 
                 $username = $_COOKIE['LoginForm']['username'];
-                $profile = Profile::model ()->findByAttributes (array (
+                $profile = Profile::model()->findByAttributes(array(
                     'username' => $username
                 ));
-                if ($profile) 
+                if ($profile) {
                     Yii::app()->params->profile = $profile;
+                }
             }
         }
 
+        /*
+        $facebook = FacebookBehavior::createFacebookInstance();
+        if (!$facebook->checkIfLoggedIn()) {
+            printR($facebook->requestAccess(), true);
+        }
+         *
+         */
+
+        // Redirects to home dashboard
         $this->layout = '//layouts/login';
         if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
             $this->redirect(Yii::app()->homeUrl);
             return;
         }
 
-
+        // If login form provided, login using form
         if (isset($_POST['LoginForm'])) {
             $this->login($model);
         }
 
-        header('REQUIRES_AUTH: 1'); // tell windows making AJAX requests to redirect
+        // Tell windows making ajax requests to redirect
+        header('REQUIRES_AUTH: 1');
 
-        $this->render(
-            'login', 
-            array(
-                'model' => $model,
-                'profile' => $profile,
-            )
-        ); // display the login form
+        // Render login form
+        $this->render('login', array(
+            'model' => $model,
+            'profile' => $profile,
+        ));
     }
 
     /**
      * Test is a user needs two factor auth, and send a verification code if so
      */
     public function actionNeedsTwoFactor() {
-        if (!Yii::app()->request->isPostRequest) $this->denied();
+        if (!Yii::app()->request->isPostRequest) {
+            $this->denied();
+        }
         $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING);
         $model = Profile::model()->findByAttributes(array(
             'username' => $username,
         ));
         if ($model && $model->enableTwoFactor) {
-            if (!$model->requestTwoFA(true))
+            if (!$model->requestTwoFA(true)) {
                 throw new CHttpException(500, Yii::t('profile', 'Failed to request two factor authentication code!'));
-            else echo 'yes';
+            } else {
+                echo 'yes';
+            }
         }
     }
 
@@ -1560,9 +1591,9 @@ class SiteController extends x2base {
         require_once 'protected/components/GoogleAuthenticator.php';
         $auth = new GoogleAuthenticator();
 
-        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
-        if ($credentials && Yii::app()->settings->googleIntegration && 
-            $token = $auth->getAccessToken()) {
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials();
+        if ($credentials && Yii::app()->settings->googleIntegration &&
+                $token = $auth->getAccessToken()) {
 
             try {
                 $user = $auth->getUserInfo($token);
@@ -1591,10 +1622,11 @@ class SiteController extends x2base {
 
                         Session::cleanUpSessions();
                         SessionToken::cleanUpSessions();
-                        if (isset($_SESSION['sessionId']))
+                        if (isset($_SESSION['sessionId'])) {
                             $sessionId = $_SESSION['sessionId'];
-                        else
+                        } else {
                             $sessionId = $_SESSION['sessionId'] = session_id();
+                        }
 
                         $session = X2Model::model('Session')->findByPk($sessionId);
 
@@ -1609,7 +1641,7 @@ class SiteController extends x2base {
                         } else {
                             $session->lastUpdated = time();
                         }
-                        
+
                         $session->save();
                         SessionLog::logSession($userRecord->username, $sessionId, 'googleLogin');
                         $userRecord->login = time();
@@ -1619,12 +1651,13 @@ class SiteController extends x2base {
                         Yii::app()->session['loginTime'] = time();
                         $session->status = 1;
 
-                        if (Yii::app()->user->returnUrl == 'site/index')
+                        if (Yii::app()->user->returnUrl == 'site/index') {
                             $this->redirect(array('/site/index'));
-                        else
+                        } else {
                             $this->redirect(Yii::app()->user->returnUrl);
+                        }
                     }
-                }else {
+                } else {
                     $this->render('googleLogin', array(
                         'failure' => 'email',
                         'email' => $email,
@@ -1652,13 +1685,13 @@ class SiteController extends x2base {
     }
 
     public function actionStoreToken() {
-        if(isset($_POST['code'])){
+        if (isset($_POST['code'])) {
             $code = $_POST['code'];
 
             require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
 
             $client = new Google_Client();
-            $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
+            $credentials = Yii::app()->settings->getGoogleIntegrationCredentials();
             $client->setClientId($credentials['clientId']);
             $client->setClientSecret($credentials['clientSecret']);
             $client->setRedirectUri('postmessage');
@@ -1670,8 +1703,7 @@ class SiteController extends x2base {
                     $token->access_token;
             $req = new Google_Http_Request($reqUrl);
 
-            $tokenInfo = json_decode(
-                    $client->getAuth()->authenticatedRequest($req)->getResponseBody());
+            $tokenInfo = json_decode($client->getAuth()->authenticatedRequest($req)->getResponseBody());
             // If there was an error in the token info, abort.
             if (isset($tokenInfo->error) && $tokenInfo->error) {
                 return new Response($tokenInfo->error, 500);
@@ -1693,7 +1725,7 @@ class SiteController extends x2base {
                 $auth->storeCredentials($profileRecord->id, $_SESSION['access_token']);
             }
             $response = 'Successfully connected with token: ' . print_r($token, true);
-        }else{
+        } else {
             $response = 'Invalid request.';
         }
         echo $response;
@@ -1727,11 +1759,11 @@ class SiteController extends x2base {
             }
             $model = X2Model::model($_POST['Type'])->findByPk($_POST['Id']);
 
-            if ($model === null || !Yii::app()->controller->checkPermissions ($model, 'view')) {
-                $this->denied ();
+            if ($model === null || !Yii::app()->controller->checkPermissions($model, 'view')) {
+                $this->denied();
             }
             echo $model->addTags($_POST['Tag']);
-            Yii::app()->end ();
+            Yii::app()->end();
         }
         echo 'false';
     }
@@ -1810,14 +1842,16 @@ class SiteController extends x2base {
 
                 // Contact and Opportunity require Account id for lookup field
                 $contact->company = Fields::nameId($account->name, $account->id);
-                if ($contact->validate() == false)
+                if ($contact->validate() == false) {
                     $allValid = false;
+                }
                 $c = $this->createContact($contact, $contact->attributes, '1');
 
                 $opportunity->accountName = Fields::nameId($account->name, $account->id);
                 $opportunity->contactName = Fields::nameId($contact->name, $contact->id);
-                if ($opportunity->validate() == false)
+                if ($opportunity->validate() == false) {
                     $allValid = false;
+                }
                 $o = $this->createOpportunity($opportunity, $opportunity->attributes, '1');
 
                 if ($allValid && $c && $a && $o) { // all records created?
@@ -1889,8 +1923,9 @@ class SiteController extends x2base {
     public function createContact($model, $oldAttributes, $api) {
         $model->createDate = time();
         $model->lastUpdated = time();
-        if (empty($model->visibility) && $model->visibility != 0)
+        if (empty($model->visibility) && $model->visibility != 0) {
             $model->visibility = 1;
+        }
         if ($api == 0) {
             parent::create($model, $oldAttributes, $api);
         } else {
@@ -1899,8 +1934,9 @@ class SiteController extends x2base {
                 $fieldName = $field->fieldName;
                 if (isset($model->$fieldName)) {
                     $lookup = X2Model::model(ucfirst($field->linkType))->findByAttributes(array('name' => $model->$fieldName));
-                    if (isset($lookup))
+                    if (isset($lookup)) {
                         $model->$fieldName = $lookup->id;
+                    }
                 }
             }
             return parent::create($model, $oldAttributes, $api);
@@ -1916,10 +1952,11 @@ class SiteController extends x2base {
 
         $model->annualRevenue = Formatter::parseCurrency($model->annualRevenue, false);
         $model->createDate = time();
-        if ($api == 0)
+        if ($api == 0) {
             parent::create($model, $oldAttributes, $api);
-        else
+        } else {
             return parent::create($model, $oldAttributes, $api);
+        }
     }
 
     /**
@@ -1930,10 +1967,11 @@ class SiteController extends x2base {
     public function createOpportunity($model, $oldAttributes, $api = 0) {
 
         // process currency into an INT
-//        $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
+        // $model->quoteAmount = Formatter::parseCurrency($model->quoteAmount,false);
 
-        if (isset($model->associatedContacts))
+        if (isset($model->associatedContacts)) {
             $model->associatedContacts = Opportunity::parseContacts($model->associatedContacts);
+        }
         $model->createDate = time();
         $model->lastUpdated = time();
         // $model->expectedCloseDate = Formatter::parseDate($model->expectedCloseDate);
@@ -1973,9 +2011,11 @@ class SiteController extends x2base {
                 X2Model::model('Session')->deleteAllByAttributes(array('IP' => $this->getRealIp()));
             }
         }
-        if (isset($_SESSION['access_token']))
+        if (isset($_SESSION['access_token'])) {
             unset($_SESSION['access_token']);
+        }
 
+        unset(Yii::app()->request->cookies['sessionToken']);
         /* $login = new LoginForm;
           foreach(array('username', 'rememberMe') as $attr){
           // Remove the cookie if they unchecked the box
@@ -1991,8 +2031,9 @@ class SiteController extends x2base {
         $id = $_SESSION['sessionId'];
         $session = Session::model()->findByAttributes(array('id' => $id));
         if (isset($session)) {
-            if ($session->status < 0)
+            if ($session->status < 0) {
                 $session->status = 0;
+            }
             $session->status = !$session->status;
             $session->save();
             SessionLog::logSession(Yii::app()->user->getName(), $id, $session->status ? "visible" : "invisible");
@@ -2004,15 +2045,15 @@ class SiteController extends x2base {
      *  Remove a right widget from the page and put it in the hidden widgets menu
      */
     public function actionHideWidget() {
-        if (isset($_POST['name']) && isset ($_POST['position'])) {
+        if (isset($_POST['name']) && isset($_POST['position'])) {
             $name = $_POST['name'];
             $position = $_POST['position'];
 
             $layout = Yii::app()->params->profile->getLayout();
-            if (isset ($layout[$position][$name])) {
+            if (isset($layout[$position][$name])) {
 
                 $layout['hiddenRight'][$name] = $layout[$position][$name];
-                unset ($layout[$position][$name]);
+                unset($layout[$position][$name]);
                 Yii::app()->params->profile->saveLayout($layout);
             }
 
@@ -2046,8 +2087,8 @@ class SiteController extends x2base {
                         unset($layout['hiddenRight'][$key]);
                         Yii::app()->params->profile->saveLayout($layout);
                         Yii::app()->session['fullscreen'] = false; // we just added a widget to the right sidebar, so turn off fullscreen mode
-                        //    Yii::app()->clientScript->scriptMap['*.js'] = false;
-                        //    $this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
+                        // Yii::app()->clientScript->scriptMap['*.js'] = false;
+                        // $this->renderPartial('application.components.views.centerWidget', array('widget'=>$widget, 'name'=>$name, 'modelType'=>$modelType, 'modelId'=>$modelId), false, true);
 
                         break;
                     }
@@ -2114,7 +2155,7 @@ class SiteController extends x2base {
         }
     }
 
-    public function resetPasswordHelper ($id, $title) {
+    public function resetPasswordHelper($id, $title) {
         $scenario = 'new';
         $message = Yii::t('app', 'Enter the email address associated with your user account to request a new password and username reminder.');
         $request = new PasswordReset;
@@ -2144,24 +2185,18 @@ class SiteController extends x2base {
                             Credentials::$sysUseId['systemNotificationEmail'], 'email');
 
                     // Compose the message & headers
-                    $message = Yii::t(
-                        'users', 
-                        "You have requested to reset the password for user {user} in {appName}.", 
-                        array(
-                            '{user}' => $request->user->alias,
-                            '{appName}' => Yii::app()->settings->appName
-                        ));
-                    $message .= ' ' . 
-                        Yii::t(
-                            'users', 
-                            "To finish resetting your password, please open the following link: ");
-                    $message .= "<br /><br />" . 
-                        $this->createAbsoluteUrl('/site/resetPassword') . '?' . 
-                        http_build_query(array('id' => $request->id));
-                    $message .= "<br /><br />" . 
-                        Yii::t(
-                            'users', 
-                            "If you did not make this request, please disregard this email.");
+                    $message = Yii::t('users', "You have requested to reset the password for user {user} in {appName}.", array(
+                                '{user}' => $request->user->alias,
+                                '{appName}' => Yii::app()->settings->appName
+                    ));
+                    $message .= ' ' .
+                            Yii::t('users', "To finish resetting your password, please open the following link: ");
+                    $message .= "<br /><br />" .
+                            $this->createAbsoluteUrl('/site/resetPassword') . '?' .
+                            http_build_query(array('id' => $request->id));
+                    $message .= "<br /><br />" .
+                            Yii::t('users', "If you did not make this request, please disregard this email.");
+
                     $recipients = array(
                         'to' => array(
                             array('', $request->email)
@@ -2170,29 +2205,26 @@ class SiteController extends x2base {
 
                     // Send the email
                     $status = $mail->deliverEmail(
-                        $recipients, Yii::app()->settings->appName . " password reset", $message);
+                            $recipients, Yii::app()->settings->appName . " password reset", $message);
 
                     // Set the response message accordingly.
                     if ($status['code'] == 200) {
                         $title = Yii::t('users', 'Almost Done!');
                         $message = Yii::t('users', 'Check your email at {email} for '
-                            . 'further instructions to finish resetting your password.', 
-                            array('{email}' => $request->email));
+                                        . 'further instructions to finish resetting your password.', array('{email}' => $request->email));
                     } else {
                         $title = Yii::t('users', 'Could not send email.');
                         $message = Yii::t(
-                            'users', 
-                            'Sending of the password reset verification email failed with '.
-                            'message: {message}', 
-                            array(
-                                '{message}' => $status['message']
-                            ));
+                                        'users', 'Sending of the password reset verification email failed with ' .
+                                        'message: {message}', array(
+                                    '{message}' => $status['message']
+                        ));
                     }
                 }
             } else if ($request->limitReached) {
                 $scenario = 'message';
-                $message = Yii::t('app', 'You have made too many requests to reset passwords. ' . 
-                    'Please wait one hour before trying again.');
+                $message = Yii::t('app', 'You have made too many requests to reset passwords. ' .
+                                'Please wait one hour before trying again.');
             }
         } else if ($id !== null) {
             // User might have arrived here through the link in a reset email.
@@ -2206,9 +2238,9 @@ class SiteController extends x2base {
                     //
                     // Default message: the password entry form (initial request)
                     $message = Yii::t(
-                        'users', 'Enter a new password for user "{user}" ({name}):', array(
-                            '{user}' => $user->alias,
-                            '{name}' => CHtml::encode($user->firstName . ' ' . $user->lastName)
+                                    'users', 'Enter a new password for user "{user}" ({name}):', array(
+                                '{user}' => $user->alias,
+                                '{name}' => CHtml::encode($user->firstName . ' ' . $user->lastName)
                     ));
                     $resetForm = new PasswordResetForm($user);
                     if (isset($_POST['PasswordResetForm'])) {
@@ -2219,8 +2251,8 @@ class SiteController extends x2base {
                             $scenario = 'message';
                             $title = Yii::t('users', 'Password Has Been Reset');
                             $message = Yii::t(
-                                'users', 'You should now have access as "{user}" with the new '.
-                                'password specified.', array('{user}' => $user->alias));
+                                            'users', 'You should now have access as "{user}" with the new ' .
+                                            'password specified.', array('{user}' => $user->alias));
                         }
                     }
                 } else {
@@ -2257,10 +2289,10 @@ class SiteController extends x2base {
         $title = Yii::t('app', 'Reset Password');
         $this->pageTitle = $title;
         $loginRoute = '/site/login';
-        extract ($this->resetPasswordHelper ($id, $title));
+        extract($this->resetPasswordHelper($id, $title));
         $this->render(
-            'resetPassword', compact(
-                'scenario', 'title', 'message', 'request', 'resetForm', 'loginRoute'));
+                'resetPassword', compact(
+                        'scenario', 'title', 'message', 'request', 'resetForm', 'loginRoute'));
     }
 
     /**
@@ -2333,7 +2365,7 @@ class SiteController extends x2base {
                     $model = X2Model::model($modelName)->findByPk($attributes['id']);
                     $model->markAsDuplicate('delete');
                 }
-            }  elseif ($action === 'mergeRecords' && isset($_POST['data'])) {
+            } elseif ($action === 'mergeRecords' && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
                 if ($ref == 'create') {
                     $model = new $modelName;
@@ -2355,7 +2387,7 @@ class SiteController extends x2base {
                 }
                 echo http_build_query(array('idArray' => $idArray));
                 return;
-            }  elseif (empty($action) && isset($_POST['data'])) {
+            } elseif (empty($action) && isset($_POST['data'])) {
                 $attributes = json_decode($_POST['data'], true);
                 $model = X2Model::model($modelName)->findByPk($attributes['id']);
             }
@@ -2384,8 +2416,6 @@ class SiteController extends x2base {
         echo X2Html::renderSkypeLink($usernames);
     }
 
-    
-
     public function actionMergeRecords($modelName) {
         $idArray = filter_input(INPUT_GET, 'idArray', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         $data = filter_input(INPUT_POST, $modelName, FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
@@ -2412,12 +2442,12 @@ class SiteController extends x2base {
                 }
             }
             $missingFields = array_diff(array_keys($model->attributes), array_keys($data));
-            foreach($missingFields as $attr){
-                if(in_array($attr, array_keys($fields)) && !in_array($attr, $model->MergeableBehavior->restrictedFields)){
+            foreach ($missingFields as $attr) {
+                if (in_array($attr, array_keys($fields)) && !in_array($attr, $model->MergeableBehavior->restrictedFields)) {
                     $model->MergeableBehavior->setMergedField($fields[$attr], $models);
                 }
             }
-            
+
             if ($model->hasAttribute('visibility') && is_null($model->visibility)) {
                 $model->visibility = 1;
             }
@@ -2434,7 +2464,7 @@ class SiteController extends x2base {
         } else {
             if (!empty($idArray)) {
                 if (!Yii::app()->user->checkAccess(
-                    X2Model::getModuleName($modelName) . 'Update')) {
+                                X2Model::getModuleName($modelName) . 'Update')) {
                     $this->denied();
                 }
                 $model = X2Model::model($modelName)->findByPk($idArray[0]);
@@ -2448,8 +2478,6 @@ class SiteController extends x2base {
             }
         }
     }
-
-    
 
     /**
      * Save model attributes POSTed by inline edit form.
@@ -2474,21 +2502,21 @@ class SiteController extends x2base {
                 if ($model->save()) {
                     $retArr = array();
                     foreach (array_intersect_key(
-                        $model->attributes, $attributes) as $attr => $key) {
+                            $model->attributes, $attributes) as $attr => $key) {
 
                         $retArr[$modelName . '_' . $attr] = $model->renderAttribute(
-                            $attr, true, false);
+                                $attr, true, false);
                     }
-                    echo CJSON::encode (array (
+                    echo CJSON::encode(array(
                         'updatedFields' => $retArr
                     ));
                 } else {
-                    $errorMessages = $model->getAllErrorMessages ();
+                    $errorMessages = $model->getAllErrorMessages();
                     $errorMessages['header'] = Yii::t(
-                        'app', '{modelName} could not be updated:', array (
-                            '{modelName}' => $model->getDisplayName (false),
-                        ));
-                    echo CJSON::encode (array (
+                                    'app', '{modelName} could not be updated:', array(
+                                '{modelName}' => $model->getDisplayName(false),
+                    ));
+                    echo CJSON::encode(array(
                         'errors' => $errorMessages,
                     ));
                 }
@@ -2500,14 +2528,11 @@ class SiteController extends x2base {
      * Action called to mark a tour (tip) as seen
      * @param  int $id ID of the tip
      */
-    public function actionTourSeen ($id) {
-        Tours::model()->updateByPk ($id, 
-            array('seen' => true)
-        );
+    public function actionTourSeen($id) {
+        Tours::model()->updateByPk($id, array('seen' => true));
 
         echo 'success';
     }
-
 
     /**
      * Gets a preview of a layout form for the form editor
@@ -2524,16 +2549,15 @@ class SiteController extends x2base {
             'model' => $model,
             'layoutData' => $layout,
             'scenario' => 'Inline',
-            'formSettings' => array (),
+            'formSettings' => array(),
         );
         echo '<div id="preview-form">';
-        $this->widget ('FormView', $config);
+        $this->widget('FormView', $config);
         echo '</div>';
 
         echo '<div id="preview-view">';
-        $this->widget ('DetailView', $config);
+        $this->widget('DetailView', $config);
         echo '</div>';
     }
-
 
 }

@@ -34,30 +34,32 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-echo '<div style="overflow: auto;">';
-if($model->launchDate == 0){
+echo '<div>';
+if ($model->launchDate == 0) {
     echo CHtml::beginForm(array('launch', 'id' => $model->id));
     echo CHtml::submitButton(
-            Yii::t('marketing', 'Launch Now'), array('class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
+            Yii::t('marketing', 'Launch Now'), array('class' => 'x2-button highlight left', 'style' => 'margin-left:0;margin: 5px;'));
     echo CHtml::endForm();
-    if($model->type == 'Email')
+    if ($model->type == 'Email') {
         echo CHtml::Button(
                 Yii::t('marketing', 'Send Test Email'), array(
             'id' => 'test-email-button',
             'class' => 'x2-button left',
+            'style' => 'margin: 5px;',
             'onclick' => 'toggleEmailForm(); return false;'
                 )
         );
-} elseif($model->active){
+    }
+} elseif ($model->active) {
     echo CHtml::beginForm(array('toggle', 'id' => $model->id));
     echo CHtml::submitButton(
-            Yii::t('app', 'Stop'), array('id'=>'campaign-toggle-button','class' => 'x2-button left urgent', 'style' => 'margin-left:0;'));
+            Yii::t('app', 'Stop'), array('id' => 'campaign-toggle-button', 'class' => 'x2-button left urgent', 'style' => 'margin-left:0;'));
     echo CHtml::endForm();
     echo CHtml::beginForm(array('complete', 'id' => $model->id));
     echo CHtml::submitButton(
-            Yii::t('marketing', 'Complete'), array('id'=>'campaign-complete-button','class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
+            Yii::t('marketing', 'Complete'), array('id' => 'campaign-complete-button', 'class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
     echo CHtml::endForm();
-}else{ //active == 0
+} else { //active == 0
     echo CHtml::beginForm(array('toggle', 'id' => $model->id));
     echo CHtml::submitButton(
             Yii::t('app', 'Resume'), array('class' => 'x2-button highlight left', 'style' => 'margin-left:0;'));
@@ -66,7 +68,7 @@ if($model->launchDate == 0){
     echo CHtml::submitButton(
             Yii::t('marketing', 'Complete'), array('class' => 'x2-button left', 'style' => 'margin-left:0;'));
     echo CHtml::endForm();
-    if($model->type == 'Email')
+    if ($model->type == 'Email') {
         echo CHtml::Button(
                 Yii::t('marketing', 'Send Test Email'), array(
             'id' => 'test-email-button',
@@ -74,6 +76,7 @@ if($model->launchDate == 0){
             'onclick' => 'toggleEmailForm(); return false;'
                 )
         );
+    }
 }
 ?>
 

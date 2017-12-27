@@ -90,7 +90,9 @@
             margin: 0;
         }
         .detail-view {
-            margin-bottom: 0;
+            margin: 0px !important;
+            border: none !important;
+            
             .fa-caret-down,
             .fa-caret-right {
                 display: none;
@@ -191,10 +193,7 @@
 
 #relationships-grid {
     .x2grid-header-container {
-        border: 1px solid rgb(197, 197, 197);
-        border-bottom: none;
-        border-left: none;
-        border-right: none;
+        border: none;
     }
     .x2grid-body-container {
         border: none;

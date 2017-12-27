@@ -93,7 +93,7 @@ LayoutEditor.prototype.resize = function() {
     for(var i in this.column1) {
         var elem$ = $(this.column1[i]);
         if (!elem$.is ($(this.draggable)) && elem$.css ('box-sizing') === 'border-box')
-            $(this.column1[i]).width (width - 5 + '%');
+            $(this.column1[i]).width (width + '%');
         else
             $(this.column1[i]).width (width + '%');
     }

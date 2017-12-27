@@ -106,7 +106,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
-	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:SmallCalendar:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
+	`widgetOrder`='OnlineUsers:TimeZone:LinkedInFeed:DropboxFeed:GoogleMaps:SmallCalendar:ChatBox:TagCloud:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, moduleType)

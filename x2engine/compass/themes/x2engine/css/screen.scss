@@ -114,7 +114,7 @@ background-size: cover; }*/
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  color: #222;
+  color: #555555;
 }
 
 h1 {
@@ -185,6 +185,7 @@ p .right {
 
 a {
   @include link;
+  color: #555555;
 }
 
 blockquote {

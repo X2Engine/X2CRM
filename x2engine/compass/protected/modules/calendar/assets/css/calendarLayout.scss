@@ -44,7 +44,6 @@ table.page-title {
     
     /* @theme background: highlight1 */
 
-    border-bottom: none !important;
     display: block;
     height: 19px;
     box-sizing: border-box;
@@ -73,7 +72,8 @@ table.page-title {
 
 
 #calendar {
-    margin-bottom: 5px;
+    margin-right: 20px;
+  
     .fc-event {
         color: $eventTextColor;
         border: 1px solid rgb(34, 34, 255) !important;

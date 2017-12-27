@@ -39,12 +39,14 @@ $menuOptions = array(
     'list', 'create',
 );
 $this->insertMenu($menuOptions);
-
 ?>
+
 <div class="page-title icon actions"><h2>
-    <?php
-        echo Yii::t('actions','Create {module}', array(
+        <?php
+        echo Yii::t('actions', 'Create {module}', array(
             '{module}' => Modules::displayName(false),
-    )); ?>
-</h2></div>
-<?php echo $this->renderPartial('_form', array('actionModel'=>$model)); ?>
+        ));
+        ?>
+    </h2></div>
+<?php
+echo $this->renderPartial('_form', array('actionModel' => $model));

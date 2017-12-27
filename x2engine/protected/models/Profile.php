@@ -1213,12 +1213,19 @@ class Profile extends X2ActiveRecord {
         if (isset($model->avatar) && $model->avatar != '' && !file_exists($model->avatar)
                 && strpos($model->avatar, 'uploads') !== false && strpos($model->avatar, 'protected') === false) {
             $path = explode(DIRECTORY_SEPARATOR, $model->avatar);
+            $pathUserFolder = explode(DIRECTORY_SEPARATOR, $model->avatar);
             $oldPathIndex = array_search('uploads',$path);
+            $oldPathIndexUserFolder = array_search('uploads',$pathUserFolder);
+            array_splice($pathUserFolder, $oldPathIndexUserFolder+1, 0, 'protected/media/'.$model->username);
             array_splice($path, $oldPathIndex+1, 0, 'protected');
             $newPath = implode(DIRECTORY_SEPARATOR, $path);
+            $newPathUserFolder = implode(DIRECTORY_SEPARATOR, $pathUserFolder);
             if(file_exists($newPath)){
                 $model->avatar = $newPath;
                 $model->update(array('avatar'));
+            } else if(file_exists($newPathUserFolder)){
+                $model->avatar = $newPathUserFolder;
+                $model->update(array('avatar'));                
             }
         }
         if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {

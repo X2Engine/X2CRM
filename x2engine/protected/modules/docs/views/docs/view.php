@@ -36,18 +36,27 @@
 $this->setPageTitle(CHtml::encode($model->name));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
+/**
+ * JavaScript
+ */
+$vars = "
+    var modelId = $model->id
+";
 
-Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
-$("#docIframe").load(function() {
-	$(this).height($(this).contents().height());
-});
-$(window).resize(function() {
-	$("#docIframe").height($("#docIframe").height(650).contents().height());
-});
-',CClientScript::POS_READY);
+$clientScript = Yii::app()->getClientScript();
+$url = Yii::app()->getBaseUrl() . '/js/docs.js';
 
-$title = Yii::t('docs','Document:');
-$this->renderPartial('_docPageHeader',compact('title','model'));
+$clientScript->registerScript('vars', $vars, CClientScript::POS_END);
+$clientScript->registerScriptFile($url, CClientScript::POS_END);
+
+/**
+ * Header
+ */
+$title = Yii::t('docs', 'Document:');
+$this->renderPartial('_docPageHeader', compact('title', 'model'));
+
+/**
+ * Doc View
+ */
 ?>
-
-<iframe src="<?php echo $this->createUrl('/docs/docs/fullView',array('id'=>$model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+<iframe src="<?php echo $this->createUrl('/docs/docs/fullView', array('id' => $model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>

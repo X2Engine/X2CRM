@@ -93,7 +93,7 @@ class NotificationsController extends CController {
         if($lastEventId==0){
             // get page of newest events
             $retVal = Events::getFilteredEventsDataProvider (
-                null, true, null, isset ($_SESSSION['filters']));
+                null, true, null, isset ($_SESSION['filters']));
             $dataProvider = $retVal['dataProvider'];
             $events = $dataProvider->getData ();
         }else{

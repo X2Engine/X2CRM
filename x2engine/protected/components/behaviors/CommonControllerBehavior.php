@@ -102,10 +102,18 @@ class CommonControllerBehavior extends CBehavior {
                     throw new CHttpException(401, Yii::t('app', 'Invalid request; no record ID specified.'));
                 }
             }
-            
+
             // Look up model; ID specified
             $this->_model = CActiveRecord::model($this->resolvedModelClass)->findByPk((int) $id);
-            
+
+            if ($this->resolvedModelClass === 'Profile') {
+                $this->_model = CActiveRecord::model('Profile')->findByAttributes(array('id' => $id));
+            }
+            if ($this->_model === null) {
+                $userModel = CActiveRecord::model('User')->findByPk((int) $id);
+                $this->_model = CActiveRecord::model('Profile')->findByAttributes(array('username' => $userModel->username));
+            }
+
             // Model record couldn't be retrieved, so throw a 404:
             if ($this->_model === null && $throw)
                 throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
@@ -118,13 +126,13 @@ class CommonControllerBehavior extends CBehavior {
         return $this->_model;
     }
 
-    public function lookUpModel ($id, $modelClass) {
+    public function lookUpModel($id, $modelClass) {
         $throw = $this->throwOnNullModel;
         $model = null;
 
         // Look up model; ID specified
         $model = CActiveRecord::model($modelClass)->findByPk((int) $id);
-        
+
         // Model record couldn't be retrieved, so throw a 404:
         if ($model === null && $throw)
             throw new CHttpException(404, Yii::t('app', 'The requested page does not exist.'));
@@ -137,13 +145,13 @@ class CommonControllerBehavior extends CBehavior {
      */
     public function getRealIp() {
         foreach (array(
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-            'REMOTE_ADDR'
+    'HTTP_CLIENT_IP',
+    'HTTP_X_FORWARDED_FOR',
+    'HTTP_X_FORWARDED',
+    'HTTP_X_CLUSTER_CLIENT_IP',
+    'HTTP_FORWARDED_FOR',
+    'HTTP_FORWARDED',
+    'REMOTE_ADDR'
         ) as $var) {
             if (array_key_exists($var, $_SERVER)) {
                 foreach (explode(',', $_SERVER[$var]) as $ip) {

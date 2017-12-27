@@ -37,39 +37,30 @@
 /**
  * Manages record view widget settings
  */
-
 class RecordViewWidgetLayout extends WidgetLayout {
+
     protected $alias = 'application.components.sortableWidget.recordViewWidgets';
 
-    protected function widgetOrder () {
-        return array (
-              
+    protected function widgetOrder() {
+        return array(
             'CampaignChartWidget',
-             
             'InlineRelationshipsWidget',
-             
+            'TwitterFeedWidget',
             'ActionHistoryChartWidget',
-             
             'PublisherWidget',
             'InlineTagsWidget',
-             
             'ImageGalleryWidget',
-             
             'WorkflowStageDetailsWidget',
-            'TwitterFeedWidget',
             'ActionsWidget',
             'CallsWidget',
             'CommentsWidget',
             'EmailsWidget',
             'EventsWidget',
             'LoggedTimeWidget',
-             
             'ProductsWidget',
-             
             'QuotesWidget',
             'WebActivityWidget',
         );
     }
-}
 
-?>
+}

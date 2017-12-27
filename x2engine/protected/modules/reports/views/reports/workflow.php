@@ -45,6 +45,10 @@ Yii::app()->clientScript->registerCss('workflowReport',"
 #grid-container {
     margin-top: 5px;
 }
+
+.x2-layout-island {
+    margin-right: 0px !important;
+}
 ");
 
 $this->insertMenu(true);

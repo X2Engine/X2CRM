@@ -49,6 +49,7 @@
 
     &:not(.minimized) {
         border-bottom: 1px solid $gray;
+        margin-right: 20px;
     }
 
     &.minimized {

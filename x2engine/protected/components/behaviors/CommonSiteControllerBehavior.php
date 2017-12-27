@@ -49,10 +49,6 @@ class CommonSiteControllerBehavior extends CBehavior {
         ob_start();
         if(SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
-            setcookie("sessionToken", "", time() - 3600);
-           echo "<script type=\"text/javascript\">
-                window.localStorage.removeItem(\"sessionToken\");
-                </script>";
         }
         Session::cleanUpSessions();
         SessionToken::cleanUpSessions();
@@ -173,12 +169,6 @@ class CommonSiteControllerBehavior extends CBehavior {
             $this->recordSuccessfulLogin ($activeUser, $ip);
             $userModel->logLocation('login', 'POST');
 
-            $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
-            $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
-            Yii::app()->request->cookies['sessionToken'] = $cookie;
-            echo "<script type=\"text/javascript\">
-                    window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
-                    </script>";
 
             if($model->rememberMe){
                 foreach(array('username','rememberMe') as $attr) {
@@ -188,7 +178,10 @@ class CommonSiteControllerBehavior extends CBehavior {
                     $cookie->expire = time () + 2592000; //60*60*24*30 = 30 days
                     Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
                 }
-            }else{
+                $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
+                $cookie->expire = time()+60*60*24*180; 
+                Yii::app()->request->cookies['sessionToken'] = $cookie;               
+            } else{
                 foreach(array('username','rememberMe') as $attr) {
                     // Remove the cookie if they unchecked the box
                     AuxLib::clearCookie(CHtml::resolveName($model, $attr));
@@ -226,7 +219,6 @@ class CommonSiteControllerBehavior extends CBehavior {
                 }
             }
 
-            $model->rememberMe = false;
         } else if ($model->loginSessionToken() && $isActiveUser){ 
                 
             //refresh the number of tokens a user owns
@@ -278,7 +270,6 @@ class CommonSiteControllerBehavior extends CBehavior {
                 $model->setScenario('loginWithCaptcha');
                     $session->status = -2;
             }
-            $model->rememberMe = false;
         }
         
        

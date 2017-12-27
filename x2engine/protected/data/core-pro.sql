@@ -65,7 +65,7 @@ CREATE TABLE `x2_cron_events` (
 	`lastExecution`		BIGINT		DEFAULT NULL,
 	`executionCount`	BIGINT		NOT NULL DEFAULT 0,
 	`flowId`	        INT		    DEFAULT NULL,
-    `associationId`     INT         NOT NULL,
+    `associationId`     INT         NULL DEFAULT 0,
     `associationType`   VARCHAR(255),
 	PRIMARY KEY (`id`)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;

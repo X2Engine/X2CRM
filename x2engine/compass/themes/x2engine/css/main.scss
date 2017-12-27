@@ -49,6 +49,7 @@ body {
     margin: 0;
     padding: 0;
     font: normal 10pt Arial, Helvetica, sans-serif;
+    color: #555555;
     /* background: url(background2.gif) top left repeat-x #000; */
     &.login {
         position: absolute;
@@ -170,16 +171,16 @@ ul.filter-hint {
 
 #actions a:link, #recent-items .portlet-content a:link, #top-contacts .portlet-content a:link, #actions a:visited, #recent-items .portlet-content a:visited, #top-contacts .portlet-content a:visited {
     background: transparent;
-    color: black;
+    color: #555555;
 }
 
 #actions .portlet-content a:hover, #recent-items .portlet-content a:hover, #actions span, #recent-items span, #top-contacts span, #actions a:active, #recent-items .portlet-content a:active {
-    background: #E9E9E9;
+    background: $lightBabyBlue;
 }
 
 #recent-items .portlet-content a, #top-contacts .portlet-content a {
     text-decoration: none;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 #recent-items .portlet-content a strong {
@@ -258,7 +259,7 @@ div.blah {
 div.portlet-minimize {
     height: 13px;
     float: right;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: normal;
     a {
         text-decoration: none;
@@ -367,9 +368,7 @@ p.descrip {
     background: none !important;
     border: none !important;
     box-shadow: none !important;
-    #history {
-        @include standard-box-shadow ();
-    }
+    margin-left: 0px;
 
     .text-area-wrapper {
         margin: 0;
@@ -451,8 +450,12 @@ p.descrip {
     a {
         text-decoration: none;
     }
+    a:hover {
+        color: #3d70b4;
+    }
+    
     .view.top-level {
-        border-top: 1px solid #F5F5F5;
+        //border-top: 1px solid #F5F5F5;
         padding: 2px 5px 10px 5px;
         &.date-break {
             text-align: center;
@@ -470,12 +473,12 @@ p.descrip {
             margin-top: 5px;
         }
         .view {
-            /*second level comment*/
-            background: #eee;
+            background: white;
             margin: 0;
             padding: 2px 5px 2px 20px;
             border: solid #F5F5F5;
             border-width: 1px 0 0 0;
+            
             @include border-radius(0);
         }
         &:first-child {
@@ -620,7 +623,7 @@ div.date-box {
     .month {
         background: #444;
         color: #fff;
-        font-size: 8px;
+        font-size: 10px;
         line-height: 10px;
         text-transform: uppercase;
     }
@@ -650,7 +653,7 @@ div.date-box {
         border-bottom: 1px solid #999;
     }
     .day {
-        font-size: 14px;
+        font-size: 12px;
         line-height: 20px;
         /* @theme color: lighter_link */
     }
@@ -962,9 +965,10 @@ Credentials storage manager
 
 .credentials-storage {
     padding: 10px;
+    
     .credentials-view {
         border-radius: 4px;
-        border: 1px solid #999;
+        border: 1px solid #e0e0e0;
         padding: 10px;
         margin-bottom: 10px;
     }
@@ -978,8 +982,9 @@ Credentials storage manager
         -moz-border-radius: 7px;
         -webkit-border-radius: 8px;
         border-radius: 8px;
-        background-color: #EEEEEE;
-        border: 1px solid #999999;
+        background-color: white;
+        border: 1px solid #e0e0e0;
+        
         &.default-state-set {
             border-color: #C6D880;
             background-color: #E6EFC2;
@@ -1022,7 +1027,7 @@ p {
     }
     &.fieldhelp-thin-small {
         color: #666;
-        font-size: 11px;
+        font-size: 10px;
         margin-bottom: 0;
         width: 193px;
     }

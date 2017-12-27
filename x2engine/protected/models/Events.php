@@ -640,7 +640,11 @@ class Events extends X2ActiveRecord {
             $_SESSION['feed-condition'] = $condition;
             $_SESSION['feed-condition-params'] = $params;
         } else {
-            $condition = "(associationType is null or associationType!='Events') AND " .
+            $params[':profileId'] = Yii::app()->user->id;
+            $params[':userName'] = Yii::app()->user->getName();
+            $condition = "(associationType='User' AND associationId=:profileId AND "
+                    . "visibility=1 OR (visibility=0 AND (user=:userName AND associationId=:profileId)))"
+                    . " OR (associationType is null or associationType!='Events') AND " .
                     "(type!='action_reminder' OR user=:username) " .
                     "AND (type!='notif' OR user=:username)" .
                     $visibilityCondition;
@@ -972,11 +976,12 @@ class Events extends X2ActiveRecord {
                 ->from('x2_profile')
                 ->where('username=:user', array(':user' => $event->user))
                 ->queryScalar();
+            $avatarImg = null;
             if (!empty($avatar) && file_exists($avatar)) {
-                $avatar = Profile::renderAvatarImage($userId, 45, 45);
+                $avatarImg = Profile::renderAvatarImage($userId, 45, 45);
             } else {
                 $dimensionLimit = 45;
-                $avatar = X2Html::x2icon('profile-large',
+                $avatarImg = X2Html::x2icon('profile-large',
                                 array(
                             'class' => 'avatar-image default-avatar',
                             'style' => "font-size: ${dimensionLimit}px",
@@ -997,13 +1002,15 @@ class Events extends X2ActiveRecord {
                         break;
                 }
             }
-            $img = $avatar;
             if (file_exists(Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png')) {
                 $imgFile = Yii::app()->getAbsoluteBaseUrl() . '/themes/x2engine/images/eventIcons/' . $typeFile . '.png';
                 $img = CHtml::image($imgFile, '',
                                 array(
                             'style' => 'width:45px;height:45px;float:left;margin-right:5px;',
                 ));
+            }
+            if (!empty($avatar) && file_exists($avatar)) {
+                $img = $avatarImg;
             }
 
             $msg .= "<td>" . $img . "</td>";

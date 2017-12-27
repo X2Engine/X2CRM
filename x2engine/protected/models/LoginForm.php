@@ -66,6 +66,8 @@ class LoginForm extends X2FormModel {
             // rememberMe needs to be a boolean
             array('rememberMe', 'boolean'),
             // password needs to be authenticated
+            array('sessionToken', 'authenticate'),
+            // password needs to be authenticated
             array('password', 'authenticate'),
             // 2FA code needs to be verified if required
             array('twoFactorCode', 'verifySecondFactor'),
@@ -170,6 +172,10 @@ class LoginForm extends X2FormModel {
 	 */
     public function loginSessionToken($google = false) {
         if(isset(Yii::app()->request->cookies['sessionToken'])){
+            /*
+             * TODO: Check referrer if its the correct server and 
+             *       maybe implement a secret key to hash the cookie
+             */
             $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
             if(empty(Yii::app()->request->cookies['sessionToken']->value))
                 return false;

@@ -44,8 +44,6 @@ if (!$isMyProfile && Yii::app()->user->id == $model->id) {
 }
 
 $this->noBackdrop = true;
-Yii::import('application.components.leftWidget.ProfileInfo');
-
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->baseUrl.'/js/profile.js', CClientScript::POS_END);
@@ -81,7 +79,7 @@ if ($isMyProfile) {
 
     <div id='profile-info-container-outer'>
         <?php 
-        if (!$isMyProfile) {
+        if (!$isMyProfile) { 
             $this->renderPartial('_profileInfo', array(
                 'model' => $model, 
             )); 

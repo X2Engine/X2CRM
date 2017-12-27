@@ -69,7 +69,7 @@ $('#maxUserCount').change(function(){
             // additional javascript options for the slider plugin
             'options' => array(
                 'min' => 1,
-                'max' => 100000,
+                'max' => 200,
                 'step' => 1,
                 'change' => "js:function(event,ui) {
 					$('#maxUserCount').val(ui.value);

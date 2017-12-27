@@ -49,14 +49,13 @@ $(function () {
                     '/admin/viewLog',
                     array('name' => 'automation.log'))).",
             'success': function (data) {
-                $('body').append($('<div>', {
+                console.log('huh');
+                var dia = $('<div>', {
                     id: 'cron-log-dialog',
                     html: data
-                }).css({
-                    'max-height':'500px',
-                    'overflow-x':'hidden'
-                }));
-                $('#cron-log-dialog').dialog ({
+                });
+                $('body').append(dia);
+                dia.dialog ({
                     autoOpen: true,
                     maxHeight: '500px',
                     title: ".CJSON::encode(
@@ -70,6 +69,7 @@ $(function () {
                         $('#view-log-button').removeAttr ('disabled');
                     }
                 });
+                dia.attr('style', 'max-height:500px;overflow-x:hidden;overflow-y:scrollable;');
             }
         });
     });
@@ -84,8 +84,8 @@ $(function () {
         <?php echo Yii::t('studio', 'View Cron Log'); ?>
     </a>
 </div>
-<div class="span-24">
-    <div class="form">
+<div class="span-24" style="width:99%;">
+    <div class="form" style="width:100%;">
 
         <h3><?php echo Yii::t('admin','Disclaimer'); ?></h3>
         <p><?php echo Yii::t('admin','Using this form may interfere with third-party cron table managers.')

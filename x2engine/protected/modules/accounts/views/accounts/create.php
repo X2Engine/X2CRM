@@ -36,12 +36,11 @@
 
 $menuOptions = array('all', 'create');
 $this->insertMenu($menuOptions);
-
 ?>
-<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2></div>
+
+<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts', 'Create {module}', array('{module}' => Modules::displayName(false))); ?></h2></div>
 
 <?php
-$this->widget ('FormView', array(
-	'model' => $model
+$this->widget('FormView', array(
+    'model' => $model
 ));
-// echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

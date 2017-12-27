@@ -1862,7 +1862,61 @@ $(function () {
         }
     });
 
-    
+    /**
+     * Hides workflow actions based on chosen trigger
+     */
+    function hideActions() {
+        var option = $("#trigger-selector option:selected");
+        var trigger = option.text();
+
+        // If no trigger selected, hide actions bank
+        if (trigger === 'Select a trigger') {
+            $('#actions-bank').hide();
+        } else {
+            $('#actions-bank').show();
+        }
+
+        $('#all').children().each(function () {
+            // Hides record actions if record model not passed
+            if ($.inArray(trigger, x2.recordModelTriggers) === -1 &&
+                    $.inArray(this.title, x2.recordModelActions) !== -1) {
+                $(this).hide();
+            } else if ($.inArray(this.title, x2.recordModelActions) !== -1) {
+                $(this).show();
+            }
+
+            // Hides process actions if process model not passed
+            if ($.inArray(trigger, x2.processModelTriggers) === -1 &&
+                    $.inArray(this.title, x2.processModelActions) !== -1) {
+                $(this).hide();
+            } else if ($.inArray(this.title, x2.processModelActions) !== -1) {
+                $(this).show();
+            }
+        });
+    }
+
+    /**
+     * Hide actions on window load
+     */
+    $(window).load(function () {
+        hideActions();
+        var shortcodes = Object.values(x2.flow.insertableAttributes[x2.flow.modelClass]);
+        for (var i in shortcodes) {
+            var shortcode = shortcodes[i];
+            //console.log(shortcode);
+            $("#shortcodes").append('<div class="shortcode">' + shortcode + '</div>');
+        }
+    });
+
+    /**
+     * Hide actions on trigger change
+     */
+    $("#trigger-selector").change(function (e) {
+        $('.x2flow-branch .x2flow-action').remove();
+        $('.x2flow-branch .x2flow-node.x2flow-empty').remove();
+        $('.x2flow-branch').append('<div class="x2flow-node x2flow-empty"></div>');
+        hideActions();
+    });
 
     flowEditor.init();
 

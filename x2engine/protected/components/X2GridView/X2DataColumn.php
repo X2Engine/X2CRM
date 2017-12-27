@@ -149,8 +149,17 @@ class X2DataColumn extends CDataColumn {
                     }
                     //$selected = isset($options[$this->grid->filter->{$this->name}]) ? 
                         //$this->grid->filter->{$this->name} : '';
+                    $dropdownList = CHtml::listData( // Used for filtering where keys are numeric
+                        $options,
+                        function($model){ // Generate value attr for option elem
+                            return $model === "- Select -" ? '' : $model;
+                        },
+                        function($model){ // Generate text for option elem
+                            return $model;
+                        }
+                    );
                     return CHtml::activeDropdownList(
-                        $this->grid->filter, $this->name, $options,
+                        $this->grid->filter, $this->name, $dropdownList,
                         array(
                             'class' => 'x2-minimal-select-filtercol'.
                                 ($dropdown->multi ? 

@@ -99,6 +99,7 @@
     .stacked-icon {
         display: inline-block;
         @include fa-icon($icon);
+        visibility: hidden;
     }
 
     .stacked-icon:before {
@@ -176,3 +177,30 @@ $icon-list-x2: (
     ("contacts" "contact")
 );
 
+$icon-list-fa: (
+    ("emailInboxes" "envelope")
+    ("profile" "user")
+    //("actions" "play-circle")
+    //("accounts" "building")
+    //("opportunities" "bullseye")
+    //("marketing" "bullhorn")
+    ("x2flow" "sitemap, %fa-rotate-270")
+    //("x2Leads" "star")
+    //("docs" "file-text")
+    //("groups" "users")
+    //("media" "music")
+    ("users" "users")
+    ("charts" "bar-chart")
+    ("topics" "comments")
+    ("bugReports" "bug")
+    //("reports" "file-o" "bar-chart")
+    ("custom-module" "folder")
+);
+$icon-list-x2: (
+    ("x2Activity" "activity")
+    ("quotes" "quotes")
+    ("services" "service")
+    //("workflow" "funnel")
+    //("products" "package")
+    ("contacts" "contact")
+);

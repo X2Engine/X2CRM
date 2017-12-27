@@ -62,11 +62,3 @@ Yii::app()->clientScript->registerCssFile(
 </div>
 
 <script type="text/javascript" async src="//platform.twitter.com/widgets.js"></script>
-
-<!--<a class="twitter-timeline" 
- href="https://twitter.com/x2engine" 
- data-screen-name="x2engine"
- data-widget-id="530872797577220096">
-Tweets by @cruzio</a>
-
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->

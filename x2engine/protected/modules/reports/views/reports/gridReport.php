@@ -43,7 +43,7 @@ Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl.'/css/gridv
 Yii::app()->clientScript->registerCss('gridReportCSS',"
 #content {
     background: none !important;
-    border: none !important;
+     border: none !important;
 }
 #report-container {
     margin-top: 5px;

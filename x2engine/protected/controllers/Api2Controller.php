@@ -134,6 +134,7 @@ class Api2Controller extends CController {
         $this->response['buildDate'] = Yii::app()->params->buildDate;
         $this->response['clientAddress'] = Yii::app()->request->userHostAddress;
         $this->response['serverName'] = $_SERVER['SERVER_NAME'];
+        $this->response['baseUrl'] = Yii::app()->getRequest()->getBaseUrl();
     }
 
     /**
@@ -839,6 +840,8 @@ class Api2Controller extends CController {
             );
             
             // Populate the "choices" array for dropdowns in the Zap editing UI:
+            //TODO: some $options are in an array format. Translate them to a map to work with Zapier
+            //(i.e., "choices": [1,2] to "choices: {"1":"one","2":"two"}.
             $options = $this->fieldOptions($field);
             if(!empty($options))
                 $fieldOut['choices'] = $options;

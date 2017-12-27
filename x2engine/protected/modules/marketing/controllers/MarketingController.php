@@ -88,6 +88,8 @@ class MarketingController extends x2base {
         ));
     }
 
+    
+
     /**
      * Deletes a web form record with the specified id 
      * @param int $id
@@ -1051,6 +1053,8 @@ class MarketingController extends x2base {
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
+
+        
 
         $this->prepareMenu($menuItems, $selectOptions);
         $this->actionMenu = $this->formatMenu($menuItems, $menuParams);

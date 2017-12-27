@@ -72,8 +72,8 @@ class X2FlowRecordTag extends X2FlowAction {
                     'options' => $tagActions
                 ),
                 array(
-                    'name' => 'tags (optional)',
-                    'label' => Yii::t('studio', 'Tags'),
+                    'name' => 'tags',
+                    'label' => Yii::t('studio', 'Tags (Optional)'),
                     'type' => 'tags',
                     'optional' => true
                 )

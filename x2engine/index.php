@@ -70,3 +70,11 @@ function printR($obj, $die = false){
         die();
     }
 }
+
+function filePutContents($file = '', $data = null, $mode = null, $context = null, $die = false){
+    $message=PHP_EOL.print_r($data, true).PHP_EOL;
+    file_put_contents($file,$message,$mode,$context);
+    if($die){
+        die();
+    }
+}

@@ -115,7 +115,7 @@ class UsersController extends x2base {
                 "SELECT COUNT(*) FROM x2_users;"
         )->queryAll();
         $userCountParsed = $userCount[0]["COUNT(*)"];
-        if ($userCountParsed >= $admin->maxUserCount) {
+        if ($userCountParsed >= 200) {
             $this->render('userLimit',array());
         }
         

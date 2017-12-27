@@ -61,7 +61,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
         "Newsletter Email Clicked", "Newsletter Email Opened", "Splitter",
         "Unsubscribed from Newsletter", "Periodic Trigger", "Conditional Switch",
         "Campaign Web Activity (no contact available)", 
-        "Macro Executed", "User Signed In", "User Signed Out"
+        "User Signed In", "User Signed Out"
     );
     private static $actionModelTriggers = array(
         "Action Completed", "Action Overdue", "Action Marked Incomplete"
@@ -78,7 +78,8 @@ abstract class X2FlowTrigger extends X2FlowItem {
         "Unsubscribed from Campaign", "Campaign Web Activity", "Inbound Email",
         "Outbound Email", "Record Created", "Record Deleted", "Tag Added",
         "Tag Removed", "Record Updated", "Record Viewed", "New Web Lead",
-        "Targeted Content Requested", "Contact Web Activity", "Voip Inbound"
+        "Targeted Content Requested", "Contact Web Activity", "Macro Executed",
+        "Voip Inbound"
     );
 
     /**
