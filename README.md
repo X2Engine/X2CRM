@@ -1,11 +1,18 @@
-# 6.9 #
-08/22/2017
+# 6.9.1 #
+11/20/2017
 * General Changelog / Developer Notes
-  * Miscellaneous UI enhancements
-    * Green login logo
+  * New Enterprise UI
+    * New Paper-White UI default theme
+    * Revamped Landing Page Designer
+    * Top Menu Dropdowns
+  * New X2HubServices integrations
+    * Contact Twitter feed
+    * LinkedIn user information autofill
+    * Dropbox integration
+    * Docusign Integration
   * Miscellaneous bug fixes
-    * Login token bug fix
-    * UI bug fixes
+    * Workflow tag bug fix
+    * Calendar empty tables bug fix
 
 # Introduction #
 Welcome to X2CRM!

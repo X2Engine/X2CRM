@@ -1,11 +1,35 @@
+# 6.9.1 #
+11/20/2017
+* General Changelog / Developer Notes
+  * New Enterprise UI
+    * New Paper-White UI default theme
+    * Revamped Landing Page Designer
+    * Top Menu Dropdowns
+  * New X2HubServices integrations
+    * Contact Twitter feed
+    * LinkedIn user information autofill
+    * Dropbox integration
+    * Docusign Integration
+  * Miscellaneous bug fixes
+    * Workflow tag bug fix
+    * Calendar empty tables bug fix
+
 # 6.9 #
 08/22/2017
 * General Changelog / Developer Notes
   * Miscellaneous UI enhancements
-    * Green login logo
+    * New Green login logo
+  * New Enterprise edition released
+    * The enterprise edition of X2CRM is developed with enterprise users in mind
+      * New colorful icons for actions (these can be seen in the activity feed)
+      * New Native Code Editor
+        * The code editor allows the modification of the application code through the app itself. This allows power users to customize the app like never before! The code editor can be accessed via the X2Studio tools in the admin section of the app
+      * X2Workflows
+        * New stock X2Workflow rules added to the workflow system
+        * Restricted non-compatible actions from being attached to triggers, this is introduced in order to prevent users from making broken workflows.
   * Miscellaneous bug fixes
-    * Login token bug fix
-    * UI bug fixes
+    * Fixed an issue with login where users would get immediately get logged out
+    * Fixed a UI bug where some smaller screens would prevent parts of the app from showing.
 
 # 6.6 #
 5/17/2017
