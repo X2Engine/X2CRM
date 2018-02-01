@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -273,9 +273,7 @@ class EmailDeliveryBehavior extends CBehavior {
 
         try{
             $this->addEmailAddresses($phpMail, $addresses);
-            $phpMail->SetFrom($cred->auth->email, $cred->auth->senderName);
-            $this->from = array(
-                'address' => $cred->auth->email, 'name' => $cred->auth->senderName);
+
             $phpMail->Subject = $subject;
             // $phpMail->AltBody = $message;
             $phpMail->MsgHTML($message);
@@ -393,12 +391,12 @@ class EmailDeliveryBehavior extends CBehavior {
      */
     public function getFrom(){
         if(!isset($this->_from)) {
-            if($this->credentials) {
-                $this->_from = array(
-                        'name' => $this->credentials->auth->senderName,
-                        'address' => $this->credentials->auth->email
-                );
-            } else {
+			if($this->credentials) {
+				$this->_from = array(
+					'name' => $this->credentials->auth->senderName,
+					'address' => $this->credentials->auth->email
+				);
+			} else {
                 if(empty($this->userProfile) ||
                         $this->userProfile->username === Profile::GUEST_PROFILE_USERNAME) {
                     // The application:
@@ -413,8 +411,8 @@ class EmailDeliveryBehavior extends CBehavior {
                         'address' => $this->userProfile->emailAddress
                     );
                 }
-            }  
-        }
+            }
+		}
         return $this->_from;
     }
 
@@ -473,13 +471,9 @@ class EmailDeliveryBehavior extends CBehavior {
                     case 'mail':
                     default:
                         $phpMail->IsMail();
-                } 
-                $from = $this->from;
+                }
                 // Use sender specified in attributes/system (legacy method):
-                if (empty($cred->auth->email) || empty($cred->auth->senderName))
-                    $from = array('address' => Yii::app()->settings->emailFromAddr, 'name' => Yii::app()->settings->emailFromName);
-                else
-                    $from = array('address' => $cred->auth->email, 'name' => $cred->auth->senderName);
+                $from = $this->from;
                 if($from == null){ // if no from address (or not formatted properly)
                     if(empty($this->userProfile->emailAddress))
                         throw new Exception('Your profile doesn\'t have a valid email address.');

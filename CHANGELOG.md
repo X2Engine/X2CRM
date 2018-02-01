@@ -1,3 +1,11 @@
+# 6.9.3 #
+1/3/2018
+* Fixed unrecognized field lastModifies bug
+
+# 6.9.2 #
+12/29/2017
+* Fixed email bug
+
 # 6.9.1 #
 11/20/2017
 * General Changelog / Developer Notes
