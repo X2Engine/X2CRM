@@ -49,6 +49,37 @@ function RecordCreateController (argsDict) {
 
 RecordCreateController.prototype = auxlib.create (x2.Controller.prototype);
 
+RecordCreateController.prototype.importCallLog = function () {
+    var that = this;
+    this.importButton$ = $('#header .lead-import-button');
+    this.importButton$.click (function () {
+        var firstCall=0;
+        var lastCall=20;
+        x2touch.API.getCalls (function(res){
+            var calls = JSON.parse(res);
+            /*for (i=0;i<calls.length;i++){
+                var tel = calls[i].phoneNumber;
+                var type = calls[i].type;
+                var date = calls[i].date;
+                var caller = calls[i].caller;
+             } */
+            x2.main.activePage$.find ('#X2Leads_description').val(
+                x2.main.activePage$.find ('#X2Leads_description').val()
+                + "\n"
+                + calls[calls.length-1]
+            );
+
+        },function(err){
+            alert('Error: ' + err);
+        },
+        "",
+        "",
+        [firstCall,lastCall] //[firstCall,lastCall] take first to last call
+        );
+        //form$.submit ();
+    });
+};
+
 RecordCreateController.prototype.importContact = function () {
     var that = this;
     this.importButton$ = $('#header .contact-import-button');
@@ -186,6 +217,7 @@ RecordCreateController.prototype.init = function () {
         that.exportContact ();
         that.importContact ();
         that.importProduct ();
+        that.importCallLog ();
         that.setUpForm ();
     }, this.constructor.name));
 };
