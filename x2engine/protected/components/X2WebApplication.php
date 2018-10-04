@@ -45,6 +45,24 @@
 class X2WebApplication extends CWebApplication {
 
 	/**
+ 	 * Processes the current request.
+ 	 * It first resolves the request into controller and action,
+ 	 * and then creates the controller to perform the action.
+ 	 */
+ 	public function processRequest()
+ 	{
+ 		if(is_array($this->catchAllRequest) && isset($this->catchAllRequest[0]))
+ 		{
+ 			$route=$this->catchAllRequest[0];
+ 			foreach(array_splice($this->catchAllRequest,1) as $name=>$value)
+ 				$_GET[$name]=$value;
+ 		}
+ 		else
+ 			$route=$this->getUrlManager()->parseUrl($this->getRequest());
+ 		$this->runController(Fields::getPurifier()->purify($route));
+ 	}
+
+	/**
 	 * Checks whether the named component has been created.
 	 * @param string $id application component ID
 	 * @return boolean whether the named application component has been created
