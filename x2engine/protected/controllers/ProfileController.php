@@ -348,11 +348,11 @@ class ProfileController extends x2base {
             $file = $themeName.'.json';
             $filePath = $this->safePath($file);
             file_put_contents($filePath, $encodedTheme);
-            echo CJSON::encode(array(
-                'downloadUrl' => $this->createUrl('/admin/downloadData', array(
-                    'file' => $file
-                ))
-            ));
+            if (Yii::app()->params->isAdmin) {
+                $this->sendFile($file);
+            } else {
+                throw new CHttpException(403, Yii::t('admin', 'Insufficient permissions.'));
+            }
         } else {
             throw new CHttpException(
             404, Yii::t('app', 'Theme does not exist or you do not have permissions to view it.'));
