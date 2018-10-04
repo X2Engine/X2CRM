@@ -83,7 +83,9 @@ class ActionHistoryChartWidget extends ChartWidget {
 		//printR (('startdate, enddate = '.$startTimestamp.', '.$endTimestamp), true);
 
 		$associationType = strtolower ($associationType);
-
+                if (is_bool($showRelationships) !== true || !is_numeric($associationId)) {
+                     throw new CHttpException(403, Yii::t('admin', 'Incorrect parameters.'));
+                 }
 		$associationCondition = self::getAssociationCond (
 			$associationId, $associationType, $showRelationships);
 

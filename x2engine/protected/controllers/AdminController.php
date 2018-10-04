@@ -5501,7 +5501,11 @@ class AdminController extends X2Controller {
      * @param string $file Filepath of the requested file
      */
     public function actionDownloadData($file) {
-        $this->sendFile($file);
+        if (Yii::app()->params->isAdmin) {
+             $this->sendFile($file);
+         } else {
+             throw new CHttpException(403, Yii::t('admin', 'Insufficient permissions.'));
+         }
     }
 
     /**
