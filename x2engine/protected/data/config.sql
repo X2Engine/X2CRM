@@ -136,5 +136,3 @@ INSERT INTO `x2_mobile_layouts`
 (`id`,`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
 VALUES
 (-1, 'Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');
-/*&*/
-
