@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
 
 Yii::import('application.components.behaviors.LinkableBehavior');
 Yii::import('application.modules.users.models.*');
@@ -1213,12 +1215,19 @@ class Profile extends X2ActiveRecord {
         if (isset($model->avatar) && $model->avatar != '' && !file_exists($model->avatar)
                 && strpos($model->avatar, 'uploads') !== false && strpos($model->avatar, 'protected') === false) {
             $path = explode(DIRECTORY_SEPARATOR, $model->avatar);
+            $pathUserFolder = explode(DIRECTORY_SEPARATOR, $model->avatar);
             $oldPathIndex = array_search('uploads',$path);
+            $oldPathIndexUserFolder = array_search('uploads',$pathUserFolder);
+            array_splice($pathUserFolder, $oldPathIndexUserFolder+1, 0, 'protected/media/'.$model->username);
             array_splice($path, $oldPathIndex+1, 0, 'protected');
             $newPath = implode(DIRECTORY_SEPARATOR, $path);
+            $newPathUserFolder = implode(DIRECTORY_SEPARATOR, $pathUserFolder);
             if(file_exists($newPath)){
                 $model->avatar = $newPath;
                 $model->update(array('avatar'));
+            } else if(file_exists($newPathUserFolder)){
+                $model->avatar = $newPathUserFolder;
+                $model->update(array('avatar'));                
             }
         }
         if(isset($model->avatar) && $model->avatar!='' && file_exists($model->avatar)) {
@@ -1502,5 +1511,5 @@ class Profile extends X2ActiveRecord {
         }
         return $this->_widgetLayouts[$name];
     }
-
+      
 }

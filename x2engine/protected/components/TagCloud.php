@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,8 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
+
+
 /**
  * Widget that renders a tag cloud
  * 
@@ -49,7 +51,7 @@ class TagCloud extends X2Widget {
 	public function run() {
         $hiddenTags=json_decode(Yii::app()->params->profile->hiddenTags,true);
         $params = array ();
-        if(!is_null($hiddenTags) && count($hiddenTags)>0){
+        if(count($hiddenTags)>0){
             $tagParams = AuxLib::bindArray ($hiddenTags);
             $params = array_merge ($params, $tagParams);
             $str1=" AND tag NOT IN (".implode (',', array_keys ($tagParams)).")";

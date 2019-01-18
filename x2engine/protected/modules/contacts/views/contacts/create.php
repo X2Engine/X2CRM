@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,8 +34,10 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-$opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
-$accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
+
+
+$opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportunities'));
+$accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
 
 $menuOptions = array(
     'all', 'lists', 'create',
@@ -43,42 +45,25 @@ $menuOptions = array(
 if ($opportunityModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';
 $this->insertMenu($menuOptions);
-
 ?>
+
 <div class="page-title icon contacts">
-	<h2><?php echo Yii::t('contacts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2>
+    <h2><?php echo Yii::t('contacts', 'Create {module}', array('{module}' => Modules::displayName(false))); ?></h2>
 </div>
-<?php 
-
-    $this->widget ('FormView', array(
-        'model' => $model,
-        'defaultsByRelatedModelType' => array (
-            'Accounts' => array (
-                'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
-                'website' => 'js: $("div.formInputBox #Contacts_website").val();',
-                'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
-            )
+<?php
+$this->widget('FormView', array(
+    'model' => $model,
+    'defaultsByRelatedModelType' => array(
+        'Accounts' => array(
+            'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
+            'website' => 'js: $("div.formInputBox #Contacts_website").val();',
+            'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
         )
-    ));
+    )
+));
 
-// echo $this->renderPartial(
-//    'application.components.views.@FORMVIEW', 
-//     array(
-//         'model'=>$model,
-//         'users'=>$users,
-//         'modelName'=>'contacts',
-//         'defaultsByRelatedModelType' => array (
-//             'Accounts' => array (
-//                 'phone' => 'js: $("div.formInputBox #Contacts_phone").val();',
-//                 'website' => 'js: $("div.formInputBox #Contacts_website").val();',
-//                 'assignedTo' => 'js: $("#Contacts_assignedTo_assignedToDropdown").val();'
-//             )
-//         )
-//     )); 
-
-if(isset($_POST['x2ajax'])) {
+if (isset($_POST['x2ajax'])) {
     echo "<script>\n";
     Yii::app()->clientScript->echoScripts();
     echo "\n</script>";
 }
-?>

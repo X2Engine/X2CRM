@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,6 +35,8 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
+
+
 Yii::import('application.components.util.*');
 
 /**
@@ -66,6 +68,7 @@ class AdminController extends X2Controller {
         'CommonControllerBehavior'=>'behaviors/CommonControllerBehavior',
         'ImportExportBehavior'=>'behaviors/ImportExportBehavior',
         'S3Behavior'=>'behaviors/S3Behavior',
+        'BouncedEmailBehavior'=>'behaviors/BouncedEmailBehavior',
         
     );
 
@@ -132,10 +135,11 @@ class AdminController extends X2Controller {
                 'class' => 'application.components.actions.Api2SettingsAction',
             ),
             
-            
             'viewLog' => array(
                 'class' => 'LogViewerAction',
             ),
+
+            
             
         ));
     }
@@ -2640,28 +2644,27 @@ class AdminController extends X2Controller {
         ));
     }
 
-    /**
-     * Render a page with options for activity feed settings.
-     *
-     * The administrator is allowed to configure what sort of information should
-     * be displayed in the activity feed and for how long. This page sets options
-     * for automated deletion of any chosen types after a set time period to help
-     * keep the database cleaner.
-     */    
     public function actionManageUserCount() {
-        $admin = &Yii::app()->settings;
-        if (isset($_POST['Admin'])) {
-            $admin->attributes = $_POST['Admin'];
+        /*$admin = &Yii::app()->settings;
+        if (isset($_POST['Admin']) && isset($_POST['Admin']['maxUserCount'])) 
+        {
+            $userCountLimit = json_decode($_POST['Admin']['maxUserCount']);
+            if ($userCountLimit != null) {
+                if ($userCountLimit > 200) {
+                    $this->render('userLimit',array());
+                } else {
+                    $admin->attributes = $_POST['Admin'];
 
-            if ($admin->save()) {
-                $this->redirect('manageUserCount');
+                    if ($admin->save()) {
+                        $this->redirect('manageUserCount');
+                    }        
+                }
             }
         }
         $this->render('manageUserCount', array(
             'model' => $admin,
-        ));
+        ));*/    
     }
-
     /**
      * Control general settings for the software.
      *
@@ -2830,9 +2833,84 @@ class AdminController extends X2Controller {
             $params = array('class' => 'GoogleProject');
         }
         $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        file_put_contents("/tmp/Justin.txt", CJSON::encode($url));
         $this->redirect($url);
     }
+    
+      /**
+     * Configure outlook integration.
+     *
+     * This method provides a form for the entry of Outlook Apps data.  This will
+     * allow for users to log in with their Microsoft account and sync X2Engine's calendars
+     * with their Outlook Calendar.
+     */
+    public function actionOutlookIntegration() {
 
+        $credId = Yii::app()->settings->outlookCredentialsId;
+
+        if ($credId && ($cred = Credentials::model()->findByPk($credId))) {
+            $params = array('id' => $credId);
+        } else {
+            $params = array('class' => 'OutlookProject');
+        }
+        $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
+        $this->redirect($url);
+    }
+    
+    /**
+     * Get and Sync outlook calender with x2calender
+     */
+    public function actionOutlookSync () {
+    //get the ticket code and use the tocken url to get the access token
+    $params1 = $_GET['code'];
+        if(isset($params1)){
+            $code = $params1;
+        }
+    $ch = curl_init();
+    
+    $admin = Admin::model()->findByPk (1);
+    $id = $admin->outlookCredentialsId;
+    $credential = Credentials::model()->findByAttributes(array('id'=>$id));
+    $auth_credential = $credential->auth;
+    $client_id = $auth_credential->outlookId;
+    $client_secret = $auth_credential->outlookSecret;
+
+    //create header and body for the POST request
+    curl_setopt($ch, CURLOPT_URL,"https://login.microsoftonline.com/common/oauth2/v2.0/token");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type' => 'application/x-www-form-urlencoded'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS,
+        http_build_query(array('code' => $code, 
+                               'grant_type' => 'authorization_code',
+                               'client_id' => $client_id,
+                               'client_secret' => $client_secret
+        )));
+    
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    //execute url
+    $server_output = curl_exec($ch);
+    curl_close ($ch);
+    
+        //check to see if something was returned
+        if (isset($server_output)) { 
+        $result = CJSON::decode($server_output);
+        $refresh_token = $result['refresh_token'];
+        
+        $currentuser = Yii::app()->user->getName();
+        $profile = Profile::model()->findByAttributes(array('username'=>$currentuser));
+        $profile->outlookRefreshToken = $refresh_token;
+        $profile->save();
+               
+        //redirect them to the calender create page
+        $url = Yii::app()->createUrl('/calendar/create');
+        $this->redirect($url);
+        
+        }else{
+        $this->redirect('index');    
+        }
+    }
+    
     public function actionX2HubIntegration() {
         $credId = Yii::app()->settings->hubCredentialsId;
 
@@ -2881,7 +2959,7 @@ class AdminController extends X2Controller {
         Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/manageCredentials.js');
         if (isset($_POST['Admin'])) {
             $admin->attributes = $_POST['Admin'];
-
+            
             if ($admin->save()) {
                 $this->redirect('emailSetup');
             }
@@ -2898,6 +2976,39 @@ class AdminController extends X2Controller {
         ));
     }
 
+    /**
+     * Configure email Bounce Handling settings.
+     *
+     * This allows for configuration of how emails are handled by X2Engine.  The admin
+     * can select to use the server that the software is hosted on or a separate mail server.
+     */
+    public function actionBounceHandlingSetup() {
+
+        $admin = &Yii::app()->settings;
+        $profile = &Yii::app()->params->profile;
+        Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl . '/js/manageCredentials.js');
+        if ($_SERVER['REQUEST_METHOD']=='POST' && isset($_POST['Admin']) &&isset($_POST['Admin']['emailBulkAccount'])) {
+            if (!extension_loaded('imap')) {
+                $this->render('error', array(
+                    'message' =>
+                        Yii::t('app', 'Processing requires the PHP IMAP extension.'),
+                ));
+            }
+            $bouncedBehaviour = new BouncedEmailBehavior();
+            $bouncedBehaviour->executeMailbox($_POST['Admin']['emailBulkAccount']);
+        } else {
+            // set defaults
+            if (!isset($admin->doNotEmailLinkText))
+                $admin->doNotEmailLinkText = Admin::getDoNotEmailLinkDefaultText();
+            if (!isset($admin->doNotEmailPage))
+                $admin->doNotEmailPage = Admin::getDoNotEmailDefaultPage();
+        }
+
+        $this->render('bounceHandlingSetup', array(
+            'model' => $admin,
+            'profile' => $profile
+        ));
+    }
     /**
      * Form/submit action for adding or customizing a field.
      *
@@ -3830,20 +3941,16 @@ class AdminController extends X2Controller {
                      * to take.
                      */
                     if ($dirFlag) {
-                        FileUtil::rrmdir('protected/modules/' . $moduleName);
-                    } else {
                         $errors[] = Yii::t('module', 'Unable to create custom module directory.');
                     }
                     if ($configFlag) {
-                        // Nothing, already taken care of by the file delete above
-                    } elseif ($dirFlag) {
                         $errors[] = Yii::t('module', 'Unable to create config file for custom module.');
                     }
                     if ($tableFlag) {
-                        $this->deleteTable($moduleName);
-                    } elseif ($dirFlag && $configFlag) {
                         $errors[] = Yii::t('module', 'Unable to create table for custom module.');
                     }
+                    FileUtil::rrmdir('protected/modules/' . $moduleName);
+                    $this->deleteTable($moduleName);
                 }
                 if (empty($errors)) {
                     $moduleRecord = new Modules;
@@ -4057,7 +4164,7 @@ class AdminController extends X2Controller {
         $ucName = $moduleTitle;
         $sqlList = array(
             'DROP TABLE IF EXISTS `x2_' . $moduleName . '`',
-            'DELETE FOM x2_fields WHERE modelName="' . $moduleTitle . '"',
+            'DELETE FROM x2_fields WHERE modelName="' . $moduleTitle . '"',
         );
         foreach ($sqlList as $sql) {
             $command = Yii::app()->db->createCommand($sql);
@@ -4340,19 +4447,23 @@ class AdminController extends X2Controller {
      * Export records from a model
      */
     public function actionExportModels($listId = null) {
+        
         unset($_SESSION['modelExportFile'], $_SESSION['exportModelCriteria'],
             $_SESSION['modelExportMeta'], $_SESSION['exportModelListId']);
         $modelList = Modules::getExportableModules();
         // Determine the model selected by the user
+        
         if (isset($_GET['model']) || isset($_POST['model'])) {
             $model = (isset($_GET['model'])) ? $_GET['model'] : $_POST['model'];
             $modelName = str_replace(' ', '', $model);
         }
+        
         if (isset($model) && in_array($modelName, array_keys($modelList))) {
             $staticModel = X2Model::model($modelName);
             $modulePath = '/' . $staticModel->module;
             $modulePath .= $modulePath;
-            if (is_null($listId) || $model != 'Contacts') {
+
+            if (is_null($listId) || ($model != 'Contacts' && $model != 'Opportunities' && $model != 'X2Leads' && $model != 'Accounts')) {
                 $file = "records_export.csv";
                 $listName = CHtml::link(
                                 Yii::t('admin', 'All {model}', array(
@@ -4385,7 +4496,7 @@ class AdminController extends X2Controller {
         );
         if (isset($model)) {
             $viewParam['model'] = $model;
-            if ($model == 'Contacts') {
+            if ($model == 'Contacts' || $model == 'Opportunities' || $model == 'X2Leads' || $model == 'Accounts') {
                 $viewParam['listName'] = $listName;
             } else if (in_array ($modelName, array('Quote', 'Product'))) {
                 $viewParam['modelDisplayName'] = Modules::displayName (true, $model.'s');
@@ -4395,7 +4506,7 @@ class AdminController extends X2Controller {
                 $viewParam['modelDisplayName'] = Modules::displayName (true, 'Opportunities');
             }
         }
-
+        
         $this->render('exportModels', $viewParam);
     }
 
@@ -5501,7 +5612,11 @@ class AdminController extends X2Controller {
      * @param string $file Filepath of the requested file
      */
     public function actionDownloadData($file) {
-        $this->sendFile($file);
+        if (Yii::app()->params->isAdmin) {
+            $this->sendFile($file);
+        } else {
+            throw new CHttpException(403, Yii::t('admin', 'Insufficient permissions.'));
+        }
     }
 
     /**
@@ -6792,6 +6907,93 @@ class AdminController extends X2Controller {
         echo 1;
     }
 
-    
-    
+    /**
+     * Display the log analyzer
+     */
+    public function actionLogAnalyzer() {
+        $this->render('logAnalyzer', array('fileNames' => $this->getLogNames()));
+    }
+
+    public function actionListProcesses() {
+        $this->render('listProcesses', array('processList' => $this->getProcessList()));
+    }
+
+    public function getProcessList() {
+        $rawData = array();
+        $cmd = "ps ux";
+
+        exec($cmd, $rawData);
+
+        array_pop($rawData); // Remove 'ps ux' from processList
+        array_pop($rawData); // Remove 'sh -c ps ux' from processList
+        array_shift($rawData);// Remove header
+
+        $processList = $this->formatPsOutput($rawData);
+
+        $dataProvider = new CArrayDataProvider($processList, array(
+            'keyField' => 'pid',
+        ));
+
+        return $dataProvider;
+    }
+
+    private function formatPsOutput($rawData) {
+        $processList = array();
+        foreach ($rawData as $rawLine) {
+            $chunks = preg_split('/\s+/', $rawLine);
+            $process['user'] = $chunks[0];
+            $process['pid'] = $chunks[1];
+            $process['cpu'] = $chunks[2];
+            $process['mem'] = $chunks[3];
+            $process['start'] = $chunks[8];
+            $process['time'] = $chunks[9];
+            $process['command'] = implode(" ", array_slice($chunks, 10));
+            $processList[] = $process; 
+        }
+        return $processList;
+    } 
+
+    public function getLogNames() {
+        $fileNames = array();
+        foreach (glob(Yii::app()->basePath . "/runtime/*.log") as $filePath) {
+            $fileNames[] = basename($filePath);
+        }
+        return $fileNames;
+    }
+
+    /* Misc functions used by the Admin Dashboard */
+    public function actionGetDashboardMetrics() {
+        $metrics = array(
+            'cpu' => $this->getCpuUsage(),
+            'mem' => $this->getUsedMem(),
+            'disk' => $this->getUsedDiskSpace(),
+        );
+      
+        echo CJSON::encode($metrics);
+    }
+
+    public function getNumberOfCores() {
+        return  (int) shell_exec("cat /proc/cpuinfo | grep processor | wc -l");
+    }
+
+    public function getCpuUsage() {
+        $loadAverage = sys_getloadavg();
+        return $loadAverage[0]; 
+    }
+
+    public function getTotalMem() {
+        return (int) shell_exec("free -m | grep -i 'mem' | awk '{print $2;}'");
+    }
+
+    public function getUsedMem() {
+        return (int) shell_exec("free -m | grep -i 'mem' | awk '{print $3;}'");
+    }
+
+    public function getUsedDiskSpace() {
+        return round((disk_total_space(Yii::app()->basePath) - disk_free_space(Yii::app()->basePath)) / pow(1024, 3));
+    }
+
+    public function getTotalDiskSpace() {
+        return round(disk_total_space(Yii::app()->basePath) / pow(1024, 3));
+    }
 }

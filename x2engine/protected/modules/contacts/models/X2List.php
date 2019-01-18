@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
 
 /**
  * This is the model class for table "x2_lists".
@@ -108,7 +110,10 @@ class X2List extends X2Model {
         // class name for the relations automatically generated below.
         return array(
             'listItems' => array(self::HAS_MANY, 'X2ListItem', 'listId'),
-            'campaign' => array(self::HAS_ONE, 'Campaign', array('listId' => 'nameId')),
+            'campaign' => array(self::HAS_ONE, 'Campaign', array(
+                'listId' => 'nameId',
+                'suppressionListId' => 'nameId'
+            )),
             'criteria' => array(self::HAS_MANY,'X2ListCriterion','listId'),
         );
     }
@@ -420,7 +425,6 @@ class X2List extends X2Model {
     public static function getVcrLinks(&$dataProvider, $modelId){
 
         $criteria = $dataProvider->criteria;
-
         $tableSchema = X2Model::model($dataProvider->modelClass)->getTableSchema();
         if($tableSchema === null)
             return false;
@@ -448,7 +452,7 @@ class X2List extends X2Model {
                 $criteria->order .= ',';
             $criteria->order .= 't.id DESC';
         }
-
+         
         // get search conditions (WHERE, JOIN, ORDER BY, etc) from the criteria
         $searchConditions = Yii::app()->db->getCommandBuilder()
             ->createFindCommand($tableSchema, $criteria)->getText();
@@ -491,6 +495,7 @@ class X2List extends X2Model {
 //        );
         // attach params from $criteria to this query
         $rowNumberQuery->params = array_merge(array(':t2_id'=>$modelId),$criteria->params);
+       
         $rowNumber = $rowNumberQuery->queryScalar();
 
         if($rowNumber === false){ // the specified record isn't in this list
@@ -625,23 +630,25 @@ class X2List extends X2Model {
                             'phone', 
                             'address', 
                             'sent',
+                            'suppressed',
+                            'bounced',
                             'opened',
                             'clicked',
                             'unsubscribed',
                             'doNotEmail',
                         ),
-                        'defaultOrder' => 'opened DESC, sent DESC, name DESC',
+                        'defaultOrder' => 'opened DESC, sent DESC, suppressed DESC, bounced DESC, name DESC',
                     ),
                 ));
     }
 
     /**
      * Returns the count of items in the list that have the specified status
-     * (i.e. sent, opened, clicked, unsubscribed)
+     * (i.e. sent, opened, clicked, unsubscribed, suppressed, bounced)
      * @return integer
      */
     public function statusCount($type){
-        $whitelist = array('sent', 'opened', 'clicked', 'unsubscribed');
+        $whitelist = array('sent', 'opened', 'clicked', 'unsubscribed', 'suppressed', 'bounced');
         if(!in_array($type, $whitelist)){
             return 0;
         }
@@ -705,6 +712,7 @@ class X2List extends X2Model {
         }
         if(count($listItemRecords) == 0)
             return;
+        
         $sql = 'INSERT into x2_list_items
             (emailAddress, contactId, listId, unsubscribed)
             VALUES '
@@ -759,6 +767,8 @@ class X2List extends X2Model {
                 if ($email)
 				    $listItem->emailAddress = $email;
             }
+            file_put_contents('/tmp/test_out.txt',"Emailed     " ,FILE_APPEND);
+      
             $listItem->contactId = $id;
             $listItem->save();
         }

@@ -1,0 +1,34 @@
+#caseTimer {
+    text-align: center;
+}
+#caseTimer a {
+}
+
+#caseTimerControl-summary {
+    display: block;
+    border-top: 1px solid #CCCCCC;
+    margin-top: 5px;
+}
+#caseTimerControl-total {
+    font-family: Consolas, monaco, monospace;
+}
+#caseTimerDisplay {
+    font-size: 15px;
+    font-family: Consolas, monaco, monospace;
+    display:block;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #CCCCCC;
+
+}
+
+#caseTimerLog-form textarea {
+    width: 100%;
+    max-width: 100%;
+    height: 100px;
+}
+
+#caseTimerLog-form input[type="submit"] {
+    display: block;
+    width: 100%;
+    text-align: center;
+}

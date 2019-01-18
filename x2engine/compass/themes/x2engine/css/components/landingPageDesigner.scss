@@ -1,0 +1,353 @@
+/*!*********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+
+/* @edition:ent */
+
+@import "standards";
+@import "colors";
+@import "icons";
+
+.tab {
+}
+
+/**
+ * Initial fields
+ */
+#init-fields {
+    padding: 20px;
+
+    /**
+     * Embeddable link
+     */
+    #embed-row  {
+        height: 25px;
+
+        /**
+         * Link
+         */
+        #embed-code {
+            box-sizing: border-box;
+            width: 200px;
+            height: 100%;
+            float: left;
+
+            margin:0px;
+
+            border: 1px solid #B9B9B9;
+            background: #F6F6F6;
+            color: #666;
+            @include box-shadow(0 1px 0 white inset 0 1px 1px rgba(0, 0, 0, 0.17));
+
+            @include border-radius(3px 0px 0px 3px);
+            &:focus {
+                border-color: #4496E7;
+                color: #444;
+                background: white;
+                outline: 0;
+            }
+        }
+
+        /**
+         * Clipboard button
+         */
+        #clipboard {
+            box-sizing: border-box;
+
+            height: 100%;
+            margin: 0px;
+            border-left: none;
+
+            @include border-radius(0px 3px 3px 0px);
+        }
+
+        /**
+         * Copy prompt
+         */
+        #copy-help {
+            display: inline-block;
+            margin-left: 5px;
+        }
+    }
+}
+
+/**
+ * Form holding landing page fields
+ */
+#landing-page-designer-form {
+    padding-bottom: 20px;
+
+    #landing-page-editor {
+        width: 100%;
+        height: 650px;
+        border-bottom: 1px solid #eee;
+
+        #chooser {
+            border-right: 1px solid #eee;
+            padding: 20px 20px 20px 0;
+            width: 150px;
+            height: 600px;
+            float: left;
+            list-style: none;
+            overflow-y: auto;
+            overflow-x: none;
+            word-break: break-word;
+            margin: 0px;
+        }
+
+        /**
+         * Edittable studio
+         */
+        #editor {
+            border-right: 1px solid #eee;
+            padding: 20px;
+            width: 800px;
+            float: left;
+            height: 600px;
+            min-width: 800px;
+
+            /**
+             * Ui of sections and columns
+             */
+            #designer {
+            }
+
+            /**
+             * Drag and drop components
+             */
+            #components {
+                margin: 0px 0px 10px 0px;
+                border: 1px solid #ccc;
+                -moz-border-radius: 4px;
+                -o-border-radius: 4px;
+                -webkit-border-radius: 4px;
+                border-radius: 4px;
+                overflow: auto;
+            }
+        }
+
+        /**
+         * Preview of current changes
+         */
+        #preview-container {
+            height: 600px;
+            float: left;
+            width: 22%;
+            padding: 20px;
+
+            #preview {
+                border: 1px solid #eee;
+                width: 100%;
+                height: 300px;
+            }
+        }
+    }
+
+    #other-fields {
+        padding: 20px;
+    }
+}
+
+/**
+ * Field container
+ */
+.custom-page-fields {
+    width: 97%;
+    clear: both;
+}
+
+/**
+ * Custom html/CSS code 
+ */
+.code {
+    width: 99%;
+}
+
+/**
+ * X2 button margin override
+ */
+.x2-button {
+    margin: 0px 10px 0px 0px;
+}
+
+.create-page {}
+
+.choose-index-elements {
+    position: relative;
+    text-align: center;
+}
+
+.choose-index-elements:after {
+    content: '';
+    display: block;
+    margin-top: 100%;
+}
+
+.choose-index-elements-content {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 1px solid lightgrey;
+    border-radius: 2px;
+    margin: 10px;
+
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+    &:hover {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+}
+
+.choose-index-elements-content-create {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: 3px dashed lightgrey;
+    cursor: pointer;
+    border-radius: 2px;
+    margin: 10px;
+}
+
+.choose-index-elements-content-empty {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border: none;
+    border-radius: 2px;
+    margin: 10px;
+}
+
+.choose-index-elements-content-click {
+    position: relative;
+    top: -100%;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.choose-index-elements-title {
+    top: calc(50% - 20px);
+    border-radius: 5px;
+    position: relative;
+    font-size: large;
+    padding: 10px;
+    color: $darkBlue;
+    padding: 2px 5px;
+    background: white;
+}
+
+.chooser-item {
+    cursor: pointer;
+    margin: 5px 0px;
+    margin-left: 20px;
+    padding: 5px 0;
+
+    &:hover {
+        color: $darkBlue;
+    }
+}
+
+.chooser-item-selected {
+    margin: 5px 0;
+    padding: 5px 0;
+    padding-left: 15px;
+    border-left: 5px solid;
+    border-color: $darkBlue;
+    color: $darkBlue;
+    position:relative;
+}
+
+#landing-page-create-button {
+    margin-bottom: 10px;
+    margin-left: 20px;
+    padding: 7px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    background: $darkBlue;
+    color: white;
+    text-align: center;
+
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+
+    &:hover {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+}
+
+/**
+ * Custom html/CSS textarea
+ */
+textarea, .CodeMirror {
+    border: 1px solid lightgrey;
+    height: 10em;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 1330px) {
+    #landing-page-designer-form {
+        #studio {
+            float: none;
+            width: auto;
+            border-radius: 5px 5px 0px 0px;
+        }
+
+        #preview-container {
+            float: none;
+            width: auto;
+            border-left: 1px solid #eee;
+            border-top: none;
+            border-radius: 0px 0px 5px 5px;
+        }
+    }
+}
+
+@media (max-width: 460px) {
+    #landing-page-designer-form {
+        #embed-row {
+            #embed-code {
+                float: none;
+            }
+        }
+    }
+}

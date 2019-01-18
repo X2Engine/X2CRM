@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
 
 @import "colors";
 @import "standards";
@@ -105,14 +107,12 @@
 #content {
     background: none !important;
     border: none !important;
-}
-
-#activity-feed-container-outer {
-    // margin-top: 10px;
+    margin: 0px;
 }
 
 #content .page-title {
     @include border-radius(2px 2px 0px 0px);
+    padding: 6px 12px 2px 12px;
 }
 
 .profile-sort-placeholder {
@@ -130,12 +130,6 @@
 
 #profile-info-container .page-title > h2 {
     background-position: -1px -8px;
-}
-
-#activity-feed-container .page-title > h2 {
-    // background-position: -1px 0px;
-    // background-size: 29px;
-    // padding-left: 34px;
 }
 
 #profile-image-container {
@@ -207,7 +201,7 @@
    
     }
     #activity-feed-container {
-        margin-right: 0;
+        margin-left: 0px;
     }
     #profile-widgets-container {
         float: right;
@@ -215,7 +209,7 @@
    
     }
     #profile-widgets-container-inner {
-        margin-left: 9px;
+        margin-bottom: 20px;
     }
 }
 

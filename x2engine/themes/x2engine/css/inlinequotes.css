@@ -1,0 +1,56 @@
+#wide-quote-form {
+	background: #F8F8F8;
+}
+
+.viewQuote hr {
+	background-color: black;
+	overflow: visible;
+}
+
+.product-table th {
+	background-color: inherit;
+}
+
+.product-table tfoot {
+	font-style: normal;
+}
+
+.quote-detail-table {
+	padding: 0;
+	width: 100%;
+}
+
+.quote-detail-table th {
+	background-color: inherit;
+	color: #666;
+	font-weight: normal;
+	font-size: 0.8em;
+	padding: 5px 0 0 0;
+
+}
+
+.quote-detail-table td {
+	font-weight: bold;
+	padding: 0;
+}
+
+.quote-create-table {
+	width: 100%;
+	padding: 0;
+}
+
+.quote-create-table th {
+	background-color: inherit;
+	font-weight: bold;
+	font-size: 0.8em;
+	padding: 5px 0 0 0;
+}
+
+.quote-detail-table td {
+	padding: 0;
+}
+
+.items td {
+	border-top: none;
+	border-bottom: none;
+}

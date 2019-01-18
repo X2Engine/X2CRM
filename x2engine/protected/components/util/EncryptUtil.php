@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
 
 /**
  * Standalone encryption utilities class that can retrieve necessary encryption
@@ -94,13 +96,8 @@ class EncryptUtil {
 	}
 
 	public static function genIV() {
-		return mcrypt_create_iv(
-                mcrypt_get_iv_size(
-                    MCRYPT_RIJNDAEL_256,
-                    MCRYPT_MODE_ECB
-                ),
-                MCRYPT_RAND
-            );
+            $nonceSize = openssl_cipher_iv_length('aes-256-ctr');
+            return openssl_random_pseudo_bytes($nonceSize);
 	}
 
 	public function __construct($keyFile=null,$IVFile=null,$throw=true) {
@@ -158,9 +155,9 @@ class EncryptUtil {
 	 */
 	public function encrypt($data){
 		if($this->key)
-			return base64_encode(rtrim(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $this->key, $data, MCRYPT_MODE_ECB, $this->IV),"\0"));
+                    return base64_encode(rtrim(openssl_encrypt($data, 'aes-256-ctr', $this->key, OPENSSL_RAW_DATA, $this->IV),"\0"));
 		else
-			return $data;
+		    return $data;
 	}
 
 	/**
@@ -168,9 +165,9 @@ class EncryptUtil {
 	 */
 	public function decrypt($data){
 		if($this->key)
-			return rtrim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256,$this->key, base64_decode($data), MCRYPT_MODE_ECB, $this->IV),"\0");
+                    return rtrim(openssl_decrypt(base64_decode($data),'aes-256-ctr', $this->key, OPENSSL_RAW_DATA, $this->IV),"\0");
 		else
-			return $data;
+		    return $data;
 	}
 
 	/**

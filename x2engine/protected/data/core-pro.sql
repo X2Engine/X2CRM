@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,6 +35,8 @@
 
 
 
+
+
 DROP TABLE IF EXISTS x2_forwarded_email_patterns;
 /*&*/
 CREATE TABLE x2_forwarded_email_patterns(
@@ -65,7 +67,7 @@ CREATE TABLE `x2_cron_events` (
 	`lastExecution`		BIGINT		DEFAULT NULL,
 	`executionCount`	BIGINT		NOT NULL DEFAULT 0,
 	`flowId`	        INT		    DEFAULT NULL,
-    `associationId`     INT         NOT NULL,
+    `associationId`     INT         NULL DEFAULT 0,
     `associationType`   VARCHAR(255),
 	PRIMARY KEY (`id`)
 ) COLLATE = utf8_general_ci, ENGINE=INNODB;

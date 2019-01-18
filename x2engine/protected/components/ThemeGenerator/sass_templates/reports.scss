@@ -1,0 +1,61 @@
+#report-container {
+    background: "$content";
+}
+
+#content-container-inner {
+    border-color: "$lighter_content";
+    background: "$content";
+}
+
+.x2-cond-list { 
+	li, fieldset {
+	    background: "$bright_content";
+	}
+}
+
+
+.x2-pill-box, .x2-subgrid, .x2-cond-list li {
+    border-color: "$darker_content";
+}
+
+#generated-report .x2-button {
+    color: "$smart_text";
+}
+
+.x2-pill-box {
+	background: "$content";
+    box-shadow: none !important;
+
+    &:hover {
+	    background: "$bright_content";
+    }
+
+}
+
+.x2-pill-box-options,
+.options-header,
+.x2-pill{
+    background: "$bright_content";
+    color: "$text";
+    border-color: "$lighter_content";
+    box-shadow: none !important;
+
+    &:hover {
+    	background: "$brighter_content";
+    }
+}
+
+
+
+
+ul.x2-dropdown-list {
+    background: "$content";
+    border-color: "$lighter_content";
+    li:hover {
+        background: "$bright_content";
+    }
+}
+
+.x2-subgrid-top-bar {
+    background: "$highlight1";
+}

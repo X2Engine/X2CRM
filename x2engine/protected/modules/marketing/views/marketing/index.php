@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,11 +34,13 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
+
+
 $this->pageTitle = Yii::t('marketing','Campaigns');
 $menuOptions = array(
-    'all', 'create', 'lists', 'import', 'export', 'newsletters', 'weblead',
+    'all', 'create', 'lists', 'import', 'export', 'newsletters', 'weblead', 'lists',
     
-    'webtracker', 'x2flow',
+    'webtracker', 'x2flow', 
 );
 
 $plaOptions = array(
@@ -75,12 +77,15 @@ foreach(Yii::app()->user->getFlashes() as $key => $message) {
 )); ?>
 </div><!-- search-form -->
 <?php
-
+$buttons = array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden');
+if (Yii::app()->params->isAdmin) {
+    array_unshift($buttons, 'updateBouncedEmails');
+}
 $this->widget('X2GridView', array(
 	'id'=>'marketing-grid',
 	'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
 	'title'=>Yii::t('marketing','Campaigns'),
-	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
+	'buttons'=> $buttons,
 	'template'=> 
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
         '<div id="x2-gridview-top-bar-inner" class="x2-gridview-fixed-top-bar-inner">'.
@@ -99,13 +104,14 @@ $this->widget('X2GridView', array(
 	'viewName'=>'campaigns',
 	// 'columnSelectorId'=>'contacts-column-selector',
 	'defaultGvSettings'=>array(
-        'gvCheckbox' => 30,
-		'name' => 156,
-		'listId' => 106,
-		'subject' => 271,
-		'launchDate' => 76,
-		'active' => 44,
-		'lastUpdated' => 78,
+        'gvCheckbox' => 28,
+        'name' => 152,
+        'listId' => 120,
+        'suppressionListId' => 110,
+        'subject' => 267,
+        'launchDate' => 186,
+        'active' => 102,
+        'lastUpdated' => 167,
 	),
 	'specialColumns'=>array(
 		'name'=>array(

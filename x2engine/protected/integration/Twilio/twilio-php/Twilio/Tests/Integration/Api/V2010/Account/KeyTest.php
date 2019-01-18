@@ -55,7 +55,7 @@ class KeyTest extends HolodeckTestCase {
         
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->keys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                     ->keys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -79,7 +79,7 @@ class KeyTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->keys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                           ->keys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,8 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
+
+
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 $this->noBackdrop = true;
 
@@ -63,7 +65,7 @@ $authParams['X2Model'] = $model;
 
 $menuOptions = array(
     'all', 'create', 'view', 'edit', 'delete', 'lists', 'newsletters',
-    'weblead', 'x2flow',
+    'weblead', 'x2flow', /* x2entend */ 'A/B-Campaigns', 'Long-Term-Campaigns', /* x2entend */
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
@@ -95,45 +97,56 @@ $this->insertMenu($menuOptions, $model, $authParams);
             'content' => '<div style="height:350px;"><iframe src="'.$this->createUrl('/marketing/marketing/viewContent',array('id'=>$model->id)).'" id="docIframe" frameBorder="0" style="height:100%;background:#fff;"></iframe></div>'
         ),
     );
-
-    if ($model->type != 'Email') {
-        $partialParams['suppressFields'] = array('template', 'subject');
+  
+    if(!isset($partialParams['suppressFields'])){
+        $partialParams['suppressFields'] = array();
     }
-
-    $this->widget ('DetailView', $partialParams);
-    // $this->renderPartial('application.components.views.@DETAILVIEW', $partialParams);
-    // 
+   if (!Yii::app()->params->isAdmin) {
+        $partialParams['suppressFields'] = array('bouncedAccount', 'enableBounceHandling');
+    }
     if ($model->type == 'Email') {
-        $this->renderPartial('attachments', array('model'=>$model));
+        $partialParams['suppressFields'] = array_merge($partialParams['suppressFields'], array('template', 'subject'));
+
     }
-
-    if(!$model->complete && Yii::app()->user->checkAccess('MarketingLaunch')){
-        $this->renderPartial('marketingLaunch', array('model'=>$model));
-    }
-
-    $this->renderPartial('inlineEmailForm', array('model'=>$model));
-
-    if($model->type === 'Email'){
-        if($model->launchDate && $model->active && !$model->complete){
-            if ($model->launchDate > time()) {
-                echo '<div class="campaign-schedule-notice"><p>';
-                echo Yii::t('marketing', 'Campaign is scheduled to launch at ').
-                    Formatter::formatDateTime($model->launchDate);
-                echo '</p>';
-                echo CHtml::ajaxButton(Yii::t('marketing', 'Validate'), 'validate', array('data' => array('id' => $model->id), 'complete' => 'function(data) { console.log(data); alert(data.responseJSON.message); }'), array('class' => 'x2-button', 'style' => 'display: inline-block'));
-                echo '</div>';
-            } else {
-                $this->widget('EmailProgressControl',array(
-                    'campaign' => $model,
-                ));
-            }
+    if($model->type == 'Parent') {
+        $this->renderPartial('KidCampaigns', array('model'=>$model));
+    } elseif($model->type == 'ParentAB') {
+        $this->renderPartial('KidCampaigns', array('model'=>$model));
+    } else {
+        $this->widget ('DetailView', $partialParams);
+        // $this->renderPartial('application.components.views.@DETAILVIEW', $partialParams);
+        if ($model->type == 'Email') {
+            $this->renderPartial('attachments', array('model'=>$model));
         }
-    } 
 
-    if(isset($model->list) && $model->launchDate){
-       $this->renderPartial('campaignGrid', array(
-            'model'=>$model, 
-        ));
+        if(!$model->complete && Yii::app()->user->checkAccess('MarketingLaunch')){
+            $this->renderPartial('marketingLaunch', array('model'=>$model));
+        }
+
+        $this->renderPartial('inlineEmailForm', array('model'=>$model));
+
+        if($model->type === 'Email'){
+            if($model->launchDate && $model->active && !$model->complete){
+                if ($model->launchDate > time()) {
+                    echo '<div class="campaign-schedule-notice"><p>';
+                    echo Yii::t('marketing', 'Campaign is scheduled to launch at ').
+                        Formatter::formatDateTime($model->launchDate);
+                    echo '</p>';
+                    echo CHtml::ajaxButton(Yii::t('marketing', 'Validate'), 'validate', array('data' => array('id' => $model->id), 'complete' => 'function(data) { console.log(data); alert(data.responseJSON.message); }'), array('class' => 'x2-button', 'style' => 'display: inline-block'));
+                    echo '</div>';
+                } else {
+                    $this->widget('EmailProgressControl',array(
+                        'campaign' => $model,
+                    ));
+                }
+            }
+        } 
+
+        if(isset($model->list) && $model->launchDate){
+           $this->renderPartial('campaignGrid', array(
+                'model'=>$model, 
+            ));
+        }
     }
     ?>
 </div>
