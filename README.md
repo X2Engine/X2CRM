@@ -1,3 +1,33 @@
+# NOTE: IF YOU ARE UPDATING FROM <7.0 YOU WILL NEED TO RE-ENTER YOUR THIRD-PARTY APP CREDENTIALS!#
+# THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. PLEASE CONTACT customersupport@x2engine.com #
+
+# 7.1 #
+
+1/3/2019
+* General Changelog / Developer Notes
+  * X2CRM is now compatible with PHP 7.1+
+
+* Miscellaneous bug fixes
+  * Fixed issue with emailing where mail servers which are not configured to use VERP can still send email
+  * Removed list option from the reporting module
+  * A/B campaigns now work with dynamic lists
+  * Fixed issue where 'do not email' settings would get incorrectly set
+  * Fixed issue where a 500 error would occur if the 'maxFileSize' attribute was not created correctly
+  * Fixed issue where X2Flow would incorrectly reference a workflow ID
+  * Fixed issue where logging time on a record would incorrectly calculate time spent
+  * Fixed front-end with the complete stage action in X2Workflow where the note textarea was covering the stage selection dropdown
+
+# 7.0 #
+10/19/2018
+
+* General Changelog / Developer Notes
+  * Accounts, Leads and Opportunities are now listable
+  * Contacts can now be converted to leads
+  * Campaigns
+    * A/B testing for campaigns added
+    * Account, Lead and Opportunity lists can now all be used in campaigns
+  * Miscellaneous bug fixes
+
 # 6.9 #
 08/22/2017
 * General Changelog / Developer Notes
