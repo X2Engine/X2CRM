@@ -78,9 +78,9 @@ class EncryptUtil {
 	 * @throws Exception 
 	 */
 	public static function dependencyCheck($throw) {
-		$hasDeps = extension_loaded('openssl') && extension_loaded('mcrypt');
+		$hasDeps = extension_loaded('openssl');
 		if(!$hasDeps && $throw)
-			throw new Exception('The "openssl" and "mcrypt" extensions are not loaded. The EncryptUtil class cannot function properly.');
+			throw new Exception('The "openssl" extension is not loaded. The EncryptUtil class cannot function properly.');
 		return $hasDeps;
 	}
 
