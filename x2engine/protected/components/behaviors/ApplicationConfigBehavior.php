@@ -546,7 +546,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         if(!$this->_cryptInit){
             $key = $this->owner->basePath.'/config/encryption.key';
             $iv = $this->owner->basePath.'/config/encryption.iv';
-            if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
+            if(extension_loaded('openssl') && file_exists($key) && file_exists($iv)){
                 EncryptedFieldsBehavior::setup($key, $iv);
             }else{
                 // Use unsafe method with encryption
