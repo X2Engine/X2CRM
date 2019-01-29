@@ -554,7 +554,7 @@ function installStage($stage) {
             fclose($handle);
 
             // Create an encryption key for credential storage:
-            if (extension_loaded('openssl') && extension_loaded('mcrypt')) {
+            if (extension_loaded('openssl')) {
                 $encryption = new EncryptUtil(
                         implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.key')),
                         implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.iv'))
