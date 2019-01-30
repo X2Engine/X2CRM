@@ -28,61 +28,6 @@ THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT c
     * Account, Lead and Opportunity lists can now all be used in campaigns
   * Miscellaneous bug fixes
 
-# 6.9.3 #
-1/3/2018
-* Fixed unrecognized field lastModifies bug
-
-# 6.9.2 #
-12/29/2017
-* Fixed email bug
-
-# 6.9.1 #
-11/20/2017
-* General Changelog / Developer Notes
-  * New Enterprise UI
-    * New Paper-White UI default theme
-    * Revamped Landing Page Designer
-    * Top Menu Dropdowns
-  * New X2HubServices integrations
-    * Contact Twitter feed
-    * LinkedIn user information autofill
-    * Dropbox integration
-    * Docusign Integration
-  * Miscellaneous bug fixes
-    * Workflow tag bug fix
-    * Calendar empty tables bug fix
-
-# 6.6 #
-5/17/2017
-* General Changelog / Developer Notes
-  * Campaign Improvements
-    * Email campaigns can now be scheduled
-    * Added email opened time and location to campaign launch grid
-    * Improved database performance of campaign email sends
-  * X2Touch Improvements
-    * Added barcode scanner to import product barcode identifier
-    * Mobile publisher now supports voice to text notes
-  * X2Workflow Improvements
-    * New Location Trigger to support general workflow operations when a Location is logged
-    * Added AddToNewsletter workflow action to manage web leads on newsletter contact lists
-  * Added new feature tours
-  * Improved email client IMAP server compatibility, including with Dovecot, Exchange, Office365, and Rackspace
-  * Added new import console command with 'rollback' operation
-  * Added an admin page to locate missing records that may have been inadvertently hidden
-  * New RackspaceEmail account type
-  * Fixed bug in email subject replacement
-  * Enabled mass execute macro on Contact list grids
-  * Added option to weblead form designer to disable dupe detection by X2Identity on a per-form basis
-  * X2Packager stability fixes
-  * Fixed date format issue under French locale
-  * Miscellaneous UI enhancements
-  * Miscellaneous bug fixes
-* Tracked Bug Fixes:
-  * [3703](http://x2software.com/index.php/bugReports/3703): Undefined index: X2List
-  * [5825](http://x2software.com/index.php/bugReports/5825): Call to a member function asa() on null
-  * [5966](http://x2software.com/index.php/bugReports/5966): Trying to get property of non-object
-  * [5971](http://x2software.com/index.php/bugReports/5971): Function mcrypt_create_iv() is deprecated
-
 # Introduction #
 Welcome to X2CRM!
 X2CRM is a next-generation,  open source social sales application for small and 
