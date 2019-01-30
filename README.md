@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 NOTE: IF YOU ARE UPDATING FROM <7.0 YOU WILL NEED TO RE-ENTER YOUR THIRD-PARTY APP CREDENTIALS! 
 THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT customersupport@x2engine.com
 
@@ -28,7 +27,7 @@ THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT c
     * A/B testing for campaigns added
     * Account, Lead and Opportunity lists can now all be used in campaigns
   * Miscellaneous bug fixes
-=======
+
 # 6.9.3 #
 1/3/2018
 * Fixed unrecognized field lastModifies bug
@@ -52,24 +51,6 @@ THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT c
   * Miscellaneous bug fixes
     * Workflow tag bug fix
     * Calendar empty tables bug fix
->>>>>>> origin/development
-
-# 6.9 #
-08/22/2017
-* General Changelog / Developer Notes
-  * Miscellaneous UI enhancements
-    * New Green login logo
-  * New Enterprise edition released
-    * The enterprise edition of X2CRM is developed with enterprise users in mind
-      * New colorful icons for actions (these can be seen in the activity feed)
-      * New Native Code Editor
-        * The code editor allows the modification of the application code through the app itself. This allows power users to customize the app like never before! The code editor can be accessed via the X2Studio tools in the admin section of the app
-      * X2Workflows
-        * New stock X2Workflow rules added to the workflow system
-        * Restricted non-compatible actions from being attached to triggers, this is introduced in order to prevent users from making broken workflows.
-  * Miscellaneous bug fixes
-    * Fixed an issue with login where users would get immediately get logged out
-    * Fixed a UI bug where some smaller screens would prevent parts of the app from showing.
 
 # 6.6 #
 5/17/2017
