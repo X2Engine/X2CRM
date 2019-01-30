@@ -221,7 +221,7 @@ class ChannelTest extends HolodeckTestCase {
         
         try {
             $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                          ->channels("CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                          ->channels("CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -256,7 +256,7 @@ class ChannelTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                                ->channels("CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                                ->channels("CHaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

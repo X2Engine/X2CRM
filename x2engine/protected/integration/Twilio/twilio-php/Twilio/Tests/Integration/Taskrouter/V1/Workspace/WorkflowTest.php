@@ -63,7 +63,7 @@ class WorkflowTest extends HolodeckTestCase {
         
         try {
             $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                         ->workflows("WFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                         ->workflows("WFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -95,7 +95,7 @@ class WorkflowTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                               ->workflows("WFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                               ->workflows("WFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

@@ -58,7 +58,7 @@ class OutgoingCallerIdTest extends HolodeckTestCase {
         
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->outgoingCallerIds("PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                     ->outgoingCallerIds("PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -85,7 +85,7 @@ class OutgoingCallerIdTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->outgoingCallerIds("PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                           ->outgoingCallerIds("PNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

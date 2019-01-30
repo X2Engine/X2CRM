@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * Manages behavior of a sortable widget
@@ -204,7 +207,7 @@ SortableWidget.prototype.setProperty = function (key, value, callback) {
             settingsModelId: this.settingsModelId,
         },
         success: function (data) {
-            if (data === 'success') {
+            if (data.trim() === 'success') {
                 if (typeof callback !== 'undefined') callback ();
             }
         }
@@ -224,7 +227,7 @@ SortableWidget.prototype.setProperties = function (props, callback) {
             settingsModelId: this.settingsModelId,
         },
         success: function (data) {
-            if (data === 'success') {
+            if (data.trim() === 'success') {
                 if (typeof callback !== 'undefined') callback ();
             }
         }
@@ -402,7 +405,7 @@ SortableWidget.prototype._setUpWidgetDeletion = function () {
                         },
                         type: 'POST',
                         success: function (data) {
-                            if (data === 'success') {
+                            if (data.trim() === 'success') {
                                 $(that.element).remove ();
                                 delete that;
                                 deletionDialog$.dialog ('close');
