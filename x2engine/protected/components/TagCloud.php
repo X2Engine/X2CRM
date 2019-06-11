@@ -52,7 +52,7 @@ class TagCloud extends X2Widget {
 	public function run() {
         $hiddenTags=json_decode(Yii::app()->params->profile->hiddenTags,true);
         $params = array ();
-        if(count($hiddenTags)>0){
+        if((is_array($hiddenTags) || $hiddenTags instanceof Countable) && count($hiddenTags)>0){
             $tagParams = AuxLib::bindArray ($hiddenTags);
             $params = array_merge ($params, $tagParams);
             $str1=" AND tag NOT IN (".implode (',', array_keys ($tagParams)).")";
