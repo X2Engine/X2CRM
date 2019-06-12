@@ -63,7 +63,8 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         )
     );
 
-    $showUserCalendars = $showCalendars['userCalendars'];
+    $showUserCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
+    //$showUserCalendars = $showCalendars['userCalendars'];
     echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
     foreach($this->calendarUsers as $userName=>$user) {
         // check if current user has permission to edit calendar
