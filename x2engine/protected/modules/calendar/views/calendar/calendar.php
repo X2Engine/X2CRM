@@ -116,7 +116,8 @@ if(!isset($showCalendars['groupCalendars'])){
     $user->save();
 }
 
-$userCalendars = $showCalendars['userCalendars'];
+$userCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
+//$userCalendars = $showCalendars['userCalendars'];
 
 $checkedUserCalendars = '';
 foreach($userCalendars as $user){
