@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 class NewListFromSelection extends MassAction {
 
@@ -79,17 +82,20 @@ class NewListFromSelection extends MassAction {
     }
 
     public function execute (array $gvSelection) {
-        if (Yii::app()->controller->modelClass !== 'Contacts' ||
+        if ((Yii::app()->controller->modelClass !== 'Contacts' 
+                && Yii::app()->controller->modelClass !== 'X2Leads'
+                && Yii::app()->controller->modelClass !== 'Accounts'
+                && Yii::app()->controller->modelClass !== 'Opportunity')||
             !isset ($_POST['listName']) || $_POST['listName'] === '') {
             
-            throw new CHttpException (400, Yii::t('app', 'Bad Request'));
+            throw new CHttpException (400, Yii::t('app', 'Bad Request at execute'));
         }
         if (!Yii::app()->params->isAdmin && 
             !Yii::app()->user->checkAccess ('ContactsCreateListFromSelection')) {
 
             return -1;
         }
-
+        
         $listName = $_POST['listName'];
         foreach($gvSelection as &$contactId){
             if(!ctype_digit((string) $contactId))
@@ -98,14 +104,14 @@ class NewListFromSelection extends MassAction {
 
         $list = new X2List;
         $list->name = $_POST['listName'];
-        $list->modelName = 'Contacts';
+        $list->modelName = Yii::app()->controller->modelClass;
         $list->type = 'static';
         $list->assignedTo = Yii::app()->user->getName();
         $list->visibility = 1;
         $list->createDate = time();
         $list->lastUpdated = time();
 
-        $itemModel = X2Model::model('Contacts');
+        $itemModel = X2Model::model($list->modelName);
         $success = true;
         if($list->save()){ // if the list is valid save it so we can get the ID
             $count = 0;
