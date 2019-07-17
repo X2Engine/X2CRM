@@ -161,7 +161,7 @@ class WorkerChannelTest extends HolodeckTestCase {
         try {
             $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                          ->workers("WKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                         ->workerChannels("WCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                         ->workerChannels("WCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -200,7 +200,7 @@ class WorkerChannelTest extends HolodeckTestCase {
         
         $actual = $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                                ->workers("WKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                               ->workerChannels("WCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                               ->workerChannels("WCaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

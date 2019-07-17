@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/about-page.css');
@@ -95,17 +92,30 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
     ?><br><br>
     <div style="clear:both">
         <a href="https://x2crm.com" target="_blank">X2Engine Inc.</a><br>
-        877 Cedar Street, Suite 122<br>
-        Santa Cruz, CA 95060 USA<br>
+        PO Box 610121<br>
+        Redwood City, California 94061 USA<br>
     </div>
     <div id="about-intro">
         <?php
         echo Yii::t('app',
-                'X2Engine, Inc. is the developer of the seamless enterprise CRM, workflow and marketing automation platform, X2CRM. The company was launched in 2011 and is now one of the fastest growing CRM companies with more than 40,000 deployments worldwide.');
+                'X2CRM | X2 Engine was designed in Santa Cruz, '
+                . 'California by John Roberts with the mission to develop '
+                . 'a new generation fast and compact CRM platform CRM platform '
+                . 'with enterprise capabilities. What makes X2CRM powerful '
+                . 'is in addition to providing an enterprise scale CRM platform, '
+                . 'X2CRM also includes both a marketing workflow automation tool '
+                . 'and a structured sales and service process tool in one '
+                . 'application. With an incredibly rich user interface in both '
+                . 'web and mobile apps, you can configure X2CRM for practically '
+                . 'any CRM use. ');
         ?><br><br>
         <?php
         echo Yii::t('app',
-                'X2CRM is revolutionizing a software industry that has become ineffective due to poor coding, inferior data management practices and outdated Cloud infrastructure. X2CRM is a new, modern, and extensive platform with an incredibly rich user interface in both web and mobile apps, and complete control on CRM customizations, data, and hosting options.',
+                'X2CRM has taken years of dedicated work by '
+                . 'many talented software developers to create. The funding for '
+                . 'this software development is provided by  X2 Engine Inc. in Redwood City, California. If you '
+                . 'would like to use X2CRM under a commercial license or other '
+                . 'terms please contact X2Engine Inc. at {contact}.',
                 array(
             '{license}' => CHtml::link(Yii::t('app', 'GNU Affero GPL v3'),
                     Yii::app()->getBaseUrl() . '/LICENSE.txt',
@@ -115,24 +125,12 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
                     'mailto:contact@x2engine.com')
         ));
         ?><br><br>
-        
-          <?php
-        echo Yii::t('app',
-                'X2CRM has taken years of dedicated work by talented software engineers to deliver this superior solution. The funding for this software development is provided by X2Engine Inc., headquartered in Santa Cruz, California. If you would like to use X2CRM under a commercial license or other terms, please contact us at contact@x2engine.com.');
-        ?><br><br>
-        
         <?php
         echo Yii::t('app',
-                'For customer support, training, or partner solutions, visit {website} or call 831-900-5830 or follow us on {Twitter} or {Linkedin}.',
+                'For Customer Support, Training, Partner Solutions please visit: {website}',
                 array('{website}' => CHtml::link('www.x2crm.com',
-                    'https://www.x2crm.com', array('target' => '_blank')),
-                    '{Twitter}' => CHtml::link('Twitter',
-                    'https://twitter.com/x2crm', array('target' => '_blank')),
-                    '{Linkedin}' => CHtml::link('Linkedin',
-                    'https://www.linkedin.com/company/x2engine/', array('target' => '_blank')),
-                    
-                    ));
-        ?><br><br>
+                    'https://www.x2crm.com', array('target' => '_blank'))));
+        ?><br>
         <?php
         echo Yii::t('app', 'For X2CRM Public Forums: {community}',
                 array('{community}' => CHtml::link('www.x2community.com',
@@ -142,15 +140,16 @@ Yii::app()->clientScript->registerScript('loadJqueryVersion',
         <?php
         echo implode(', ',
                 array(
+            'John Roberts',
             'David Buchanan',
-            'Peter Czupil',
+            'Raymond Colebaugh',
             'Josef Bustamante',
-            'Tom Carroll',
-            'Phillip Kershow',
-            'Jack Lento-Edritch',
-            'Clifton Chiang',
-            'Justin Toyomitsu',
-            'Justin Law',
+            'Isaiah Solomon',
+            'Peter Czupil',
+            'Jake Houser',
+            'Steve Lance',
+            'Derek Mueller',
+            'Matthew Pearson',
         ));
         ?><br><br>
     </div>

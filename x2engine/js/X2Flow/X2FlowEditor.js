@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 
@@ -494,7 +491,7 @@ $(function () {
 
         init: function () {
             var that = this;
-            
+
             // listen for changes in fields on these parent elements
             // x2.fieldUtils.addChangeListener("#x2flow-conditions, #x2flow-attributes");
             x2.fieldUtils.addChangeListener("#x2flow-config-box");
@@ -765,7 +762,7 @@ $(function () {
             $('#targeted-content-embed-code-container').hide();
             return true;
         },
-        
+
         /**
          * Saves workflow flow
          * 
@@ -776,18 +773,15 @@ $(function () {
              they only get updated when you click a different item */
             this.saveCurrentConfig();
             this.invalidateDropdownCaches(this.trigger.data('config'));
-            
+
             var flow = {
                 version: this.version,
                 idCounter: this.idCounter,
                 trigger: this.trigger.data("config"),
                 items: this.getNodeTree($("#x2flow-main > .x2flow-branch"))
             };
-            
             $("#flowDataField").val(JSON.stringify(flow));
         },
-        
-        
 
         /**
          * Loads workflow flow
@@ -830,7 +824,6 @@ $(function () {
             var branch = $('<div class="bracket"></div>');
             for (var i in items) {
                 var item = items[i];
-                
                 if (item.type === "X2FlowSwitch" || item.type === 'X2FlowSplitter') {
                     var flowSwitch = $("#all ." + item.type).clone().data("config", item);
                     var rightChildName = item.type === 'X2FlowSwitch' ? 'trueBranch' : 'upperBranch';
@@ -860,7 +853,6 @@ $(function () {
 
                             flowItem.attr('style', '');
                         }
-                        
                         branch = branch.add(flowItem);
                     }
                 }
@@ -920,9 +912,6 @@ $(function () {
             }
             return items;
         },
-        
-        
-
 
         /**
          * Gets the model class to be used for the specified item's model attributes
@@ -1873,61 +1862,7 @@ $(function () {
         }
     });
 
-    /**
-     * Hides workflow actions based on chosen trigger
-     */
-    function hideActions() {
-        var option = $("#trigger-selector option:selected");
-        var trigger = option.text();
-
-        // If no trigger selected, hide actions bank
-        if (trigger === 'Select a trigger') {
-            $('#actions-bank').hide();
-        } else {
-            $('#actions-bank').show();
-        }
-
-        $('#all').children().each(function () {
-            // Hides record actions if record model not passed
-            if ($.inArray(trigger, x2.recordModelTriggers) === -1 &&
-                    $.inArray(this.title, x2.recordModelActions) !== -1) {
-                $(this).hide();
-            } else if ($.inArray(this.title, x2.recordModelActions) !== -1) {
-                $(this).show();
-            }
-
-            // Hides process actions if process model not passed
-            if ($.inArray(trigger, x2.processModelTriggers) === -1 &&
-                    $.inArray(this.title, x2.processModelActions) !== -1) {
-                $(this).hide();
-            } else if ($.inArray(this.title, x2.processModelActions) !== -1) {
-                $(this).show();
-            }
-        });
-    }
-
-    /**
-     * Hide actions on window load
-     */
-    $(window).load(function () {
-        hideActions();
-        var shortcodes = Object.values(x2.flow.insertableAttributes[x2.flow.modelClass]);
-        for (var i in shortcodes) {
-            var shortcode = shortcodes[i];
-            //console.log(shortcode);
-            $("#shortcodes").append('<div class="shortcode">' + shortcode + '</div>');
-        }
-    });
-
-    /**
-     * Hide actions on trigger change
-     */
-    $("#trigger-selector").change(function (e) {
-        $('.x2flow-branch .x2flow-action').remove();
-        $('.x2flow-branch .x2flow-node.x2flow-empty').remove();
-        $('.x2flow-branch').append('<div class="x2flow-node x2flow-empty"></div>');
-        hideActions();
-    });
+    
 
     flowEditor.init();
 

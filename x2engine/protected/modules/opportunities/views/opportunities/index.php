@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,24 +34,15 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
 $menuOptions = array(
-    'index', 'create', 'import', 'export', 'lists',
+    'index', 'create', 'import', 'export',
 );
 if ($accountModule->visible && $contactModule->visible)
     $menuOptions[] = 'quick';
 $this->insertMenu($menuOptions);
-
-//these hidden field is here to stop google auto fill from filling in the grid
-$ConFields = X2Model::model("Opportunity")->getFields();
-foreach($ConFields as $field){
-    echo '<input type="hidden" id="Opportunity[' . $field->fieldName . ']" name="Opportunity[' . $field->fieldName . ']">';      
-}
 
 
 Yii::app()->clientScript->registerScript('search', "
@@ -74,13 +65,11 @@ $('.search-form form').submit(function(){
 )); ?>
 </div><!-- search-form -->
 <?php
-$enableSelectAllOnAllPages = true;
 $this->widget('X2GridView', array(
 	'id'=>'opportunities-grid',
     'title'=>Yii::t('opportunities','{opportunities}', array(
         '{opportunities}'=>Modules::displayName(),
     )),
-    'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
@@ -124,12 +113,6 @@ $this->widget('X2GridView', array(
 			'type'=>'raw',
 		),
 	),
-        'massActions' => array(
-        'MassDelete', 'MassTag', 'MassTagRemove', 'MassUpdateFields', 
-        'MergeRecords', 'MassPublishNote', 'MassPublishCall', 'MassPublishTime', 
-        'MassPublishAction', 'MassAddRelationship', 
-        'MassAddToList', 'NewListFromSelection', 'MassExecuteMacro'
-        ),
 	'enableControls'=>true,
 	'fullscreen'=>true,
 ));

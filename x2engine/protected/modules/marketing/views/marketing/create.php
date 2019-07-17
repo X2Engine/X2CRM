@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,15 +34,11 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 Tours::loadTips('marketing.create');
 
-$this->pageTitle = Yii::t('marketing', 'Create Campaign');
+$this->pageTitle = Yii::t('marketing','Create Campaign');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
-    
 );
 
 $plaOptions = array(
@@ -61,11 +57,11 @@ $form = $this->beginWidget('CActiveForm', array(
 
 <div class="page-title icon marketing">
     <h2><?php echo Yii::t('marketing','Create Campaign'); ?></h2>
-    <?php echo CHtml::submitButton(Yii::t('module','Create'), array('class'=>'x2-button highlight right')); ?>
+    <?php echo CHtml::submitButton(Yii::t('module','Create'),array('class'=>'x2-button highlight right')); ?>
 </div>
 
 <?php
-$this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign', 'form'=>$form));
+$this->renderPartial('_form', array('model'=>$model, 'modelName'=>'Campaign','form'=>$form));
 
 $this->endWidget();
 ?>

@@ -225,7 +225,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string $column the name of the column to be dropped. The name will be properly quoted by the method.
 	 * @return string the SQL statement for dropping a DB column.
 	 * @since 1.1.6
-	 * @throws CDbException
 	 */
 	public function dropColumn($table, $column)
 	{
@@ -240,7 +239,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string $newName the new name of the column. The name will be properly quoted by the method.
 	 * @return string the SQL statement for renaming a DB column.
 	 * @since 1.1.6
-	 * @throws CDbException
 	 */
 	public function renameColumn($table, $name, $newName)
 	{
@@ -259,7 +257,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
 	 * @return string the SQL statement for adding a foreign key constraint to an existing table.
 	 * @since 1.1.6
-	 * @throws CDbException
 	 */
 	public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete=null, $update=null)
 	{
@@ -273,7 +270,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
 	 * @return string the SQL statement for dropping a foreign key constraint.
 	 * @since 1.1.6
-	 * @throws CDbException
 	 */
 	public function dropForeignKey($name, $table)
 	{
@@ -290,7 +286,6 @@ class CSqliteSchema extends CDbSchema
 	 * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
 	 * @return string the SQL statement for changing the definition of a column.
 	 * @since 1.1.6
-	 * @throws CDbException
 	 */
 	public function alterColumn($table, $column, $type)
 	{
@@ -317,7 +312,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
 	 * @return string the SQL statement for adding a primary key constraint to an existing table.
 	 * @since 1.1.13
-	 * @throws CDbException
 	 */
 	public function addPrimaryKey($name,$table,$columns)
 	{
@@ -332,7 +326,6 @@ class CSqliteSchema extends CDbSchema
 	 * @param string $table the table that the primary key constraint will be removed from.
 	 * @return string the SQL statement for removing a primary key constraint from an existing table.
 	 * @since 1.1.13
-	 * @throws CDbException
 	 */
 	public function dropPrimaryKey($name,$table)
 	{

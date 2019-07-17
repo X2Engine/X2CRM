@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,10 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
-
+ 
 @import "standards";
 @import "font-awesome";
 @import "x2-icons";
@@ -43,10 +40,10 @@
 
 div.no-selection,
 span.no-selection {
-    -moz-user-select: none; 
-    -webkit-user-select: none; 
-    -ms-user-select: none; 
-    -khtml-user-select: none;
+        -moz-user-select: none; 
+        -webkit-user-select: none; 
+        -ms-user-select: none; 
+        -khtml-user-select: none;
 }
 
 .right-widget-title {
@@ -68,7 +65,8 @@ menu with JS
 
 #search-bar-title {
     font-size: 31px;
-    color: #FFFFFF;
+    color: $appBlue;
+    
     float: left;
     margin-left: 18px;
     margin-right: 6px;
@@ -146,16 +144,18 @@ body {
     width: 100%;
     z-index: 1000;
     &.defaultBg {
-        background: #3d70b4;
+        background: $lightestGray;
+        
     }
 }
 
 #header-inner {
     height: 31px;
+    /* #header.defaultBg #header-inner { */
+    opacity: 0.95;
     background-image: url(../images/stripes2.png);
     background-repeat: no-repeat;
     background-size: auto;
-    opacity: 1;
 }
 
 .avatar-image {
@@ -293,20 +293,19 @@ div.admin-flash-error {
     padding: 0;
     margin-top: 3px;
     @include border-radius (3px);
-    background: #f4f6f9;
+    background: #fff;
     text-decoration: none;
     text-align: center;
     font-size: 18px;
     line-height: 25px;
-    
     span {
+        color: #09f;
         display: block;
         padding: 0 10px;
         line-height: 25px;
         font-size: 18px;
         text-decoration: none;
         text-shadow: none;
-        color: #3d70b4;
     }
 }
 
@@ -415,15 +414,14 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
     padding: 0 2px;
     /* min-height:60px; */
     top: 40px;
+    background: #f0f0f0;
     position: absolute;
     right: 160px;
     z-index: 2000;
-    background: white;
-    -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    
+    /* border:1px solid #333; */
+    /* border-top:none; */
     @include border-radius(2px);
+    @include box-shadow(0 3px 15px 2px rgba(black, 0.5));
 
     &:after {
         position: absolute;
@@ -438,6 +436,7 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
     }
 
     .notif {
+        /* border-bottom:1px solid #999; */
         position: relative;
         overflow: auto;
         padding: 1px 5px;
@@ -485,13 +484,11 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
 }
 
 #notif-view-all a, #notif-clear-all a {
-    color: #555555;
-    text-decoration: none;
+    color: black;
 }
 
 #notif-view-all a:hover, #notif-clear-all a:hover {
-    color: #3d70b4;
-    text-decoration: none;
+    text-decoration: underline;
 }
 
 .notif {
@@ -522,13 +519,18 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
 .sidebar-left {
     background: white;
     width: 150px;
+    /* margin-left:20px; */
     clear: left;
-    margin: 0px 0px 20px 20px;
-    border: 1px solid #e0e0e0;
+    margin: 5px 5px 0 5px;
+    /* padding:0 0 10px 0; */
+    /* position:relative; */
+    // border: 1px solid #c5c5c5;
+    @include standard-box-shadow ();
+    // border: 1px solid rgba(0,0,0,0);
+    /* border-width:0 1px 1px 0;
+    margin-right: -1px; */
     float: left;
-    
     @include border-radius (2px);
-    
     > .left-widget-collapsed + div {
         background: #F5F5F5;
     }
@@ -631,10 +633,14 @@ Remove border radius from left widget title bars which are preceded by a collaps
 
 .portlet-decoration {
     padding: 1px;
-    background: white;
+    /* background:#eee; */
     text-align: center;
-    
+    /* border-width:1px 0 1px 0; */
+    /*  -moz-box-shadow:        inset 0 1px 0 0 #fff;
+        -webkit-box-shadow:     inset 0 1px 0 0 #fff;
+        box-shadow:             inset 0 1px 0 0 #fff; */
     @include border-radius (2px 2px 0 0);
+    background: $defaultTitleBar;
 
 }
 
@@ -647,17 +653,15 @@ Remove border radius from left widget title bars which are preceded by a collaps
     font-size: 8pt;
     font-weight: bold;
     line-height: 18px;
-    color: #555555;
+    color: #333;
     cursor: default;
-    
     .gear-img-container, .portlet-minimize > a {
         @include titleBarIconButton;
     }
 }
 
 .portlet-content {
-    //padding: 5px 10px;
-    padding: 12px;
+    padding: 5px 10px;
     overflow: auto;
     background: #fff;
     clear: both;
@@ -680,7 +684,6 @@ Remove border radius from left widget title bars which are preceded by a collaps
     }
     li {
         margin: 0 0 5px 0;
-        color: #555555;
     }
 }
 
@@ -710,7 +713,7 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }
 
 #sidebar-left-widget-box {
-    margin-top: 20px !important;
+    /*margin-top: 5px;*/
     .portlet-decoration i {
         @include titleBarIconButton;
     }
@@ -722,17 +725,18 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }*/
 
 #sidebar-right {
-    margin: 0px 20px 20px 0px;
+    margin: 5px 5px 10px 5px;
     z-index: 100;
     width: 22%;
     float: right;
     padding-bottom: 10px;
-    
+    /*  border-left:1px solid #999;
+        border-width:0 1px; */
     @include border-radius ();
-    
     .portlet {
-        margin-bottom: 20px;
-        border: 1px solid #e0e0e0;
+        margin-bottom: 5px;
+        @include standard-box-shadow();
+
     }
 }
 
@@ -742,25 +746,21 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }
 
 #content {
-    margin: 0px;
-    border: 1px solid #e0e0e0;
-
+    margin: 5px 5px 0px 5px;
+    
     &.no-backdrop {
         padding-bottom: 0px;
-        margin: 0px;
-        margin-left: 20px;
+
     }
 
     &:not(.no-backdrop) {
+        @include standard-box-shadow ();
         margin-bottom: 3px;
-        margin: 0px;
-        margin-left: 20px;
-        margin-right: 20px;
-        
         &:after {
             content: ' ';
             clear: both;
         }
+        // border: 1px solid #c5c5c5;
     }
 
     .no-backdrop {
@@ -772,9 +772,9 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }
 
 #content-container-inner {
-    box-shadow: none;
+    @include standard-box-shadow ();
+    // border: 1px solid #c5c5c5;
     border-top: none;
-    
     @include border-radius (0 0 2px 2px);
 }
 
@@ -782,10 +782,6 @@ Remove border radius from left widget title bars which are preceded by a collaps
     position: relative;
     padding: 0 10px 20px 10px;
     margin: 5px 10px 10px 0;
-}
-
-#content.x2-layout-island {
-    margin-top: -5px;
 }
 
 
@@ -811,7 +807,7 @@ body.no-widgets {
 .no-widgets {
     div {
         &.page-title-fixed-outer div.page-title {
-            margin-right: -21px;
+            margin-right: 0px;
         }
         &.page-title-fixed-inner {
             padding-right: 0 !important;
@@ -876,7 +872,7 @@ body.no-widgets {
 div.page-title h2, table.fc-header h2 {
     display: inline;
     font-weight: bold;
-    color: #555555;
+    color: #333;
     margin: 0 10px;
     font-size: 18px;
 }
@@ -1057,40 +1053,40 @@ div {
         &.auto-resize-button span {
             background: url(../images/icons/resize.png) center center no-repeat;
         }
-        &.search-button span {
-            background: url(../images/icons/search-button.png) 5px center no-repeat;
-        }
-        .filter-button span {
-            // @extend .fa;
-            // background: url(../images/icons/filter-button.png) center center no-repeat;
-        }
+      &.search-button span {
+        background: url(../images/icons/search-button.png) 5px center no-repeat;
+      }
+    .filter-button span {
+      // @extend .fa;
+      // background: url(../images/icons/filter-button.png) center center no-repeat;
     }
-    &.title-bar .x2-button.column-selector-link span {
-        background: url(../images/icons/columns-button.png) center center no-repeat;
+  }
+  &.title-bar .x2-button.column-selector-link span {
+    background: url(../images/icons/columns-button.png) center center no-repeat;
+  }
+  &.page-title .x2-button {
+    &.column-selector-link span {
+      background: url(../images/icons/columns-button.png) center center no-repeat;
     }
-    &.page-title .x2-button {
-        &.column-selector-link span {
-            background: url(../images/icons/columns-button.png) center center no-repeat;
-        }
-        &.auto-resize-button span {
-            background: url(../images/icons/resize.png) center center no-repeat;
-        }
-        &.right {
-            display: block;
-            vertical-align: top;
-            margin: 5px 5px 0 0;
-        }
-        &.left {
-            display: block;
-            vertical-align: top;
-            margin: 5px 5px 0 0;
-        }
+    &.auto-resize-button span {
+      background: url(../images/icons/resize.png) center center no-repeat;
     }
-    &.grid-top-bar .x2-button span, &.page-title .x2-button span {
-        display: block;
-        height: 24px;
-        width: 24px;
+    &.right {
+      display: block;
+      vertical-align: top;
+      margin: 5px 5px 0 0;
     }
+    &.left {
+      display: block;
+      vertical-align: top;
+      margin: 5px 5px 0 0;
+    }
+  }
+  &.grid-top-bar .x2-button span, &.page-title .x2-button span {
+    display: block;
+    height: 24px;
+    width: 24px;
+  }
 }
 
 /*div.page-title .x2-button.icon.email span {background:url(../images/icons/email-button.png) left center no-repeat;}*/
@@ -1215,13 +1211,12 @@ div {
 /* for layout sections positioned outside of the layout tray */
 
 .x2-layout-island {
-    /* @theme background: content */
-    
-    margin: 0px 20px 20px 0px !important;
-    border: 1px solid #e0e0e0 !important;
     background-color: white;
-    
+
+    /* @theme background: content */
+    @include standard-box-shadow ();
     @include border-radius (2px);
+    border: none;
 
     &.x2-layout-island-merge-bottom {
         border-bottom: none;
@@ -1314,9 +1309,6 @@ body.disable-mobile-layout {
     }
     .x2-gridview-fixed-top-bar-outer .x2-gridview-fixed-top-bar-inner > .page-title {
         @include border-radius (0);
-        
-        border-top: 1px solid #e0e0e0;
-        margin-top: 5px;
     }
     .x2-gridview-fixed-top-bar-inner > .page-title {
         @include border-radius (2px 2px 0px 0px);
@@ -1388,7 +1380,7 @@ body.disable-mobile-layout {
 ***********************************************************************/
 
 .x2-col {
-    float: left;
+        float: left;
 }
 
 /***********************************************************************
@@ -1435,7 +1427,7 @@ body.disable-mobile-layout {
 }
 .detail-view {
     a {
-        color: #555555;
+        color: #004baf;
     }
 }
 

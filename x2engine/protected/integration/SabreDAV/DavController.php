@@ -43,7 +43,7 @@ class DavController extends CController {
             'baseUri' => $baseUri,
             'oAuthToken' => $accessToken['access_token'],
         ));
-        
+
         $result = $client->propFind($calendarUrl, array(
             $displayNameKey,
             $ctagKey,

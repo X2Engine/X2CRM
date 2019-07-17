@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Form model for logging into the app.
  *
@@ -68,8 +65,6 @@ class LoginForm extends X2FormModel {
             array('username, password', 'required'),
             // rememberMe needs to be a boolean
             array('rememberMe', 'boolean'),
-            // password needs to be authenticated
-            array('sessionToken', 'authenticate'),
             // password needs to be authenticated
             array('password', 'authenticate'),
             // 2FA code needs to be verified if required
@@ -175,10 +170,6 @@ class LoginForm extends X2FormModel {
 	 */
     public function loginSessionToken($google = false) {
         if(isset(Yii::app()->request->cookies['sessionToken'])){
-            /*
-             * TODO: Check referrer if its the correct server and 
-             *       maybe implement a secret key to hash the cookie
-             */
             $sessionToken = Yii::app()->request->cookies['sessionToken']->value;
             if(empty(Yii::app()->request->cookies['sessionToken']->value))
                 return false;

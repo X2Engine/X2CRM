@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * X2WebApplication class file.
  * 
@@ -47,24 +44,6 @@
  */
 class X2WebApplication extends CWebApplication {
 
-	/**
-	 * Processes the current request.
-	 * It first resolves the request into controller and action,
-	 * and then creates the controller to perform the action.
-	 */
-	public function processRequest()
-	{
-		if(is_array($this->catchAllRequest) && isset($this->catchAllRequest[0]))
-		{
-			$route=$this->catchAllRequest[0];
-			foreach(array_splice($this->catchAllRequest,1) as $name=>$value)
-				$_GET[$name]=$value;
-		}
-		else
-			$route=$this->getUrlManager()->parseUrl($this->getRequest());
-		$this->runController(Fields::getPurifier()->purify($route));
-	}
-    
 	/**
 	 * Checks whether the named component has been created.
 	 * @param string $id application component ID

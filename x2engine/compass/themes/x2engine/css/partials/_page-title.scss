@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
 *  
@@ -72,20 +69,18 @@ table.fc-header {
     background-repeat: no-repeat;
     background-position: 0 -5px;
     padding: 0 5px;
-    margin-bottom: 20px;
-    border-bottom: none;
-    border: 1px solid #e0e0e0;
-    background: white;
+    border-bottom: 1px solid #aaa;
+    background: $defaultTitleBar;
 
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c0c0c0', endColorstr='#b0b0b0',GradientType=0 );
 
     line-height: 34px;
     height: 35px;
+
 }
 
 .grid-view div.page-title {
-    border-bottom: 1px solid #e0e0e0;
-    
+    border-bottom: 1px solid $gray;
     h2 {
         overflow: visible;
     }
@@ -106,7 +101,7 @@ table.fc-header .fc-header-title h2 {
 }
 
 .page-title {
-    background: white;
+    background: $defaultTitleBar;
     border-bottom: none;
 
     span.icon, &.icon h2:before {
@@ -117,27 +112,17 @@ table.fc-header .fc-header-title h2 {
         display: inline-block;
         padding: 0;
         &.contacts {
-            margin-left: 10px;
-            display: inline-block;
-            &:before {
-                position: relative;
-                top: -6px;
-            }
+        @include x2-icon('contact');
+         margin-left: 10px;
+         display: inline-block;
+         &:before {
+             position: relative;
+             top: -6px;
+         }
         }
     }
 
-    div.icon {
-        display: inline-block;
-        padding: 0;
-        &.contacts {
-            margin-left: 10px;
-            display: inline-block;
-            &:before {
-                position: relative;
-                top: -6px;
-            }
-        }
-    }
+    
 
     // This may be able to be merged with .icon h2 below
     h2 {
@@ -157,7 +142,6 @@ table.fc-header .fc-header-title h2 {
             margin-left: 0;
             background-repeat: no-repeat;
             background-position: -1px -5px;
-            color: #555555;
 
             &:before {
                 margin-left: -39px;
@@ -183,6 +167,8 @@ table.fc-header .fc-header-title h2 {
 }
 
 .reports h2 {
+     @include fa-icon ('file-o', 'before');
+     @include fa-icon ('bar-chart', 'after');
     &:before {
         font-size: 22px !important;
         position: relative;
@@ -198,68 +184,20 @@ table.fc-header .fc-header-title h2 {
     }
 }
 
+table.fc-header .fc-header-title h2 {
+    @include fa-icon('calendar-o') {position: relative;left: -5px;font-size: 21px;margin-right: 4px;margin-left: -32px;top: 1px;}
+}
+
+div.page-title.icon.activity-feed h2 {
+     @include x2-icon('activity') {position: relative;left: -10px;font-size: 23px !important;margin-right: 0px;margin-left: -34px;top: 2px;};
+    
+}
+
 div.page-title.icon.contacts h2 {
-    background-image: url(../images/contacts.png);
+     @include x2-icon('contacts') {position: relative;left: -10px;font-size: 23px !important;margin-right: 0px;margin-left: -34px;top: 2px;};
+    
 }
 
-.page-title.icon.accounts h2{
-    background-image: url(../../x2engine/images/accounts.png);
-}
-
-.page-title.icon.marketing h2{
-    background-image: url(../images/marketing.png)
-}
-
-.page-title.icon.x2Leads h2{
-    background-image: url(../images/x2Leads.png)
-}
-
-.page-title.icon.opportunities h2{
-    background-image: url(../images/opportunities.png)
-}
-
-.page-title.icon.services h2{
-    background-image: url(../images/services.png);
-}
-
-.page-title.icon.actions h2{
-    background-image: url(../images/actions.png);
-}
-
-
-span.fc-header-title h2{
-    background-image: url(../images/calendar.png);
-}
-
-.page-title.icon.docs h2{
-    background-image: url(../images/docs.png);
-}
-
-.page-title.icon.workflow h2{
-    background-image: url(../images/workflow.png);
-}
-
-.page-title.icon.products h2{
-    background-image: url(../images/products.png);
-}
-
-.page-title.icon.quotes h2{
-    background-image: url(../images/quotes.png);
-}
-
-.page-title.icon.reports h2{
-    background-position: inherit;
-    background-image: url(../images/folder.png);
-}
-
-.page-title.icon.media h2{
-    background-position: inherit;
-    background-image: url(../images/media.png);
-}
-
-.page-title.icon.groups h2{
-    background-image: url(../images/groups.png);
-}
 
 .page-title .inline-edit-button {
     & .fa {
@@ -279,12 +217,11 @@ td.fc-header-left h2 {
     clear: both;
 }
 .page-title-fixed-outer {
+    width: 100%;
     height: 0;
     position: fixed;
     z-index: 500;
-    width: calc(100% - 63px);
-    top: 52px;
-    margin-left: 27px;
+    top: 32px;
     left: 0;
     -webkit-transform: translateZ(0);
     -webkit-box-sizing: border-box;
@@ -312,9 +249,9 @@ td.fc-header-left h2 {
         margin-left: 3px;
         margin-right: 6px;
         width: auto;
-        border: 1px solid #e0e0e0;
-        
-        @include border-radius (4px 4px 4px 4px);
+        border: 1px solid $lightGray;
+        border-top: none;
+        @include border-radius (0 0 4px 4px);
     }
     padding-right: 9px;
 }

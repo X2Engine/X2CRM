@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,36 +34,28 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /*
-  Public/private profile page. If the requested profile belongs to the current user, profile widgets
-  get displayed in addition to the activity feed/profile information sections.
- */
+Public/private profile page. If the requested profile belongs to the current user, profile widgets
+get displayed in addition to the activity feed/profile information sections. 
+*/
 
-Yii::app()->clientScript->registerCssFiles('profileCombinedCss', array(
+Yii::app()->clientScript->registerCssFiles ('profileCombinedCss', array (
     'profile.css', 'activityFeed.css', '../../../js/multiselect/css/ui.multiselect.css'
 ));
 
-Yii::app()->clientScript->registerResponsiveCssFile(Yii::app()->getTheme()->getBaseUrl() . '/css/responsiveActivityFeed.css');
+Yii::app()->clientScript->registerResponsiveCssFile (Yii::app()->getTheme()->getBaseUrl().'/css/responsiveActivityFeed.css');
 
-AuxLib::registerPassVarsToClientScriptScript(
-        'x2.profile', array('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');
-?>
+AuxLib::registerPassVarsToClientScriptScript (
+    'x2.profile', array ('isMyProfile' => ($isMyProfile ? 'true' : 'false')), 'profileScript');
 
-<div activity-feed-module-container style="margin-right: -20px">
-    <?php
-    $this->renderPartial('_activityFeed', array(
-        'dataProvider' => $dataProvider,
-        'profileId' => $model->id,
-        'users' => $users,
-        'lastEventId' => $lastEventId,
-        'firstEventId' => $firstEventId,
-        'lastTimestamp' => $lastTimestamp,
-        'stickyDataProvider' => $stickyDataProvider,
-        'userModels' => $userModels,
-        'isMyProfile' => $isMyProfile
-    ));
-    ?>
-</div>
+$this->renderPartial('_activityFeed', array(
+    'dataProvider' => $dataProvider,
+    'profileId' => $model->id,
+    'users' => $users,
+    'lastEventId' => $lastEventId,
+    'firstEventId' => $firstEventId,
+    'lastTimestamp' => $lastTimestamp,
+    'stickyDataProvider' => $stickyDataProvider,
+    'userModels' => $userModels,
+    'isMyProfile' => $isMyProfile
+));

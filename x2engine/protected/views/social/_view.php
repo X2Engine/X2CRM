@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 ?>
 <div class="view top-level">
 	<div class="deleteButton">
@@ -55,15 +52,7 @@
                 )
             ); //,array('class'=>'x2-button') ?>
 	</div>
-        <div class="img-box test" style="width:45px;float:left;margin-right:5px;">
-            <?php
-		$profile = Profile::model()->findByAttributes(array('username'=>$data->user));
-		if (isset($profile))
-			echo Profile::renderFullSizeAvatar($profile->id, 35);
-            ?>
-        </div>
-	<?php 
-        echo User::getUserLinks($data->user);
+	<?php echo User::getUserLinks($data->user);
 	echo ' ';
 	echo X2Html::tag('span', array(
 		'class' => 'comment-age x2-hint',

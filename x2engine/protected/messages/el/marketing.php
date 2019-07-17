@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => 'Αυτή η επιλογή σάς επιτρέπει να ορίσετε εάν θα γίνει η γεωγραφική τοποθέτηση για τους επισκέπτες σας.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => 'Αυτή η επιλογή σάς επιτρέπει να ρυθμίσετε εάν θα πραγματοποιηθεί η αποτύπωση δακτυλικών αποτυπωμάτων για να επιχειρηθεί η αντιστοίχιση του επισκέπτη σας.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => 'Μπορείτε επίσης να διαμορφώσετε τον ελάχιστο αριθμό απαιτήσεων του προγράμματος περιήγησης που απαιτούνται για την αντιστοίχιση ενός επισκέπτη. Όσο υψηλότερη είναι αυτή η τιμή, τόσο πιο ακριβείς θα είναι οι μερικοί σας αγώνες.',
-    'Suppressed' => 'Καταστολή',
-    'Suppression List' => 'Λίστα κατάργησης',
-    'Suppression List:' => 'Λίστα κατάργησης:',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => 'Παράλειψη αποστολής μηνυμάτων ηλεκτρονικού ταχυδρομείου στη διεύθυνση {address}. Αυτή η επαφή παραλείπεται καθώς υπάρχει σε καταργημένη λίστα.',
-    'Select a Suppression List' => 'Επιλέξτε μια λίστα καταστολής',
-    'New Suppression List' => 'Νέα λίστα κατάργησης',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => 'Επιλέξτε μια λίστα κατάργησης για να αποφύγετε την αποστολή του μηνύματος ηλεκτρονικού ταχυδρομείου καμπάνιας ή δημιουργήστε ένα εδώ.',
 );

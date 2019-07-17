@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $modTitle = Modules::displayName();
 
 $menuOptions = array(
@@ -64,11 +61,8 @@ echo $this->renderPartial('_form',
 	 array(
 		 'model'=>$model,
                  'googleIntegration'=>$googleIntegration,
-                 'outlookIntegration' => $outlookIntegration,
                  'client' => $client,
-                 'clientOutlook' => $clientOutlook,
                  'googleCalendarList' => $googleCalendarList,
-                 'outlookCalendarList' => $outlookCalendarList,
                  'hubCalendaring' => $hubCalendaring,
 		 'users'=>$users,
 		 'modelName'=>'calendar',

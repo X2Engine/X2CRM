@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /************************************************
 * This file mantains several important mixins for 
@@ -102,7 +99,6 @@
     .stacked-icon {
         display: inline-block;
         @include fa-icon($icon);
-        visibility: hidden;
     }
 
     .stacked-icon:before {
@@ -180,30 +176,3 @@ $icon-list-x2: (
     ("contacts" "contact")
 );
 
-$icon-list-fa: (
-    ("emailInboxes" "envelope")
-    ("profile" "user")
-    //("actions" "play-circle")
-    //("accounts" "building")
-    //("opportunities" "bullseye")
-    //("marketing" "bullhorn")
-    ("x2flow" "sitemap, %fa-rotate-270")
-    //("x2Leads" "star")
-    //("docs" "file-text")
-    //("groups" "users")
-    //("media" "music")
-    ("users" "users")
-    ("charts" "bar-chart")
-    ("topics" "comments")
-    ("bugReports" "bug")
-    //("reports" "file-o" "bar-chart")
-    ("custom-module" "folder")
-);
-$icon-list-x2: (
-    ("x2Activity" "activity")
-    ("quotes" "quotes")
-    ("services" "service")
-    //("workflow" "funnel")
-    //("products" "package")
-    ("contacts" "contact")
-);

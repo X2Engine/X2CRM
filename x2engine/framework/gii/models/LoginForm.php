@@ -19,8 +19,6 @@ class LoginForm extends CFormModel
 	/**
 	 * Authenticates the password.
 	 * This is the 'authenticate' validator as declared in rules().
-	 * @param string $attribute the name of the attribute to be validated.
-	 * @param array $params additional parameters passed with rule when being executed.
 	 */
 	public function authenticate($attribute,$params)
 	{

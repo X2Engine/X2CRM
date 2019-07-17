@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.models.X2Model');
 
@@ -79,9 +76,6 @@ class X2Leads extends X2Model {
             'ContactsNameBehavior' => array(
                 'class' => 'application.components.behaviors.ContactsNameBehavior',
             ),
-            'MappableBehavior' => array(
-                'class' => 'application.components.behaviors.MappableBehavior',
-            ),
 		));
 	}
 
@@ -105,33 +99,6 @@ class X2Leads extends X2Model {
 		return implode(', ',$links);
 	}
 
-    /**
-     * Gets a DataProvider for all the contacts in the specified list,
-     * using this Contact model's attributes as a search filter
-     */
-    public function searchList($id, $pageSize = null) {
-        $list = X2List::model()->findByPk($id);
-
-        if (isset($list)) {
-            $search = $list->queryCriteria();
-
-            $this->compareAttributes($search);
-
-            return new SmartActiveDataProvider('X2Leads', array(
-                'criteria' => $search,
-                'sort' => array(
-                    'defaultOrder' => 't.lastUpdated DESC'    // true = ASC
-                ),
-                'pagination' => array(
-                    'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
-                ),
-            ));
-        } else {    //if list is not working, return all contacts
-            return $this->searchBase();
-        }
-    }
-
-        
     public function beforeSave () {
         // backwards compatibility check for when leads didn't have first and last name fields
         if (!$this->isNewRecord && 
@@ -147,13 +114,8 @@ class X2Leads extends X2Model {
 
      public function search($resultsPerPage=null, $uniqueId=null) {
          $criteria=new CDbCriteria;
-        if ($resultsPerPage === null) {
-            if (!Yii::app()->user->isGuest) {
-                $resultsPerPage = Profile::getResultsPerPage();
-            } else {
-                $resultsPerPage = 20;
-            }
-        }
+         $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
+         $criteria->scopes=array('findAll'=>array($parameters));
  
          // allows converted leads to be filtered out of grid by default
          $filters = $this->asa ('ERememberFiltersBehavior')->getSetting ('filters');

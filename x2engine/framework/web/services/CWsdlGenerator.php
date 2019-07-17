@@ -361,8 +361,6 @@ class CWsdlGenerator extends CComponent
 
 	/**
 	 * @param string $type PHP variable type
-	 * @return mixed|string
-	 * @throws CException
 	 */
 	protected function processType($type)
 	{
@@ -443,10 +441,9 @@ class CWsdlGenerator extends CComponent
 	}
 
 	/**
-	 * Parse attributes nillable, minOccurs, maxOccurs
-	 * @param string $comment Extracted PHPDoc comment
-	 * @return array array of [nillable, minOccurs, maxOccurs]
-	 */
+	* Parse attributes nillable, minOccurs, maxOccurs
+	* @param string $comment Extracted PHPDoc comment
+	*/
 	protected function getWsdlElementAttributes($comment) {
 		$nillable=$minOccurs=$maxOccurs=null;
 		if(preg_match('/{(.+)}/',$comment,$attr))
@@ -501,7 +498,6 @@ class CWsdlGenerator extends CComponent
 	/**
 	 * @param string $serviceUrl Web service URL
 	 * @param string $encoding encoding of the WSDL. Defaults to 'UTF-8'.
-	 * @return DOMDocument
 	 */
 	protected function buildDOM($serviceUrl,$encoding)
 	{
@@ -687,7 +683,6 @@ class CWsdlGenerator extends CComponent
 	 * @param DOMDocument $dom Represents an entire HTML or XML document; serves as the root of the document tree
 	 * @param string $name method name
 	 * @param string $doc doc
-	 * @return DOMElement a new instance of wsdl:operation element filled by tns In/Out data
 	 */
 	protected function createPortElement($dom,$name,$doc)
 	{
@@ -730,7 +725,6 @@ class CWsdlGenerator extends CComponent
 	 * @param DOMDocument $dom Represents an entire HTML or XML document; serves as the root of the document tree
 	 * @param string $name method name
 	 * @param array $headers array like array('input'=>array(MESSAGE,PART),'output=>array(MESSAGE,PART))
-	 * @return DOMElement a new instance of wsdl:operation element
 	 */
 	protected function createOperationElement($dom,$name,$headers=null)
 	{

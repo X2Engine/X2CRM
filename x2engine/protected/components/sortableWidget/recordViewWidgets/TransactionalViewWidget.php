@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.components.sortableWidget
@@ -221,9 +218,6 @@ abstract class TransactionalViewWidget extends GridViewWidget {
 
         $addWidths = function ($widthA, $widthB) {
             if (preg_match ('/%/', $widthA) && preg_match ('/%/', $widthB)) {
-                //get numeric components
-                $widthA = substr($widthA, 0, -1);
-                $widthB = substr($widthB, 0, -1);
                 return $widthA + $widthB . '%';
             } else if (!preg_match ('/%/', $widthA) && !preg_match ('/%/', $widthB)) {
                 return $widthA + $widthB;

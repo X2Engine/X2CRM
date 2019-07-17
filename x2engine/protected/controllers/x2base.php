@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Base controller for all application controllers with CRUD operations
@@ -260,7 +257,7 @@ abstract class x2base extends X2Controller {
             //printR($model, true);
             X2Flow::trigger('RecordViewTrigger',array('model'=>$model));
         }
-       
+
         $this->render('view', array_merge($params,array(
             'model' => $model,
             'actionHistory' => $this->getHistory($model,$type),
@@ -301,7 +298,7 @@ abstract class x2base extends X2Controller {
     }
 
     /**
-     * Obtains the current workflow for a model of given type and id.
+     * Obtains the current worflow for a model of given type and id.
      * Prioritizes incomplete workflows over completed ones.
      * @param integer $id the ID of the record
      * @param string $type the associationType of the record
@@ -724,12 +721,10 @@ abstract class x2base extends X2Controller {
      */
     public function render($view,$data=null,$return=false)
     {
-        
         if($this->beforeRender($view))
         {
-            
             $output=$this->renderPartial($view,$data,true);
-            //printR($output, 1);
+
             /* x2modstart */ 
             if(($layoutFile=$this->getLayoutFile($this->layout))!==false) {
                 $output = $this->renderLayout ($layoutFile, $output);

@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.modules.media.controllers
@@ -97,20 +94,16 @@ class MediaController extends x2base {
      * Forces download of specified media file
      */
     public function actionDownload($id) {
-        $model = Media::model()->findByPk($id);
+        $model = $this->loadModel($id);
         if (!$this->checkPermissions($model, 'view'))
             $this->denied();
-        if (isset($model)) {
-            $filePath = $model->getPath();
-            if ($filePath != null)
-                $file = Yii::app()->file->set($filePath);
-            else
-                throw new CHttpException(404, 'File path could not be found.');
-            if ($file->exists)
-                $file->send();
-        } else {
-            throw new CHttpException(404, 'File not found.');
-        }
+        $filePath = $model->getPath();
+        if ($filePath != null)
+            $file = Yii::app()->file->set($filePath);
+        else
+            throw new CHttpException(404);
+        if ($file->exists)
+            $file->send();
         //Yii::app()->getRequest()->sendFile($model->fileName,@file_get_contents($fileName));
         $this->redirect(array('view', 'id' => $id));
     }
@@ -226,15 +219,15 @@ class MediaController extends x2base {
 
         try {
             if (Yii::app()->user->isGuest)
-                throw new CHttpException(401, 'You are not logged in.');
+                throw new Exception('You are not logged in.');
 
             if (!isset($_FILES['upload'], $_GET['CKEditorFuncNum'])) //,$_GET['Media']
-                throw new CHttpException(400, 'That was an invalid request.');
+                throw new Exception('Invalid request.');
 
             $upload = CUploadedFile::getInstanceByName('upload');
 
             if ($upload == null)
-                throw new CHttpException(403, 'Invalid file.');
+                throw new Exception('Invalid file.');
 
             $fileName = $upload->getName();
             $fileName = str_replace(' ', '_', $fileName);
@@ -244,12 +237,12 @@ class MediaController extends x2base {
             // if user folder doesn't exit, try to create it
             if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
                 if (!@mkdir('uploads/protected/media/' . $userFolder, 0777, true)) { // make dir with edit permission
-                    throw new CHttpException(500, 'Error creating user folder.');
+                    throw new Exception('Error creating user folder.');
                 }
             }
 
             if (!$upload->saveAs($userFolderPath . DIRECTORY_SEPARATOR . $fileName))
-                throw new CHttpException(500, 'Error saving file.');
+                throw new Exception('Error saving file');
 
             // save media info
             $model = new Media;
@@ -260,7 +253,7 @@ class MediaController extends x2base {
             $model->associationType = 'none';
 
             if (!$model->save()) {
-                throw new CHttpException(500, 'Error saving Media entry.');
+                throw new Exception('Error saving Media entry');
             }
 
             $fileUrl = $model->getFullUrl();
@@ -487,7 +480,7 @@ class MediaController extends x2base {
         $mediaSettings['hideUsers'] = $hideUsers;
         $widgetSettings['MediaBox'] = $mediaSettings;
         Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
-        Yii::app()->params->profile->save();
+        Yii::app()->params->profile->update();
 
         echo $ret;
     }

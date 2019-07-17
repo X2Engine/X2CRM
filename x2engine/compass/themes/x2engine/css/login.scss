@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 @import "standards";
 @import "colors";
@@ -463,20 +460,23 @@ body.custom-background-image {
 #login-page {
     width: 331px !important;
     border: 1px solid rgb(206, 206, 206);
-    
-    /*
     -moz-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
     -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.35);
-    */
-    
     width: 360px;
+    /*opacity: 0.98;*/
+    /* background:url(../images/login_stripes.png) center 50px no-repeat; */
+    /* background:#eaeaea; */
     background: #F3F3F3;
-    background: white;
+    /* background-color:#87a155;
+    background-color:rgba(255,255,255,0.25); */
     min-height: 0;
+    /* position:relative; */
+    /*top:40%;*/
+    /*margin:-130px auto 0 auto;*/
     padding: 8px 3px;
     position: relative;
-    
+    /* border:1px solid rgba(0,0,0,0.25); */
     @include border-radius (6px);
 }
 
@@ -542,18 +542,19 @@ body.custom-background-image {
 }*/
 
 #LoginForm_username, #LoginForm_password, #LoginForm_verifyCode {
-    color: #555555;
+    color: #444;
     font-size: 16px;
     line-height: 24px;
+    -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+    -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 #signin-button {
     line-height: 15px;
     padding: 10px 25px;
     @include loginButtons;
-    background: #a1a1a1 !important;
-    border-color: #a1a1a1 !important;
-    text-shadow: none !important;
+    /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#417dcd', endColorstr='#3d70b4',GradientType=0 ); /* IE6-8 */
 }
 
 #login-form a.alt-sign-in-link {
@@ -652,7 +653,7 @@ body.custom-background-image {
     width: 100%;
     height: 100%;
     z-index: -10;
-    background: #fefefe !important;
+    background: $defaultBgColor;
 
     .stripe-container {
         width: 650px;
@@ -661,9 +662,9 @@ body.custom-background-image {
     }
     
     .stripe {
-        background: #a1a1a1;
-        background: #f3f3f3;
-        //opacity: 0.2;
+        background: #C7C7C7;
+        background: white;
+        opacity: 0.2;
         width: 275px;
         height: 100%;
         &.small {

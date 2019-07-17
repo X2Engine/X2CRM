@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * A Campaign represents a one time mailing to a list of contacts.
  *
@@ -54,108 +51,105 @@ class Campaign extends X2Model {
 
     public $supportsWorkflow = false;
 
-    public static function model($className=__CLASS__) {
-            return parent::model($className);
-    }
+	public static function model($className=__CLASS__) {
+		return parent::model($className);
+	}
 
-    public function tableName()	{ return 'x2_campaigns'; }
+	public function tableName()	{ return 'x2_campaigns'; }
 
-    public function behaviors() {
-        return array_merge(parent::behaviors(),array(
-            'LinkableBehavior'=>array(
-                    'class'=>'LinkableBehavior',
-                    'module'=>'marketing'
-            ),
-            'ERememberFiltersBehavior' => array(
-                    'class'=>'application.components.behaviors.ERememberFiltersBehavior',
-                    'defaults'=>array(),
-                    'defaultStickOnClear'=>false
-            ),
+	public function behaviors() {
+		return array_merge(parent::behaviors(),array(
+			'LinkableBehavior'=>array(
+				'class'=>'LinkableBehavior',
+				'module'=>'marketing'
+			),
+			'ERememberFiltersBehavior' => array(
+				'class'=>'application.components.behaviors.ERememberFiltersBehavior',
+				'defaults'=>array(),
+				'defaultStickOnClear'=>false
+			),
             'TagBehavior' => array(
                 'class' => 'TagBehavior',
                 'disableTagScanning' => true,
             ),
-        ));
-    }
+		));
+	}
 
-    public function relations() {
-        return array_merge(parent::relations(), array(
-            'list' => array(self::BELONGS_TO, 'X2List', array('listId'=>'nameId')),
-            'suppressionList' => array(self::BELONGS_TO, 'X2List', array('suppressionListId'=>'nameId')),
-            'attachments' => array(self::HAS_MANY, 'CampaignAttachment', 'campaign'),
-        ));
-    }
+	public function relations() {
+		return array_merge(parent::relations(),array(
+			'list'=>array(self::BELONGS_TO, 'X2List', array('listId'=>'nameId')),
+			'attachments'=>array(self::HAS_MANY, 'CampaignAttachment', 'campaign'),
+		));
+	}
 
-    //Similar to X2Model but we had a special case with 'marketing'
-    public function attributeLabels() {
-        $this->queryFields();
+	//Similar to X2Model but we had a special case with 'marketing'
+	public function attributeLabels() {
+		$this->queryFields();
 
-        $labels = array();
+		$labels = array();
 
-        foreach(self::$_fields[$this->tableName()] as &$_field) {
-            $labels[ $_field->fieldName ] = Yii::t('marketing', $_field->attributeLabel);
-        }
-        return $labels;
-    }
+		foreach(self::$_fields[$this->tableName()] as &$_field)
+			$labels[ $_field->fieldName ] = Yii::t('marketing',$_field->attributeLabel);
 
-    //Similar to X2Model but we had a special case with 'marketing'
-    public function getAttributeLabel($attribute) {
-        $this->queryFields();
+		return $labels;
+	}
 
-        // don't call attributeLabels(), just look in self::$_fields
-        foreach(self::$_fields[$this->tableName()] as &$_field) {
-            if($_field->fieldName == $attribute) {
-                return Yii::t('marketing', $_field->attributeLabel);
-            }
-        }
-        // original Yii code
-        if(strpos($attribute,'.') !== false) {
-            $segs = explode('.',$attribute);
-            $name = array_pop($segs);
-            $model = $this;
-            foreach($segs as $seg) {
-                    $relations = $model->getMetaData()->relations;
-                    if(isset($relations[$seg])) {
-                        $model = X2Model::model($relations[$seg]->className);
-                    } else {
-                        break;
-                    }
-            }
-            return $model->getAttributeLabel($name);
-        } else {
-            return $this->generateAttributeLabel($attribute);
-        }
-    }
+	//Similar to X2Model but we had a special case with 'marketing'
+	public function getAttributeLabel($attribute) {
 
-    /**
-     * Convenience method to retrieve a Campaign model by id. Filters by the current user's permissions.
-     *
-     * @param integer $id Model id
-     * @return Campaign
-     */
-    public static function load($id) {
-        $model = X2Model::model('Campaign');
-        $campaign = $model->with('list')->findByPk((int)$id, $model->getAccessCriteria());
-        $campaign->recalculateRates();
-        return $campaign;
-    }
+		$this->queryFields();
 
-    /**
-     * Search all Campaigns using this model's attributes as the criteria
-     *
-     * @return Array Set of matching Campaigns
-     */
-    public function search() {
-        $criteria = new CDbCriteria;
-        return $this->searchBase($criteria);
-    }
+		// don't call attributeLabels(), just look in self::$_fields
+		foreach(self::$_fields[$this->tableName()] as &$_field) {
+			if($_field->fieldName == $attribute)
+				return Yii::t('marketing',$_field->attributeLabel);
+		}
+		// original Yii code
+		if(strpos($attribute,'.')!==false) {
+			$segs=explode('.',$attribute);
+			$name=array_pop($segs);
+			$model=$this;
+			foreach($segs as $seg) {
+				$relations=$model->getMetaData()->relations;
+				if(isset($relations[$seg]))
+					$model=X2Model::model($relations[$seg]->className);
+				else
+					break;
+			}
+			return $model->getAttributeLabel($name);
+		} else
+			return $this->generateAttributeLabel($attribute);
+	}
+
+	/**
+	 * Convenience method to retrieve a Campaign model by id. Filters by the current user's permissions.
+	 *
+	 * @param integer $id Model id
+	 * @return Campaign
+	 */
+	public static function load($id) {
+		$model = X2Model::model('Campaign');
+		$campaign = $model->with('list')->findByPk((int)$id,$model->getAccessCriteria());
+		$campaign->recalculateRates();
+		return $campaign;
+	}
+
+	/**
+	 * Search all Campaigns using this model's attributes as the criteria
+	 *
+	 * @return Array Set of matching Campaigns
+	 */
+	public function search() {
+		$criteria=new CDbCriteria;
+		return $this->searchBase($criteria);
+	}
 
     /**
      * Override of {@link X2Model::setX2Fields}
      *
      * Skips HTML purification for the content so that tracking links will work.
      */
-    public function setX2Fields(&$data, $filter = false, $bypassPermissions = false) {
+    public function setX2Fields(&$data, $filter = false, $bypassPermissions=false) {
         $originalContent = isset($data['content'])?$data['content']:$this->content;
         parent::setX2Fields($data, $filter, $bypassPermissions);
         $this->content = $originalContent;
@@ -164,14 +158,12 @@ class Campaign extends X2Model {
     public static function getValidContactLists () {
         $list = new X2List;
         $criteria = $list->getAccessCriteria();
-        $criteria->addCondition("type!='campaign' and type!='UnSubscribe'");
+        $criteria->addCondition("type!='campaign'");
     	$lists = X2Model::model('ContactList')->findAllByAttributes (array(), 
-            $criteria
+    		$criteria
     	);
     	return $lists;
     }
-    
-
 
     public function getDisplayName ($plural=true, $ofModule=true) {
         if (!$ofModule) {
@@ -183,34 +175,26 @@ class Campaign extends X2Model {
 
     protected function recalculateRates() {
         $list = $this->list;
-        if (!$list) { 
-            return;
-        }
+        if (!$list) return;
 
         $total = $list->statusCount('sent');
-        if ($total == 0) { 
-            return;
-        }
-        
+        if ($total == 0) return;
+
         $opened = $list->statusCount('opened');
         $clicked = $list->statusCount('clicked');
         $unsubscribed = $list->statusCount('unsubscribed');
         $updateAttrs = array();
         $this->openRate = sprintf('%.2f', $opened / $total * 100);
-        if (!isset($this->_oldAttributes['openRate']) || $this->openRate != $this->_oldAttributes['openRate']) {
+        if (!isset($this->_oldAttributes['openRate']) || $this->openRate != $this->_oldAttributes['openRate'])
             $updateAttrs[] = 'openRate';
-        }
         $this->clickRate = sprintf('%.2f', $clicked / $total * 100);
-        if (!isset($this->_oldAttributes['clickRate']) || $this->clickRate != $this->_oldAttributes['clickRate']) {
+        if (!isset($this->_oldAttributes['clickRate']) || $this->clickRate != $this->_oldAttributes['clickRate'])
             $updateAttrs[] = 'clickRate';
-        }
         $this->unsubscribeRate = sprintf('%.2f', $unsubscribed / $total * 100);
-        if (!isset($this->_oldAttributes['unsubscribeRate']) || $this->unsubscribeRate != $this->_oldAttributes['unsubscribeRate']) {
+        if (!isset($this->_oldAttributes['unsubscribeRate']) || $this->unsubscribeRate != $this->_oldAttributes['unsubscribeRate'])
             $updateAttrs[] = 'unsubscribeRate';
-        }
 
-        if (!empty($updateAttrs)) {
+        if (!empty($updateAttrs))
             $this->update($updateAttrs);
-        }
     }
 }

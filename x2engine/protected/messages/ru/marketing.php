@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => 'Эта опция позволяет вам настроить, будет ли выполняться геолокация для ваших посетителей.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => 'Эта опция позволяет вам настроить, будет ли осуществляться отпечаток пальца браузера, чтобы попытаться соответствовать вашему посетителю.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => 'Вы также можете настроить минимальное количество атрибутов браузера, необходимых для соответствия посетителю. Чем выше это значение, тем точнее будут ваши частичные совпадения.',
-    'Suppressed' => 'подавленный',
-    'Suppression List' => 'Список подавления',
-    'Suppression List:' => 'Список подавления:',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => "Пропуск отправки электронной почты {address}. Этот контакт пропускается, поскольку он присутствует в подавленном списке.",
-    'Select a Suppression List' => 'Выберите список подавления',
-    'New Suppression List' => 'Новый список подавления',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => "Выберите список подавления, чтобы не отправлять электронную почту кампании или создавать ее здесь.",
 );

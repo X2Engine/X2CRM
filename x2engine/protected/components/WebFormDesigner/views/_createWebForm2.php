@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 ?>
@@ -280,33 +277,4 @@ endif;
 </div>
 
 </div> <!-- web-form-inner  -->
-
-<!-- Web form Preview -->
-    <!--<div class="cell">-->
-        <h4><?php echo Yii::t('marketing','Preview') .':'; ?></h4>
-        <p class="fieldhelp" style="width: auto;">
-            <?php echo Yii::t('marketing', 'Unsubscription form preview.'); ?>
-        </p>
-        <div id="iframe_unsub" class='<?php echo $this->type ?>'></div>
-<div class="row">
-    <div class="cell">
-        <h4><?php echo Yii::t('marketing','Embed Code') .':'; ?></h4>
-        <p class='fieldhelp' style="width:auto"><?php
-        echo Yii::t('marketing',
-            'Copy and paste this code into your website to include the web lead form.');
-        ?></p>
-        <div id='embed-row'>
-            <input readonly type='text' id="unsubembedcode"/>
-            <span class='x2-button' id='unsubclipboard' title='Select Text'><i class='fa fa-clipboard'></i></span>
-            <span style ='display:none' id='unsub-copy-help'><p style = 'display:inline' class='fieldhelp'>
-            <?php $help = Auxlib::isMac() ? "⌘-c to copy" : "ctrl-c to copy"; ?>
-            <?php echo Yii::t('app', $help) ?></p></span>
-        </div>
-    </div>
-</div>
-
 </div> <!-- Web form outer -->
-
-    <!--</div>-->
-    
-    

@@ -49,14 +49,6 @@ CREATE TABLE `x2_contacts` (
     trackingKey    VARCHAR(32),
     dupeCheck      INT DEFAULT 0,
     fingerprintId  INT DEFAULT NULL,
-    accountName        VARCHAR(100),
-
-
-    businessEmail              VARCHAR(250),
-    personalEmail              VARCHAR(250),
-    alternativeEmail              VARCHAR(250),
-    preferredEmail              VARCHAR(250),
-
     UNIQUE (nameId),
     INDEX (email),
     INDEX (assignedTo),
@@ -71,7 +63,7 @@ DROP TABLE IF EXISTS x2_lists;
 CREATE TABLE x2_lists (
     id          INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     assignedTo  VARCHAR(255),
-    name        VARCHAR(238) NOT NULL,
+    name        VARCHAR(100) NOT NULL,
     nameId      VARCHAR(250) DEFAULT NULL,
     description VARCHAR(250) NULL,
     type        VARCHAR(20) NULL,
@@ -108,9 +100,6 @@ CREATE TABLE x2_list_items (
     clicked      INT UNSIGNED NOT NULL DEFAULT 0,
     unsubscribed INT UNSIGNED NOT NULL DEFAULT 0,
     sending      TINYINT NOT NULL DEFAULT 0,
-    suppressed   INT NOT NULL DEFAULT 0,
-    bounced      INT NOT NULL DEFAULT 0,
-    urls         TEXT DEFAULT NULL,
     INDEX (listId),
     INDEX (uniqueId),
     FOREIGN KEY (listId) REFERENCES x2_lists(id) ON UPDATE CASCADE ON DELETE CASCADE
@@ -143,7 +132,7 @@ VALUES
 ('Contacts', 'firstName',      'First Name',             0, 0, 'varchar',    1, 0, NULL,         1, 0, 'High',   0, 1, NULL),
 ('Contacts', 'lastName',       'Last Name',              0, 0, 'varchar',    1, 0, NULL,         1, 0, 'High',   0, 1, NULL),
 ('Contacts', 'title',          'Title',                  0, 0, 'varchar',    0, 0, NULL,         0, 0, '',       0, 1, NULL),
-('Contacts', 'company',        'Company',                0, 0, 'link',       0, 0, 'Accounts',   0, 0, '',       0, 1, 'MUL'),
+('Contacts', 'company',        'Account',                0, 0, 'link',       0, 0, 'Accounts',   0, 0, '',       0, 1, 'MUL'),
 ('Contacts', 'phone',          'Phone',                  0, 0, 'phone',      0, 0, NULL,         1, 0, 'Medium', 0, 1, NULL),
 ('Contacts', 'phone2',         'Phone 2',                0, 0, 'phone',      0, 0, NULL,         1, 0, 'Medium', 0, 1, NULL),
 ('Contacts', 'email',          'Email',                  0, 0, 'email',      0, 0, NULL,         1, 0, 'Medium', 0, 1, 'MUL'),
@@ -166,14 +155,14 @@ VALUES
 ('Contacts', 'updatedBy',      'Updated By',             0, 0, 'varchar',    0, 1, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadSource',     'Lead Source',            0, 0, 'dropdown',   0, 0, '103',        0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadDate',       'Lead Date',              0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
-('Contacts', 'priority',       'Priority',               0, 0, 'dropdown',   0, 0, 124,          0, 0, '',       0, 1, NULL),
+("Contacts", "priority",          "Priority",         0, 0, "dropdown",    0, 0, 124, 0, 0, "",     0, 1, NULL),
 ('Contacts', 'rating',         'Confidence',             0, 0, 'rating',     0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'createDate',     'Create Date',            0, 0, 'dateTime',   0, 1, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'facebook',       'Facebook',               0, 0, 'url',        0, 0, 'facebook',   0, 0, '',       0, 1, NULL),
 ('Contacts', 'otherUrl',       'Other',                  0, 0, 'url',        0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadtype',       'Lead Type',              0, 0, 'dropdown',   0, 0, '102',        0, 0, '',       0, 1, NULL),
 ('Contacts', 'closedate',      'Close Date',             0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
-('Contacts', 'expectedCloseDate', 'Expected Close Date', 0, 0, 'date',       0, 0, NULL,         0, 0, '',       0, 1, NULL),
+('Contacts', 'expectedCloseDate', 'Expected Close Date', 0, 0, 'date',       0, 0, NULL,       0, 0, '',       0, 1, NULL),
 ('Contacts', 'interest',       'Interest',               0, 0, 'varchar',    0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'dealvalue',      'Deal Value',             0, 0, 'currency',   0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('Contacts', 'leadstatus',     'Lead Status',            0, 0, 'dropdown',   0, 0, '104',        0, 0, '',       0, 1, NULL),
@@ -193,10 +182,4 @@ VALUES
 ('X2List',   'visibility',     'Visibility',             0, 0, 'visibility', 0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('X2List',   'count',          'Count',                  0, 0, 'varchar',    0, 0, NULL,         0, 0, '',       0, 1, NULL),
 ('X2List',   'createDate',     'Date Created',           0, 0, 'date',       0, 1, NULL,         0, 0, '',       0, 1, NULL),
-('X2List',   'lastUpdated',    'lastUpdated',            0, 0, 'date',       0, 1, NULL,         0, 0, '',       0, 1, NULL),
-('Contacts', 'accountName',       'Account',             0, 0, 'link',       0, 0, 'Accounts', 0, 0, '',       0, 1, 'MUL'),
-
-('Contacts', 'businessEmail',            'Business Email',                  0, 0, 'email',      0, 0, NULL,         1, 0, 'Medium', 0, 1, 'MUL'),
-('Contacts', 'personalEmail',            'Personal Email',                  0, 0, 'email',      0, 0, NULL,         1, 0, 'Medium', 0, 1, 'MUL'),
-('Contacts', 'alternativeEmail',            'Alternative Email',                  0, 0, 'email',      0, 0, NULL,         1, 0, 'Medium', 0, 1, 'MUL'),
-('Contacts', 'preferredEmail',          'Preferred Email',         0, 0, 'dropdown',    0, 0, -1, 0, 0, '',     0, 1, NULL);
+('X2List',   'lastUpdated',    'lastUpdated',            0, 0, 'date',       0, 1, NULL,         0, 0, '',       0, 1, NULL);

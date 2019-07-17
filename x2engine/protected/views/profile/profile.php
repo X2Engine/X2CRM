@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /*
 Public/private profile page. If the requested profile belongs to the current user, profile widgets
 get displayed in addition to the activity feed/profile information sections. 
@@ -47,6 +44,8 @@ if (!$isMyProfile && Yii::app()->user->id == $model->id) {
 }
 
 $this->noBackdrop = true;
+Yii::import('application.components.leftWidget.ProfileInfo');
+
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->baseUrl.'/js/profile.js', CClientScript::POS_END);
@@ -82,7 +81,7 @@ if ($isMyProfile) {
 
     <div id='profile-info-container-outer'>
         <?php 
-        if (!$isMyProfile) { 
+        if (!$isMyProfile) {
             $this->renderPartial('_profileInfo', array(
                 'model' => $model, 
             )); 

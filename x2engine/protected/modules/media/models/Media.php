@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * This is the model class for table "x2_media".
  *
@@ -63,10 +60,10 @@ class Media extends X2Model {
         return parent::model($className);
     }
 
+     
     private static $_loginLogo;
-
-    public static function getLoginLogo() {
-        if (!isset(self::$_loginLogo)) {
+    public static function getLoginLogo () {
+        if (!isset (self::$_loginLogo)) {
             $logo = Media::model()->findByAttributes(array(
                 'associationId' => 1,
                 'associationType' => 'loginLogo'
@@ -75,11 +72,11 @@ class Media extends X2Model {
         }
         return self::$_loginLogo;
     }
+     
 
     private static $_menuLogo;
-
-    public static function getMenuLogo() {
-        if (!isset(self::$_menuLogo)) {
+    public static function getMenuLogo () {
+        if (!isset (self::$_menuLogo)) {
             $logo = Media::model()->findByAttributes(array(
                 'associationId' => 1,
                 'associationType' => 'logo'
@@ -96,60 +93,12 @@ class Media extends X2Model {
         return 'x2_media';
     }
 
-    public static function createMediaFromFormData() {
-        if (Yii::app()->user->isGuest) {
-            throw new Exception('You are not logged in.');
-        }
-
-        if (!isset($_FILES['uploadMedia'])) {
-            throw new Exception('Invalid request.');
-        }
-
-        $upload = CUploadedFile::getInstanceByName('uploadMedia');
-
-        if ($upload == null) {
-            throw new Exception('Invalid file.');
-        }
-
-        $fileName = $upload->getName();
-        $fileName = str_replace(' ', '_', $fileName);
-
-        $userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
-        $userFolderPath = 'uploads/protected/media/' . $userFolder;
-        // if user folder doesn't exit, try to create it
-        if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
-            if (!@mkdir('uploads/protected/media/' . $userFolder, 0777, true)) { // make dir with edit permission
-                throw new Exception('Error creating user folder.');
-            }
-        }
-
-        if (!$upload->saveAs($userFolderPath . DIRECTORY_SEPARATOR . $fileName)) {
-            throw new Exception('Error saving file');
-        }
-
-        // save media info
-        $model = new Media;
-        $model->fileName = $fileName;
-        $model->createDate = time();
-        $model->lastUpdated = time();
-        $model->uploadedBy = Yii::app()->user->name;
-        $model->associationType = 'none';
-
-        if (!$model->save()) {
-            throw new Exception('Error saving Media entry');
-        }
-
-        $fileUrl = $model->getPublicUrl();
-        
-        return array('id' => $model->id, 'link' => $fileUrl);
-    }
-
     /**
      * Called after removing media or changing the filename field. Checks for existing references
      * to filename and deletes file if none exist.
      */
-    private function collectGarbage(array $exclude = array()) {
-        if (!in_array($this->getPath(), $exclude) && file_exists($this->getPath())) {
+    private function collectGarbage (array $exclude = array ()) {
+        if (!in_array ($this->getPath (), $exclude) && file_exists($this->getPath())) {
             $media = Media::model()->findByAttributes(array(
                 'uploadedBy' => $this->uploadedBy,
                 'fileName' => $this->fileName
@@ -167,7 +116,7 @@ class Media extends X2Model {
         parent::afterDelete();
         // Reset path if name was changed:
         $this->_path = null;
-        $this->collectGarbage();
+        $this->collectGarbage ();
 
         // if theme is deleted which is default, unset default theme setting
         if ($this->id === Yii::app()->settings->defaultTheme) {
@@ -177,15 +126,15 @@ class Media extends X2Model {
         }
     }
 
-    public function resolveNameConflicts() {
-        $found = (int) Media::model()->countByAttributes(array('fileName' => $this->fileName));
+    public function resolveNameConflicts () {
+        $found = (int) Media::model()->countByAttributes (array('fileName' => $this->fileName));
 
         // rename file if there name conflicts by suffixing "(n)"
         if ($found) {
             $count = 1;
             $newName = $this->fileName;
-            $ext = CFileHelper::getExtension($newName);
-            $base = preg_replace('/\.' . preg_quote($ext) . '$/', '', $newName);
+            $ext = CFileHelper::getExtension ($newName);
+            $base = preg_replace ('/\.'.preg_quote ($ext).'$/', '', $newName);
             while ($found) {
                 $newName = "$base($count).$ext";
                 $found = (int) Media::model()->countByAttributes(array('fileName' => $newName));
@@ -216,8 +165,8 @@ class Media extends X2Model {
         // Scan uploaded media for viruses if requested
         if ($this->isNewRecord && Yii::app()->settings->scanUploads === '1' &&
                 !$this->clamScan()) {
-            FileUtil::rrmdir($this->path);
-            return false;
+                    FileUtil::rrmdir($this->path);
+                    return false;
         }
 
         return parent::beforeSave();
@@ -251,11 +200,12 @@ class Media extends X2Model {
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
 
-        return array_merge(
-                $this->getBehaviorRules(), array(
-            array('fileName', 'unique', 'on' => 'themeCreate'),
-            array('fileName', 'length', 'max' => 100),
-                )
+        return array_merge (
+            $this->getBehaviorRules (),
+            array(
+                array('fileName', 'unique', 'on' => 'themeCreate'),
+                array('fileName', 'length', 'max' => 100),
+            )
         );
     }
 
@@ -307,11 +257,10 @@ class Media extends X2Model {
     public function isAudio() {
         return strpos($this->resolveType(), 'audio/') === 0;
     }
-
+    
     public function isVideo() {
         return strpos($this->resolveType(), 'video/') === 0;
     }
-
     /**
      * Return true if $filename has an image extension. Image extensions include:
      * jpg, gif, png, bmp, jpeg, jpe
@@ -325,7 +274,7 @@ class Media extends X2Model {
 
     // return an img tag of this file
     // return '' if file is not an image
-    public function getImage($link = false, array $htmlOptions = array('encode' => false)) {
+    public function getImage($link = false, array $htmlOptions=array ('encode'=>false)) {
         if (!$this->fileExists() || !$this->isImage()) {
             return '';
         }
@@ -335,9 +284,9 @@ class Media extends X2Model {
         }
 
         $img = CHtml::image(
-                        $this->getPublicUrl(), '', X2Html::mergeHtmlOptions(array(
-                            'class' => 'attachment-img',
-                                ), $htmlOptions)
+            $this->getPublicUrl(), '', X2Html::mergeHtmlOptions (array(
+                'class' => 'attachment-img',
+            ), $htmlOptions)
         );
 
         if (!$link) {
@@ -346,10 +295,10 @@ class Media extends X2Model {
 
         return X2Html::link($img, $this->getPublicUrl());
     }
-
+    
     // return an audio tag of this file
     // return '' if file is not an image
-    public function getAudio($link = false, array $htmlOptions = array('encode' => false)) {
+    public function getAudio($link = false, array $htmlOptions=array ('encode'=>false)) {
         if (!$this->fileExists() || !$this->isAudio()) {
             return '';
         }
@@ -358,29 +307,31 @@ class Media extends X2Model {
             return $this->googlePreview;
         }
         $audio = '';
-        if (!Yii::app()->params->isPhoneGap) {
-            $audio = Yii::app()->controller->widget('application.extensions.mediaElement.MediaElementPortlet', array(
-                'url' => $this->getPublicUrl(),
-                // or you can set the model and attributes
-                //'model' => $model,
-                //'attribute' => 'url'
-                // its required and so you have to set correctly
-                'mimeType' => $this->resolveType(),
-                    ), True);
+        if (!Yii::app()->params->isPhoneGap) {     
+            $audio = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);   
         } else {
             $audio = '';
         }
 
         if (!$link) {
             return $audio;
-        }
+        } 
 
         return X2Html::link($audio, $this->getPublicUrl());
     }
-
+    
     // return an video tag of this file
     // return '' if file is not an image
-    public function getVideo($link = false, array $htmlOptions = array('encode' => false)) {
+    public function getVideo($link = false, array $htmlOptions=array ('encode'=>false)) {
         if (!$this->fileExists() || !$this->isVideo()) {
             return '';
         }
@@ -390,18 +341,20 @@ class Media extends X2Model {
         }
         $video = '';
         if (!Yii::app()->params->isPhoneGap) {
-            $video = Yii::app()->controller->widget('application.extensions.mediaElement.MediaElementPortlet', array(
-                'url' => $this->getPublicUrl(),
-                // or you can set the model and attributes
-                //'model' => $model,
-                //'attribute' => 'url'
-                // its required and so you have to set correctly
-                'mimeType' => $this->resolveType(),
-                    ), True);
+            $video = Yii::app()->controller->widget ( 'application.extensions.mediaElement.MediaElementPortlet',
+                        array ( 
+                        'url' => $this->getPublicUrl(),
+                        // or you can set the model and attributes
+                        //'model' => $model,
+                        //'attribute' => 'url'
+                        // its required and so you have to set correctly
+                        'mimeType' => $this->resolveType(),    
+
+                    ),True);  
         } else {
             $video = '';
         }
-
+        
         if (!$link) {
             return $video;
         }
@@ -416,23 +369,24 @@ class Media extends X2Model {
                         ), '');
     }
 
+
     public function renderAttribute(
-    $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
+        $fieldName, $makeLinks = true, $textOnly = true, $encode = true) {
 
         switch ($fieldName) {
-            case 'image':
-                $imageLink = $this->getImage(true);
-                return
-                        '<div class="media-image">
-                        <div class="full-size-screen">' .
-                        X2Html::fa('expand') . Yii::t('media', 'View Full Size') . '
+            case 'image': 
+                $imageLink = $this->getImage (true);
+                return 
+                    '<div class="media-image">
+                        <div class="full-size-screen">'.
+                            X2Html::fa('expand').Yii::t('media', 'View Full Size').'
                         </div>
-                        ' . $imageLink . '
+                        '. $imageLink .'
                     </div>';
                 break;
         }
 
-        return call_user_func_array('parent::' . __FUNCTION__, func_get_args());
+        return call_user_func_array ('parent::'.__FUNCTION__, func_get_args ());    
     }
 
     /**
@@ -564,11 +518,11 @@ class Media extends X2Model {
             "uploads/protected/media/{$uploadedBy}/{$fileName}",
             "uploads/protected/{$fileName}",
         );
-        foreach ($possiblePaths as $path) {
+        foreach($possiblePaths as $path){
             if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", $path)))) {
                 return $path;
             }
-        }
+        }        
 
         return null;
     }
@@ -624,12 +578,16 @@ class Media extends X2Model {
         }
         if (!ResponseUtil::isCli()) {
             return CHtml::link(
-                            $this->fileName, Yii::app()->controller->createUrl('/media/', array('view' => $this->id)));
+                            $this->fileName,
+                            Yii::app()->controller->createUrl('/media/',
+                                    array('view' => $this->id)));
         } else {
-            return CHtml::link($this->fileName, Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php' : '/index.php') . '/media/media/view/' . $this->id);
+            return CHtml::link($this->fileName,
+                            Yii::app()->absoluteBaseUrl . (YII_UNIT_TESTING ? '/index-test.php'
+                                        : '/index.php') . '/media/media/view/' . $this->id);
         }
     }
-
+    
     //
     public function fileExists() {
         if (file_exists(implode(DIRECTORY_SEPARATOR, array(Yii::app()->basePath, "..", "uploads", "protected", "media", $this->uploadedBy, $this->fileName)))) // try new format
@@ -698,7 +656,7 @@ class Media extends X2Model {
             $str .= "";
 
         if ($makeImage && $media->isImage()) { // to render an image, first check file extension
-            $str .= '<br>' . $media->getImage();
+            $str .= '<br>'.$media->getImage();
         }
 
         return $str;
@@ -740,16 +698,17 @@ class Media extends X2Model {
 
     public function getDownloadLink($text = null, $htmlOptions = array()) {
         $text = !isset($text) ? '[' . CHtml::encode(Yii::t('media', 'Download')) . ']' : $text;
-
+             
         if (Yii::app()->params->isPhoneGap) {
-            $url = Yii::app()->createAbsoluteUrl(
-                    '/media/media/download', array('id' => $this->id));
+            $url = Yii::app()->createAbsoluteUrl (
+                '/media/media/download', array ('id' => $this->id));
         } else {
-
-            $url = Yii::app()->createUrl('/media/media/download', array('id' => $this->id));
+         
+            $url = Yii::app()->createUrl ('/media/media/download', array ('id' => $this->id));
+         
         }
-
-        return CHtml::link($text, $url, $htmlOptions);
+         
+        return CHtml::link ($text, $url, $htmlOptions);
     }
 
     public function renderFile() {
@@ -766,19 +725,22 @@ class Media extends X2Model {
     }
 
     public function getAccessKey() {
-        if (empty($this->accessKey)) {
+        if(empty($this->accessKey)){
             $this->accessKey = bin2hex(openssl_random_pseudo_bytes(32));
             Yii::app()->db->createCommand()->update(
-                    'x2_media', array('accessKey' => $this->accessKey), 'id=:id', array(':id' => $this->id));
+                'x2_media', 
+                array('accessKey' => $this->accessKey),
+                'id=:id',
+                array(':id' => $this->id));
         }
         return $this->accessKey;
     }
 
     public function getPublicUrl($key = true) {
         return Yii::app()->createExternalUrl('/media/media/getFile', array(
-                    'id' => $this->id,
-                    'key' => $key ? $this->getAccessKey() : '',
-        ));
+                'id' => $this->id,
+                'key' => $key?$this->getAccessKey():'',
+            ));
     }
 
     /**
@@ -795,10 +757,10 @@ class Media extends X2Model {
         $media = null;
         if ($action instanceof Actions) {
             $media = $action->media;
-            if ($media)
-                $media = array_pop($media);
-        }
+            if ($media) $media = array_pop ($media);
+        } 
         if (!$media) { // handle legacy association format
+
             $actionDescription = Yii::app()->controller->convertUrls($action->actionDescription);
             $data = explode(':', $actionDescription);
             $media = null;
@@ -830,7 +792,7 @@ class Media extends X2Model {
 
             return $str;
         } else
-            return CHtml::encode(Yii::t('app', 'Attachment not found'));
+            return CHtml::encode (Yii::t('app', 'Attachment not found'));
     }
 
 }

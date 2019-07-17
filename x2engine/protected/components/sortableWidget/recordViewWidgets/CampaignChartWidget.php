@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 
@@ -183,31 +180,6 @@ class CampaignChartWidget extends ChartWidget {
 					'YEAR(FROM_UNIXTIME(list.unsubscribed))')
 			->order('year DESC, month DESC, week DESC, day DESC, hour desc')
 			->queryAll());
-        $data = array_merge ($data, Yii::app()->db->createCommand()
-            ->select(
-                '"suppressed" as type,'.
-                'count(list.suppressed) as count, '.
-                'YEAR(FROM_UNIXTIME(list.suppressed)) as year, '.
-                'MONTH(FROM_UNIXTIME(list.suppressed)) as month, '.
-                'WEEK(FROM_UNIXTIME(list.suppressed)) as week, '.
-                'DAY(FROM_UNIXTIME(list.suppressed)) as day, '.
-                'HOUR(FROM_UNIXTIME(list.suppressed)) as hour')
-            ->from(X2ListItem::model()->tableName().' as list')
-            ->leftJoin(X2Model::model($modelName)->tableName().' t', 'list.contactId=t.id')
-            ->where('list.suppressed>0 AND list.listId=:listId AND ('.$conditions.') '.
-                'AND list.suppressed BETWEEN :startTimestamp AND :endTimestamp',
-                array_merge (array(
-                    ':listId'=>$id,
-                    'startTimestamp' => $startTimestamp,
-                    'endTimestamp' => $endTimestamp
-                ), $criteria->params))
-            ->group('HOUR(FROM_UNIXTIME(list.suppressed)),'.
-                'DAY(FROM_UNIXTIME(list.suppressed)),'.
-                'WEEK(FROM_UNIXTIME(list.suppressed)),'.
-                'MONTH(FROM_UNIXTIME(list.suppressed)),'.
-                'YEAR(FROM_UNIXTIME(list.suppressed))')
-            ->order('year DESC, month DESC, week DESC, day DESC, hour desc')
-            ->queryAll());
 		return $data;
 	}
 
@@ -278,7 +250,6 @@ class CampaignChartWidget extends ChartWidget {
                         'opened'=>Yii::t('app', 'Opened'),
                         'clicked'=>Yii::t('app', 'Clicked'),
                         'unsubscribed'=>Yii::t('app', 'Unsubscribed'),
-                        'suppressed'=>Yii::t('app', 'Suppressed'),
                     ),
                     'chartType' => 'campaignChart',
                 )

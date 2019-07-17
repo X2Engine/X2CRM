@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Controller to handle creating and mailing campaigns.
  *
@@ -57,11 +54,7 @@ class MarketingController extends x2base {
     public function accessRules() {
         return array(
             array('allow', // allow all users
-                'actions' => array('click', 'doNotEmailLinkClick', 'unsubscribe'),
-                'users' => array('*'),
-            ),
-            array('allow', // allow all users
-                'actions' => array('unsubWebleadForm', 'doNotEmailLinkClick', 'unsubscribe'),
+                'actions' => array('click', 'doNotEmailLinkClick'),
                 'users' => array('*'),
             ),
             
@@ -84,7 +77,6 @@ class MarketingController extends x2base {
     }
 
     public function actions() {
-        
         return array_merge(parent::actions(), array(
             'webleadForm' => array(
                 'class' => 'CreateWebFormAction',
@@ -95,8 +87,6 @@ class MarketingController extends x2base {
             ),
         ));
     }
-
-    
 
     /**
      * Deletes a web form record with the specified id 
@@ -130,9 +120,8 @@ class MarketingController extends x2base {
      */
     public function actionAnonContactView($id) {
         $model = X2Model::model('AnonContact')->findByPk($id);
-        if (!isset($model)) {
+        if (!isset($model))
             throw new CHttpException(404, "The requested page does not exist.");
-        }
         $this->render('anonContactView', array(
             'model' => $model,
             'modelName' => 'AnonContact',
@@ -174,6 +163,7 @@ class MarketingController extends x2base {
                         ' perform this action'));
             }
         } else {
+
             LinkableBehavior::getItems($term);
         }
     }
@@ -185,30 +175,28 @@ class MarketingController extends x2base {
      */
     public function actionView($id) {
         $model = $this->loadModel($id);
-        //printR($model, 1);
-        if (!$this->checkPermissions($model, 'view')) {
+        if (!$this->checkPermissions($model, 'view'))
             $this->denied();
-        }
 
         if (isset($_GET['ajax']) && $_GET['ajax'] == 'campaign-grid') {
             $this->renderPartial('campaignGrid', array('model' => $model));
             return;
         }
-       
+
         if (!isset($model)) {
             Yii::app()->user->setFlash(
                     'error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
-        
+
         if (isset($model->list)) {
             //set this as the list we are viewing, for use by vcr controls
             Yii::app()->user->setState('contacts-list', $model->list->id);
         }
-        
+
         // add campaign to user's recent item list
         User::addRecentItem('p', $id, Yii::app()->user->getId());
-        
+
         $this->view($model, 'marketing');
     }
 
@@ -237,7 +225,6 @@ class MarketingController extends x2base {
      * @return type
      */
     public function loadModel($id) {
-        
         return Campaign::load($id);
     }
 
@@ -248,46 +235,10 @@ class MarketingController extends x2base {
     public function actionCreate() {
         $model = new Campaign;
         $model->type = 'Email'; //default choice for now
-        $listName;
+
         if (isset($_POST['Campaign'])) {
-            $newList;
-            if(isset($_POST['Campaign']['suppressionListId']) && !empty($_POST['Campaign']['suppressionListId'])){
-                foreach ($_POST['Campaign']['suppressionListId'] as $listNumb){
-                    
-                    if(!isset($newList)){
-                        
-                        $newList = X2List::model()->findByPk($listNumb)->staticDuplicate();
-                        if(isset($newList)){
-                            $newList->type = 'campaign';
-                            $newList->save();
-                            $listName = $newList->name;
-                        }
-                    }else{
-                        $holdList = X2List::model()->findByPk($listNumb)->staticDuplicate();
-                        if(isset($holdList)){
-                            $sql = 'update x2_list_items set listID = :newLis where listId =:oldLis';
-                            $prams = array(':newLis' => $newList->id , ':oldLis' => $holdList->id);
-                            Yii::app()->db->createCommand($sql)->execute($prams);
-
-                            $listName .= ', ' . $holdList->name;
-
-                            $clearComand = 'Delete from x2_lists where id = :oldLis';
-                            $prams = array( ':oldLis' => $holdList->id);
-                            Yii::app()->db->createCommand($clearComand)->execute($prams);
-                        }     
-                    }
-                }
-                if(isset($newList)) {
-                    $newList->name = $listName;
-                    $newList->save();
-                }
-            }
-            unset($_POST['Campaign']['suppressionListId']);
             $model->setX2Fields($_POST['Campaign']);
-            if(isset($newList)){
-                $model->suppressionList = $newList;
-                $model->suppressionListId = $newList->nameId;
-            }
+
             $model->content = Fields::getPurifier()->purify($model->content);
             $model->content = Formatter::restoreInsertableAttributes($model->content);
             $model->createdBy = Yii::app()->user->getName();
@@ -372,20 +323,18 @@ class MarketingController extends x2base {
 
         $transaction = Yii::app()->db->beginTransaction();
         try {
-            if (!$list->save()) {
+            if (!$list->save())
                 throw new Exception(array_shift(array_shift($list->getErrors())));
-            }
             $campaign->listId = $list->nameId;
-            if (!$campaign->save()) {
+            if (!$campaign->save())
                 throw new Exception(array_shift(array_shift($campaign->getErrors())));
-            }
+
             foreach ($ids as $id) {
                 $listItem = new X2ListItem;
                 $listItem->listId = $list->id;
                 $listItem->contactId = $id;
-                if (!$listItem->save()) {
+                if (!$listItem->save())
                     throw new Exception(array_shift(array_shift($listItem->getErrors())));
-                }
             }
 
             $transaction->commit();
@@ -413,45 +362,7 @@ class MarketingController extends x2base {
 
         if (isset($_POST['Campaign'])) {
             $oldAttributes = $model->attributes;
-            
-                        $newList;
-            if(isset($_POST['Campaign']['suppressionListId']) && !empty($_POST['Campaign']['suppressionListId'])){
-                foreach ($_POST['Campaign']['suppressionListId'] as $listNumb){
-                    if(!isset($newList)){
-                       
-                        $newList = X2List::model()->findByPk($listNumb)->staticDuplicate();
-                        if(isset($newList)){
-                            $newList->type = 'campaign';
-                            $newList->save();
-                            $listName = $newList->name;
-                        }
-                    }else{
-                        $holdList = X2List::model()->findByPk($listNumb)->staticDuplicate();
-                        if(isset($holdList)){
-                            $sql = 'update x2_list_items set listID = :newLis where listId =:oldLis';
-                            $prams = array(':newLis' => $newList->id , ':oldLis' => $holdList->id);
-                            Yii::app()->db->createCommand($sql)->execute($prams);
-
-                            $listName .= ', ' . $holdList->name;
-
-                            $clearComand = 'Delete from x2_lists where id = :oldLis';
-                            $prams = array( ':oldLis' => $holdList->id);
-                            Yii::app()->db->createCommand($clearComand)->execute($prams);
-                        }
-                    }
-                }
-                $newList->name = $listName;
-                $newList->save();
-            }
-            unset($_POST['Campaign']['suppressionListId']);
             $model->setX2Fields($_POST['Campaign']);
-            if(isset($newList)){
-                $model->suppressionList = $newList;
-                $model->suppressionListId = $newList->nameId;
-            }else{
-              
-                $model->suppressionListId = $oldAttributes['suppressionListId'];
-            }
             $model->content = Fields::getPurifier()->purify($model->content);
             $model->content = Formatter::restoreInsertableAttributes($model->content);
 
@@ -497,421 +408,20 @@ class MarketingController extends x2base {
             // $event->user=Yii::app()->user->getName();
             // $event->save();
             $list = $model->list;
-            if (isset($list) && $list->type == "campaign") {
+            if (isset($list) && $list->type == "campaign")
                 $list->delete();
-            }
             // $this->cleanUpTags($model);	// now in TagBehavior
             $model->delete();
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-            if (!isset($_GET['ajax'])) {
+            if (!isset($_GET['ajax']))
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-            }
         } else {
             Yii::app()->user->setFlash('error', Yii::t('app', 'Invalid request. Please do not repeat this request again.'));
             $this->redirect(array('index'));
         }
     }
 
-    // Displays all visible Contact Lists
-    public function actionLists() {
-        $filter = new X2List('search');
-        $criteria = new CDbCriteria();
-        $criteria->addCondition('modelName = "Campaign"');
-        $criteria->addCondition('type="static" OR type="dynamic"');
-        if (!Yii::app()->params->isAdmin) {
-            $condition = 'visibility="1" OR assignedTo="Anyone" OR 
-                 assignedTo="' . Yii::app()->user->getName() . '"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()
-                            ->select('groupId')
-                            ->from('x2_group_to_user')
-                            ->where('userId=' . Yii::app()->user->getId())->queryColumn();
-            if (!empty($groupLinks)) {
-                $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
-            }
-
-            $condition .= 'OR (visibility=2 AND assignedTo IN
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId 
-                     FROM x2_group_to_user 
-                     WHERE userId=' . Yii::app()->user->getId() . ')
-                )
-            )';
-            $criteria->addCondition($condition);
-        }
-
-        $perPage = Profile::getResultsPerPage();
-
-        //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
-        //$criteria->limit = $perPage;
-        $criteria->order = 'createDate DESC';
-        $filter->compareAttributes($criteria);
-
-        $contactLists = X2Model::model('X2List')->findAll($criteria);
-
-        $totalContacts = X2Model::model('Campaign')->count();
-        $totalMyContacts = X2Model::model('Campaign')->count('assignedTo="' . Yii::app()->user->getName() . '"');
-        $totalNewContacts = X2Model::model('Campaign')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
-
-        $allContacts = new X2List;
-        $allContacts->attributes = array(
-            'id' => 'all',
-            'name' => Yii::t('contacts', 'All {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $newContacts = new X2List;
-        $newContacts->attributes = array(
-            'id' => 'new',
-            'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'New {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalNewContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $myContacts = new X2List;
-        $myContacts->attributes = array(
-            'id' => 'my',
-            'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'My {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalMyContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $contactListData = array(
-            $allContacts,
-            $myContacts,
-            $newContacts,
-        );
-
-        $filteredPseudoLists = $filter->filter($contactListData);
-        $lists = array_merge($filteredPseudoLists, $contactLists);
-        $dataProvider = new CArrayDataProvider($lists, array(
-            'pagination' => array('pageSize' => $perPage),
-            'sort' => array(
-                'attributes' => array(
-                    'name' => array(
-                        'asc' => 'name asc, id desc',
-                        'desc' => 'name desc, id desc',
-                    ),
-                    // secondary order is needed to fix https://github.com/yiisoft/yii/issues/2082
-                    'type' => array(
-                        'asc' => 'type asc, id desc',
-                        'desc' => 'type desc, id desc',
-                    ),
-//                    'count' => array (
-//                        'asc' => 'count asc, id desc',
-//                        'desc' => 'count desc, id desc',
-//                    ),
-                    'assignedTo' => array(
-                        'asc' => 'assignedTo asc, id desc',
-                        'desc' => 'assignedTo desc, id desc',
-                    ),
-                )),
-            'totalItemCount' => count($contactLists) + 3,
-        ));
-
-        $this->render('listIndex', array(
-            'contactLists' => $dataProvider,
-            'filter' => $filter,
-        ));
-    }
-    
-        // Lists all contacts assigned to this user
-    public function actionMyMarketing() {
-        $model = new Campaign('search');
-        Yii::app()->user->setState('vcr-list', 'myCampaign');
-        $this->render('index', array('model' => $model));
-    }
-
-    // Lists all contacts assigned to this user
-    public function actionNewMarketing() {
-        $model = new Campaign('search');
-        Yii::app()->user->setState('vcr-list', 'newCampaign');
-        $this->render('index', array('model' => $model));
-    }
-
-    
-    /**
-     * Return a JSON encoded list of Contact lists
-     */
-    public function actionGetLists() {
-        if (!Yii::app()->user->checkAccess('ContactsAdminAccess')) {
-            $condition = ' AND (visibility="1" OR assignedTo="Anyone"  OR assignedTo="' . Yii::app()->user->getName() . '"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
-            if (!empty($groupLinks)) {
-                $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
-            }
-
-            $condition .= ' OR (visibility=2 AND assignedTo IN
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                (SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . '))))';
-        } else {
-            $condition = '';
-        }
-        // Optional search parameter for autocomplete
-        $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
-        $static = isset($_GET['static']) && $_GET['static'];
-        $weblist = isset($_GET['weblist']) && $_GET['weblist'];
-        $result = Yii::app()->db->createCommand()
-                ->select('id,name as value')
-                ->from('x2_lists')
-                ->where(
-                        ($static ? 'type="static" AND ' : '') .
-                        ($weblist ? 'type="weblist" AND ' : '') .
-                        'modelName="Campaign" AND type!="campaign" 
-                    AND name LIKE :qterm' . $condition, array(':qterm' => $qterm))
-                ->order('name ASC')
-                ->queryAll();
-        echo CJSON::encode($result);
-    }
-    
-    /**
-     * Gets a DataProvider for all the contacts in the specified list,
-     * using this Contact model's attributes as a search filter
-     */
-    public function searchList($id, $pageSize = null) {
-        $list = X2List::model()->findByPk($id);
-        
-        if (isset($list)) {
-            $search = $list->queryCriteria();
-            $this->compareAttributes($search);
-            return new SmartActiveDataProvider('Contacts', array(
-                'criteria' => $search,
-                'sort' => array(
-                    'defaultOrder' => 't.lastUpdated DESC'    // true = ASC
-                ),
-                'pagination' => array(
-                    'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
-                ),
-            ));
-        } else {    //if list is not working, return all contacts
-            return $this->searchBase();
-        }
-    }
-
-    // Shows contacts in the specified list
-    public function actionList($id = null) {
-        $list = X2List::load($id);
-
-        if (!isset($list)) {
-            Yii::app()->user->setFlash(
-                    'error', Yii::t('app', 'The requested page does not exist.'));
-            $this->redirect(array('lists'));
-        }
-        
-        $model = new Campaign('search');
-        Yii::app()->user->setState('vcr-list', $id);
-        
-        $dataProvider = $model->searchList($id);
-        $list->count = $dataProvider->totalItemCount;
-        $list->runWithoutBehavior('FlowTriggerBehavior', function () use ($list) {
-            $list->save();
-        });
-
-        X2Flow::trigger('RecordViewTrigger', array('model' => $list));
-        $this->render('list', array(
-            'listModel' => $list,
-            'dataProvider' => $dataProvider,
-            'model' => $model,
-        ));
-    }
-    
-    public function actionUpdateList($id) {
-        $list = Campaign::model()->findByPk($id);
-
-        if (!isset($list)) {
-            throw new CHttpException(400, Yii::t('app', 'This list cannot be found.'));
-        }
-
-        if (!$this->checkPermissions($list, 'edit')) {
-            throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
-        }
-
-        $contactModel = new Campaign;
-        $comparisonList = Campaign::getComparisonList();
-        $fields = $contactModel->getFields(true);
-
-        if ($list->type == 'dynamic') {
-            $criteriaModels = CampaignCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
-
-            if (isset($_POST['Campaign'], $_POST['Campaign']['attribute'], $_POST['Campaign']['comparison'], $_POST['Campaign']['value'])) {
-
-                $attributes = &$_POST['Campaign']['attribute'];
-                $comparisons = &$_POST['Campaign']['comparison'];
-                $values = &$_POST['Campaign']['value'];
-
-                if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
-
-                    $list->attributes = $_POST['Campaign'];
-                    $list->modelName = 'Campaign';
-                    $list->lastUpdated = time();
-
-                    if (!$list->hasErrors() && $list->save()) {
-                        $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
-                    }
-                }
-            }
-        } else { //static or campaign lists
-            if (isset($_POST['Campaign'])) {
-                $list->attributes = $_POST['Campaign'];
-                $list->modelName = 'Campaign';
-                $list->lastUpdated = time();
-                $list->save();
-                $this->redirect(array('/contacts/contacts/list', 'id' => $list->id));
-            }
-        }
-
-        if (empty($criteriaModels)) {
-            $default = new CampaignCriterion;
-            $default->value = '';
-            $default->attribute = '';
-            $default->comparison = 'contains';
-            $criteriaModels[] = $default;
-        } else {
-            if ($list->type = 'dynamic') {
-                foreach ($criteriaModels as $criM) {
-                    if (isset($fields[$criM->attribute])) {
-                        if ($fields[$criM->attribute]->type == 'link') {
-                            $criM->value = implode(',', array_map(function($c) {
-                                        list($name, $id) = Fields::nameAndId($c);
-                                        return $name;
-                                    }, explode(',', $criM->value)
-                                    )
-                            );
-                        }
-                    }
-                }
-            }
-        }
-
-        $this->render('updateList', array(
-            'model' => $list,
-            'criteriaModels' => $criteriaModels,
-            'users' => User::getNames(),
-            // 'attributeList'=>$attributeList,
-            'comparisonList' => $comparisonList,
-            'listTypes' => array(
-                'dynamic' => Yii::t('contacts', 'Dynamic'),
-                'static' => Yii::t('contacts', 'Static')
-            ),
-            'itemModel' => $contactModel,
-        ));
-    }
-    
-    public function actionCreateList($ajax = false) {
-        $list = new X2List;
-        $list->modelName = 'Campaign';
-        $list->type = 'dynamic';
-        $list->assignedTo = Yii::app()->user->getName();
-        $list->visibility = 1;
-
-        $contactModel = new Campaign;
-        $comparisonList = X2List::getComparisonList();
-       
-        if (isset($_POST['X2List'])) {
-             
-            $list->type = $_POST['X2List']['type'];
-            $list->attributes = $_POST['X2List'];
-            $list->modelName = 'Campaign';
-            $list->createDate = time();
-            $list->lastUpdated = time();
-
-            if (isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
-               
-                $attributes = &$_POST['X2List']['attribute'];
-                $comparisons = &$_POST['X2List']['comparison'];
-                $values = &$_POST['X2List']['value'];
-
-                if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
-                    
-                    $list->modelName = 'Campaign';
-                    $list->lastUpdated = time();
-                }
-            }
-             
-            if (!$list->hasErrors() && $list->save()) {
-                 // printR( $list,1);
-                if ($ajax) {
-                    echo CJSON::encode($list->attributes);
-                    return;
-                }
-               
-                $this->redirect(array('/marketing/marketing/list', 'id' => $list->id));
-                
-            }
-        }
-        //printR( $list,1);
-        if (empty($criteriaModels)) {
-            $default = new X2ListCriterion;
-            $default->value = '';
-            $default->attribute = '';
-            $default->comparison = 'contains';
-            $criteriaModels[] = $default;
-        }
-
-        if ($ajax) {
-            $html = $this->renderPartial('createList', array(
-                'model' => $list,
-                'criteriaModels' => $criteriaModels,
-                'users' => User::getNames(),
-                // 'attributeList'=>$attributeList,
-                'comparisonList' => $comparisonList,
-                'listTypes' => array(
-                    'dynamic' => Yii::t('contacts', 'Dynamic'),
-                    'static' => Yii::t('contacts', 'Static')
-                ),
-                'itemModel' => $contactModel,
-                    ), false);
-            echo $this->processOutput($html);
-            return;
-        }
-
-        $this->render('createList', array(
-            'model' => $list,
-            'criteriaModels' => $criteriaModels,
-            'users' => User::getNames(),
-            // 'attributeList'=>$attributeList,
-            'comparisonList' => $comparisonList,
-            'listTypes' => array(
-                'dynamic' => Yii::t('contacts', 'Dynamic'),
-                'static' => Yii::t('contacts', 'Static')
-            ),
-            'itemModel' => $contactModel,
-        ));
-    }
-    
-    public function actionDeleteList() {
-
-        $id = isset($_GET['id']) ? $_GET['id'] : 'all';
-
-        if (is_numeric($id)) {
-            $list = X2Model::model('Campaign')->findByPk($id);
-        }
-        if (isset($list)) {
-
-            // check permissions
-            if ($this->checkPermissions($list, 'edit')) {
-                $list->delete();
-            } else {
-                throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
-            }
-        }
-        $this->redirect(array('/contacts/contacts/lists'));
-    }
-    
     /**
      * Lists all models.
      */
@@ -928,7 +438,7 @@ class MarketingController extends x2base {
      * Launches the specified campaign, activating it for mailing
      *
      * When a campaign is created, it is specified with an existing contact list.
-     * When the campaign is launched, this list is replaced with a duplicate to prevent
+     * When the campaign is lauched, this list is replaced with a duplicate to prevent
      * the original from being modified, and to allow campaign specific information to
      * be saved in the list.  This includes the email send time, and the times when a
      * contact has opened the mail or unsubscribed from the list.
@@ -971,9 +481,6 @@ class MarketingController extends x2base {
         //only if the list is not already a campaign list
         if ($campaign->list->type != "campaign") {
             $newList = $campaign->list->staticDuplicate();
-            
-            
-            
             if (!isset($newList)) {
                 Yii::app()->user->setFlash('error', Yii::t('marketing', 'The contact list is empty.'));
                 $this->redirect(array('view', 'id' => $id));
@@ -986,21 +493,10 @@ class MarketingController extends x2base {
                 Yii::app()->user->setFlash('error', Yii::t('marketing', 'Failed to save temporary list.'));
             }
         }
-        if (!empty($campaign->suppressionListId)) {
-            $newSuppressionList = $campaign->suppressionList->staticDuplicate();
-            $newSuppressionList->type = 'campaign';
-            if ($newSuppressionList->save()) {
-                $campaign->suppressionList = $newSuppressionList;
-                $campaign->suppressionListId = $newSuppressionList->nameId;
-            }
-        }
+
         $campaign->launchDate = time();
-        $this->checkUnsubList($campaign->category);
-        $FullName = 'Unsubscribe_' . $campaign->category . '_X2_internal_list';
-        $list = CActiveRecord::model('X2List')->findByAttributes(array('name' => $FullName));
-        $campaign->categoryListId = $list->id;
         $campaign->save();
-        
+
         Yii::app()->user->setFlash('success', Yii::t('marketing', 'Campaign launched'));
         $this->redirect(array('view', 'id' => $id, 'launch' => true));
     }
@@ -1072,10 +568,7 @@ class MarketingController extends x2base {
             Yii::app()->user->setFlash('error', Yii::t('app', 'The requested page does not exist.'));
             $this->redirect(array('index'));
         }
-        if (Yii::app()->params->isAdmin && $campaign->enableBounceHandling && !empty($campaign->bouncedAccount)) {
-            $bouncedBehaviour = new BouncedEmailBehavior();
-            $bouncedBehaviour->executeMailbox($campaign->bouncedAccount);
-        }
+
         $campaign->active = 0;
         $campaign->complete = 1;
         $campaign->save();
@@ -1094,15 +587,12 @@ class MarketingController extends x2base {
         $this->itemId = $itemId;
         $this->campaign = Campaign::model()->findByPk($campaignId);
         $email = $this->recipient->email;
-
-
         if ($this->campaign instanceof Campaign && $this->listItem instanceof X2ListItem) {
             $this->sendIndividualMail();
             $this->response['fullStop'] = $this->fullStop;
             $status = $this->status;
             // Actual SMTP (or elsewise) delivery error that should stop the batch:
             $error = ($status['code'] != 200 && $this->undeliverable) || $this->fullStop;
-            $this->response['warning'] = ($status['code'] == 412 && !$this->fullStop);
             $this->response['status'] = $this->status;
             $this->respond($status['message'], $error);
         } else {
@@ -1110,233 +600,20 @@ class MarketingController extends x2base {
         }
     }
 
-    public function actionDoNotEmailLinkClick($x2_key,$email) {
+    public function actionDoNotEmailLinkClick($x2_key) {
         $contact = Contacts::model()->findByAttributes(array(
             'trackingKey' => $x2_key,
         ));
-        
-
-        
         if ($contact !== null) {
-            
-            if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                            echo "You have been successfully unsubscribed.";
-                            return;
-            }
-            
-            $baseURL = Yii::app()->request->getBaseUrl(true);
-
-            $pageUNSUB = Yii::app()->settings->doNotEmailPage;
-
-            $listOfOpp = '<form  action="' . $baseURL . '/index.php/site/unsubscribe" >';
-            $listOfOpp .= '<input type="hidden" name="email" value="' . $contact->email . '">';
-            foreach ($maillist as $key => $value) {
-                $this->checkUnsubList($value);
-                $listOfOpp .= '<input type="checkbox" name="' . $value . '" value="' . $value . '">' . $value . '<br>';
-            }
-            $listOfOpp .= '<input type="checkbox" name="unsubscribeALL" value="unsubscribeALL">Unsubscribe from all emails<br>';
-
-            $listOfOpp .= '<input type="submit" value="Submit"></form></div >';
-
-            $pageUNSUB = str_replace("(PLACE_OPP)", $listOfOpp, $pageUNSUB);
-            echo $pageUNSUB;
-        }else {
-            
-            if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                            $this->UnSubAll($email);
-                            echo "You have been successfully unsubscribed.";
-                             return;
-            }
-            
-            $baseURL = Yii::app()->request->getBaseUrl(true);
-
-            $pageUNSUB = Yii::app()->settings->doNotEmailPage;
-
-            $listOfOpp = '<form  action="' . $baseURL . '/index.php/site/unsubscribe" >';
-            $listOfOpp .= '<input type="hidden" name="email" value="' . $email . '">';
-            foreach ($maillist as $key => $value) {
-                $this->checkUnsubList($value);
-                $listOfOpp .= '<input type="checkbox" name="' . $value . '" value="' . $value . '">' . $value . '<br>';
-            }
-            $listOfOpp .= '<input type="checkbox" name="unsubscribeALL" value="unsubscribeALL">Unsubscribe from all emails<br>';
-
-            $listOfOpp .= '<input type="submit" value="Submit"></form></div >';
-
-            $pageUNSUB = str_replace("(PLACE_OPP)", $listOfOpp, $pageUNSUB);
-            
-
-            
-            echo $pageUNSUB;
-            
-            
-            
-        }
-    }
-    
-    public function UnSubAll($email){
-                        Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                           
-                             
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                         
-                           
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                           
-                             
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                           
-                             return;
-    }
-    
-    //check to make sure unsubscribe list exsist, if not make the list
-    public function checkUnsubList($Category) {
-        $FullName = 'Unsubscribe_' . $Category . '_X2_internal_list';
-        $list = CActiveRecord::model('X2List')
-                        ->findByAttributes(array('name' => $FullName));
-        if (empty($list)){
-            $NewUNSub = new X2List;
-            $NewUNSub->modelName = 'Contacts';
-            $NewUNSub->type = 'UnSubscribe';
-            $NewUNSub->assignedTo = 'Anyone';
-            $NewUNSub->visibility = 1;
-            $NewUNSub->name = $FullName;
-            $NewUNSub->nameId = $FullName;
-            $NewUNSub->createDate = time();
-            $NewUNSub->lastUpdated = time();
-            $NewUNSub->logicType = 'AND';
-            $NewUNSub->save();
-            //INSERT INTO `x2_lists` ( `assignedTo`, `name`, `nameId`, `description`, `type`, `logicType`, `modelName`, `visibility`, `count`, `createDate`, `lastUpdated`) VALUES ('Anyone',$FullName,$FullName,NULL,'UnSubscribe','AND','Contacts',1,0,time(),time());
-        }
-        //printR($NewUNSub , 0);
-        return($list);
-     }
-     /**
-     *this function will add names to the unsubscribe list
-      */
-      public function actionUnsubscribe() {
-          if (!isset( $_GET["unsubscribeALL"])){
-               X2ListItem::model()
-                        ->updateAll(
-                                array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $_GET["email"]));
-          }
-          $categories = Yii::app()->db->createCommand()
-                    ->select('options')
-                        ->from('x2_dropdowns')
-                        ->where('id=155')
-                        ->queryRow();
-          
-         $maillist = json_decode($categories["options"]); 
-         
-         foreach($maillist as $key => $value) {
-             $FullName = 'Unsubscribe_' . $value . '_X2_internal_list';
-             $list = CActiveRecord::model('X2List')->findByAttributes(array('name' => $FullName));
-             $item = CActiveRecord::model('X2ListItem')->findByAttributes(array('emailAddress' => $_GET["email"], 'listId' => $list->id));
-             
-             if(!isset($item)){
-                $unSub = new X2ListItem;
-                $unSub->emailAddress =  $_GET["email"];
-                $unSub->listId = $list->id;
-                $unSub->save();
-             }
-             
-         } 
-         echo Yii::app()->createExternalUrl('/marketing/marketing/unsubscribe');
-         echo 'done';
-         
-      }
-      
-      /**
-     * Specific endpoint for gathering unsubscribe web lead form html elements
-     * and echoes it out.
-     *
-     * Imitation of actionClick(...) below.
-     */
-    public function actionUnsubWebleadForm() {
-        $baseUrl = Yii::app()->request->getBaseUrl(true);
-        $pageUNSUB = Yii::app()->settings->doNotEmailPage;
-        $categories = Yii::app()->db->createCommand()
-                    ->select('options')
-                        ->from('x2_dropdowns')
-                        ->where('id=155')
-                        ->queryRow();
-        $maillist = json_decode($categories["options"]);
-        
-        $listOfOpp =  '<form  action="' . $baseUrl . '/index.php/site/unsubscribe" >';
-                $listOfOpp .=  '<h>Email</h> <input type="text" name="email"><br>';
-                foreach($maillist as $key => $value) {
-                   $this->checkUnsubList($value);
-                   $listOfOpp .=   '<input type="checkbox" name="'. $value .'" value="' . $value . '">' . $value . '<br>';
+            $contact->doNotEmail = true;
+            if ($contact->update()) {
+                if (Yii::app()->settings->doNotEmailPage) {
+                    echo Yii::app()->settings->doNotEmailPage;
+                } else {
+                    echo Admin::getDoNotEmailDefaultPage();
                 }
-                $listOfOpp .=  '<input type="checkbox" name="unsubscribeALL" value="unsubscribeALL">Unsubscribe from all emails<br>';
-               
-                $listOfOpp .=  '<input type="submit" value="Submit"></form></div >';
-               
-        $pageUNSUB = str_replace("(PLACE_OPP)",$listOfOpp,$pageUNSUB);
-
-                if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                            
-                            echo "You have been successfully unsubscribed.";
-                            return;
-                }
-                
-        echo $pageUNSUB;
-        
+            }
+        }
     }
 
     /**
@@ -1353,7 +630,6 @@ class MarketingController extends x2base {
      *  of the person unsubscribing
      */
     public function actionClick($uid, $type, $url = null, $email = null) {
-       
         // If the request is coming from within the web application, ignore it.
         $referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
         $baseUrl = Yii::app()->request->getBaseUrl(true);
@@ -1363,17 +639,15 @@ class MarketingController extends x2base {
             echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             return;
         }
-        
+
         $now = time();
         $item = CActiveRecord::model('X2ListItem')
                         ->with('contact', 'list')->findByAttributes(array('uniqueId' => $uid));
-        
+
         // It should never happen that we have a list item without a campaign,
         // but it WILL happen on any old db where x2_list_items does not cascade on delete
         // we can't track anything if the listitem was deleted, but at least prevent breaking links
-        
         if ($item === null || $item->list->campaign === null) {
-            
             if ($type == 'click') {
                 // campaign redirect link click
                 $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
@@ -1382,68 +656,22 @@ class MarketingController extends x2base {
                 header('Content-Type: image/gif');
                 echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             } elseif ($type == 'unsub' && !empty($email)) {
-               // Contacts::model()
-                //        ->updateAll(
-                //                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                //get the categories
-                
-                $categories = Yii::app()->db->createCommand()
-                    ->select('options')
-                        ->from('x2_dropdowns')
-                        ->where('id=155')
-                        ->queryRow();
+                Contacts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
                 X2ListItem::model()
                         ->updateAll(
                                 array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $email));
                 $message = Yii::t('marketing', 'You have been unsubscribed');
-                $maillist = json_decode($categories["options"]);
-                $baseURL = Yii::app()->request->getBaseUrl(true);
-                
-                $pageUNSUB = Yii::app()->settings->doNotEmailPage;
-                
-                $listOfOpp =  '<form  action="' . $baseURL . '/index.php/site/unsubscribe" >';
-                $listOfOpp .=  '<input type="hidden" name="email" value="'. $email . '">';
-                foreach($maillist as $key => $value) {
-                   $this->checkUnsubList($value);
-                   $listOfOpp .=   '<input type="checkbox" name="'. $value .'" value="' . $value . '">' . $value . '<br>';
-                }
-                $listOfOpp .=  '<input type="checkbox" name="unsubscribeALL" value="unsubscribeALL">Unsubscribe from all emails<br>';
-               
-                $listOfOpp .=  '<input type="submit" value="Submit"></form></div >';
-                
-                $pageUNSUB = str_replace("(PLACE_OPP)",$listOfOpp,$pageUNSUB);
-                
-                if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                            $this->UnSubAll($email);
-                            echo "You have been successfully unsubscribed.";
-                            return;
-                }
-                
-                echo $pageUNSUB;
+                echo '<html><head><title>' . $message . '</title></head><body>' . $message .
+                '</body></html>';
             }
-            
             return;
-
         }
 
         $contact = $item->contact;
         $list = $item->list;
-        $MyType = $list->modelName;
-        
-        //this is to get the types for actions and stuff
-        if($MyType == 'X2Leads'){
-            $contact = X2Model::model('X2Leads')->findByPk($item->contactId);
-        }
-        if($MyType == 'Opportunity'){
-            $contact = X2Model::model('Opportunity')->findByPk($item->contactId);
-            
-        }
-        if($MyType == 'Accounts'){
-            $contact = X2Model::model('Accounts')->findByPk($item->contactId);
-        }
-        
-        
-        if (!is_null($contact) && $MyType == 'Contacts') {
+        if (!is_null($contact)) {
             $location = $contact->logLocation($type, false);
         }
 
@@ -1458,9 +686,8 @@ class MarketingController extends x2base {
 
         if ($contact !== null) {
             $skipActionEvent = false;
-            if ($email === null) {
+            if ($email === null)
                 $email = $contact->email;
-            }
 
             $action->associationType = 'contacts';
             $action->associationId = $contact->id;
@@ -1470,34 +697,10 @@ class MarketingController extends x2base {
 
             $event->associationId = $action->associationId;
             $event->associationType = 'Contacts';
-                    
-            if($MyType == 'X2Leads'){
-                $event->associationType = 'X2Leads';
-                $action->associationType = 'x2Leads';
-            }
-            if($MyType == 'Opportunity'){
-                $event->associationType = 'Opportunities';
-                $action->associationType = 'opportunities';
-                
-            }
-            if($MyType == 'Accounts'){
-                $event->associationType = 'Accounts';
-                $action->associationType = 'accounts';
-            }
 
             if ($action->assignedTo !== '' && $action->assignedTo !== 'Anyone') {
                 $notif->user = $contact->assignedTo;
                 $notif->modelType = 'Contacts';
-                if($MyType == 'X2Leads'){
-                    $notif->modelType= 'X2Leads';
-                }
-                if($MyType == 'Opportunity'){
-                     $notif->modelType = 'Opportunities';
-                }
-                if($MyType == 'Accounts'){
-                    $notif->modelType = 'Accounts';
-                }
-                
                 $notif->modelId = $contact->id;
                 $notif->createDate = $now;
                 $notif->value = $item->list->campaign->getLink();
@@ -1519,7 +722,8 @@ class MarketingController extends x2base {
         }
 
         if ($type == 'unsub') {
-            //$item->unsubscribe();
+            $item->unsubscribe();
+
             // find any weblists associated with the email address and create unsubscribe actions 
             // for each of them
             $sql = 'SELECT t.* 
@@ -1544,8 +748,10 @@ class MarketingController extends x2base {
                         Yii::t('marketing', 'has unsubscribed') . ".";
                 $weblistAction->save();
             }
+
             $action->type = 'email_unsubscribed';
             $notif->type = 'email_unsubscribed';
+
             if ($contact === null) {
                 $action->actionDescription = Yii::t('marketing', 'Campaign') . ': ' .
                         $item->list->campaign->name . "\n\n" . $item->emailAddress . ' ' .
@@ -1556,58 +762,21 @@ class MarketingController extends x2base {
                         Yii::t('marketing', 'Contact has unsubscribed') . ".\n" .
                         Yii::t('marketing', '\'Do Not Email\' has been set') . ".";
             }
-               // Contacts::model()
-                //        ->updateAll(
-                //                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                //get the categories
-                $categories = Yii::app()->db->createCommand()
-                    ->select('options')
-                        ->from('x2_dropdowns')
-                        ->where('id=155')
-                        ->queryRow();
-                X2ListItem::model()
-                        ->updateAll(
-                                array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $email));
-                $message = Yii::t('marketing', 'You have been unsubscribed');
-                $maillist = json_decode($categories["options"]);
-                $baseURL = Yii::app()->request->getBaseUrl(true);
-                
-                $pageUNSUB = Yii::app()->settings->doNotEmailPage;
-                
-                $listOfOpp =  '<form  action="' . $baseURL . '/index.php/site/unsubscribe" >';
-                $listOfOpp .=  '<input type="hidden" name="email" value="'. $email . '">';
-                foreach($maillist as $key => $value) {
-                   $this->checkUnsubList($value);
-                   $listOfOpp .=   '<input type="checkbox" name="'. $value .'" value="' . $value . '">' . $value . '<br>';
-                }
-                $listOfOpp .=  '<input type="checkbox" name="unsubscribeALL" value="unsubscribeALL">Unsubscribe from all emails<br>';
-               
-                $listOfOpp .=  '<input type="submit" value="Submit"></form></div >';
-                
-                $pageUNSUB = str_replace("(PLACE_OPP)",$listOfOpp,$pageUNSUB);
-                
-                if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage) ) {
-                        $this->UnSubAll($email);
-                            echo "You have been successfully unsubscribed.";
-                            return;
-                }
-                
-                echo $pageUNSUB;
 
+            $message = Yii::t('marketing', 'You have been unsubscribed');
+            echo '<html><head><title>' . $message . '</title></head><body>' . $message . '</body></html>';
         } elseif ($type == 'open') {
             //return a one pixel transparent gif
             header('Content-Type: image/gif');
             echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
             // Check if it has been marked as opened already, or if the contact
             // no longer exists. If so, exit; nothing more need be done.
-            if ($item->opened != 0) {
+            if ($item->opened != 0)
                 Yii::app()->end();
-            }
             // This needs to happen before the skip option to accomodate the case of newsletters
             $item->markOpened();
-            if ($skipActionEvent) {
+            if ($skipActionEvent)
                 Yii::app()->end();
-            }
             $action->disableBehavior('changelog');
             $action->type = 'campaignEmailOpened';
             $event->type = 'email_opened';
@@ -1625,9 +794,7 @@ class MarketingController extends x2base {
         } elseif ($type == 'click') {
             // redirect link click
             $item->markClicked($url);
-            
-            
-            
+
             $action->type = 'email_clicked';
             $notif->type = 'email_clicked';
 
@@ -1640,13 +807,11 @@ class MarketingController extends x2base {
                         $item->list->campaign->name . "\n\n" . $item->emailAddress . ' ' .
                         Yii::t('marketing', 'has clicked a link') . ":\n" . urldecode($url);
             }
-            
             $this->redirect(htmlspecialchars_decode($url, ENT_NOQUOTES));
         }
 
-        if (isset($location)) {
+        if (isset($location))
             $action->locationId = $location->id;
-        }
         $action->save();
         // if any of these hasn't been fully configured
         $notif->save();  // it will simply not validate and not be saved
@@ -1703,9 +868,8 @@ class MarketingController extends x2base {
                     'performHostnameLookups',
                 );
                 foreach ($settings as $setting) {
-                    if (isset($_POST['Admin'][$setting])) {
+                    if (isset($_POST['Admin'][$setting]))
                         $admin->$setting = $_POST['Admin'][$setting];
-                    }
                 }
             }
 
@@ -1717,11 +881,10 @@ class MarketingController extends x2base {
                     '..',
                     '.nogeoloc',
                 ));
-                if ($admin->enableGeolocation && file_exists($geolocLockFile)) {
+                if ($admin->enableGeolocation && file_exists($geolocLockFile))
                     unlink($geolocLockFile);
-                } else if (!$admin->enableGeolocation && !file_exists($geolocLockFile)) {
+                else if (!$admin->enableGeolocation && !file_exists($geolocLockFile))
                     touch($geolocLockFile);
-                }
             }
         }
         $this->render('webTracker', array('admin' => $admin));
@@ -1750,9 +913,8 @@ class MarketingController extends x2base {
         $fh = fopen($srcFile, 'r');
         fgets($fh); // skip first line (open PHP tag)
         $header = '';
-        for ($i = 0; $i < $headerLength; $i++) {
+        for ($i = 0; $i < $headerLength; $i++)
             $header .= fgets($fh);
-        }
         fclose($fh);
 
         // Write to temporary file and send to browser
@@ -1767,65 +929,6 @@ class MarketingController extends x2base {
     $id, $modelName, $startTimestamp, $endTimestamp) {
         echo CJSON::encode(CampaignChartWidget::getChartData(
                         $id, $modelName, $startTimestamp, $endTimestamp));
-    }
-
-    
-    
-    public function actionMakeFull() {
-        $ParentCamp = Campaign::model()->findByPk($_GET['id']);
-        $KidToUse =  $_GET['Campaign']['children'];
-       
-        $fullCamp = new Campaign;
-        $kids = json_decode($ParentCamp->children);
-        $TestCamp = Campaign::model()->findByPk($kids[$KidToUse]);
-        $fullCamp->type = 'Email';
-        
-        $fullCamp->visibility = 1;
-        $fullCamp->createDate = time();
-        $fullCamp->lastUpdated = time();
-        $fullCamp->lastActivity = time();
-        $fullCamp->content = $TestCamp->content;
-        $fullCamp->createdBy = Yii::app()->user->getName();
-        $fullCamp->assignedTo = Yii::app()->user->getName();
-        $fullCamp->list = $ParentCamp->list;
-        $fullCamp->listId = $ParentCamp->listId;
-        $fullCamp->name = $ParentCamp->name . ' (FULL)';
-        $fullCamp->template = $TestCamp->template ;
-        $fullCamp->sendAs = $TestCamp->sendAs;
-        $fullCamp->launchDate = NULL;
-        $fullCamp->category = $ParentCamp->category;
-        $fullCamp->parent = $ParentCamp->id;
-        $fullCamp->save();
-        array_push($kids, $fullCamp->id);
-        $ParentCamp->children = json_encode($kids);
-        $ParentCamp->save();
-        $this->redirect(array('view', 'id' => $fullCamp->id));
-    }
-    
-    
-
-    public function actionUpdateBouncedEmails($process = 'All') {
-        if (!extension_loaded('imap')) {
-            throw new Exception('Processing requires the PHP IMAP extension.');
-        }
-        if (!empty($_GET) && !empty($_GET['process'])) {
-            $process = $_GET['process'];
-        }
-        if ($process == "All") {
-            $staticModel = Credentials::model();
-            $criteria = new CDbCriteria();
-            $criteria->addCondition('disableInbox=0');
-            $criteria->addCondition("isBounceAccount=1");
-            $credRecords = $staticModel->findAll($criteria);
-
-            foreach ($credRecords as $credential) {
-                $bouncedBehaviour = new BouncedEmailBehavior();
-                $bouncedBehaviour->executeMailbox($credential->id);
-            }
-        } else {
-            $bouncedBehaviour = new BouncedEmailBehavior();
-            $bouncedBehaviour->executeMailbox($process);
-        }
     }
 
     /**
@@ -1864,8 +967,6 @@ class MarketingController extends x2base {
                 'label' => Yii::t('marketing', 'Create Campaign'),
                 'url' => array('create')
             ),
-            
-
             RecordViewLayoutManager::getViewActionMenuListItem($modelId),
             array(
                 'name' => 'viewAnon',
@@ -1885,7 +986,6 @@ class MarketingController extends x2base {
                     'submit' => array('delete', 'id' => $modelId),
                     'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'))
             ),
-
             array(
                 'name' => 'deleteAnon',
                 'label' => Yii::t('contacts', 'Delete'),
@@ -1937,15 +1037,13 @@ class MarketingController extends x2base {
                 'label' => Yii::t('marketing', 'Fingerprints'),
                 'url' => array('fingerprintIndex'),
                 'visible' => $marketingAdmin && Yii::app()->contEd('pla')
-            ),           
-
+            ),
             array(
                 'name' => 'x2flow',
                 'label' => Yii::t('app', 'X2Workflow'),
                 'url' => array('/studio/flowIndex'),
                 'visible' => (Yii::app()->contEd('pro'))
             ),
-            
             array(
                 'name' => 'email',
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
@@ -1954,8 +1052,8 @@ class MarketingController extends x2base {
             RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
 
-        
         $this->prepareMenu($menuItems, $selectOptions);
         $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
     }
+
 }

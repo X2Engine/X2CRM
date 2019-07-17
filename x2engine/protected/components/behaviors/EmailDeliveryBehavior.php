@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Email delivery methods.
@@ -207,13 +204,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * @return true if file size is acceptable
      */
     public function validateFileSize ($size) {
-        $admin = &Yii::app()->settings; 
-        // make sure the php.ini's "upload_max_size" and "post_max_size" directives are consistent with this
-        $FILEsize = 10;
-        if(isset($admin->maxFileSize)){
-            $FILEsize = $admin->maxFileSize;
-        }
-        if($size > ($FILEsize * 1024 * 1024)) { // 10mb file size limit is default
+        if($size > (10 * 1024 * 1024)) { // 10mb file size limit
             throw new Exception(
                 "Attachment '{$attachment['filename']}' exceeds size ".
                 "limit of 10mb.");
@@ -233,15 +224,7 @@ class EmailDeliveryBehavior extends CBehavior {
      * @throws Exception
      * @return array
      */
-    public function deliverEmail(
-        $addresses,
-        $subject,
-        $message,
-        $attachments = array(),
-        $unsubLink = null,
-        $bounceHandlingEmail = null,
-        $campaignInformation = array()
-    ){
+    public function deliverEmail($addresses, $subject, $message, $attachments = array(), $unsubLink = null){
         if(YII_UNIT_TESTING && defined ('X2_DEBUG_EMAIL') && X2_DEBUG_EMAIL) {
             // Fake a successful send
             /**/AuxLib::debugLog(
@@ -292,8 +275,6 @@ class EmailDeliveryBehavior extends CBehavior {
             $this->addEmailAddresses($phpMail, $addresses);
 
             $phpMail->Subject = $subject;
-            $phpMail->bounceAccount = $bounceHandlingEmail;
-            $phpMail->bounceInfo = $campaignInformation;
             // $phpMail->AltBody = $message;
             $phpMail->MsgHTML($message);
             // $phpMail->Body = $message;

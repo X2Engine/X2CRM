@@ -53,7 +53,7 @@ class  Text_Highlighter_CPP extends Text_Highlighter
 
         $this->_options = $options;
         $this->_regs = array (
-            -1 => '/((?i)")|((?i)\\{)|((?i)\\()|((?i)\\[)|((?i)[a-z_]\\w*)|((?i)\\b0[xX][\\da-f]+)|((?i)\\b\\d\\d*|\\b0\\b)|((?i)\\b0[0-7]+)|((?i)\\b(\\d*\\.\\d+)|(\\d+\\.\\d*))|((?mi)^[ \\t]*#include)|((?mii)^[ \\t]*#[ \\t]*[a-z]+)|((?i)\\d*\\.?\\d+)|((?i)\\/\\*)|((?i)\\/\\/.+)/',
+            -1 => '/((?i)")|((?i)\\{)|((?i)\\()|((?i)\\[)|((?i)[a-z_]\\w*)|((?mi)^[ \\t]*#include)|((?mii)^[ \\t]*#[ \\t]*[a-z]+)|((?i)\\d*\\.?\\d+)|((?i)\\/\\*)|((?i)\\/\\/.+)/',
             0 => '/((?i)\\\\)/',
             1 => '/((?i)")|((?i)\\{)|((?i)\\()|((?i)\\[)|((?i)[a-z_]\\w*)|((?i)\\b0[xX][\\da-f]+)|((?i)\\b\\d\\d*|\\b0\\b)|((?i)\\b0[0-7]+)|((?i)\\b(\\d*\\.\\d+)|(\\d+\\.\\d*))|((?mi)^[ \\t]*#include)|((?mii)^[ \\t]*#[ \\t]*[a-z]+)|((?i)\\d*\\.?\\d+)|((?i)\\/\\*)|((?i)\\/\\/.+)/',
             2 => '/((?i)")|((?i)\\{)|((?i)\\()|((?i)\\[)|((?i)[a-z_]\\w*)|((?i)\\b0[xX][\\da-f]+)|((?i)\\b\\d\\d*|\\b0\\b)|((?i)\\b0[0-7]+)|((?i)\\b(\\d*\\.\\d+)|(\\d+\\.\\d*))|((?mi)^[ \\t]*#include)|((?mii)^[ \\t]*#[ \\t]*[a-z]+)|((?i)\\d*\\.?\\d+)|((?i)\\/\\*)|((?i)\\/\\/.+)/',
@@ -75,12 +75,8 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                 5 => 0,
                 6 => 0,
                 7 => 0,
-                8 => 2,
+                8 => 0,
                 9 => 0,
-                10 => 0,
-                11 => 0,
-                12 => 0,
-                13 => 0,
             ),
             0 => 
             array (
@@ -175,15 +171,11 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                 2 => 'brackets',
                 3 => 'brackets',
                 4 => '',
-                5 => '',
-                6 => '',
+                5 => 'prepro',
+                6 => 'prepro',
                 7 => '',
-                8 => '',
-                9 => 'prepro',
-                10 => 'prepro',
-                11 => '',
-                12 => 'mlcomment',
-                13 => 'comment',
+                8 => 'mlcomment',
+                9 => 'comment',
             ),
             0 => 
             array (
@@ -278,15 +270,11 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                 2 => 'code',
                 3 => 'code',
                 4 => 'identifier',
-                5 => 'number',
-                6 => 'number',
+                5 => 'prepro',
+                6 => 'code',
                 7 => 'number',
-                8 => 'number',
-                9 => 'prepro',
-                10 => 'code',
-                11 => 'number',
-                12 => 'mlcomment',
-                13 => 'comment',
+                8 => 'mlcomment',
+                9 => 'comment',
             ),
             0 => 
             array (
@@ -392,15 +380,11 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                 2 => 2,
                 3 => 3,
                 4 => -1,
-                5 => -1,
-                6 => -1,
+                5 => 5,
+                6 => 6,
                 7 => -1,
-                8 => -1,
-                9 => 5,
-                10 => 6,
-                11 => -1,
-                12 => 7,
-                13 => 8,
+                8 => 7,
+                9 => 8,
             ),
             0 => 
             array (
@@ -500,25 +484,13 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                     'types' => '/^(auto|bool|char|class|const|double|enum|explicit|export|extern|float|inline|int|long|mutable|namespace|register|short|signed|static|struct|template|typedef|typename|union|unsigned|virtual|void|volatile|wchar_t)$/',
                     'Common Macros' => '/^(NULL|TRUE|FALSE|MAX|MIN|__LINE__|__DATA__|__FILE__|__TIME__|__STDC__)$/',
                 ),
-                5 => 
-                array (
-                ),
-                6 => 
-                array (
-                ),
+                5 => -1,
+                6 => -1,
                 7 => 
                 array (
                 ),
-                8 => 
-                array (
-                ),
+                8 => -1,
                 9 => -1,
-                10 => -1,
-                11 => 
-                array (
-                ),
-                12 => -1,
-                13 => -1,
             ),
             0 => 
             array (
@@ -768,10 +740,6 @@ class  Text_Highlighter_CPP extends Text_Highlighter
                 7 => false,
                 8 => false,
                 9 => false,
-                10 => false,
-                11 => false,
-                12 => false,
-                13 => false,
             ),
             0 => 
             array (

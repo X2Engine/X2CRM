@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Abstract Class for rendering the Form view and Detail View
@@ -346,12 +343,6 @@ abstract class RecordView extends X2Widget {
             'class' => 'formSectionHeader'
         ));
 
-        $html .= X2Html::tag('span', array(
-            'class' => 'sectionTitle',
-            'title' => addslashes($section['title'])
-            ), Yii::t(strtolower(Yii::app()->controller->id), $section['title'])
-        );
-
         // Add the collapse Icon
         if ($section['collapsible']) {
             $html .= X2Html::link (
@@ -370,6 +361,12 @@ abstract class RecordView extends X2Widget {
                 )
             );
         }
+
+        $html .= X2Html::tag('span', array(
+            'class' => 'sectionTitle',
+            'title' => addslashes($section['title'])
+            ), Yii::t(strtolower(Yii::app()->controller->id), $section['title'])
+        );
 
         $html .= '</div>';
         return $html;

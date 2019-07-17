@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() . '/js/multiselect/js/ui.multiselect.js');
 Yii::app()->clientScript->registerCssFile(Yii::app()->getBaseUrl() . '/js/multiselect/css/ui.multiselect.css', 'screen, projection');
@@ -100,33 +97,6 @@ $users = array_map (array('CHtml', 'encode'), $users);
         ?>
     </div>
     <?php
-    //dropdown to pick either google or Outlook. Can't do both.
-    if( $googleIntegration && $outlookIntegration ){
-        if($client->getAccessToken() && $clientOutlook->getAccessToken()){
-            echo "<br>";
-            echo $form->labelEx($model, 'syncType');
-            $syncTypes = array('google' => 'Google Calendar', 'outlook' => 'Outlook Calendar');
-            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        }
-    }elseif($googleIntegration){
-        if($client->getAccessToken()){
-        echo "<br>";
-            echo $form->labelEx($model, 'syncType');
-            $syncTypes = array('google' => 'Google Calendar');
-            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration'))); 
-        }    
-    }elseif($outlookIntegration){
-        if($clientOutlook->getAccessToken()){
-            echo "<br>";
-            echo $form->labelEx($model, 'syncType');
-            $syncTypes = array('outlook' => 'Outlook Calendar');
-            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        } 
-    }     
-    ?>
-    <?php
-    //google Version
-    // REMEMBER THEY CAN ONLY PICK EITHER OR
     if ($googleIntegration || $hubCalendaring) {
         ?>
         <div class="form">
@@ -140,10 +110,10 @@ $users = array_map (array('CHtml', 'encode'), $users);
 
                     <?php if ($client->getAccessToken()) { ?>
                         <?php
-                        //$model->syncType = 'google';
+                        $model->syncType = 'google';
                         $model->remoteSync = 1;
                         echo $form->hiddenField($model, 'remoteSync');
-                        //echo $form->hiddenField($model, 'syncType');
+                        echo $form->hiddenField($model, 'syncType');
                         ?>
                         <?php
                         echo $form->labelEx($model, 'remoteCalendarId');
@@ -156,49 +126,13 @@ $users = array_map (array('CHtml', 'encode'), $users);
                         echo CHtml::link(Yii::t('calendar', "Link to Google Calendar"), $client->getAuthorizationUrl('calendar'),array('class'=>'x2-button'));
                         ?>
                     <?php } ?>
+
                 </td>
             </table>
             <br>
         </div>
     <?php } ?>
-    
-    <?php
-    //outlook Version
-    if ($outlookIntegration) {
-        ?>
-        <div class="form">
-            <br>
-            <h3><?php echo Yii::t('calendar', 'Outlook Calendar Sync');?></h3>
-        </div>
 
-        <div class="form">
-            <table>
-                <td>
-
-                    <?php if ($clientOutlook->getAccessToken()) { ?>
-                        <?php
-                        //$model->syncType = 'outlook';
-                        $model->remoteSync = 1;
-                        echo $form->hiddenField($model, 'remoteSync');
-                        //echo $form->hiddenField($model, 'syncType');
-                        ?>
-                        <?php
-                        echo $form->labelEx($model, 'remoteCalOutlook');
-                        ?>
-                        <?php
-                        echo $form->dropDownList($model, 'remoteCalOutlook', $outlookCalendarList, array('empty'=>Yii::t('calendar','Select a calendar')));
-                        ?>
-                    <?php } else { ?>
-                        <?php
-                        echo CHtml::link(Yii::t('calendar', "Link to Outlook Calendar"), $clientOutlook->getAuthorizationUrl(),array('class'=>'x2-button'));                           
-                        ?>
-                    <?php } ?>
-                </td>
-            </table>
-            <br>
-        </div>
-    <?php } ?>
-    
     <?php
     echo '	<div class="row buttons">' . "\n";
     echo '		' . CHtml::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save'), array('class' => 'x2-button', 'id' => 'save-button', 'tabindex' => 24)) . "\n";

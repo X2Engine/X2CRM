@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 LoginThemeHelper::init();
 
@@ -131,6 +128,14 @@ Yii::app()->clientScript->registerCss('googleLogin', "
         </div>
     <?php }
     ?>
+
+    <div class="row" style="margin-top:10px;text-align:center;">
+        <?php
+        echo CHtml::link('<img src="'.Yii::app()->theme->baseUrl.'/images/google_icon.png" id="google-icon" /> '.Yii::t('app', 'Sign in with Google'), (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+                ((substr($_SERVER['HTTP_HOST'], 0, 4) == 'www.') ? substr($_SERVER['HTTP_HOST'], 4) : $_SERVER['HTTP_HOST']).
+                $this->createUrl('/site/googleLogin'), array('class' => 'x2touch-link'));
+        ?>
+    </div>
 </div>
 </div>
 </div>

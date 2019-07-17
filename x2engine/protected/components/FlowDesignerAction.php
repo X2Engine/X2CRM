@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,9 +36,6 @@
 
 
 
-
-
-
 /**
  * External action for creating and editing X2Flow automation workflows
  *
@@ -55,9 +52,9 @@ class FlowDesignerAction extends CAction {
         } else {
             $flow = new X2Flow;
         }
+
         if(isset($_POST['X2Flow'])) {
             $flow->attributes = $_POST['X2Flow'];
-            
             $flowData = CJSON::decode($flow->flow);
             $flow->name = $_POST['X2Flow']['name'];
             $flow->description = filter_var($_POST['X2Flow']['description'], FILTER_SANITIZE_STRING, array('flags' => FILTER_FLAG_NO_ENCODE_QUOTES));

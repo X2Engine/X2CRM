@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,76 +36,62 @@
 
 
 
-
-
-
-Yii::app()->clientScript->registerCssFiles('RowsAndColumnsReportCss', array(
-    Yii::app()->controller->module->getAssetsUrl() . '/css/gridReportsGridView.css',
-    Yii::app()->controller->module->getAssetsUrl() . '/css/rowsAndColumnsReport.css',
-    Yii::app()->theme->baseUrl . '/css/gridview/styles.css'), false);
-
-Yii::app()->clientScript->registerCss('gridReportCSS',"
-#content {
-    border: 1px solid #e0e0e0 !important;
-}
-");
-
-Yii::app()->clientScript->registerScript('automaticallyGenerateReport', "
-$(function() {
-    $('#x2-generate-report-button').click();
-});
-", CClientScript::POS_READY);
+Yii::app()->clientScript->registerCssFiles ('RowsAndColumnsReportCss', array (
+    Yii::app()->controller->module->getAssetsUrl ().'/css/gridReportsGridView.css',
+    Yii::app()->controller->module->getAssetsUrl ().'/css/rowsAndColumnsReport.css',
+    Yii::app()->theme->baseUrl.'/css/gridview/styles.css'), false);
 
 // render grid report settings (start closed if report is being generated, open otherwise)
+
 ?>
 <div id='content-container-inner'>
-    <div class='form form2'>
-        <?php
-        $attributeOptions = X2Model::model($formModel->primaryModelType)
-                ->getFieldsForDropdown(true, false);
-        $form = $this->beginWidget('X2ReportForm', array(
-            'reportContainerId' => 'report-container',
-            'formModel' => $formModel,
-        ));
-        echo $form->errorSummary($formModel);
-        echo $form->label($formModel, 'primaryModelType');
-        echo $form->primaryModelTypeDropDown($formModel);
-        ?>
-        <br/>
-        <br/>
-        <?php
-        echo $form->label($formModel, 'allFilters');
-        echo $form->filterConditionList($formModel, 'allFilters');
-        ?> 
-        <br/>
-        <?php
-        echo $form->label($formModel, 'anyFilters');
-        echo $form->filterConditionList($formModel, 'anyFilters');
-        ?>
-        <br/>
-        <?php
-        echo $form->label($formModel, 'columns');
-        echo $form->attributePillBox($formModel, 'columns', $attributeOptions);
-        ?>
-        <br/>
-        <?php
-        echo $form->label($formModel, 'orderBy');
-        echo $form->sortByAttrPillBox($formModel, 'orderBy', $attributeOptions, array(
-            'id' => 'order-by-pill-box',
-        ));
-        ?>
-        <br/>
-        <?php
-        echo $form->checkBox($formModel, 'includeTotalsRow');
-        echo $form->label($formModel, 'includeTotalsRow', array(
-            'class' => 'right-label',
-        ));
-        ?>
-        <br/>
-        <?php
-        echo $form->generateReportButton();
-        $this->endWidget();
-        ?>
-    </div>
+<div class='form form2'>
+<?php
+$attributeOptions = X2Model::model ($formModel->primaryModelType)
+    ->getFieldsForDropdown (true, false);
+$form = $this->beginWidget ('X2ReportForm', array (
+    'reportContainerId' => 'report-container',
+    'formModel' => $formModel,
+));
+    echo $form->errorSummary ($formModel);
+    echo $form->label ($formModel, 'primaryModelType');
+    echo $form->primaryModelTypeDropDown ($formModel);
+    ?>
+    <br/>
+    <br/>
+    <?php
+    echo $form->label ($formModel, 'allFilters');
+    echo $form->filterConditionList ($formModel, 'allFilters');
+    ?> 
+    <br/>
+    <?php
+    echo $form->label ($formModel, 'anyFilters');
+    echo $form->filterConditionList ($formModel, 'anyFilters');
+    ?>
+    <br/>
+    <?php
+    echo $form->label ($formModel, 'columns');
+    echo $form->attributePillBox ($formModel, 'columns', $attributeOptions);
+    ?>
+    <br/>
+    <?php
+    echo $form->label ($formModel, 'orderBy');
+    echo $form->sortByAttrPillBox ($formModel, 'orderBy', $attributeOptions, array (
+        'id' => 'order-by-pill-box',
+    ));
+    ?>
+    <br/>
+    <?php
+    echo $form->checkBox ($formModel, 'includeTotalsRow');
+    echo $form->label ($formModel, 'includeTotalsRow', array (
+        'class' => 'right-label',
+    ));
+    ?>
+    <br/>
+    <?php
+    echo $form->generateReportButton ();
+$this->endWidget ();
+?>
+</div>
 </div>
 

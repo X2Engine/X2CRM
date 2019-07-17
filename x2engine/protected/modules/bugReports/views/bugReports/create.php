@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,20 +34,17 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
-    array('label' => Yii::t('module', '{X} List', array('{X}' => Modules::itemDisplayName())), 'url' => array('index')),
-    array('label' => Yii::t('module', 'Create {X}', array('{X}' => Modules::itemDisplayName()))),
-        ));
-?>
-
-<div class="page-title"><h2><?php echo Yii::t('module', 'Create New {X}', array('{X}' => Modules::itemDisplayName())); ?></h2></div>
-
-<?php
-$this->widget('FormView', array(
-    'model' => $model
+	array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('index')),
+	array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName()))),
 ));
+?>
+<div class="page-title"><h2><?php echo Yii::t('module','Create New {X}',array('{X}'=>Modules::itemDisplayName())); ?></h2></div>
+
+<?php 
+$this->widget ('FormView', array(
+	'model' => $model
+));
+//echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model,'users'=>$users,'modelName'=>'bugReports')); ?>

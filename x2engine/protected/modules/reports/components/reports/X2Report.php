@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 abstract class X2Report extends X2Widget {
 
@@ -498,7 +495,7 @@ abstract class X2Report extends X2Widget {
         return $leftJoinOn;
     }
 
-      /**
+    /**
      * @return string select clause for ungrouped report query. The records returned by this query
      *  get used for group drill down and an ungrouped grid view
      */
@@ -507,6 +504,7 @@ abstract class X2Report extends X2Widget {
         $i = 0;
         foreach ($columns as $col) {
             if ($i++ !== 0) $selectClause .= ',';
+
             $matches = array ();
             $selectClause.= $this->getAliasedAttr ($col);
             $selectClause.= ' AS `'.addslashes ($col).'`';
@@ -514,14 +512,14 @@ abstract class X2Report extends X2Widget {
         if ($includeId) $selectClause .= ', t.id as '.self::HIDDEN_ID_ALIAS;
         return $selectClause;
     }
-    
+
     /**
      * @return string order by clause constructed from orderBy property 
      */
     protected function getOrderByClause (array $attrs) {
         $sortOrder = $this->getSortOrderSQL ($attrs);
         if ($sortOrder !== '') {
-            $orderByClause = 'ORDER BY ' . $sortOrder;
+            $orderByClause = 'ORDER BY '.$sortOrder;
         } else {
             $orderByClause = '';
         }
@@ -593,11 +591,11 @@ abstract class X2Report extends X2Widget {
         $qpg->mergeParams ($params);
         return $permissionsCondition;
     }
-    
+
     /**
      * @param array conditions and logical operators 
      */
-    protected function buildSQLConditions (array $conditions ) { 
+    protected function buildSQLConditions (array $conditions) {
         $conditionsSQL = '';
         foreach ($conditions as $cond) {
             $this->addCondition ($conditionsSQL, $cond);
@@ -612,6 +610,7 @@ abstract class X2Report extends X2Widget {
     protected function buildQueryCommand (
         $selectClause, $primaryTableName, $joinClause, $whereClause, $groupByClause=null,
         $havingClause=null, $orderByClause=null) {
+
         $query = Yii::app()->db->createCommand ("
             $selectClause
             FROM $primaryTableName AS t 
@@ -620,12 +619,9 @@ abstract class X2Report extends X2Widget {
             ".(isset ($groupByClause) ? $groupByClause : '')."
             ".(isset ($havingClause) ? $havingClause : '')."
             ".(isset ($orderByClause) ? $orderByClause : ''));
-
         return $query;
     }
-   
-    
-    
+
     /**
      * @param string $conditionsSQL
      * @param array|string $condition
@@ -643,6 +639,5 @@ abstract class X2Report extends X2Widget {
             $conditionsSQL = $condition;
         }
     }
-    
-    
+
 }

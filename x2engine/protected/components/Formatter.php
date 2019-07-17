@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Consolidated class for common string formatting and parsing functions.
@@ -896,27 +893,6 @@ class Formatter {
         
         $shortCodeValues = static::getReplacementTokens($value, $params, $renderFlag, $makeLinks);
         return strtr($value,$shortCodeValues);
-    }
-    
-    /**
-     * Check for empty variables in dynamic text blocks.
-     *
-     * @param String $value The text which should be searched for dynamic attributes.
-     * @param X2Model $model The model which attributes should be taken from.
-     * @return Array $nullList A list of attributes paired with empty values.
-     */
-    public static function findNullVariables ($value, $params){
-        if (!is_array ($params)) {
-            $params = array ('model' => $params);
-        }
-        $attrTable = static::getReplacementTokens($value, $params, true, false);
-        $nullList = array();
-        foreach ($attrTable as $attr => $val) {
-            if ($val === ''){
-                array_push($nullList, $attr);
-            }
-        }
-        return $nullList;
     }
 
     /**

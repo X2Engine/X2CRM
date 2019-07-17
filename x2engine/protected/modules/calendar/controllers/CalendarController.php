@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.components.Ical');
 
@@ -186,18 +183,13 @@ class CalendarController extends x2base {
         $calendar = filter_input(INPUT_POST, 'X2Calendar', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
         if(is_array($calendar)){
             $model->attributes = $calendar;
-            //Added fix was that the remoteCalendarId can not be empty
-            //This is because it can not attachSyncBehavior without it.
-            if($model->remoteSync && (!empty($model->remoteCalendarId) || !empty($model->remoteCalOutlook))){
+            if($model->remoteSync){
                 $model->attachSyncBehavior();
                 if(isset($_SESSION['token'])){
                     $credentials = $_SESSION['token'];
                     $model->credentials = $credentials;
-                }if($model->syncType == 'google'){
-                $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
-                }if($model->syncType == 'outlook'){
-                $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalOutlook, $model->syncBehavior->calendarUrl);    
                 }
+                $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
             }
 
             $model->createdBy = Yii::app()->user->name;
@@ -217,7 +209,6 @@ class CalendarController extends x2base {
 
         $admin = Yii::app()->settings;
         $googleIntegration = $admin->googleIntegration;
-        $outlookIntegration = $admin->outlookIntegration;
         $hubCreds = Credentials::model()->findByPk($admin->hubCredentialsId);
         $hubCalendaring = false;
         if ($hubCreds && $hubCreds->auth)
@@ -230,21 +221,12 @@ class CalendarController extends x2base {
             $client = null;
             $googleCalendarList = null;
         }
-        
-        if ($outlookIntegration){
-           list($clientOutlook, $outlookCalendarList) = X2Calendar::getOutlookCalendarList();
-        }else{
-           $clientOutlook = null;
-           $outlookCalendarList = null;
-        }
+
         $this->render('create', array(
             'model' => $model,
             'client' => $client,
-            'clientOutlook' => $clientOutlook,
             'googleIntegration' => $googleIntegration,
-            'outlookIntegration' => $outlookIntegration,
             'googleCalendarList' => $googleCalendarList,
-            'outlookCalendarList' => $outlookCalendarList,
             'hubCalendaring' => $hubCalendaring,
         ));
     }
@@ -268,21 +250,13 @@ class CalendarController extends x2base {
                     if(isset($_SESSION['token'])){
                         $credentials = $_SESSION['token'];
                         $model->credentials = $credentials;
-                    }if($model->syncType == 'google'){
-                        if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
-                            $model->deleteRemoteActions();
-                            $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
-                            $model->ctag = null;
-                            $model->syncToken = null;
-                        }
-                    }if($model->syncType == 'outlook'){    
-                        if($oldAttributes['remoteCalOutlook'] !== $model->remoteCalOutlook){
-                            $model->deleteRemoteActions();
-                            $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalOutlook, $model->syncBehavior->calendarUrl);
-                            $model->ctag = null;
-                            $model->syncToken = null;
-                        }
-                    }    
+                    }
+                    if($oldAttributes['remoteCalendarId'] !== $model->remoteCalendarId){
+                        $model->deleteRemoteActions();
+                        $model->remoteCalendarUrl = str_replace('{calendarId}', $model->remoteCalendarId, $model->syncBehavior->calendarUrl);
+                        $model->ctag = null;
+                        $model->syncToken = null;
+                    }
                 }
 
                 $model->updatedBy = Yii::app()->user->name;
@@ -301,7 +275,6 @@ class CalendarController extends x2base {
 
             $admin = Yii::app()->settings;
             $googleIntegration = $admin->googleIntegration;
-            $outlookIntegration = $admin->outlookIntegration;
             $hubCreds = Credentials::model()->findByPk($admin->hubCredentialsId);
             $hubCalendaring = false;
             if ($hubCreds && $hubCreds->auth)
@@ -313,21 +286,12 @@ class CalendarController extends x2base {
                 $client = null;
                 $googleCalendarList = null;
             }
-             if ($outlookIntegration){
-                list($clientOutlook, $outlookCalendarList) = X2Calendar::getOutlookCalendarList();
-            }else{
-               $clientOutlook = null;
-               $outlookCalendarList = null;
-            }
-            
+
             $this->render('update', array(
                 'model' => $model,
                 'client' => $client,
-                'clientOutlook' => $clientOutlook,
                 'googleIntegration' => $googleIntegration,
-                'outlookIntegration' => $outlookIntegration,
                 'googleCalendarList' => $googleCalendarList,
-                'outlookCalendarList' => $outlookCalendarList,
                 'hubCalendaring' => $hubCalendaring,
             ));
         }else{
@@ -360,6 +324,7 @@ class CalendarController extends x2base {
      */
     public function actionJsonFeed($calendarId, $start, $end){
         echo CJSON::encode($this->getFeed($calendarId, $start, $end));
+
     }
 
     public function formatActionToEvent($action, $id){
@@ -567,7 +532,7 @@ class CalendarController extends x2base {
             $action->complete = "Yes";
             $action->completedBy = Yii::app()->user->getName();
             $action->completeDate = time();
-            $action->save();
+            $action->update();
         }
     }
 
@@ -580,7 +545,7 @@ class CalendarController extends x2base {
             $action->complete = "No";
             $action->completedBy = null;
             $action->completeDate = null;
-            $action->save();
+            $action->update();
         }
     }
 
@@ -625,7 +590,7 @@ class CalendarController extends x2base {
 
             /**/print_r($showCalendars);
             $user->showCalendars = CJSON::encode($showCalendars);
-            $user->save();
+            $user->update();
         }
     }
 
@@ -639,7 +604,7 @@ class CalendarController extends x2base {
             $visible = Yii::app()->params->profile->$parameterName;
             $visible = !$visible;
             Yii::app()->params->profile->$parameterName = $visible;
-            Yii::app()->params->profile->save();
+            Yii::app()->params->profile->update();
             echo $visible;
         }else{
             echo 1; // if portlet not found, just make it visible

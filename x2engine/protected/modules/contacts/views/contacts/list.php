@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,18 +34,9 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $heading = $listModel->name; //Yii::t('contacts','All Contacts');
 
 $authParams['X2Model'] = $listModel;
-
-//these hidden field is here to stop google auto fill from filling in the grid
-$ConFields = X2Model::model("Contacts")->getFields();
-foreach ($ConFields as $field) {
-    echo '<input type="hidden" id="Contacts[' . $field->fieldName . ']" name="Contacts[' . $field->fieldName . ']">';
-}
 
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));

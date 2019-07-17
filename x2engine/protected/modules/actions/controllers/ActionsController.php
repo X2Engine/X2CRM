@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.modules.actions.controllers
@@ -101,7 +98,7 @@ class ActionsController extends x2base {
         if(isset($_POST['ShowActions'])){
             $profile = Profile::model()->findByPk(Yii::app()->user->id);
             $profile->showActions = $_POST['ShowActions'];
-            $profile->save();
+            $profile->update();
         }
     }
 
@@ -250,23 +247,20 @@ class ActionsController extends x2base {
      * If creation is successful, the browser will be redirected to the 'view' page.
      */
     public function actionCreate(){
-        
         if ((Yii::app()->user->isGuest && 
             !Yii::app()->user->checkAccess($_POST['Actions']['associationType'].'View'))) {
 
             $this->denied ();
         }
-        
+
         $formTypes = Actions::getFormTypes ();
         foreach ($formTypes as $type) { // determine which kind of action we're creating
             if (isset ($_POST[$type])) {
                 $post = $_POST[$type];
                 $modelType = $type;
-                
                 break;
             }
         }
-        
         if (!isset ($modelType) && isset ($_POST['actionType']) && 
             in_array ($_POST['actionType'], $formTypes)) {
 
@@ -275,32 +269,19 @@ class ActionsController extends x2base {
             $modelType = 'Actions';
         }
         $model = new $modelType;
-        
+
         if (isset ($post)){
             if ($model instanceof ActionFormModelBase) {
-
                 $model->setAttributes ($post);
 
-        
                 if ($model->validate () && !isset($_POST['keepForm'])) {
                     $model = $model->getAction (); // convert to active record
                 }
             } else { // ($model instanceof Actions)
                 $model->setX2Fields ($post);
             }
-            
-            if($modelType == 'TimeFormModel'){
-                $model->visibility =  $_POST['TimeFormModel']['visibility'];    
-            }
-            if($modelType == 'CallFormModel'){
-                $model->visibility =  $_POST['CallFormModel']['visibility'];    
-            }
-            if($modelType == 'NoteFormModel'){
-                $model->visibility =  $_POST['NoteFormModel']['visibility'];    
-            }
-            
+
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
-                     
                 $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
                 $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
                 $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
@@ -320,7 +301,6 @@ class ActionsController extends x2base {
             if (!$model->hasErrors () && !isset($_POST['keepForm'])) $model = new $modelType;
             $this->renderInlineForm ($model);
         } else {
-
             $this->render('create', array(
                 'model' => $model,
             ));

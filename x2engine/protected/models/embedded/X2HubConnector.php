@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 Yii::import('application.models.embedded.*');
 
 /**
@@ -47,12 +44,12 @@ Yii::import('application.models.embedded.*');
  */
 class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials {
 
-    public static function getAdminProperty() {
-        return 'hubCredentialsId';
+    public static function getAdminProperty () {
+        return 'hubCredentialsId'; 
     }
 
-    public function getMetaData() {
-        return array(
+    public function getMetaData () {
+        return array (
             'private' => 1,
             'userId' => Credentials::SYS_ID,
             'name' => 'X2 Hub Services',
@@ -65,67 +62,61 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
     public $enableGoogleMaps = true;
     public $enableTwoFactor = true;
     public $enableGoogleSpeech = false;
-    public $enableLinkedIn = true;
-    public $enableDropbox = true;
 
-    public function rules() {
+    public function rules(){
         return array(
-            array('unique_id,hubEnabled,enableGoogleCalendar,enableGoogleMaps,enableTwoFactor,enableLinkedIn, enableDropbox', 'safe'),
+            array('unique_id,hubEnabled,enableGoogleCalendar,enableGoogleMaps,enableTwoFactor', 'safe'),
         );
     }
 
-    public function getProtectedFields() {
-        return array();
+    public function getProtectedFields () {
+        return array ();
     }
 
-    public function renderForm() {
-        $this->renderInputs();
-        echo '<br />';
-        echo '<br />';
+    public function renderForm () {
+		$this->renderInputs();
+		echo '<br />';
+		echo '<br />';
     }
 
-    public function attributeLabels() {
+    public function attributeLabels(){
         return array(
-            'unique_id' => Yii::t('app', 'X2 Hub Product Key'),
-            'hubEnabled' => Yii::t('app', 'Hub Enabled'),
-            'enableGoogleCalendar' => Yii::t('app', 'Enable Google Calendar Sync'),
-            'enableGoogleMaps' => Yii::t('app', 'Enable Google Maps'),
-            'enableGoogleSpeech' => Yii::t('app', 'Enable Google Speech'),
-            'enableTwoFactor' => Yii::t('app', 'Enable 2 Factor Authentication'),
-            'enableLinkedIn' => Yii::t('app', 'Enable LinkedIn Integration'),
-            'enableDropbox' => Yii::t('app', 'Enable Dropbox Integration'),
+            'unique_id' => Yii::t('app','X2 Hub Product Key'),
+            'hubEnabled' => Yii::t('app','Hub Enabled'),
+            'enableGoogleCalendar' => Yii::t('app','Enable Google Calendar Sync'),
+            'enableGoogleMaps' => Yii::t('app','Enable Google Maps'),
+            'enableGoogleSpeech' => Yii::t('app','Enable Google Speech'),
+            'enableTwoFactor' => Yii::t('app','Enable 2 Factor Authentication'),
         );
     }
 
-    public function getPageTitle() {
-        return $this->modelLabel();
+    public function getPageTitle () {
+        return $this->modelLabel ();
     }
 
     public function modelLabel() {
-        return Yii::t('app', 'X2 Hub Services');
+        return Yii::t('app','X2 Hub Services');
     }
 
-    public function htmlOptions($name, $options = array()) {
-        return parent::htmlOptions($name, $options);
+    public function htmlOptions ($name, $options=array ()) {
+        return parent::htmlOptions ($name, $options);
     }
 
     public function renderInput($field) {
         switch ($field) {
             case 'hubEnabled':
             case 'enableGoogleCalendar':
-            case 'enableLinkedIn':
-            case 'enableDropbox':
             case 'enableGoogleMaps':
             case 'enableTwoFactor':
-                echo CHtml::hiddenField('Credentials[auth][' . $field . ']', 0);
-                echo CHtml::checkBox('Credentials[auth][' . $field . ']', $this->$field);
+                echo CHtml::hiddenField('Credentials[auth]['.$field.']', 0);
+                echo CHtml::checkBox('Credentials[auth]['.$field.']', $this->$field);
                 break;
             case 'unique_id':
-                echo CHtml::textField('Credentials[auth][' . $field . ']', $this->$field);
+                echo CHtml::textField('Credentials[auth]['.$field.']', $this->$field);
                 break;
             case 'enableGoogleSpeech': // unreleased
                 //echo CHtml::hiddenField('Credentials[auth]['.$field.']', 0);
-                echo CHtml::checkBox('Credentials[auth][' . $field . ']', $this->$field, array('disabled' => 'disabled', 'style' => 'opacity:0.5', 'title' => Yii::t('app', 'Coming Soon!')));
+                echo CHtml::checkBox('Credentials[auth]['.$field.']', $this->$field, array('disabled' => 'disabled', 'style' => 'opacity:0.5', 'title' => Yii::t('app', 'Coming Soon!')));
                 break;
             default:
                 parent::renderInput($field);
@@ -133,7 +124,7 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         }
     }
 
-    public function renderInputs() {
+    public function renderInputs(){
         Yii::app()->clientScript->registerCss('hubConfigStyling', '
             #hubServiceConfig input[type="checkbox"] {
                 margin-right: 8px;
@@ -147,29 +138,25 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
             }
         ');
 
-        echo $this->getInstructions();
+        echo $this->getInstructions ();
 
-        echo CHtml::tag('h3', array(), $this->exoModel->getAttributeLabel($this->exoAttr));
-        echo '<hr />';
+		echo CHtml::tag ('h3', array (), $this->exoModel->getAttributeLabel ($this->exoAttr));
+		echo '<hr />';
         echo CHtml::activeLabel($this, 'unique_id');
-        $this->renderInput('unique_id');
+        $this->renderInput ('unique_id');
         echo CHtml::activeLabel($this, 'hubEnabled');
-        $this->renderInput('hubEnabled');
+        $this->renderInput ('hubEnabled');
 
-        echo CHtml::tag('h4', array(), Yii::t('', 'Services'));
+		echo CHtml::tag ('h4', array (), Yii::t('', 'Services'));
         echo '<div id="hubServiceConfig">';
-        $this->renderInput('enableTwoFactor');
-        echo CHtml::activeLabel($this, 'enableTwoFactor');
-        $this->renderInput('enableGoogleCalendar');
-        echo CHtml::activeLabel($this, 'enableGoogleCalendar');
-        $this->renderInput('enableGoogleMaps');
-        echo CHtml::activeLabel($this, 'enableGoogleMaps');
-        $this->renderInput('enableLinkedIn');
-        echo CHtml::activeLabel($this, 'enableLinkedIn');
-        $this->renderInput('enableDropbox');
-        echo CHtml::activeLabel($this, 'enableDropbox');
-        $this->renderInput('enableGoogleSpeech');
-        echo CHtml::activeLabel($this, 'enableGoogleSpeech');
+        $this->renderInput ('enableTwoFactor');
+        echo CHtml::activeLabel ($this, 'enableTwoFactor');
+        $this->renderInput ('enableGoogleCalendar');
+        echo CHtml::activeLabel ($this, 'enableGoogleCalendar');
+        $this->renderInput ('enableGoogleMaps');
+        echo CHtml::activeLabel ($this, 'enableGoogleMaps');
+        $this->renderInput ('enableGoogleSpeech');
+        echo CHtml::activeLabel ($this, 'enableGoogleSpeech');
         echo '</div>';
 
         echo CHtml::errorSummary($this);
@@ -177,28 +164,29 @@ class X2HubConnector extends JSONEmbeddedModel implements AdminOwnedCredentials 
         echo '<br>';
     }
 
-    private function getInstructions() {
+    private function getInstructions () {
         $enabled = false;
         if (Yii::app()->settings->hubCredentialsId && $this->hubEnabled) {
             $enabled = Yii::app()->controller
-                    ->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior)
-                    ->pingHub();
+                ->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior)
+                ->pingHub();
         }
-        return
-                '<h3>' . Yii::t('app', 'Configuring X2 Hub Services') . '</h3>
+        return 
+            '<h3>'.Yii::t('app', 'Configuring X2 Hub Services').'</h3>
             <hr>
-            <div>' . Yii::t('app', 'Status') . ': ' .
+            <div>'.Yii::t('app', 'Status').': '.
                 ($enabled ?
-                        '<span style="color:green">' . X2Html::fa('check') . Yii::t('app', 'Enabled') . '</span>' :
-                        '<span style="color:red">' . X2Html::fa('times') . Yii::t('app', 'Disabled')) . '</span>' .
-                '</div><br />
-            <p>' .
-                Yii::t('app', 'Enter your X2 Hub product key below to enable external connectivity ' .
-                        'through the X2 Hub Services. Once you have configured your settings, ' .
-                        'other connectors will be automatically configured and utilized through ' .
-                        'X2 Hub, including Google Maps integration and two factor auth support.'
-                ) .
-                '</p>';
+                '<span style="color:green">'.X2Html::fa('check').Yii::t('app', 'Enabled').'</span>' :
+                '<span style="color:red">'.X2Html::fa('times').Yii::t('app', 'Disabled')).'</span>' .
+            '</div><br />
+            <p>'.
+                Yii::t('app',
+                    'Enter your X2 Hub product key below to enable external connectivity '.
+                    'through the X2 Hub Services. Once you have configured your settings, '.
+                    'other connectors will be automatically configured and utilized through '.
+                    'X2 Hub, including Google Maps integration and two factor auth support.'
+                ).
+            '</p>';
     }
 
 }

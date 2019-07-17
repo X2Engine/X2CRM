@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 require_once 'protected/integration/Google/google-api-php-client/src/Google/autoload.php';
 
@@ -117,29 +114,29 @@ class GoogleAuthenticator {
      * connect to Google properly.
      */
     public function __construct($scenario = null) {
-        $this->_enabled = Yii::app()->settings->googleIntegration || HubConnectionBehavior::checkHubEnabled(); // Check if integration is enabled in the first place
-        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials();
+        $this->_enabled = Yii::app()->settings->googleIntegration; // Check if integration is enabled in the first place
+        $credentials = Yii::app()->settings->getGoogleIntegrationCredentials ();
         if (Yii::app()->settings->hubCredentialsId && in_array($scenario, $this->_hubScenarios)) {
             // Check if Hub integration is configured
             $hubCreds = Credentials::model()->findByPk(Yii::app()->settings->hubCredentialsId);
             if ($hubCreds && $hubCreds->auth && $hubCreds->auth->hubEnabled) {
                 if ($scenario === 'calendar' && $hubCreds->auth->enableGoogleCalendar) {
                     $this->_hubScenario = $scenario;
-                    if (empty($this->redirectUri)) {
-                        $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') .
-                                $_SERVER['HTTP_HOST'] . Yii::app()->controller->createUrl('');
+                    if(empty($this->redirectUri)){
+                        $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+                            $_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('');
                     }
                     $this->_hubCredentials = $hubCreds;
                     return;
                 }
             }
         }
-        if ($this->_enabled) {
+        if($this->_enabled){
             $this->clientId = $credentials['clientId'];
             $this->clientSecret = $credentials['clientSecret'];
-            if (empty($this->redirectUri)) {
-                $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') .
-                        $_SERVER['HTTP_HOST'] . Yii::app()->controller->createUrl('');
+            if(empty($this->redirectUri)){
+                $this->redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').
+                    $_SERVER['HTTP_HOST'].Yii::app()->controller->createUrl('');
             }
         }
     }
@@ -150,9 +147,9 @@ class GoogleAuthenticator {
      * @param String $userId User's ID.
      * @return String Json representation of the OAuth 2.0 credentials.
      */
-    public function getStoredCredentials($userId) {
+    public function getStoredCredentials($userId){
         $profile = X2Model::model('Profile')->findByPk($userId);
-        if (isset($profile)) {
+        if(isset($profile)){
             return $profile->googleRefreshToken;
         }
         return null;
@@ -165,10 +162,10 @@ class GoogleAuthenticator {
      * @param String $credentials Json representation of the OAuth 2.0 credentials to
       store.
      */
-    public function storeCredentials($userId, $credentials) {
+    public function storeCredentials($userId, $credentials){
         $profile = X2Model::model('Profile')->findByPk($userId);
         $credentialsArray = json_decode($credentials, true);
-        if (isset($profile) && isset($credentialsArray['refresh_token'])) {
+        if(isset($profile) && isset($credentialsArray['refresh_token'])){
             $profile->googleRefreshToken = $credentialsArray['refresh_token'];
             $profile->update(array('googleRefreshToken'));
         }
@@ -182,24 +179,24 @@ class GoogleAuthenticator {
      * @return String Json representation of the OAuth 2.0 credentials.
      * @throws CodeExchangeException An error occurred.
      */
-    public function exchangeCode($authorizationCode) {
-        if ($this->_enabled) {
-            try {
+    public function exchangeCode($authorizationCode){
+        if($this->_enabled){
+            try{
                 $client = new Google_Client();
                 $client->setClientId($this->clientId);
                 $client->setClientSecret($this->clientSecret);
                 $client->setRedirectUri($this->redirectUri);
                 $_GET['code'] = $authorizationCode;
                 return $client->authenticate($authorizationCode);
-            } catch (Google_Auth_Exception $e) {
+            }catch(Google_Auth_Exception $e){
                 $this->setErrors($e->getMessage());
                 throw new CodeExchangeException(null);
             }
-        } else {
+        }else{
             return false;
         }
     }
-
+    
     public function exchangeRefreshToken($refreshToken) {
         if ($this->_hubCredentials) {
             $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
@@ -233,23 +230,23 @@ class GoogleAuthenticator {
      * @return Userinfo User's information.
      * @throws NoUserIdException An error occurred.
      */
-    public function getUserInfo($credentials) {
-        if ($this->_enabled) {
+    public function getUserInfo($credentials){
+        if($this->_enabled){
             $apiClient = new Google_Client();
             $apiClient->setAccessToken($credentials);
-            $userInfoService = new Google_Service_Oauth2($apiClient);
+            $userInfoService = new Google_Service_Oauth2 ($apiClient);
             $userInfo = null;
-            try {
+            try{
                 $userInfo = $userInfoService->userinfo->get();
-            } catch (Google_Exception $e) {
+            }catch(Google_Exception $e){
                 $this->setErrors($e->getMessage());
             }
-            if ($userInfo != null && $userInfo->getId() != null) {
+            if($userInfo != null && $userInfo->getId() != null){
                 return $userInfo;
-            } else {
+            }else{
                 throw new NoUserIdException();
             }
-        } else {
+        }else{
             return false;
         }
     }
@@ -261,24 +258,23 @@ class GoogleAuthenticator {
      * @param String $state State for the authorization URL.
      * @return String Authorization URL to redirect the user to.
      */
-    public function getAuthorizationUrl($state) {
-        if (HubConnectionBehavior::checkHubEnabled()) {
+    public function getAuthorizationUrl($state){
+        if ($this->_hubCredentials) {
             $url = $this->getAuthorizationUrlFromHub($state);
-            if ($url) {
+            if ($url)
                 return $url;
-            }
         }
-        if ($this->_enabled) {
+        if($this->_enabled){
             $client = new Google_Client();
 
             $client->setClientId($this->clientId);
-            switch ($state) {
+            switch($state){
                 case 'calendar':
-                    $_SESSION['calendarForceRefresh'] = 1;
+                    $_SESSION['calendarForceRefresh']=1;
                     $client->setRedirectUri(
-                            (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] .
+                        (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].
                             Yii::app()->controller->createUrl(
-                                    '/calendar/calendar/syncActionsToGoogleCalendar'));
+                                '/calendar/calendar/syncActionsToGoogleCalendar'));
                     break;
                 default:
                     $client->setRedirectUri($this->redirectUri);
@@ -289,21 +285,28 @@ class GoogleAuthenticator {
             $client->setScopes($this->scopes);
 
             return $client->createAuthUrl();
-        } else {
+        }else{
             return false;
         }
+//        $tmpUrl = parse_url($client->createAuthUrl());
+//        $query = explode('&', $tmpUrl['query']);
+//        $query[] = 'user_id='.urlencode($emailAddress);
+//        return
+//                $tmpUrl['scheme'].'://'.$tmpUrl['host'].$tmpUrl['port'].
+//                $tmpUrl['path'].'?'.implode('&', $query);
     }
 
     protected function getAuthorizationUrlFromHub($state) {
-        if (HubConnectionBehavior::checkHubEnabled()) {
+        if ($this->_hubCredentials) {
             $type = $this->_hubScenario;
-            $hub = HubConnectionBehavior::createHubInstance();
-            switch ($state) {
+            $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+            switch($state){
                 case 'calendar':
-                    $_SESSION['calendarForceRefresh'] = 1;
-                    $redirectUri = (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] .
+                    $_SESSION['calendarForceRefresh']=1;
+                    $redirectUri =
+                        (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://').$_SERVER['HTTP_HOST'].
                             Yii::app()->controller->createUrl(
-                                    '/calendar/calendar/syncActionsToGoogleCalendar');
+                                '/calendar/calendar/syncActionsToGoogleCalendar');
                     break;
                 default:
                     $redirectUri = $this->redirectUri;
@@ -330,39 +333,39 @@ class GoogleAuthenticator {
      * @throws NoRefreshTokenException No refresh token could be retrieved from
      *         the available sources.
      */
-    public function getCredentials($authorizationCode, $state) {
-        if ($this->_enabled) {
-            try {
+    public function getCredentials($authorizationCode, $state){
+        if($this->_enabled){
+            try{
                 $credentials = $this->exchangeCode($authorizationCode);
                 $userId = Yii::app()->user->getId();
                 $credentialsArray = json_decode($credentials, true);
-                if (isset($credentialsArray['refresh_token'])) {
-                    if (!empty($userId)) {
+                if(isset($credentialsArray['refresh_token'])){
+                    if(!empty($userId)){
                         $this->storeCredentials($userId, $credentials);
                     }
                     return $credentials;
-                } else {
+                }else{
                     $credentials = $this->getStoredCredentials($userId);
                     $credentialsArray = json_decode($credentials, true);
-                    if ($credentials != null &&
-                            isset($credentialsArray['refresh_token'])) {
+                    if($credentials != null &&
+                            isset($credentialsArray['refresh_token'])){
                         return $credentials;
                     }
                 }
-            } catch (CodeExchangeException $e) {
+            }catch(CodeExchangeException $e){
                 $this->setErrors($e->getMessage());
                 // Drive apps should try to retrieve the user and credentials for the current
                 // session.
                 // If none is available, redirect the user to the authorization URL.
                 $e->setAuthorizationUrl($this->getAuthorizationUrl($state));
                 throw $e;
-            } catch (NoUserIdException $e) {
+            }catch(NoUserIdException $e){
                 $this->setErrors('No e-mail address could be retrieved.');
             }
             // No refresh token has been retrieved.
             $authorizationUrl = $this->getAuthorizationUrl($state);
             throw new NoRefreshTokenException($authorizationUrl);
-        } else {
+        }else{
             return false;
         }
     }
@@ -378,13 +381,13 @@ class GoogleAuthenticator {
      * just clearing the session tokens will allow for another attempt using the
      * refresh token.
      */
-    public function flushCredentials($full = true) {
-        if ($this->_enabled || $this->_hubCredentials) {
+    public function flushCredentials($full = true){
+        if($this->_enabled || $this->_hubCredentials){
             unset($_SESSION['access_token']);
             unset($_SESSION['token']);
             unset($_GET['code']);
             $profile = Yii::app()->params->profile;
-            if ($full && isset($profile)) {
+            if($full && isset($profile)){
                 $profile->googleRefreshToken = null;
                 $profile->update(array('googleRefreshToken'));
             }
@@ -400,47 +403,55 @@ class GoogleAuthenticator {
      * @param Integer $userId The ID of the current User
      * @return String|boolean Returns either the JSON encoded access token, or false on failure
      */
-    public function getAccessToken($userId = null) {
-        if (HubConnectionBehavior::checkHubEnabled()) {
+    public function getAccessToken($userId = null){
+        if ($this->_hubCredentials) {
             $token = $this->getAccessTokenFromHub($userId);
-            if ($token) {
+            if ($token)
                 return $token;
-            }
         }
-        if ($this->_enabled) {
+        if($this->_enabled){
             $client = new Google_Client();
             $client->setClientId($this->clientId);
             $client->setClientSecret($this->clientSecret);
-            if (empty($userId)) {
+            if(empty($userId)){
                 $userId = Yii::app()->user->getId();
             }
-            if (isset($_SESSION['access_token'])) { // The access token is already stored in the session, return it.
+            if(isset($_SESSION['access_token'])){ // The access token is already stored in the session, return it.
+//            $token=json_decode($_SESSION['access_token']);
+//            $reqUrl = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token='.
+//                    $token->access_token;
+//            $req = new Google_Http_Request($reqUrl);
+//
+//            $tokenInfo = json_decode(
+//                    $client::getIo()->authenticatedRequest($req)->getResponseBody());
+//            if(!isset($tokenInfo->error)){
                 return $_SESSION['access_token'];
+//            }
             }
-            if (!empty($userId) && !is_null($this->getStoredCredentials($userId))) { // We found a stored refresh token
+            if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){ // We found a stored refresh token
                 $refreshToken = $this->getStoredCredentials($userId);
-                try {
+                try{
                     $client->refreshToken($refreshToken); // Try to get an access token based on the stored refresh token
                     $credentials = $client->getAccessToken(); // No recursion, this is a different function
                     $_SESSION['token'] = $credentials; // Set credentials as a session variable for quicker lookup.
                     $_SESSION['access_token'] = $credentials;
                     return $credentials;
-                } catch (Google_Auth_Exception $e) {
+                }catch(Google_Auth_Exception $e){
                     $profile = Yii::app()->params->profile;
-                    if (isset($profile)) { // If there was an error using the refresh token, remove it from the database so it can't cause issues.
+                    if(isset($profile)){ // If there was an error using the refresh token, remove it from the database so it can't cause issues.
                         $profile->googleRefreshToken = null;
                         $profile->update(array('googleRefreshToken'));
                     }
                     return false;
                 }
             }
-            if (isset($_GET['code'])) { // There is a Google auth code in the GET request header.
-                try {
+            if(isset($_GET['code'])){ // There is a Google auth code in the GET request header.
+                try{
                     $credentials = $this->getCredentials($_GET['code'], null); // Attempt to exchange the auth code for an access token.
                     $_SESSION['token'] = $credentials;
                     $_SESSION['access_token'] = $credentials;
                     return $credentials;
-                } catch (CodeExchangeException $e) {
+                }catch(CodeExchangeException $e){
                     return false;
                 }
             }
@@ -449,46 +460,47 @@ class GoogleAuthenticator {
     }
 
     protected function getAccessTokenFromHub($userId) {
-        if (isset($_SESSION['access_token'])) { // The access token is already stored in the session, return it.
+        if(isset($_SESSION['access_token'])){ // The access token is already stored in the session, return it.
             return $_SESSION['access_token'];
         }
-        if (HubConnectionBehavior::checkHubEnabled()) {
+        if ($this->_hubCredentials) {
             $type = $this->_hubScenario;
-            $hub = HubConnectionBehavior::createHubInstance();
+            $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
 
-            $userId = empty($userId) ? Yii::app()->user->getId() : $userId;
-                
-            if (!empty($userId) && !is_null($this->getStoredCredentials($userId))) { // We found a stored refresh token
+            if(empty($userId)){
+                $userId = Yii::app()->user->getId();
+            }
+            if(!empty($userId) && !is_null($this->getStoredCredentials($userId))){ // We found a stored refresh token
                 $refreshToken = $this->getStoredCredentials($userId);
-                try {
+                try{
                     $credentials = $hub->getGoogleAccessToken($userId, $type, $this->redirectUri, null, $refreshToken);
                     if ($credentials) {
                         $_SESSION['token'] = $credentials; // Set credentials as a session variable for quicker lookup.
                         $_SESSION['access_token'] = $credentials;
                         return $credentials;
                     }
-                } catch (Google_Auth_Exception $e) {
+                }catch(Google_Auth_Exception $e){
                     $profile = Yii::app()->params->profile;
-                    if (isset($profile)) { // If there was an error using the refresh token, remove it from the database so it can't cause issues.
+                    if(isset($profile)){ // If there was an error using the refresh token, remove it from the database so it can't cause issues.
                         $profile->googleRefreshToken = null;
                         $profile->update(array('googleRefreshToken'));
                     }
                     return false;
                 }
             }
-            if (isset($_GET['code'])) { // There is a Google auth code in the GET request header.
-                try {
+            if(isset($_GET['code'])){ // There is a Google auth code in the GET request header.
+                try{
                     $credentials = $hub->getGoogleAccessToken($userId, $type, $this->redirectUri, $_GET['code']); // Attempt to exchange the auth code for an access token.
                     if ($credentials) {
                         $_SESSION['token'] = $credentials;
                         $_SESSION['access_token'] = $credentials;
                         $credentialsArray = CJSON::decode($credentials, true);
-                        if (!empty($userId) && $credentialsArray && isset($credentialsArray['refresh_token'])) {
+                        if (!empty($userId) && $credentialsArray && isset($credentialsArray['refresh_token'])){
                             $this->storeCredentials($userId, $credentials);
                         }
                         return $credentials;
                     }
-                } catch (CodeExchangeException $e) {
+                }catch(CodeExchangeException $e){
                     return false;
                 }
             }
@@ -496,22 +508,22 @@ class GoogleAuthenticator {
         return false; // No token was ever returned due to data not being set or exceptions. Return false to indicate a failure.
     }
 
-    public function getDriveService() {
-        if ($this->getAccessToken()) {
+    public function getDriveService(){
+        if($this->getAccessToken()){
             $client = new Google_Client();
             $client->setClientId($this->clientId);
             $client->setClientSecret($this->clientSecret);
             $client->setRedirectUri($this->redirectUri);
             $client->setScopes(array('https://www.googleapis.com/auth/drive'));
             $client->setAccessToken($this->getAccessToken());
-            return new Google_Service_Drive($client);
-        } else {
+            return new Google_Service_Drive ($client);
+        }else{
             return false;
         }
     }
 
-    public function getCalendarService() {
-        if ($this->getAccessToken()) {
+    public function getCalendarService(){
+        if($this->getAccessToken()){
             $client = new Google_Client();
             $client->setClientId($this->clientId);
             $client->setClientSecret($this->clientSecret);
@@ -521,25 +533,25 @@ class GoogleAuthenticator {
                 'https://www.googleapis.com/auth/calendar.readonly'));
             $client->setAccessToken($this->getAccessToken());
             return new Google_Service_Calendar($client);
-        } else {
+        }else{
             return false;
         }
     }
 
-    public function setErrors($message) {
-        if (!is_array($this->_errors)) {
+    public function setErrors($message){
+        if(!is_array($this->_errors)){
             $this->_errors = array(
                 $message
             );
-        } else {
+        }else{
             $this->_errors[] = $message;
         }
     }
 
-    public function getErrors() {
-        if (!is_array($this->_errors) || empty($this->_errors)) {
+    public function getErrors(){
+        if(!is_array($this->_errors) || empty($this->_errors)){
             return false;
-        } else {
+        }else{
             return $this->_errors;
         }
     }
@@ -560,21 +572,21 @@ class GetCredentialsException extends Exception {
      *
      * @param authorizationUrl The authorization URL to redirect the user to.
      */
-    public function __construct($authorizationUrl) {
+    public function __construct($authorizationUrl){
         $this->authorizationUrl = $authorizationUrl;
     }
 
     /**
      * @return the authorizationUrl.
      */
-    public function getAuthorizationUrl() {
+    public function getAuthorizationUrl(){
         return $this->authorizationUrl;
     }
 
     /**
      * Set the authorization URL.
      */
-    public function setAuthorizationurl($authorizationUrl) {
+    public function setAuthorizationurl($authorizationUrl){
         $this->authorizationUrl = $authorizationUrl;
     }
 
@@ -584,21 +596,21 @@ class GetCredentialsException extends Exception {
  * Exception thrown when no refresh token has been found.
  */
 class NoRefreshTokenException extends GetCredentialsException {
-    
+
 }
 
 /**
  * Exception thrown when a code exchange has failed.
  */
 class CodeExchangeException extends GetCredentialsException {
-    
+
 }
 
 /**
  * Exception thrown when no user ID could be retrieved.
  */
 class NoUserIdException extends Exception {
-    
+
 }
 
 ?>

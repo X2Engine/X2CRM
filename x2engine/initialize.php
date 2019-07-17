@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 ////////////////////
 // Global Objects //
@@ -555,7 +552,7 @@ function installStage($stage) {
             fclose($handle);
 
             // Create an encryption key for credential storage:
-            if (extension_loaded('openssl')) {
+            if (extension_loaded('openssl') && extension_loaded('mcrypt')) {
                 $encryption = new EncryptUtil(
                         implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.key')),
                         implode(DIRECTORY_SEPARATOR, array(__DIR__, 'protected','config','encryption.iv'))
@@ -875,7 +872,7 @@ if (!$complete || $silent) {
         foreach ($sendArgs as $urlKey) {
             $stats[$urlKey] = $config[$urlKey];
         }
-        $ch = curl_init('http://52.33.121.218/x2planet.com/installs/registry/activity?' . http_build_query($stats));
+        $ch = curl_init('http://x2planet.com/installs/registry/activity?' . http_build_query($stats));
         curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $gif = curl_exec($ch);
@@ -927,7 +924,7 @@ if (!$silent && $complete):
                     Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2crm.com">X2Engine Inc.</a><br />
                     <?php echo installer_t('All Rights Reserved.'); ?>
                         <?php if (!$config['test_db']): ?>
-                        <img style="height:0;width:0" src="http://52.33.121.218/x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+                        <img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
     <?php endif; ?>
                 </div>
             </div>

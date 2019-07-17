@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * User profiles controller
  *
@@ -58,7 +55,7 @@ class ProfileController extends x2base {
         return array(
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions' => array(
-                    'testPage', 'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto',
+                    'index', 'view', 'update', 'search', 'addPost', 'deletePost', 'uploadPhoto',
                     'getEvents', 'getEventsBetween', 'broadcastEvent', 'loadComments',
                     'loadLikeHistory', 'likePost', 'flagPost', 'stickyPost', 'minimizePosts',
                     'publishPost', 'createChartSetting', 'ajaxExportTheme',
@@ -92,11 +89,6 @@ class ProfileController extends x2base {
                     'application.modules.mobile.components.behaviors.'.
                         'MobileProfileControllerBehavior'
             ),
-            'LinkedInBehavior' => array(
-                'class' => 
-                    'application.components.behaviors.'.
-                        'LinkedInBehavior'
-            ),
             'ImportExportBehavior' => array('class' => 'ImportExportBehavior'),
                 )
         );
@@ -107,10 +99,6 @@ class ProfileController extends x2base {
             'accessControl',
             'setPortlets',
         ));
-    }
-
-    public function actionTestPage() {
-        $this->render('testPage');
     }
 
     public function actionHideTag($tag) {
@@ -326,8 +314,10 @@ class ProfileController extends x2base {
         } else {
             echo self::getThemeSuccessMsg(array('id' => $theme->id));
         }
-    }   
+    }
+
     
+
     /**
      * Exports theme as .json file and prompts download
      */
@@ -349,7 +339,11 @@ class ProfileController extends x2base {
             $file = $themeName.'.json';
             $filePath = $this->safePath($file);
             file_put_contents($filePath, $encodedTheme);
-            $this->sendFile($file);
+            echo CJSON::encode(array(
+                'downloadUrl' => $this->createUrl('/admin/downloadData', array(
+                    'file' => $file
+                ))
+            ));
         } else {
             throw new CHttpException(
             404, Yii::t('app', 'Theme does not exist or you do not have permissions to view it.'));
@@ -440,9 +434,7 @@ class ProfileController extends x2base {
 
         if (isset($_POST['Profile']) || isset($_POST['preferences'])) {
             if (isset($_POST['Profile'])) {
-                foreach($_POST['Profile'] as $key => $value) {
-                        $model->$key = $value;
-                }
+                $model->attributes = $_POST['Profile'];
                 if(isset($_POST['preferences']['loginSound'])){
                     $pieces = explode(',',$_POST['preferences']['loginSound']);
                     $model->loginSound = $pieces[0];
@@ -590,7 +582,7 @@ class ProfileController extends x2base {
      * @param type $class embedded model class name
      * @throws CHttpException
      */
-    public function actionCreateUpdateCredentials($id = null, $class = null, $bounced = false) {
+    public function actionCreateUpdateCredentials($id = null, $class = null) {
         
         $this->pageTitle = Yii::t('app', 'Edit Credentials');
         $profile = Yii::app()->params->profile;
@@ -601,7 +593,6 @@ class ProfileController extends x2base {
                     400, 'Class must be specified when creating new credentials.');
             $model = new Credentials();
             $model->modelClass = $class;
-            $model->isBounceAccount = $bounced;
         } else {
             $model = Credentials::model()->findByPk($id);
             if (empty($model))
@@ -611,7 +602,8 @@ class ProfileController extends x2base {
             $model->setAttributes ($model->getAuthModel ()->getMetaData (), false);
             $disableMetaDataForm = true;
         }
-        if (in_array ($model->modelClass, array ('TwitterApp', 'GoogleProject', 'OutlookProject'))) {
+
+        if (in_array ($model->modelClass, array ('TwitterApp', 'GoogleProject'))) {
             if (!Yii::app()->params->isAdmin) {
                 $this->denied ();
             }
@@ -626,12 +618,6 @@ class ProfileController extends x2base {
                 if (isset ($_POST['Admin']['googleIntegration'])) {
                     Yii::app()->settings->googleIntegration = 
                         $_POST['Admin']['googleIntegration'];
-                }
-            }
-            if ($model->modelClass === 'OutlookProject') {
-                if (isset ($_POST['Admin']['outlookIntegration'])) {
-                    Yii::app()->settings->outlookIntegration = 
-                        $_POST['Admin']['outlookIntegration'];
                 }
             }
             $this->layout = '//layouts/column1';
@@ -672,9 +658,9 @@ class ProfileController extends x2base {
                     $message = Yii::t('app', 'Saved') . ' ' . Formatter::formatLongDateTime($time);
                     Yii::app()->user->setFlash ('success', $message);
                     if (in_array (
-                        $model->modelClass, array ('TwitterApp', 'GoogleProject', 'OutlookProject'))) {
+                        $model->modelClass, array ('TwitterApp', 'GoogleProject'))) {
 
-                        if ($model->modelClass === 'GoogleProject' || $model->modelClass === 'OutlookProject') {
+                        if ($model->modelClass === 'GoogleProject') {
                             Yii::app()->settings->save ();
                         }
                     } else {
@@ -683,7 +669,7 @@ class ProfileController extends x2base {
                 }
             } else {
                 //AuxLib::debugLogR ($model->getErrors ());
-            }   
+            }
         }
         $this->render(
             'createUpdateCredentials', 
@@ -779,9 +765,7 @@ class ProfileController extends x2base {
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
-        $currentProfile = CActiveRecord::model('Profile')->findByAttributes(array('id'=>$id));
-        $currentUser = CActiveRecord::model('User')->findByPk(Yii::app()->user->getId());
-        if ($currentProfile->username == $currentUser->username || Yii::app()->params->isAdmin) {
+        if ($id == Yii::app()->user->getId() || Yii::app()->params->isAdmin) {
             $model = $this->loadModel($id);
             $users = User::getNames();
 
@@ -790,9 +774,6 @@ class ProfileController extends x2base {
                 foreach ($_POST['Profile'] as $name => $value) {
                     if ($value == $model->getAttributeLabel($name)) {
                         $_POST['Profile'][$name] = '';
-                    }
-                    if ($name == 'photo') {
-                        printR($value,True);
                     }
                     $model->$name = $value;
                 }
@@ -1128,7 +1109,7 @@ class ProfileController extends x2base {
         $model = $this->loadModel($id);
 
         $model->layout = json_encode($model->initLayout());
-        $model->save();
+        $model->update();
 
         $this->redirect(array('view', 'id' => $id));
     }
@@ -1389,17 +1370,9 @@ class ProfileController extends x2base {
 
     public function getActivityFeedViewParams($id, $publicProfile) {
         Events::deleteOldEvents();
-        
-        if ($id !== Yii::app()->params->profile->id) {
-            $userModel =  CActiveRecord::model('User')->findByAttributes(array('id'=>$id));
-            $profileModel = CActiveRecord::model('Profile')->findByAttributes(array('username'=>$userModel->username));
-            $id = $profileModel->id;
-        }
 
+        $isMyProfile = !$publicProfile && $id === Yii::app()->params->profile->id;
         $profile = $this->loadModel($id);
-
-        $userModel = User::model()->findByPk(Yii::app()->user->id);
-        $isMyProfile = !$publicProfile && $profile->username === $userModel->username;
 
         if (!Yii::app()->request->isAjaxRequest || Yii::app()->params->isMobileApp) {
             $_SESSION['lastDate'] = 0;
@@ -1469,6 +1442,8 @@ class ProfileController extends x2base {
             'userModels' => $userModels
         );
     }
+
+    
 
     public function actionManageEmailReports() {
         $dataProvider = new CActiveDataProvider('EmailReport', array(
@@ -1631,7 +1606,7 @@ class ProfileController extends x2base {
      * Displays a feed of new records that have been created since the last
      * login of the current web user.
      */
-    public function actionView($id, $clicked = null,$publicProfile = false) {
+    public function actionView($id, $publicProfile = false) {
         if (isset($_GET['ajax'])) { // ajax request from grid view widget
             if (!isset ($_POST['widgetClass']) && !isset ($_POST['widgetType'])) {
                 $_POST['widgetClass'] = $_GET['ajax'];

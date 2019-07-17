@@ -79,6 +79,7 @@ INSERT INTO `x2_media` (`id`, `associationType`, `uploadedBy`, `fileName`, `desc
 ('-5', "theme",'admin','Archaic','{"themeName":"Archaic","background":"1E1E20","content":"2A2C2B","text":"FFFFFF","link":"D9CB9E","highlight1":"1E1E20","highlight2":"A5382B"}',0),
 ('-6', "theme",'admin','Phosphor','{"themeName":"Phosphor","background":"050320","content":"1E1E20","text":"ECF4EA","link":"44FF24","highlight1":"131A19","highlight2":"226B15"}',0),
 ('-7', "theme",'admin','Night','{"themeName":"Night","background":"252525","content":"252525","text":"E0E0E0","link":"E0E0E0","highlight1":"131A19","highlight2":"E0E0E0"}',0);
+
 /*&*/
 INSERT INTO x2_form_layouts 
 (id, model,version, scenario, layout,defaultView,defaultForm,createDate,lastUpdated) 

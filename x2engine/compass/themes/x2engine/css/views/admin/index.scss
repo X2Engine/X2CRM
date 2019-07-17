@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,11 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
-@import "colors";
-
 .form.x2-layout-island {
     padding-bottom: 10px !important;
 }
@@ -56,39 +51,33 @@
     max-width: 1920px;
     .license-info-section {
         padding-top: 10px;
-        margin-top: 20px !important;
-        margin-right: 20px !important;
-        margin-bottom: 20px !important;
-        border: 1px solid #e0e0e0 !important;
     }
     .page-title {
         margin-bottom: 5px;
     }
     .ui-widget-content .cell a {
-        color: #3d70b4;
+        color: #004BAF;
     }
     .cell a{
         text-decoration:none;
     }
 
     .ui-tabs-vertical {
-        .ui-tabs-nav {
-            padding: 0;
-            float: left; width: 25%; 
+        .ui-tabs-nav { 
+            padding: .2em .1em .2em .2em; float: left; width: 25%; 
             background: #FFFFFF;
-            
             li {
                 background: #FFF;
                 font-size: 14.6px;
+                margin: 0 2px 0 0;
                 font-family: Verdana,Arial,sans-serif;
                 border-color: #FFF !important;
                 height: 3.2em; 
                 clear: left; 
                 width: 100%; 
                 border-bottom-width: 1px !important; 
-                border-right-width: 0 !important;
-                margin: 0;
-                
+                border-right-width: 0 !important; 
+                margin: 0 -1px .2em 0;
                 div {
                     position: relative;
                     top: 15%;
@@ -100,7 +89,7 @@
                     height: 60%; 
                 }
                 a:focus, a:hover {
-                    color: #3d70b4;
+                    color: #006CFC;
                 }
                 .ui-tabs-active { 
                     padding-bottom: 0; 
@@ -140,58 +129,15 @@
         border-color: #FFF !important;
     }
     .ui-tabs-nav li.ui-tabs-active a {
-        color: #3d70b4;
+        color: #007fff;
     }
 }
 
 #tabs .ui-tabs-active {
-    background: $lightBabyBlue;
+    background: #F1F1F1;
 }
 .page-title h2 {
     line-height: 36px !important;
     margin-top: 0px;
 }
 
-.admin-tab {
-    height: auto !important;
-    min-height: 3.2em !important;
-    white-space: normal !important;
-}
-
-.admin-tab-container {
-    position: relative;
-}
-
-.admin-tab-link {
-    font-size: 14px;
-    position: absolute;
-    width: auto;
-    left: 0px;
-    top: 100%;
-}
-
-.admin-tab-content {
-    height: 900px !important;
-}
-
-.admin-tab-content-title {
-    margin-left: 20px;
-}
-
-.admin-tab-content-description {
-    margin-left: 20px;
-    padding-left: 0px !important;
-}
-
-#tabs {
-    height: 900px !important;
-    overflow: visible;
-}
-
-#main-admin-panel {
-    height: 900px !important;
-}
-
-#content {
-    border: none !important;
-}

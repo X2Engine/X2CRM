@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.modules.calendar.models
@@ -93,17 +90,8 @@ class X2CalendarPermissions extends CActiveRecord
         }
         $calendars = $calendarQuery->queryAll();
         $ret = array();
-        if (isset($calendars) && isset($usersCalendar) && $calendars->rowCount !== 0 && $usersCalendar->rowCount !== 0) {
-            foreach($calendars as $arr){
-                if ($usersCalendar[0]['id'] !==  $arr['id']) {
-                    $ret[$arr['id']] = $arr['name'];
-                }
-            }
-            return array($usersCalendar[0]['id'] => $usersCalendar[0]['name']) + $ret;
-        } else {
-            foreach($calendars as $arr){
-                $ret[$arr['id']] = $arr['name'];
-            }            
+        foreach($calendars as $arr){
+            $ret[$arr['id']] = $arr['name'];
         }
         return $ret;
     }

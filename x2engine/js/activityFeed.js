@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,25 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
-
-// Compatibility fix for IE and other browsers which do not support String object 'includes' method
-if (!String.prototype.includes) {
-  String.prototype.includes = function(search, start) {
-    'use strict';
-    if (typeof start !== 'number') {
-      start = 0;
-    }
-
-    if (start + search.length > this.length) {
-      return false;
-    } else {
-      return this.indexOf(search, start) !== -1;
-    }
-  };
-}
 
 x2.ActivityFeed = (function () {
 function ActivityFeed (argsDict) {
@@ -595,21 +576,8 @@ ActivityFeed.prototype.setupActivityFeed = function  () {
     });
     
     that.makePostsExpandable ();
-    
-    /*
-    $('.deleteButton').hide();
-    
-    $('.activity-feed').on('mouseenter', function(){
-        var self = this;
-        $(self).find('.deleteButton').show();
-    });
-    
-    $('.activity-feed').on('mouseleave', function(){
-        var self = this;
-        $(self).find('.deleteButton').hide();
-    });
-    */
-};
+
+}
 
 ActivityFeed.prototype.makePostExpandable = function  (element) {
     var that = this;
@@ -766,6 +734,39 @@ ActivityFeed.prototype.setupMakeImportantDialog = function  () {
 
 ActivityFeed.prototype.updateEventList = function  () {
     var that = this;
+
+    // $(document).on("click",".unimportant-link",function(e){
+    //     e.preventDefault();
+    //     // clickMakeImportantButton(this, false);
+    // });
+
+    // $(document).on("click",".unimportant-link",function(e){
+    //     e.preventDefault();
+    //     var link = this;
+    //     var pieces = $(this).attr("id").split("-");
+    //     var id = pieces[0];
+    //     $.ajax({
+    //         url:"flagPost",
+    //         data:{id:id,attr:"unimportant"},
+    //         success:function(data){
+    //             var post$ = $(link).parents(".view.top-level");
+    //             post$.css({
+    //                 "background-color": "#fff",
+    //                 "color": "#222"
+    //             });
+    //             var postLinks$ = post$.find ('div.event-text-box a');
+    //             postLinks$.css ("color","#06c");
+    //             var commentAge$ = post$.find ('div.event-text-box .comment-age');
+    //             commentAge$.css({
+    //                 "background-color": "#fff",
+    //                 "color": "#666"
+    //             });
+    //         }
+    //     });
+    //     $(link).hide();
+    //     $(link).prev().show();
+    //     return false;
+    // });
 
     function incrementLikeCount (likeCountElem) {
         likeCount = parseInt ($(likeCountElem).html ().replace (/[() ]/g, ""), 10) + 1;

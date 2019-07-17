@@ -324,7 +324,6 @@ class CPhpAuthManager extends CAuthManager
 	 * Saves an authorization item to persistent storage.
 	 * @param CAuthItem $item the item to be saved.
 	 * @param string $oldName the old item name. If null, it means the item name is not changed.
-	 * @throws CException
 	 */
 	public function saveAuthItem($item,$oldName=null)
 	{

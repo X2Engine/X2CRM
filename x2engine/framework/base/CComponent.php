@@ -609,14 +609,7 @@ class CComponent
 		if(is_string($_expression_))
 		{
 			extract($_data_);
-			try
-			{
-				return eval('return ' . $_expression_ . ';');
-			}
-			catch (ParseError $e)
-			{
-				return false;
-			}
+			return eval('return '.$_expression_.';');
 		}
 		else
 		{

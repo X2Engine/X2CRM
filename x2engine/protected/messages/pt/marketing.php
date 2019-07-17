@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => 'Esta opção permite que você configure se a geolocalização será realizada para seus visitantes.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => 'Esta opção permite configurar se a impressão digital do navegador será executada para tentar corresponder ao seu visitante.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => 'Você também pode configurar o número mínimo de atributos do navegador necessários para coincidir com um visitante. Quanto maior esse valor, mais precisas serão suas partidas.',
-    'Suppressed' => 'Suprimido',
-    'Suppression List' => 'Lista de Supressão',
-    'Suppression List:' => 'Lista de Supressão:',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => "Ignorando o envio de email para {address}. Esse contato é ignorado, pois está presente na Lista suprimida.",
-    'Select a Suppression List' => 'Selecione uma lista de supressão',
-    'New Suppression List' => 'Nova lista de supressão',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => "Escolha uma lista de Supressão para evitar o envio do email da campanha ou crie um aqui.",
 );

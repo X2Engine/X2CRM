@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Create Record action
  *
@@ -58,19 +55,6 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
      */
     public function paramRules() {
         $parentRules = parent::paramRules();
-        //this code is for category options
-        $categories = Yii::app()->db->createCommand()
-                    ->select('options')
-                        ->from('x2_dropdowns')
-                        ->where('id=155')
-                        ->queryRow();
-        $maillist = json_decode($categories["options"]);
-        $CatOpp = array();
-        foreach($maillist as $key => $value) {
-            $CatOpp[$value] = $value;
-        }
-        
-        
         $parentRules['modelRequired'] = 1;
         $parentRules['options'] = array_merge(
                 $parentRules['options'], array(
@@ -80,7 +64,7 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
                 'type' => 'dropdown',
                 'defaultVal' => '',
                 'options' => array('' => Yii::t('studio', 'Custom')) +
-                Docs::getEmailTemplates('email')
+                Docs::getEmailTemplates('email', 'Contacts')
             ),
             array(
                 'name' => 'subject',
@@ -124,14 +108,6 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
                 'type' => 'boolean',
             ),
             array(
-                'name' => 'category',
-                'label' => Yii::t('studio', 'Category'),
-                'type' => 'dropdown',
-                'defaultVal' => '',
-                'options' => array('' => Yii::t('studio', 'No Category')) + $CatOpp
-            ),
-                    
-            array(
                 'name' => 'body',
                 'label' => Yii::t('studio', 'Message'),
                 'optional' => 1,
@@ -164,7 +140,7 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
         if (isset($options['bcc']['value'])) {
             $eml->bcc = $this->parseOption('bcc', $params);
         }
-        if ($params['model'] instanceof Contacts || $params['model'] instanceof X2Leads || $params['model'] instanceof Accounts || $params['model'] instanceof Opportunities) {
+        if ($params['model'] instanceof Contacts) {
             if (!$contact->hasAttribute('email') || empty($contact->email))
                 return array(false, Yii::t('app', "Email could not be sent"));
             $eml->to = $contact->email;
@@ -183,11 +159,10 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
         } elseif ($params['model'] instanceof X2Model) {
             $failure = true;
             foreach ($params['model']->getFields() as $field) {
-                if ($field->type == 'link' && ($field->linkType == 'Contacts' || $field->linkType == 'X2Leads' || 
-                $field->linkType == 'Accounts' || $field->linkType == 'Opportunities' )) {
+                if ($field->type == 'link' && $field->linkType == 'Contacts') {
                     // Use the relation established via X2Model.relations()
                     $lookup = $params['model']->getRelated("{$field->fieldName}Model");
-                    if ($lookup instanceof Contacts || $lookup instanceof X2Leads || $lookup instanceof Accounts || $lookup instanceof Opportunities) {
+                    if ($lookup instanceof Contacts) {
                         $failure = false;
                         $contact = $lookup;
                         if (!$contact->hasAttribute('email') || empty($contact->email))
@@ -198,7 +173,7 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
                 }
             }
             if ($failure) {
-                return array(false, Yii::t('app', 'No valid Contact found. Link type is ' . (string)$field->linkType . '  <--should be some data here'));
+                return array(false, Yii::t('app', 'No valid Contact found.'));
             }
         } else {
             return array(false, Yii::t('app', 'No valid Contact found.'));
@@ -219,26 +194,6 @@ class X2FlowRecordEmail extends BaseX2FlowEmail {
         $eml->subject = Formatter::replaceVariables(
                         $this->parseOption('subject', $params), $contact);
         $eml->targetModel = $contact;
-        
-        
-        //check to make sure the email is not on a unsubscribe list
-        
-        if($options['category']['value'] != ''){
-            $list = X2List::model()->findByAttributes(array(
-                'name' =>  'Unsubscribe_' . $options['category']['value'] . '_X2_internal_list',
-                ));
-            if(!empty($list)){
-                    // Contact has unsubscribed from this category
-                $userCheck = X2ListItem::model()->findByAttributes(array(
-                    'emailAddress' => $eml->to,
-                    'listId' => $list->id,
-                 ));
-            
-                 if (!empty($userCheck)) {
-                    return array(false, Yii::t('app', 'The email (' . $eml->to . ') was unsubscribed from the category'));
-                }
-            }
-        }
 
         // "body" option (deliberately-entered content) takes precedence over template
         $prepared = true;

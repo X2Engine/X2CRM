@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 /**
  * @package application.modules.calendar.models
  *
@@ -47,7 +44,7 @@ Yii::import('application.components.calendarSync.*');
 
 class X2Calendar extends CActiveRecord
 {
-        public $outlookCalenarName;
+
 	public $googleCalendarName;
         public $defaultCalendar;
 	
@@ -71,30 +68,24 @@ class X2Calendar extends CActiveRecord
                 array('name','required'),
                 array('remoteSync','boolean'),
                 array('name','length', 'max' => 100),
-                array('syncType, remoteCalendarId, remoteCalOutlook, remoteCalendarUrl, ctag, credentials','safe')
+                array('syncType, remoteCalendarId, remoteCalendarUrl, ctag, credentials','safe')
             );
         }
         
         public function behaviors() {
             $behaviors = array();
-            if (!empty($this->syncType) && (!empty($this->remoteCalendarId) || !empty($this->remoteCalOutlook))) {
+            if (!empty($this->syncType) && !empty($this->remoteCalendarId)) {
                 if ($this->syncType == 'google') {
                     $behaviors['syncBehavior'] = 'GoogleCalendarSync';
-                }
-                if ($this->syncType == 'outlook') {
-                    $behaviors['syncBehavior'] = 'OutlookCalendarSync';
                 }
             }
             return array_merge($behaviors, parent::behaviors());
         }
         
         public function attachSyncBehavior(){
-            if (!empty($this->syncType) && (!empty($this->remoteCalendarId) || !empty($this->remoteCalOutlook))) {
+            if (!empty($this->syncType) && !empty($this->remoteCalendarId)) {
                 if ($this->syncType == 'google') {
                     $this->attachBehavior('syncBehavior','GoogleCalendarSync');
-                }
-                if ($this->syncType == 'outlook') {
-                    $this->attachBehavior('syncBehavior','OutlookCalendarSync');
                 }
             }
         }
@@ -103,7 +94,6 @@ class X2Calendar extends CActiveRecord
 		return array(
                     'id' => Yii::t('admin','ID'),
                     'remoteCalendarId' => Yii::t('calendar','Remote Calendar Name'),
-                    'remoteCalOutlook' => Yii::t('calendar','Remote Calendar Name'),
 		);
 	}
         
@@ -116,52 +106,7 @@ class X2Calendar extends CActiveRecord
 		
 		return $names;
 	}
-     
-        /*
-        * Get All the Calenders from the user
-        */
-       public static function getOutlookCalendarList($id = null) {
-
-           $client = new OutlookAuthenticator('calendar');
-           $access_token = $client->getAccessToken();
-
-           if($client->getAccessToken()){
-                $access = "Bearer " . $access_token;
-
-                $ch = curl_init();
-                //create header and body for the POST request
-                curl_setopt($ch, CURLOPT_URL,"https://graph.microsoft.com/v1.0/me/calendars");
-                curl_setopt($ch, CURLOPT_HTTPGET, 1);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization:' .$access, 
-                                                           'Content-Type: application/json'));
-
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-                //execute url
-                $server_output = curl_exec($ch);
-                curl_close ($ch);
-
-                $temp = CJSON::decode($server_output);
-                $calendarlist = $temp['value'];
-                $calendars = array();
-
-                foreach( $calendarlist as $object ){
-                   foreach( $object as $key => $value ){
-                       if($key == 'id'){
-                       $id = $value;    
-                       }
-                       if($key == 'name'){
-                       $tempCalendar = array( (string)$id => (string)$value );
-                       $calendars = array_merge($calendars, $tempCalendar);
-                       }
-                   } 
-                }
-           }else{
-               $calendars = null;
-           }
-
-           return array($client, $calendars);
-       }
+	
         
         /**
          * Returns a list of calendars that can be synced to

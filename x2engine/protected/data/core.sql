@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,15 +32,12 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 DROP TABLE IF EXISTS x2_admin;
 /*&*/
 CREATE TABLE x2_admin(
 	id                              INT				NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	timeout                         INT,
-        maxUserCount                    INT                             DEFAULT 200,
+    maxUserCount                   INT                             DEFAULT 100000,
         loginCredsTimeout               INT                             DEFAULT 30,
         tokenPersist                    TINYINT         DEFAULT 1,
 	webLeadEmail			VARCHAR(255),
@@ -49,9 +46,7 @@ CREATE TABLE x2_admin(
 	enableWebTracker		TINYINT			DEFAULT 1,
 	enableGeolocation		TINYINT			DEFAULT 1,
 	currency                        VARCHAR(3)		NULL,
-	duplicateFields			VARCHAR(255)	NOT NULL DEFAULT "name",
-        chatPollTime			INT				DEFAULT 3000,
-        maxFileSize			INT				DEFAULT 10,
+	chatPollTime			INT				DEFAULT 3000,
         locationTrackingFrequency       INT				DEFAULT 60,
         defaultTheme                    INT             NULL,
 	ignoreUpdates			TINYINT			DEFAULT 0,
@@ -66,7 +61,7 @@ CREATE TABLE x2_admin(
 	emailFromAddr			VARCHAR(255)	NOT NULL DEFAULT '',
 	emailBatchSize			INT				NOT NULL DEFAULT 200,
 	emailInterval			INT				NOT NULL DEFAULT 60,
-        emailCount                      INT              DEFAULT 0,
+        emailCount                      INT             NOT NULL DEFAULT 0,
         emailStartTime                  BIGINT          DEFAULT NULL,
 	emailUseSignature		VARCHAR(5)		DEFAULT "user",
 	emailSignature			TEXT,
@@ -86,8 +81,7 @@ CREATE TABLE x2_admin(
         locationTrackingSwitch          TINYINT,
         checkinByDefault                TINYINT DEFAULT 1,
 	googleIntegration		TINYINT,
-	outlookIntegration              TINYINT,
-        inviteKey				VARCHAR(255),
+	inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
 	workflowBackdateRange			INT			NOT NULL DEFAULT -1,
 	workflowBackdateReassignment	TINYINT		NOT NULL DEFAULT 1,
@@ -126,22 +120,16 @@ CREATE TABLE x2_admin(
     /* This is the rich text that gets displayed to contacts after they've clicked a do not email 
        link */
     doNotEmailPage   LONGTEXT DEFAULT NULL,
-    EmailUnSubPage   LONGTEXT DEFAULT NULL,
     doNotEmailLinkText          VARCHAR(255) DEFAULT NULL,
     enableUnsubscribeHeader     TINYINT DEFAULT 0,
     twitterCredentialsId        INT UNSIGNED,
-    dropboxCredentialsId        INT UNSIGNED,
-    linkedInCredentialsId       INT UNSIGNED,
     twitterRateLimits           TEXT DEFAULT NULL,
-    linkedInRateLimits          TEXT DEFAULT NULL,
-    dropboxRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
     jasperCredentialsId         INT UNSIGNED,
     hubCredentialsId            INT UNSIGNED,
     twoFactorCredentialsId      INT UNSIGNED,
-    disableAnonContactNotifs    TINYINT DEFAULT 0,
-    outlookCredentialsId        INT UNSIGNED
+    disableAnonContactNotifs    TINYINT DEFAULT 0
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -189,17 +177,11 @@ CREATE TABLE x2_credentials(
 	modelClass	VARCHAR(50)	NOT NULL, -- The class of embedded model used for handling authentication data
 	createDate	BIGINT DEFAULT NULL,
 	lastUpdated	BIGINT DEFAULT NULL,
-	isBounceAccount TINYINT NOT NULL DEFAULT 0,
-	lastRunDate	BIGINT DEFAULT NULL,
 	auth		TEXT, -- encrypted (hopefully) authentication data
 	INDEX(userId)
 ) ENGINE=InnoDB COLLATE = utf8_general_ci;
 /*&*/
 ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`twitterCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
-/*&*/
-ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`linkedInCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
-/*&*/
-ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`dropboxCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
 ALTER TABLE `x2_admin` ADD CONSTRAINT FOREIGN KEY (`googleCredentialsId`) REFERENCES x2_credentials(`id`) ON UPDATE CASCADE ON DELETE SET NULL;
 /*&*/
@@ -439,7 +421,6 @@ CREATE TABLE x2_profile(
     historyShowAll          TINYINT         DEFAULT 0,
     historyShowRels         TINYINT         DEFAULT 0,
     googleRefreshToken      VARCHAR(255),
-    outlookRefreshToken     VARCHAR(1000),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
         defaultCalendar     INT,
@@ -699,7 +680,6 @@ CREATE TABLE x2_flows(
     triggerType             VARCHAR(40)         NOT NULL,
     modelClass              VARCHAR(40),
     flow                    LONGTEXT,
-    flow_counter            LONGTEXT,
     createDate              BIGINT              NOT NULL,
     lastUpdated             BIGINT              NOT NULL
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;

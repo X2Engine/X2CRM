@@ -219,7 +219,7 @@ class OriginationUrlTest extends HolodeckTestCase {
         
         try {
             $this->twilio->trunking->v1->trunks("TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                       ->originationUrls("OUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                       ->originationUrls("OUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -250,7 +250,7 @@ class OriginationUrlTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->trunking->v1->trunks("TRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                             ->originationUrls("OUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                             ->originationUrls("OUaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

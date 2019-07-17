@@ -173,7 +173,6 @@ class CAccessControlFilter extends CFilter
 	 * This method is invoked when access check fails.
 	 * @param IWebUser $user the current user
 	 * @param string $message the error message to be displayed
-	 * @throws CHttpException
 	 */
 	protected function accessDenied($user,$message)
 	{

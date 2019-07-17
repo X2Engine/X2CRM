@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,89 +34,68 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 ?>
 
 <meta charset="UTF-8">
 <link rel='stylesheet' type='text/css' 
-      href='<?php echo Yii::app()->getTheme()->getBaseUrl() . '/css/x2forms.css'; ?>'/>
+ href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/x2forms.css'; ?>'/>
 <link rel='stylesheet' type='text/css' 
-      href='<?php echo Yii::app()->getTheme()->getBaseUrl() . '/css/printableRecord.css'; ?>'/>
+ href='<?php echo Yii::app()->getTheme()->getBaseUrl().'/css/printableRecord.css'; ?>'/>
 <!--<link rel='stylesheet' type='text/css' 
- href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css';    ?>'/>-->
+ href='<?php //echo Yii::app()->getClientScript()->getCoreScriptUrl().'/rating/jquery.rating.css'; ?>'/>-->
 <link rel='stylesheet' type='text/css' 
-      href='<?php echo Yii::app()->theme->getBaseUrl() . '/css/rating/jquery.rating.css'; ?>'/>
-<script src='<?php
-echo Yii::app()->getClientScript()->getCoreScriptUrl() .
- '/jquery.js';
-?>'></script>
-<script src='<?php
-echo Yii::app()->getClientScript()->getCoreScriptUrl() .
- '/jquery.metadata.js';
-?>'></script>
-<script src='<?php
-echo Yii::app()->getClientScript()->getCoreScriptUrl() .
- '/jquery.rating.js';
-?>'></script>
+ href='<?php echo Yii::app()->theme->getBaseUrl().'/css/rating/jquery.rating.css'; ?>'/>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.js'; ?>'></script>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.metadata.js'; ?>'></script>
+<script src='<?php echo Yii::app()->getClientScript()->getCoreScriptUrl().
+ '/jquery.rating.js'; ?>'></script>
 
 <div class='config-panel-content'>
 </div>
 
-<h1 id='page-title'><?php echo addslashes($pageTitle); ?></h1>
-<h3 id='model-title'><?php echo addslashes($modelTitle); ?></h3>
+<h1 id='page-title'><?php echo addslashes ($pageTitle); ?></h1>
+<h3 id='model-title'><?php echo addslashes ($modelTitle); ?></h3>
 
-<?php
-$this->widget('DetailView', array(
+<?php //echo X2Html::divider(); ?>
+
+<?php 
+$this->widget ('DetailView', array(
     'model' => $model,
     'modelName' => $modelClass
 ));
 
-// Actions of type emailOpened is not as significant as the other types of Actions when it comes up Notes
-$actions = Actions::model()->findAll(array('condition'=>'type!="emailOpened" AND associationId='.$model->id,'order'=>'createDate DESC'));
-$notes = array();
-
-echo '<h3 style="margin-top: 100px;">Notes</h3>';
-echo '<div style="width: 100%; min-height: 200px; list-style: none;">';
-foreach ($actions as $action) {
-    $note = ActionText::model()->find('actionId=' . $action->id)->text;
-    $noteType = $action->type;
-    if ($note && trim($note) !== '') {
-        $notes[] = $note;
-	echo '<div style="padding: 20px 0px;">' . $noteType . '</div>';
-        echo '<div style="padding: 20px 0px;">' . $note . '</div>';
-    }
-}
-echo '</div>';
+//$this->renderPartial('application.components.views.@DETAILVIEW', array('model' => $model, 'modelName' => $modelClass));
 ?>
 
 <script>
-    $('title').html("<?php echo $pageTitle ?>");
+	$('title').html("<?php echo $pageTitle ?>");
 
-    // replace stars with textual representation
-    $('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each(function () {
-        var stars = $(this).find('[checked="checked"]').val();
+	// replace stars with textual representation
+	$('span[id^="<?php echo $modelClass; ?>-<?php echo $id; ?>-rating"]').each (function () {
+		var stars = $(this).find ('[checked="checked"]').val ();
         stars = stars ? stars : 0;
-        $(this).children().remove();
-        $(this).html(stars + '/5 <?php echo addslashes(Yii::t('app', 'Stars')); ?>');
-    });
+		$(this).children ().remove ();
+		$(this).html (stars + '/5 <?php echo addslashes (Yii::t('app', 'Stars')); ?>');
+	});
 
-    var sections = 1;
-    $('.sectionTitle').each(function () {
-        var title = $(this).html();
-        if (!title) {
-            title = 'Section ' + sections++;
-        }
-        var row = $('<div class="row"></div>').appendTo($('.config-panel-content'));
-        $('<span class="label"></span>').appendTo(row).html(title)
-        var check = $('<input type="checkbox" checked />').appendTo(row);
+	var sections = 1;
+	$('.sectionTitle').each(function(){
+		var title = $(this).html();
+		if (!title) {
+			title = 'Section ' + sections++;
+		}
+		var row = $('<div class="row"></div>').appendTo($('.config-panel-content'));
+		$('<span class="label"></span>').appendTo(row).html(title)
+		var check = $('<input type="checkbox" checked />').appendTo(row);
 
-        var that = this;
-        check.change(function () {
-            $(that).closest('.formSection').toggle();
-        });
-    });
+		var that = this;
+		check.change(function(){
+			$(that).closest('.formSection').toggle();
+		});
+	});
+
 </script>
 
 

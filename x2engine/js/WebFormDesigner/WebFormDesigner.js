@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 x2.WebFormDesigner = (function() {
 
     /*
@@ -48,7 +45,6 @@ x2.WebFormDesigner = (function() {
         // properties that can be set with constructor arguments
         var defaultArgs = {
             translations: [], // used for various web form text
-            baseUrl: '',
             iframeSrc: '', 
             externalAbsoluteBaseUrl: '', // used for specifying web form generation script source
             saveUrl: '', // used to save the web form settings
@@ -165,14 +161,6 @@ x2.WebFormDesigner = (function() {
             e.preventDefault();
         });
         $('#embedcode').focus();
-        
-        $('#unsubembedcode').focus(function() {
-            $(this).select();
-        });
-        $('#unsubembedcode').mouseup(function(e) {
-            e.preventDefault();
-        });
-        $('#unsubembedcode').focus();
 
         // instantiate color pickers
         $.each(that.colorfields, function(i, field) {
@@ -255,24 +243,7 @@ x2.WebFormDesigner = (function() {
         $('#iframe_example').data('src',that.iframeSrc);
         $('#iframe_example').resizable({
             start: function(event, ui) {
-                
-            },
-            stop: function(event, ui) {
-                that.updateParams();
-                //$(this).removeAttr('style');
-            },
-            helper: 'ui-resizable-helper',
-            resize: function(event, ui) {
-            //    $('#iframe_example').width(ui.size.width);
-            //    $('#iframe_example').height(ui.size.height);
-            //    $('#iframe_example iframe').attr('width', ui.size.width);
-            //    $('#iframe_example iframe').attr('height', ui.size.height);
-            },
-        });
-        
-        $('#iframe_unsub').resizable({
-            start: function(event, ui) {
-                
+
             },
             stop: function(event, ui) {
                 that.updateParams();
@@ -404,14 +375,6 @@ x2.WebFormDesigner = (function() {
                 $('#copy-help').hide();
             }, 2000);
         });
-        
-        $('#unsubclipboard').click(function(){
-            $('#unsubembedcode').focus();
-            $('#unsub-copy-help').show();
-            setTimeout(function(){
-                $('#unsub-copy-help').hide();
-            }, 2000);
-        });
     }
 
     /**
@@ -466,7 +429,7 @@ x2.WebFormDesigner = (function() {
         if (that.listId !== null) {
             params.push('lid='+that.listId);
         }
-        
+
         $.each(that.fields, function(i, field) {
             var value = WebFormDesigner.sanitizeInput($('#'+field).val());
             if (value.length > 0) { params.push(field+'='+value); }
@@ -485,13 +448,13 @@ x2.WebFormDesigner = (function() {
         } else {
             iframeWidth = 200;
         }
-        
+
         /* 
         */
         var embedCode = '<iframe name="web-form-iframe" src="' + that.iframeSrc + query +
             '" frameborder="0" allowtransparency="true" scrolling="0" width="' + iframeWidth +  '" height="' + 
             iframeHeight + '"></iframe>';
-    
+
         if ($('#saved-forms').val() != 0) {
             $('#embedcode').val(embedCode);
         } else {
@@ -500,30 +463,6 @@ x2.WebFormDesigner = (function() {
 
         $('#iframe_example').children ('iframe').remove ();
         $('#iframe_example').append (embedCode);
-        
-        
-        /*
-         * Unsub Embed 
-         */
-        
-        var unsubHeight = $('#iframe_unsub').height ();
-        var unsubWidth;
-        if ($('#iframe_unsub').find ('iframe').length) {
-            unsubWidth = $('#iframe_unsub').width ();
-        } else {
-            unsubWidth = 200;
-        }
-        
-        var unsubEmbed = '<iframe name="web-form-iframe" src="' + that.baseUrl +
-                '/index.php/marketing/marketing/unsubWebleadForm' +
-            '" frameborder="0" allowtransparency="true" scrolling="0" width="' +
-            unsubWidth +  '" height="' + unsubHeight + '"></iframe>';
-        
-        $('#unsubembedcode').val(unsubEmbed);
-
-        $('#iframe_unsub').children ('iframe').remove ();
-        $('#iframe_unsub').append (unsubEmbed);
-        
     };
 
     /*

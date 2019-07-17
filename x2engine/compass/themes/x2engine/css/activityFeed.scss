@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
 *  
 * styling page for activity feed. Most icons for the activity feed are
@@ -53,8 +50,7 @@
 ***********************************************************************/
 
 #activity-feed-container {
-    @include border-radius(2px !important);
-    margin-right: 0px;
+    @include border-radius(4px !important);
 
     .event-text {
         .topic-preview {
@@ -180,7 +176,7 @@
     .comment-textbox {
         -webkit-appearance: none;
         height: 22px;
-        width: 70% !important;
+        width: 100% !important;
         box-sizing: border-box;
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
@@ -189,28 +185,22 @@
         font-family: Arial, Helvetica, sans-serif;
         @include border-radius(3px);
         background: white;
-        margin-left: 60px;
     }
 
     .comment-box .items {
-        margin-left: 55px;
+        margin-left: 15px;
         // padding-right: 15px;
         border: none;
         // background: none;
 
         > .view {
-            background: white;
-            word-break: break-word;
-            border-left: 1px solid #e0e0e0;
 
             &:first-child {
-                background: white;
-                word-break: break-word;
+                border-radius: 2px 0px 0px 0px;
             }
 
             &:last-child {
-                background: white;
-                word-break: break-word;
+                border-radius: 0px 0px 2px 0px;
             }
         }
     }
@@ -232,16 +222,16 @@
     }
 
     #sticky-feed {
-        .important-action {
+         .important-action {
             background: #FFFFC2;
         }
     }
 
     #activity-feed.list-view .view.top-level.activity-feed {
-        padding: 12px;
+        padding: 5px;
         overflow: auto;
         &.important-action {
-            background: $lightBabyBlue;
+            background: #FFFFC2;
         }
     }
 
@@ -270,6 +260,7 @@
         .comment-age {
             display: inline-block;
             margin-top: 8px;
+            min-width: 25%;
             color: $darkBlue;
             /* @theme color link */
             @include opacity-hover(0.8);
@@ -285,6 +276,7 @@
         border-top: none;
         border-left: none;
         border-right: none;
+        border-bottom: 1px solid #eee;
         border-radius: 0;
     }
 
@@ -319,7 +311,7 @@
     * pseudo elements to base the icons on
     ******************************************/
     %icon {
-        margin-left: 10px;
+       margin-left: 10px;
     }
 
     %active-icon {
@@ -380,11 +372,22 @@
     * Activity Feed Icon Styling
     ********************************/
     .img-box {
-        /* 
-        ** TODO: We need to find a better way to exclude open source styling 
-        ** changes from enterprise. (Perhaps edit the build script for a /* x2openstart *\/
-        ** and a /* x2openend *\/)
-        **/
+        
+         display: block;
+         float: left;
+         position: relative;
+         overflow: visible;
+
+         text-align: center;
+         font-size: 35px;
+         color: $darkBlue;
+
+         width: 50px;
+         height: 45px;
+
+         padding-bottom: 5px;
+
+         &:before {font-size: 30px !important;}
 
         $fa-map: (
             ("action_complete"   "play-circle" "check")
@@ -410,7 +413,7 @@
             ("web_activity"       "globe")
             ("weblead_create"     "globe" "star")
             ("topic_reply"        "comment-o") 
-            );
+        );
 
         $x2-map: (
             ("log_time"             "stopwatch")
@@ -422,19 +425,40 @@
             ("workflow_complete"    "funnel" "check")
             ("workflow_start"       "funnel" "arrow-right")
         );
-
-        $fa-map: ();
-        $x2-map: ();
+        
+        
 
         @include generate-icons ($fa-map);
         @include generate-icons ($x2-map, 'x2');
 
 
         &.record_create {
-            content: "";
+            //@include stacked-icon('plus'); // ALl record Creates have a plus indicator
+            content: "\f067";
+            
 
-            $fa-map: ();
-            $x2-map: ();
+            $fa-map: (
+                ("Campaign-create" "bullhorn")
+                ("Actions-create" "play-circle")
+                ("Accounts-create" "building")
+                ("Opportunity-create" "bullseye")
+                ("X2Leads-create" "star")
+                ("Docs-create" "file-text")
+                ("Groups-create" "users")
+                ("BugReports-create" "bug")
+                ("Charts-create" "bar-chart")
+                ("Reports-create" "file-text-o")
+                ("Topics-create" "comments")
+              );
+
+            $x2-map: (
+                ("Quote-create" "quotes")
+                ("Product-create"  "package")
+                ("Services-create" "service")
+                ("Contacts-create" "contact")
+            );
+
+            
 
             @include generate-icons($fa-map);
             @include generate-icons($x2-map, 'x2');
@@ -442,138 +466,6 @@
         }
 
     }
-
-    .img-box {
-        display: block;
-        float: left;
-        position: relative;
-        overflow: visible;
-
-        text-align: center;
-        font-size: 35px;
-        color: $darkBlue;
-        /* @theme color lighter_link */
-
-        width: 50px;
-        height: 45px;
-
-        &:before {
-            font-size: 30px !important;
-        }
-        &.action_complete {
-            background-image: url(../images/eventIcons/action_complete.png);
-        }
-        &.action_reminder {
-            background-image: url(../images/eventIcons/action_reminder.png);
-        }
-        &.calendar_event {
-            background-image: url();
-        }
-        &.case_escalated {
-            background-image: url(../images/eventIcons/case_escalated.png);
-        }
-        &.doc_update {
-            background-image: url(../images/eventIcons/doc_update.png);
-        }
-        &.email_from {
-            background-image: url(../images/eventIcons/email_from.png);
-        }
-        &.email_opened, &.email_opened_quote, &.email_opened_invoice {
-            background-image: url(../images/eventIcons/email_opened.png);
-        }
-        &.email_clicked {
-            background-image: url(../images/eventIcons/web_activity.png);
-        }
-        &.email_sent, &.email_sent_quote, &.email_sent_invoice {
-            background-image: url(../images/eventIcons/email_sent.png);
-        }
-        &.feed {
-            background-image: url(../images/eventIcons/default.png);
-        }
-        &.invoice_emailed {
-            background-image: url(../images/eventIcons/invoice_emailed.png);
-        }
-        &.media {
-            background-image: url(../images/eventIcons/media.png);
-        }
-        &.notif {
-            background-image: url(../images/eventIcons/notif.png);
-        }
-        &.voip_call {
-            background-image: url(../images/eventIcons/voip_call.png);
-        }
-        &.log_time {
-            background-image: url(../images/action_time.png);
-        }
-        &.quote_emailed {
-            background-image: url(../images/eventIcons/quote_emailed.png);
-        }
-        &.record_create {
-            background-image: url(../images/eventIcons/record_create.png);
-        }
-        &.record_deleted {
-            background-image: url(../images/eventIcons/record_deleted.png);
-        }
-        &.web_activity {
-            background-image: url(../images/eventIcons/web_activity.png);
-        }
-        &.weblead_create {
-            background-image: url(../images/eventIcons/weblead_create.png);
-        }
-        &.workflow_complete {
-            background-image: url(../images/eventIcons/workflow_complete.png);
-        }
-        &.workflow_revert {
-            background-image: url(../images/eventIcons/workflow_revert.png);
-        }
-        &.workflow_start {
-            background-image: url(../images/eventIcons/workflow_start.png);
-        }
-        &.plus-sign {
-            margin-top: 25px;
-            margin-left: 5px;
-            background-image: url(../images/Plus_sign.png);
-            height: 20px;
-            width: 65px;
-        }
-        &.record_create {
-            &.Quote-create {
-                background-image: url(../images/quotes.png);
-            }
-            &.Contacts-create {
-                background-image: url(../images/contacts.png);
-            }
-            &.Campaign-create {
-                background-image: url(../images/campaign_create.png);
-            }
-            &.Actions-create {
-                background-image: url(../images/actions.png);
-            }
-            &.Accounts-create {
-                background-image: url(../images/accounts.png);
-            }
-            &.Opportunity-create {
-                background-image: url(../images/opportunities.png);
-            }
-            &.Product-create {
-                background-image: url(../images/products.png);
-            }
-            &.X2Leads-create {
-                background-image: url(../images/x2Leads.png);
-            }
-            &.Docs-create {
-                background-image: url(../images/docs.png);
-            }
-            &.Services-create {
-                background-image: url(../images/services.png);
-            }
-            &.Groups-create {
-                background-image: url(../images/groups.png);
-            }
-            &.BugReports-create {
-                background-image: url(../images/bugreports.png);
-            }
-        }
-    }
+    
 
 }

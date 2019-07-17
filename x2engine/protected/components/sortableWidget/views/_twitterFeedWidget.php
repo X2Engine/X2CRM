@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 Yii::app()->clientScript->registerCssFile(
     Yii::app()->theme->baseUrl.'/css/components/sortableWidget/views/twitterFeedWidget.css'); 
 
@@ -65,3 +62,11 @@ Yii::app()->clientScript->registerCssFile(
 </div>
 
 <script type="text/javascript" async src="//platform.twitter.com/widgets.js"></script>
+
+<!--<a class="twitter-timeline" 
+ href="https://twitter.com/x2engine" 
+ data-screen-name="x2engine"
+ data-widget-id="530872797577220096">
+Tweets by @cruzio</a>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>-->

@@ -1094,7 +1094,6 @@ class CHttpRequest extends CApplicationComponent
 	 * @param string $content content to be set.
 	 * @param string $mimeType mime type of the content. If null, it will be guessed automatically based on the given file name.
 	 * @param boolean $terminate whether to terminate the current application after calling this method
-	 * @throws CHttpException
 	 */
 	public function sendFile($fileName,$content,$mimeType=null,$terminate=true)
 	{
@@ -1303,10 +1302,7 @@ class CHttpRequest extends CApplicationComponent
 	 */
 	protected function createCsrfCookie()
 	{
-		$securityManager=Yii::app()->getSecurityManager();
-		$token=$securityManager->generateRandomBytes(32);
-		$maskedToken=$securityManager->maskToken($token);
-		$cookie=new CHttpCookie($this->csrfTokenName,$maskedToken);
+		$cookie=new CHttpCookie($this->csrfTokenName,sha1(uniqid(mt_rand(),true)));
 		if(is_array($this->csrfCookie))
 		{
 			foreach($this->csrfCookie as $name=>$value)
@@ -1336,24 +1332,21 @@ class CHttpRequest extends CApplicationComponent
 			switch($method)
 			{
 				case 'POST':
-					$maskedUserToken=$this->getPost($this->csrfTokenName);
+					$userToken=$this->getPost($this->csrfTokenName);
 				break;
 				case 'PUT':
-					$maskedUserToken=$this->getPut($this->csrfTokenName);
+					$userToken=$this->getPut($this->csrfTokenName);
 				break;
 				case 'PATCH':
-					$maskedUserToken=$this->getPatch($this->csrfTokenName);
+					$userToken=$this->getPatch($this->csrfTokenName);
 				break;
 				case 'DELETE':
-					$maskedUserToken=$this->getDelete($this->csrfTokenName);
+					$userToken=$this->getDelete($this->csrfTokenName);
 			}
 
-			if (!empty($maskedUserToken) && $cookies->contains($this->csrfTokenName))
+			if (!empty($userToken) && $cookies->contains($this->csrfTokenName))
 			{
-				$securityManager=Yii::app()->getSecurityManager();
-				$maskedCookieToken=$cookies->itemAt($this->csrfTokenName)->value;
-				$cookieToken=$securityManager->unmaskToken($maskedCookieToken);
-				$userToken=$securityManager->unmaskToken($maskedUserToken);
+				$cookieToken=$cookies->itemAt($this->csrfTokenName)->value;
 				$valid=$cookieToken===$userToken;
 			}
 			else

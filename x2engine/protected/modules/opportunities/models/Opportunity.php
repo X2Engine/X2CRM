@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 Yii::import('application.models.X2Model');
 
 /**
@@ -66,10 +63,7 @@ class Opportunity extends X2Model {
 				'class' => 'application.components.behaviors.ERememberFiltersBehavior',
 				'defaults'=>array(),
 				'defaultStickOnClear'=>false
-			),
-                   'MappableBehavior' => array(
-                'class' => 'application.components.behaviors.MappableBehavior',
-            ),
+			)
 		));
 	}
 
@@ -208,16 +202,10 @@ class Opportunity extends X2Model {
 	}
 
 	public function search($resultsPerPage=null, $uniqueId=null) {
-
+		$criteria=new CDbCriteria;
 		// $parameters=array("condition"=>"salesStage='Working'",'limit'=>ceil(Profile::getResultsPerPage()));
-	         $criteria=new CDbCriteria;
-                if ($resultsPerPage === null) {
-                    if (!Yii::app()->user->isGuest) {
-                        $resultsPerPage = Profile::getResultsPerPage();
-                    } else {
-                        $resultsPerPage = 20;
-                    }
-                }
+		$parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
+		$criteria->scopes=array('findAll'=>array($parameters));
 
 		return $this->searchBase($criteria, $resultsPerPage);
 	}
@@ -227,28 +215,6 @@ class Opportunity extends X2Model {
 
 		return $this->searchBase($criteria);
 	}
-        
-    public function searchList($id, $pageSize = null) {
-        $list = X2List::model()->findByPk($id);
-        
-        if (isset($list)) {
-            $search = $list->queryCriteria();
-            
-            $this->compareAttributes($search);
-           
-            return new SmartActiveDataProvider('Opportunity', array(
-                'criteria' => $search,
-                'sort' => array(
-                    'defaultOrder' => 't.lastUpdated DESC' // true = ASC
-                ),
-                'pagination' => array(
-                    'pageSize' => isset($pageSize) ? $pageSize : Profile::getResultsPerPage(),
-                ),
-            ));
-        } else { //if list is not working, return all contacts
-            return $this->searchBase();
-        }
-    }
 
 
 }

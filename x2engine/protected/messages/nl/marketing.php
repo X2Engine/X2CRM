@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => 'Met deze optie kunt u instellen of geolocation voor uw bezoekers wordt uitgevoerd.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => 'Met deze optie kunt u instellen of browser vingerafdrukken wordt uitgevoerd om te proberen uw bezoekers te vergelijken.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => 'U kunt ook het minimale aantal browser attributen configureren die nodig zijn om een ​​bezoeker aan te passen. Hoe hoger deze waarde is, hoe nauwkeuriger uw gedeeltelijke overeenkomsten zullen zijn.',
-    'Suppressed' => 'onderdrukte',
-    'Suppression List' => 'Suppressielijst',
-    'Suppression List:' => 'Suppressielijst:',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => "E-mailverzending overslaan naar {address}. Dit contact wordt overgeslagen omdat het aanwezig is in onderdrukte lijst.",
-    'Select a Suppression List' => 'Selecteer een onderdrukkingslijst',
-    'New Suppression List' => 'Nieuwe onderdrukkingslijst',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => "Kies een onderdrukkingslijst om te voorkomen dat u de e-mail van de campagne verzendt, of maak er hier een aan.",
 );

@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 
@@ -159,8 +156,8 @@ $edgeColor: #CCCCCC;
     overflow-x: auto;
     white-space: nowrap;
     font-size: 0;
-    background-color: transparent !important;
-    border-color: transparent !important;
+    background-color: transparent;
+    border-color: transparent;
     .x2flow-action::after {
         content: "";
         width: 24px;
@@ -286,16 +283,8 @@ $edgeColor: #CCCCCC;
 }
 
 #actions-bank {
-    overflow-y: visible;
-    width:93%;
-    display:none;
-    -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    border: 1px solid #C2C2C2;
-    background-color: #fff;
-    padding: 10px;
-    margin: 20px 19px 20px 19px;
+    overflow-y: hidden;
+    
 }
 
 .shortcodes {
@@ -704,10 +693,7 @@ $edgeColor: #CCCCCC;
  * Workflow action draggable
  */
 .actions {
-    height: auto;
-    width: 100%;
-    margin-bottom: 0px;
-    padding-left: 0px;
+    
     overflow-y: hidden;
 
     .x2flow-placeholder {
@@ -723,19 +709,23 @@ $edgeColor: #CCCCCC;
         background-color: #eee;
         background-position: 3px center;
         cursor: pointer;
-        
-        padding: 2px 13px 2px 26px;
-        width: auto;
-        margin: 5px;
-        border: 1px solid white;
-        -moz-border-radius: 15px;
-        -o-border-radius: 15px;
-        -webkit-border-radius: 15px;
-        border-radius: 15px;
+
+	padding: 2px 0 2px 26px;
+        width: 124px;
+        margin: 0;
+        border: 1px solid #999;
+        border-width: 1px 0 0 0;
+        -moz-border-radius: 0;
+        -o-border-radius: 0;
+        -webkit-border-radius: 0;
+        border-radius: 0;
+
+	
 
         &:hover {
             background-color: #fff;
-            border: 1px solid #eee;
+
+	    
         }
         span {
             display: block;
@@ -1080,7 +1070,7 @@ labels
         top: 36px;
         left: -15px;
         font-size: 8pt;
-        color: rgb(85, 85, 85) !important;
+        color: rgb(85, 85, 85);
         white-space: normal;
     }
     &.x2flow-trigger > div.x2flow-icon-label {

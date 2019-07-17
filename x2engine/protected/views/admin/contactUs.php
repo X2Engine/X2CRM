@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 ?><h1><?php echo Yii::t('admin','Contact Us');?></h1>
 <?php echo Yii::t('admin','X2Engine Inc. is the company behind X2Engine CRM - a high-performance contact management and customer relations management web application. X2Engine Inc. can offer to your organization professional support and training on X2Engine CRM.  Please fill out the form below to contact us.');?>
 <form name="contact-us" method="POST"><br />

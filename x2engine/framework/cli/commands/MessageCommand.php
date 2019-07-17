@@ -147,15 +147,7 @@ EOD;
 				else
 					$category=substr($matches[$i][1],1,-1);
 				$message=$matches[$i][2];
-				try
-				{
-					$evalResult = eval("return $message;");  // use eval to eliminate quote escape
-				}
-				catch (ParseError $e)
-				{
-					$evalResult = false;
-				}
-				$messages[$category][] = $evalResult;
+				$messages[$category][]=eval("return $message;");  // use eval to eliminate quote escape
 			}
 		}
 		return $messages;

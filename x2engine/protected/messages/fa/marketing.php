@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => 'این گزینه اجازه می دهد تا شما را به پیکربندی کنید که منطقه جغرافیایی خواهد شد برای بازدید کنندگان خود را انجام.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => 'این گزینه اجازه می دهد تا شما را به پیکربندی کنید که انگشتنگاری مرورگر انجام خواهد شد را به تلاش برای مطابقت بازدید کننده خود را.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => 'شما همچنین می توانید حداقل تعدادی از ویژگی مرورگر مورد نیاز برای مطابقت با یک بازدید کننده را پیکربندی کنید. بالاتر از این مقدار است، دقیق تر مسابقات جزئی خواهد بود.',
-    'Suppressed' => 'سرکوب',
-    'Suppression List' => 'لیست سرکوب',
-    'Suppression List:' => ':لیست سرکوب',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => 'پیغام فرستادن ایمیل به {address}. این مخاطب همانطور که در فهرست سرکوب شده موجود است، حذف می شود.',
-    'Select a Suppression List' => 'لیست سرکوب را انتخاب کنید',
-    'New Suppression List' => 'لیست سرکوب جدید',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => 'برای جلوگیری از ارسال ایمیل مبارزات انتخابی، یک لیست سرکوب را انتخاب کنید، یا اینجا را ایجاد کنید.',
 );

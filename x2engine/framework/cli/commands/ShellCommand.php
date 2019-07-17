@@ -125,18 +125,7 @@ EOD;
 					$_command_->run($_args_);
 				}
 				else
-				{
-					try
-					{
-						$evalResult = eval($_line_ . ';');
-					}
-					catch (ParseError $e)
-					{
-						$evalResult = false;
-					}
-
-					echo $evalResult;
-				}
+					echo eval($_line_.';');
 			}
 			catch(Exception $e)
 			{

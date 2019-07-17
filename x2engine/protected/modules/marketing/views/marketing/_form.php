@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,16 +36,12 @@
 
 
 
-
-
-
 Yii::app()->clientScript->registerPackage ('emailEditor');
 Yii::app()->clientScript->registerCssFile ($this->module->assetsUrl.'/css/campaignForm.css');
 
 $insertableAttributes = array();
-foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label){
+foreach(X2Model::model('Contacts')->attributeLabels() as $fieldName => $label)
     $insertableAttributes[$label] = '{'.$fieldName.'}';
-}
 $insertableAttributes[Yii::t('profile','Signature')] = '{signature}';
 
 $contacts = Yii::t('contacts','{module} Attributes', array (
@@ -68,11 +64,8 @@ if ($model->list && !in_array ($model->list->id, array_keys ($contactLists))) {
     $contactLists = ArrayUtil::asorti ($contactLists);
 }
 
-//get templates, lex sort (case insensitive), place Custom on top
 $templates = CHtml::listData (Docs::getEmailTemplates2('email', 'Contacts'), 'id', 'name');
-
 $templates[0] = Yii::t('marketing',"Custom");
-$templates = ArrayUtil::asorti ($templates);
 
 $form = $this->beginWidget('CActiveForm', array(
     'id'=>'campaign-form',
@@ -87,7 +80,7 @@ $form = $this->beginWidget('CActiveForm', array(
             <?php echo $model->renderInput('name');?>
         </div>
         <div class='row'>
-            <label><?php echo Yii::t('marketing', 'List:')?></label>
+            <label><?php echo Yii::t('marketing', 'Contact List:')?></label>
             <?php 
             if (isset($model->list)) {
                 $model->listId = $model->list->id;
@@ -100,40 +93,8 @@ $form = $this->beginWidget('CActiveForm', array(
                 <?php echo X2Html::fa ('plus')?>
             </span>
         </div>
-        <div class ='row' id='supButton'>
-            <label><?php echo Yii::t('marketing', 'Suppression List(s):')?></label>
-            <?php    echo CHtml::button(
-                Yii::t('app', 'Add Suppression List(s)'), 
-                array(
-                    
-                ));
-            ?>
-            </div>
-        <div id= 'supRow' class='row' style = 'display:none;'>
-            <label><?php echo Yii::t('marketing', 'Suppression List(s):')?></label>
-            <?php
-            if (isset($model->suppressionList)) {
-                $model->suppressionListId = $model->suppressionList->id;
-            }
-            echo X2Html::activeDropDownList ($model, 'suppressionListId', $contactLists, array(
-        
-                'multiple' => "multiple",
-                'class' => 'multiselect',
-                'size' => 8,
-                'style'=> "height:100px;",
-                
-            ))?>
-            <?php echo X2Html::hint (Yii::t('marketing', 'Choose a Suppression list to avoid sending the campaign email, or create one here. Do not'
-                    . ' mix types of list as this can cuase unpredictable error. Controls CTRL + CLICK to pick multiple list or unselect a list.'));?>
-            <span id='quick-create-suppression-list'>
-                <?php echo X2Html::fa ('plus')?>
-            </span>
-        </div>
     <div id='quick-create-list-form' style='display:none'>
         <h3><?php echo Yii::t('contacts', 'New Contact List');?></h3>
-    </div>
-    <div id='quick-create-suppression-list-form' style='display:none'>
-        <h3><?php echo Yii::t('contacts', 'New Suppression List');?></h3>
     </div>
         <div class='row'>
             <label><?php echo Yii::t('marketing', 'Email Template:')?></label>
@@ -144,16 +105,13 @@ $form = $this->beginWidget('CActiveForm', array(
 
 </div>
 
-<?php
-$suppressFields = array ('listId', 'suppressionListId');
-if (!Yii::app()->params->isAdmin) {
-    $suppressFields = array_merge($suppressFields, array('bouncedAccount', 'enableBounceHandling'));
-}
+<?php 
+
 $this->widget('FormView', array(
     'model'=>$model,
     'form'=>$form,
      // Temporary kludge until system read-only fields are added
-    'suppressFields'=> $suppressFields,
+    'suppressFields'=>array ('listId'),
 ));
 ?>
 

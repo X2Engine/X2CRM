@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * @package application.modules.x2Leads.controllers
  */
@@ -51,7 +48,7 @@ class X2LeadsController extends x2base {
                 'users'=>array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions'=>array('index','view','create','update','search','lists',
+                'actions'=>array('index','view','create','update','search',
                     'saveChanges','delete','shareX2Leads','inlineEmail'),
                 'users'=>array('@'),
             ),
@@ -94,7 +91,7 @@ class X2LeadsController extends x2base {
     /**
      * Displays a particular model.
      * @param integer $id the ID of the model to be displayed
-     * @param null|X2Leads Set by actionConvertLead in the case that conversion fails
+     * @param null|Opportunity Set by actionConvertLead in the case that conversion fails
      */
     public function actionView($id, $opportunity=null) {
         $type = 'x2Leads';
@@ -217,354 +214,7 @@ class X2LeadsController extends x2base {
         if(!isset($_GET['ajax']))
             $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
     }
-    
-    // Displays all visible Contact Lists
-    public function actionLists() {
-        $filter = new X2List('search');
-        $criteria = new CDbCriteria();
-        $criteria->addCondition('modelName = "X2Leads"');
-        $criteria->addCondition('type="static" OR type="dynamic"');
-        if (!Yii::app()->params->isAdmin) {
-            $condition = 'visibility="1" OR assignedTo="Anyone" OR 
-                 assignedTo="' . Yii::app()->user->getName() . '"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()
-                            ->select('groupId')
-                            ->from('x2_group_to_user')
-                            ->where('userId=' . Yii::app()->user->getId())->queryColumn();
-            if (!empty($groupLinks))
-                $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
 
-            $condition .= 'OR (visibility=2 AND assignedTo IN
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                    (SELECT groupId 
-                     FROM x2_group_to_user 
-                     WHERE userId=' . Yii::app()->user->getId() . ')
-                )
-            )';
-            $criteria->addCondition($condition);
-        }
-
-        $perPage = Profile::getResultsPerPage();
-
-        //$criteria->offset = isset($_GET['page']) ? $_GET['page'] * $perPage - 3 : -3;
-        //$criteria->limit = $perPage;
-        $criteria->order = 'createDate DESC';
-        $filter->compareAttributes($criteria);
-
-        $contactLists = X2Model::model('X2List')->findAll($criteria);
-
-        $totalContacts = X2Model::model('X2Leads')->count();
-        $totalMyContacts = X2Model::model('X2Leads')->count('assignedTo="' . Yii::app()->user->getName() . '"');
-        $totalNewContacts = X2Model::model('X2Leads')->count('assignedTo="' . Yii::app()->user->getName() . '" AND createDate >= ' . mktime(0, 0, 0));
-
-        $allContacts = new X2List;
-        $allContacts->attributes = array(
-            'id' => 'all',
-            'name' => Yii::t('contacts', 'All {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $newContacts = new X2List;
-        $newContacts->attributes = array(
-            'id' => 'new',
-            'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'New {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalNewContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $myContacts = new X2List;
-        $myContacts->attributes = array(
-            'id' => 'my',
-            'assignedTo' => Yii::app()->user->getName(),
-            'name' => Yii::t('contacts', 'My {module}', array('{module}' => Modules::displayName())),
-            'description' => '',
-            'type' => 'dynamic',
-            'visibility' => 1,
-            'count' => $totalMyContacts,
-            'createDate' => 0,
-            'lastUpdated' => 0,
-        );
-        $contactListData = array(
-            $allContacts,
-            $myContacts,
-            $newContacts,
-        );
-
-        $filteredPseudoLists = $filter->filter($contactListData);
-        $lists = array_merge($filteredPseudoLists, $contactLists);
-        $dataProvider = new CArrayDataProvider($lists, array(
-            'pagination' => array('pageSize' => $perPage),
-            'sort' => array(
-                'attributes' => array(
-                    'name' => array(
-                        'asc' => 'name asc, id desc',
-                        'desc' => 'name desc, id desc',
-                    ),
-                    // secondary order is needed to fix https://github.com/yiisoft/yii/issues/2082
-                    'type' => array(
-                        'asc' => 'type asc, id desc',
-                        'desc' => 'type desc, id desc',
-                    ),
-//                    'count' => array (
-//                        'asc' => 'count asc, id desc',
-//                        'desc' => 'count desc, id desc',
-//                    ),
-                    'assignedTo' => array(
-                        'asc' => 'assignedTo asc, id desc',
-                        'desc' => 'assignedTo desc, id desc',
-                    ),
-                )),
-            'totalItemCount' => count($contactLists) + 3,
-        ));
-
-        $this->render('listIndex', array(
-            'contactLists' => $dataProvider,
-            'filter' => $filter,
-        ));
-    }
-    
-    /**
-     * Return a JSON encoded list of Contact lists
-     */
-    public function actionGetLists() {
-        if (!Yii::app()->user->checkAccess('ContactsAdminAccess')) {
-            $condition = ' AND (visibility="1" OR assignedTo="Anyone"  OR assignedTo="' . Yii::app()->user->getName() . '"';
-            /* x2temp */
-            $groupLinks = Yii::app()->db->createCommand()->select('groupId')->from('x2_group_to_user')->where('userId=' . Yii::app()->user->getId())->queryColumn();
-            if (!empty($groupLinks)) {
-                $condition .= ' OR assignedTo IN (' . implode(',', $groupLinks) . ')';
-            }
-
-            $condition .= ' OR (visibility=2 AND assignedTo IN
-                (SELECT username FROM x2_group_to_user WHERE groupId IN
-                (SELECT groupId FROM x2_group_to_user WHERE userId=' . Yii::app()->user->getId() . '))))';
-        } else {
-            $condition = '';
-        }
-        // Optional search parameter for autocomplete
-        $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
-        $static = isset($_GET['static']) && $_GET['static'];
-        $weblist = isset($_GET['weblist']) && $_GET['weblist'];
-        $result = Yii::app()->db->createCommand()
-                ->select('id,name as value')
-                ->from('x2_lists')
-                ->where(
-                        ($static ? 'type="static" AND ' : '') .
-                        ($weblist ? 'type="weblist" AND ' : '') .
-                        'modelName="X2Leads" AND type!="campaign" 
-                    AND name LIKE :qterm' . $condition, array(':qterm' => $qterm))
-                ->order('name ASC')
-                ->queryAll();
-        echo CJSON::encode($result);
-    }
-
-    // Shows contacts in the specified list
-    public function actionList($id = null) {
-        $list = X2List::load($id);
-
-        if (!isset($list)) {
-            Yii::app()->user->setFlash(
-                    'error', Yii::t('app', 'The requested page does not exist.'));
-            $this->redirect(array('lists'));
-        }
-
-        $model = new X2Leads('search');
-        Yii::app()->user->setState('vcr-list', $id);
-        $dataProvider = $model->searchList($id);
-        $list->count = $dataProvider->totalItemCount;
-        $list->runWithoutBehavior('FlowTriggerBehavior', function () use ($list) {
-            $list->save();
-        });
-
-        X2Flow::trigger('RecordViewTrigger', array('model' => $list));
-        $this->render('list', array(
-            'listModel' => $list,
-            'dataProvider' => $dataProvider,
-            'model' => $model,
-        ));
-    }
-
-    public function actionCreateList($ajax = false) {
-        $list = new X2List;
-        $list->modelName = 'X2Leads';
-        $list->type = 'dynamic';
-        $list->assignedTo = Yii::app()->user->getName();
-        $list->visibility = 1;
-
-        $contactModel = new X2Leads;
-        $comparisonList = X2List::getComparisonList();
-        if (isset($_POST['X2List'])) {
-            $list->type = $_POST['X2List']['type'];
-            $list->attributes = $_POST['X2List'];
-            $list->modelName = 'X2Leads';
-            $list->createDate = time();
-            $list->lastUpdated = time();
-
-            if (isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
-
-                $attributes = &$_POST['X2List']['attribute'];
-                $comparisons = &$_POST['X2List']['comparison'];
-                $values = &$_POST['X2List']['value'];
-
-                if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
-                    $list->modelName = 'X2Leads';
-                    $list->lastUpdated = time();
-                }
-            }
-            if (!$list->hasErrors() && $list->save()) {
-                if ($ajax) {
-                    echo CJSON::encode($list->attributes);
-                    return;
-                }
-                $this->redirect(array('/x2Leads/x2Leads/list', 'id' => $list->id));
-            }
-        }
-
-        if (empty($criteriaModels)) {
-            $default = new X2ListCriterion;
-            $default->value = '';
-            $default->attribute = '';
-            $default->comparison = 'contains';
-            $criteriaModels[] = $default;
-        }
-
-        if ($ajax) {
-            $html = $this->renderPartial('createList', array(
-                'model' => $list,
-                'criteriaModels' => $criteriaModels,
-                'users' => User::getNames(),
-                // 'attributeList'=>$attributeList,
-                'comparisonList' => $comparisonList,
-                'listTypes' => array(
-                    'dynamic' => Yii::t('x2Leads', 'Dynamic'),
-                    'static' => Yii::t('x2Leads', 'Static')
-                ),
-                'itemModel' => $contactModel,
-                    ), false);
-            echo $this->processOutput($html);
-            return;
-        }
-
-        $this->render('createList', array(
-            'model' => $list,
-            'criteriaModels' => $criteriaModels,
-            'users' => User::getNames(),
-            // 'attributeList'=>$attributeList,
-            'comparisonList' => $comparisonList,
-            'listTypes' => array(
-                'dynamic' => Yii::t('x2Leads', 'Dynamic'),
-                'static' => Yii::t('x2Leads', 'Static')
-            ),
-            'itemModel' => $contactModel,
-        ));
-    }
-    
-    public function actionUpdateList($id) {
-        $list = X2List::model()->findByPk($id);
-
-        if (!isset($list))
-            throw new CHttpException(400, Yii::t('app', 'This list cannot be found.'));
-
-        if (!$this->checkPermissions($list, 'edit'))
-            throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
-
-        $contactModel = new X2Leads;
-        $comparisonList = X2List::getComparisonList();
-        $fields = $contactModel->getFields(true);
-
-        if ($list->type == 'dynamic') {
-            $criteriaModels = X2ListCriterion::model()->findAllByAttributes(array('listId' => $list->id), new CDbCriteria(array('order' => 'id ASC')));
-
-            if (isset($_POST['X2List'], $_POST['X2List']['attribute'], $_POST['X2List']['comparison'], $_POST['X2List']['value'])) {
-
-                $attributes = &$_POST['X2List']['attribute'];
-                $comparisons = &$_POST['X2List']['comparison'];
-                $values = &$_POST['X2List']['value'];
-
-                if (count($attributes) > 0 && count($attributes) == count($comparisons) && count($comparisons) == count($values)) {
-
-                    $list->attributes = $_POST['X2List'];
-                    $list->modelName = 'X2Leads';
-                    $list->lastUpdated = time();
-
-                    if (!$list->hasErrors() && $list->save()) {
-                        $this->redirect(array('/x2Leads/x2Leads/list', 'id' => $list->id));
-                    }
-                }
-            }
-        } else { //static or campaign lists
-            if (isset($_POST['X2List'])) {
-                $list->attributes = $_POST['X2List'];
-                $list->modelName = 'X2Leads';
-                $list->lastUpdated = time();
-                $list->save();
-                $this->redirect(array('/x2Leads/x2Leads/list', 'id' => $list->id));
-            }
-        }
-
-        if (empty($criteriaModels)) {
-            $default = new X2ListCriterion;
-            $default->value = '';
-            $default->attribute = '';
-            $default->comparison = 'contains';
-            $criteriaModels[] = $default;
-        } else {
-            if ($list->type = 'dynamic') {
-                foreach ($criteriaModels as $criM) {
-                    if (isset($fields[$criM->attribute])) {
-                        if ($fields[$criM->attribute]->type == 'link') {
-                            $criM->value = implode(',', array_map(function($c) {
-                                        list($name, $id) = Fields::nameAndId($c);
-                                        return $name;
-                                    }, explode(',', $criM->value)
-                                    )
-                            );
-                        }
-                    }
-                }
-            }
-        }
-
-        $this->render('updateList', array(
-            'model' => $list,
-            'criteriaModels' => $criteriaModels,
-            'users' => User::getNames(),
-            // 'attributeList'=>$attributeList,
-            'comparisonList' => $comparisonList,
-            'listTypes' => array(
-                'dynamic' => Yii::t('x2Leads', 'Dynamic'),
-                'static' => Yii::t('x2Leads', 'Static')
-            ),
-            'itemModel' => $contactModel,
-        ));
-    }
-    
-    public function actionDeleteList() {
-
-        $id = isset($_GET['id']) ? $_GET['id'] : 'all';
-
-        if (is_numeric($id))
-            $list = X2Model::model('X2List')->findByPk($id);
-        if (isset($list)) {
-
-            // check permissions
-            if ($this->checkPermissions($list, 'edit'))
-                $list->delete();
-            else
-                throw new CHttpException(403, Yii::t('app', 'You do not have permission to modify this list.'));
-        }
-        $this->redirect(array('/x2Leads/x2Leads/lists'));
-    }
-    
     public function actionGetTerms(){
         $sql = 'SELECT id, name as value FROM x2_accounts WHERE name LIKE :qterm ORDER BY name ASC';
         $command = Yii::app()->db->createCommand($sql);
@@ -626,11 +276,6 @@ class X2LeadsController extends x2base {
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
-            array(
-                'name' => 'lists',
-                'label' => Yii::t('contacts', 'Lists'),
-                'url' => array('lists')
-            ),
             ModelFileUploader::menuLink(),
             array(
                 'name'=>'quotes',
@@ -685,48 +330,11 @@ class X2LeadsController extends x2base {
                 'url'=>array('admin/exportModels', 'model'=>'X2Leads'),
                 'visible'=>Yii::app()->params->isAdmin
             ),
-                      array(
-                'name' => 'createList',
-                'label' => Yii::t('contacts', 'Create List'),
-                'url' => array('createList')
-            ),
-            array(
-                'name' => 'viewList',
-                'label' => Yii::t('contacts', 'View List'),
-                'url' => array('list', 'id' => $modelId)
-            ),
-            array(
-                'name' => 'editList',
-                'label' => Yii::t('contacts', 'Edit List'),
-                'url' => array('updateList', 'id' => $modelId)
-            ),
-            array(
-                'name' => 'deleteList',
-                'label' => Yii::t('contacts', 'Delete List'),
-                'url' => '#',
-                'linkOptions' => array(
-                    'submit' => array('deleteList', 'id' => $modelId),
-                    'confirm' => 'Are you sure you want to delete this item?')
-            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);
         $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
-    }
-    
-            // Lists all contacts assigned to this user
-    public function actionMyX2Leads() {
-        $model = new X2Leads('search');
-        Yii::app()->user->setState('vcr-list', 'myContacts');
-        $this->render('index', array('model' => $model));
-    }
-
-    // Lists all contacts assigned to this user
-    public function actionNewX2Leads() {
-        $model = new X2Leads('search');
-        Yii::app()->user->setState('vcr-list', 'newContacts');
-        $this->render('index', array('model' => $model));
     }
 
 }

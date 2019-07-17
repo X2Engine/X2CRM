@@ -23,7 +23,7 @@
  * Comparison among state persister, session and cache is as follows:
  * <ul>
  * <li>session: data persisting within a single user session.</li>
- * <li>state persister: data persisting through all rxequests/sessions (e.g. hit counter).</li>
+ * <li>state persister: data persisting through all requests/sessions (e.g. hit counter).</li>
  * <li>cache: volatile and fast storage. It may be used as storage medium for session or state persister.</li>
  * </ul>
  *
@@ -105,8 +105,7 @@ class CStatePersister extends CApplicationComponent implements IStatePersister
 	 * Loads content from file using a shared lock to avoid data corruption when reading
 	 * the file while it is being written by save()
 	 *
-	 * @param string $filename file name
-	 * @return bool|string file contents
+	 * @return string file contents
 	 * @since 1.1.17
 	 */
 	protected function getContent($filename)

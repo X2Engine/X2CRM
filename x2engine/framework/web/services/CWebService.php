@@ -106,7 +106,6 @@ class CWebService extends CComponent
 	/**
 	 * The PHP error handler.
 	 * @param CErrorEvent $event the PHP error event
-	 * @throws CException
 	 */
 	public function handleError($event)
 	{

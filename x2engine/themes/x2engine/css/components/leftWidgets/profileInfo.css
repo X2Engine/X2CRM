@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -31,4 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#x2widget_ProfileInfo .portlet-content{padding:0px}#x2widget_ProfileInfo a{text-decoration:none}#x2widget_ProfileInfo #profile-badge{border-bottom:1px solid #e0e0e0}#x2widget_ProfileInfo #profile-avatar{box-sizing:border-box;padding:5px;width:55px;height:55px;float:left}#x2widget_ProfileInfo #profile-avatar .avatar-image{width:100%;height:100%;border-radius:3px;font-size:45px}#x2widget_ProfileInfo #profile-avatar .avatar-image.default-avatar{color:#004baf}#x2widget_ProfileInfo #info{box-sizing:border-box;float:left;padding-top:5px;max-width:95px}#x2widget_ProfileInfo #info #profile-name{margin-top:10px;font-weight:bold}#x2widget_ProfileInfo #info #profile-edit{margin-top:4px;font-size:80%}#x2widget_ProfileInfo #profile-actions #profile-widget-action-menu{text-align:center;padding:5px;padding-top:10px}#x2widget_ProfileInfo #profile-actions #profile-widget-action-menu>li{width:85%;margin:auto}
+ **********************************************************************************/#x2widget_ProfileInfo .portlet-content{padding:0px}#x2widget_ProfileInfo a{text-decoration:none}#x2widget_ProfileInfo #profile-badge{border-bottom:1px solid #c5c5c5}#x2widget_ProfileInfo #profile-avatar{box-sizing:border-box;padding:5px;width:55px;height:55px;float:left}#x2widget_ProfileInfo #profile-avatar .avatar-image{width:100%;height:100%;border-radius:3px;font-size:45px}#x2widget_ProfileInfo #profile-avatar .avatar-image.default-avatar{color:#004baf}#x2widget_ProfileInfo #info{box-sizing:border-box;float:left;padding-top:5px;max-width:95px}#x2widget_ProfileInfo #info #profile-name{margin-top:10px;font-weight:bold}#x2widget_ProfileInfo #info #profile-edit{margin-top:4px;font-size:80%}#x2widget_ProfileInfo #profile-actions #profile-widget-action-menu{text-align:center;padding:5px;padding-top:10px}#x2widget_ProfileInfo #profile-actions #profile-widget-action-menu>li{width:85%;margin:auto}

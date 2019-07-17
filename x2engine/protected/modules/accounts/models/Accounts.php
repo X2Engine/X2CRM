@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.models.X2Model');
 
@@ -90,9 +87,6 @@ class Accounts extends X2Model {
                     // legacy field
                     'associatedContacts'
                 )
-            ),
-             'MappableBehavior' => array(
-                'class' => 'application.components.behaviors.MappableBehavior',
             ),
         ));
     }
@@ -242,52 +236,6 @@ class Accounts extends X2Model {
         }
         return true;
     }
-    
-    /**
-     * Searches in current user's contacts
-     * 
-     * @return type
-     */
-    public function searchMyAccounts() {
-        $criteria = new CDbCriteria;
-
-        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
-        $conditions = $this->getAccessConditions($accessLevel);
-        foreach ($conditions as $arr) {
-            $criteria->addCondition($arr['condition'], $arr['operator']);
-            $criteria->params = array_merge($criteria->params, $arr['params']);
-        }
-
-        // $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
-        // $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
-        // $parameters['condition']=$condition;
-        // $criteria->scopes=array('findAll'=>array($parameters));
-
-        return $this->searchBase($criteria);
-    }
-
-    /**
-     * Searches newest contacts
-     * 
-     * @return type
-     */
-    public function searchNewAccounts() {
-        $criteria = new CDbCriteria;
-        $condition = 't.createDate > ' . mktime(0, 0, 0);
-        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
-        $conditions = $this->getAccessConditions($accessLevel);
-        foreach ($conditions as $arr) {
-            $criteria->addCondition($arr['condition'], $arr['operator']);
-            $criteria->params = array_merge($criteria->params, $arr['params']);
-        }
-
-        $parameters = array('limit' => ceil(Profile::getResultsPerPage()));
-
-        $parameters['condition'] = $condition;
-        $criteria->scopes = array('findAll' => array($parameters));
-
-        return $this->searchBase($criteria);
-    }
 
     public function search($pageSize = null, $uniqueId = null) {
         $criteria = new CDbCriteria;
@@ -296,12 +244,12 @@ class Accounts extends X2Model {
 
     public function searchList($id, $pageSize = null) {
         $list = X2List::model()->findByPk($id);
-        
+
         if (isset($list)) {
             $search = $list->queryCriteria();
-            
+
             $this->compareAttributes($search);
-           
+
             return new SmartActiveDataProvider('Accounts', array(
                 'criteria' => $search,
                 'sort' => array(

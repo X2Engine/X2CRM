@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 // uncomment the following to define a path alias
 // Yii::setPathOfAlias('custom','custom');
@@ -82,23 +79,23 @@ $debugLogRoutes = array(
         'maxLogFiles' => 10,
         'maxFileSize' => 128,
     ),
-    array(
-        'class' => 'CFileLogRoute',
-        'logFile' => 'trace.log',
+	array(
+		'class' => 'CFileLogRoute',
+		'logFile' => 'trace.log',
         'levels' => 'trace',
         'maxLogFiles' => 10,
         'maxFileSize' => 128,
-    ),
+	),
 );
 
 if (YII_DEBUG && YII_DEBUG_TOOLBAR) {
-    $debugLogRoutes[] = array(
+    $debugLogRoutes[] = array (
         'class' => 'ext.yii-debug-toolbar.YiiDebugToolbarRoute',
         'ipFilters' => array('*'),
     );
 }
 
-$noSession = php_sapi_name() == 'cli';
+$noSession = php_sapi_name()=='cli';
 if (!$noSession || YII_UNIT_TESTING) {
     $userConfig = array(
         'class' => 'X2WebUser',
@@ -112,7 +109,7 @@ if (!$noSession || YII_UNIT_TESTING) {
 }
 
 $config = array(
-    'basePath' => dirname(__FILE__) . DIRECTORY_SEPARATOR . '..',
+    'basePath' => dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
     'name' => $appName,
     'theme' => 'x2engine',
     'sourceLanguage' => 'en',
@@ -124,17 +121,29 @@ $config = array(
         'application.components.behaviors.ApplicationConfigBehavior',
         'application.components.X2UrlRule',
         'application.components.ThemeGenerator.ThemeGenerator',
-        'application.components.formatters.*'
+        'application.components.formatters.*',
+    // 'application.controllers.x2base',
+    // 'application.models.*',
+    // 'application.components.*',
+    // 'application.components.behaviors.ERememberFiltersBehavior',
+    // 'application.components.EButtonColumnWithClearFilters',
     ),
     'modules' => array(
+//		 'gii'=>array('class'=>'system.gii.GiiModule',
+//            'password'=>'admin',
+//            // If removed, Gii defaults to localhost only. Edit carefully to taste.
+//            'ipFilters'=>false,
+//        ),
         'mobile',
     ),
     'behaviors' => array('ApplicationConfigBehavior'),
-    'controllerMap' => array(
-        'googlePlus' => array(
+     
+    'controllerMap' => array (
+        'googlePlus' => array (
             'class' => 'application.integration.Google.GooglePlusController'
         )
     ),
+     
     // application components
     'components' => array(
         'user' => $userConfig,
@@ -142,6 +151,7 @@ $config = array(
             'class' => 'application.extensions.CFile',
         ),
         // uncomment the following to enable URLs in path-format
+
         'urlManager' => array(
             'class' => 'X2UrlManager',
             'urlFormat' => 'path',
@@ -162,7 +172,10 @@ $config = array(
                 '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|search|notifications|studio|gallery|relationships)>/<action:\w+>/id/<id:\d+>' => '<controller>/<action>',
                 '<controller:(site|admin|profile|api|search|notifications|studio|gallery|relationships)>/<action:\w+>' => '<controller>/<action>',
+                 
                 '<controller:(googlePlus)>/<action:\w+>' => '<controller>/<action>',
+                 
+
                 // REST-ful 2nd-gen API URLs
                 //
                 // Note, all "reserved" GET parameters begin with an underscore.
@@ -185,7 +198,7 @@ $config = array(
                 // Tags manipulation:
                 'api2/<_class:[A-Z]\w+>/<_id:\d+>/tags/<_tagName:.+>.json' => 'api2/tags',
                 // Special fields URL format:
-                'api2/<_class:[A-Z]\w+>/fields/<_fieldName:\w+>.json' => 'api2/fields',
+                'api2/<_class:[A-Z]\w+>/fields/<_fieldName:\w+>.json'=>'api2/fields',
                 // REST hooks:
                 'api2/<_class:[A-Z]\w+>/hooks/:<_id:\d+>' => 'api2/hooks',
                 'api2/<_class:[A-Z]\w+>/hooks' => 'api2/hooks',
@@ -193,25 +206,25 @@ $config = array(
                 // Directly access an X2Model instance
                 // ...By attributes
                 // Example: api2/Contacts/by:firstName=John;lastName=Doe.json
-                'api2/<_class:[A-Z]\w+>/by:<_findBy:.+>.json' => 'api2/model',
+                'api2/<_class:[A-Z]\w+>/by:<_findBy:.+>.json'=>'api2/model',
                 // Count records by attributes
                 // Example: api2/Contacts/by:firstName=John;lastName=Doe.json
-                'api2/<_class:[A-Z]\w+>/count/by:<_findBy:.+>.json' => 'api2/count',
+                'api2/<_class:[A-Z]\w+>/count/by:<_findBy:.+>.json'=>'api2/count',
                 // ...By ID
                 // Example: api2/Contacts/1121.json = Contact #1121
-                'api2/<_class:[A-Z]\w+>/<_id:\d+>.json' => 'api2/model',
-                // Run the "model" action, with class parameter (required); the
+                'api2/<_class:[A-Z]\w+>/<_id:\d+>.json'=>'api2/model',
+               // Run the "model" action, with class parameter (required); the
                 // base URI for the "model" function
-                'api2/<_class:[A-Z]\w+>' => 'api2/model',
+                'api2/<_class:[A-Z]\w+>'=>'api2/model',
                 // Run an action "on" a class with a record ID for that class
                 // Example: api2/Contacts/1121/relationships = query
                 // relationships for contact #1121
-                'api2/<_class:[A-Z]\w+>/<_id:\d+>/<action:[a-z]\w+>' => 'api2/<action>',
+                'api2/<_class:[A-Z]\w+>/<_id:\d+>/<action:[a-z]\w+>'=>'api2/<action>',
                 // Run an action "on" a class (run action with class parameter)
                 // but without any ID specified, i.e. for metadata
                 // Example: api2/Contacts/fields = query fields for Contacts model
-                'api2/<_class:[A-Z]\w+>/<action:[a-z]\w+>.json' => 'api2/<action>',
-                'api2/<_class:[A-Z]\w+>/<action:[a-z]\w+>' => 'api2/<action>',
+                'api2/<_class:[A-Z]\w+>/<action:[a-z]\w+>.json'=>'api2/<action>',
+                'api2/<_class:[A-Z]\w+>/<action:[a-z]\w+>'=>'api2/<action>',
                 // Tag searches:
                 'api2/tags/<_tags:[^\/]+>/<_class:[A-Z]\w+>' => 'api2/model',
                 // Run a generic action with an ID:
@@ -221,7 +234,9 @@ $config = array(
                 // Everything else:
                 'api2/<action:[a-z]\w+>' => 'api2/<action>',
                 // End REST API URL rules
+
                 '<module:calendar>/<action:ical>/<user:\w+>:<key:[^\/]+>.ics' => '<module>/<module>/<action>',
+
                 'weblist/<action:\w+>' => 'marketing/weblist/<action>',
                 '<module:\w+>' => '<module>/<module>/index',
                 '<module:\w+>/<id:\d+>' => '<module>/<module>/view',
@@ -265,12 +280,12 @@ $config = array(
             'itemChildTable' => 'x2_auth_item_child',
             'assignmentTable' => 'x2_auth_assignment',
         ),
-        'clientScript' => array(
+        'clientScript'=>array(
             'class' => 'application.components.X2ClientScript',
             'mergeJs' => false,
             'mergeCss' => false,
         ),
-        'assetManager' => array(
+        'assetManager'=>array(
             'class' => 'application.components.X2AssetManager',
         ),
         'errorHandler' => array(
@@ -279,7 +294,9 @@ $config = array(
         ),
         'log' => array(
             'class' => 'CLogRouter',
-            'routes' => (YII_DEBUG && YII_LOGGING ? array_merge($defaultLogRoutes, $debugLogRoutes) : (YII_LOGGING ? $defaultLogRoutes : array()))
+            'routes' => (YII_DEBUG && YII_LOGGING 
+                ? array_merge($defaultLogRoutes, $debugLogRoutes)
+                : (YII_LOGGING ? $defaultLogRoutes : array()))
         ),
         'messages' => array(
             'class' => 'application.components.X2MessageSource',
@@ -320,10 +337,12 @@ $config = array(
         'isAdmin' => false,
         'sessionStatus' => 0,
         'logo' => "uploads/protected/logos/yourlogohere.png",
-        'webRoot' => __DIR__ . DIRECTORY_SEPARATOR . '..',
+        'webRoot' => __DIR__.DIRECTORY_SEPARATOR.'..',
         'trueWebRoot' => substr(__DIR__, 0, -17),
         'registeredWidgets' => array(
+             
             'FlowMacros' => 'Execute Workflow',
+             
             'OnlineUsers' => 'Active Users',
             'TimeZone' => 'Clock',
             'GoogleMaps' => 'Google Map',
@@ -333,6 +352,7 @@ $config = array(
             'MessageBox' => 'Message Board',
             'QuickContact' => 'Quick Contact',
             'SmallCalendar' => 'Calendar',
+            //'TwitterFeed'=>'Twitter Feed',
             'NoteBox' => 'Note Pad',
             'MediaBox' => 'Files',
             'DocViewer' => 'Doc Viewer',
@@ -346,23 +366,24 @@ $config = array(
         'automatedTesting' => false,
         'supportedCurrencies' => array('USD', 'EUR', 'GBP', 'CAD', 'JPY', 'CNY', 'CHF', 'INR', 'BRL', 'VND'),
         'supportedCurrencySymbols' => array(),
-        'modelPermissions' => 'X2PermissionsBehavior',
-        'controllerPermissions' => 'X2ControllerPermissionsBehavior',
+        'modelPermissions'=>'X2PermissionsBehavior',
+        'controllerPermissions'=>'X2ControllerPermissionsBehavior',
         'isPhoneGap' => false,
         'isMobileApp' => false,
     ),
 );
 
 if (YII_UNIT_TESTING)
-    $config['components']['urlManager']['rules'] = array_merge(
-            array('profileTest/<action:\w+>' => 'profileTest/<action>'), $config['components']['urlManager']['rules']);
+    $config['components']['urlManager']['rules'] = array_merge (
+        array ('profileTest/<action:\w+>' => 'profileTest/<action>'),
+        $config['components']['urlManager']['rules']);
 
-if (file_exists('protected/config/proConfig.php')) {
+if(file_exists('protected/config/proConfig.php')){
     $proConfig = include('protected/config/proConfig.php');
-    foreach ($proConfig as $attr => $proConfigData) {
-        if (isset($config[$attr])) {
+    foreach($proConfig as $attr => $proConfigData){
+        if(isset($config[$attr])){
             $config[$attr] = array_merge($config[$attr], $proConfigData);
-        } else {
+        }else{
             $config[$attr] = $proConfigData;
         }
     }

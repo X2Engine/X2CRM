@@ -415,7 +415,7 @@ class Client {
         if ($curlErrNo) {
             throw new Exception('[CURL] Error while making request: ' . $curlError . ' (error code: ' . $curlErrNo . ')');
         }
-        
+
         if ($response['statusCode']>=400) {
             switch ($response['statusCode']) {
                 case 400 :
