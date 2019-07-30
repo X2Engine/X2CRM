@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
  
 
 
@@ -75,7 +72,9 @@
     height: 30px;
     width: 30px;
     margin: 0;
-    color: #FFFFFF;
+
+    color: $appBlue;
+    
     text-decoration: none;
 }
 
@@ -150,11 +149,14 @@ li.special.leadrouting-indicator {
 
     li {
         a, span {
+            color: $appBlue;
+            
+            line-height: 32px;
             height: 32px;
+            text-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
+            /* temp */
             line-height: 25px;
             height: 25px;
-            text-shadow: none;
-            color: #FFFFFF;
         }
     }
 }
@@ -174,8 +176,8 @@ li.special.leadrouting-indicator {
 
 .main-menu > li.dropdown {
     &:hover, &.active {
-        background: rgba(255,255,255,0.15);
-       
+        /* background:url(../images/black_15.png); */
+        background: lighten($appBlue, 7.5%);
         span, a {
             color: white;
         }
@@ -189,7 +191,8 @@ li.special.leadrouting-indicator {
 
 #header.defaultBg #main-menu > li {
     &:hover, &.active {
-        background: rgba(255,255,255,0.15);
+        background: lighten($appBlue, 7.5%);
+        
         span, a {
             color: white;
         }
@@ -203,7 +206,8 @@ li.special.leadrouting-indicator {
 
 #admin-users-user-menu-link {
     &:hover, &.active {
-        background: rgba(255,255,255,0.15);
+        background: lighten($appBlue, 7.5%);
+        
         span, a {
             color: white;
         }
@@ -217,7 +221,8 @@ li.special.leadrouting-indicator {
 
 #profile-user-menu-link {
     &:hover, &.active {
-        background: rgba(255,255,255,0.15);
+        background: lighten($appBlue, 7.5%);
+        
         span, a {
             color: white;
         }
@@ -231,7 +236,8 @@ li.special.leadrouting-indicator {
 
 #admin-user-menu-link {
     &:hover, &.active {
-        background: rgba(255,255,255,0.15);
+        background: lighten($appBlue, 7.5%);
+        
         span, a {
             color: white;
         }
@@ -243,9 +249,15 @@ li.special.leadrouting-indicator {
     }
 }
 
+
+#header.defaultBg #user-menu > li#search-bar.special:hover {
+     background: white;
+}
 .main-menu > li.special:hover, #header.defaultBg .main-menu > li.special:hover {
     background: none;
 }
+
+
 
 #main-menu-bar {
     #x2-logo {
@@ -286,44 +298,21 @@ li.special.leadrouting-indicator {
          margin: 2px 0 0 0;
          padding: 0;
          @include border-radius (0 3px 3px 0);
-         border-color: #3d70b4;
-         border-width: 1px 1px 1px 0px;
          
          span {
-            display: block;
-            margin: 0;
-            padding: 0;
-            height: 25px;
-            width: 30px;
-            color: #4b4f56;
-            background-color: #f6f7f9;
-            border-radius: 0px 4px 4px 0px;
-              
+             display: block;
+             margin: 0;
+             padding: 0;
+             height: 25px;
+             width: 30px;
+             color: $appBlue;
+             //@include fa-icon('search'); 
              /* @theme color smart_text */
+             
+             // background: url(../images/search-icon.png) 8px 5px no-repeat;
          }
+         
      }
  }
 
  
- #fullscreen-button:hover {
-    color: #4b4f56;
-    background-color: #f6f7f9;
- }
- 
- #widget-button:hover {
-    color: #4b4f56;
-    background-color: #f6f7f9;
- }
- 
- /*********************************
-  * top menu : user-menu-2
-  ********************************/
- #fullscreen-button {
-    color: #4b4f56;
-    background-color: #f6f7f9;
- }
- 
- #widget-button {
-    color: #4b4f56;
-    background-color: #f6f7f9;
- }

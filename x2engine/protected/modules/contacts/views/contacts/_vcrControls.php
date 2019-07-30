@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 $listId = Yii::app()->user->getState('vcr-list');
 if(empty($listId))
@@ -85,7 +82,7 @@ $moduleTitle = Modules::displayName();
 
 // decide which data provider to use
 if(is_numeric($listId)) {
-	$list = X2Model::model('X2List')->findByAttributes(array('id'=>$listId,'modelName'=>'Contacts'));;
+	$list = X2Model::model('X2List')->findByPk($listId);
     if(isset($list)){
         $listLink = CHtml::link($list->name,array('/contacts/contacts/list','id'=>$listId));
         $vcrDataProvider = $searchModel->searchList($listId);

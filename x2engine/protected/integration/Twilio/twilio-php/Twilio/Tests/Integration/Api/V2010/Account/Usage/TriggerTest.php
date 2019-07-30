@@ -70,7 +70,7 @@ class TriggerTest extends HolodeckTestCase {
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                      ->usage
-                                     ->triggers("UTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                     ->triggers("UTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -107,7 +107,7 @@ class TriggerTest extends HolodeckTestCase {
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                            ->usage
-                                           ->triggers("UTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                           ->triggers("UTaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

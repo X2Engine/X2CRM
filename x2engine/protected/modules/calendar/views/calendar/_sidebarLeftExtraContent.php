@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,9 +36,6 @@
 
 
 
-
-
-
 $user = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 $showCalendars = json_decode($user->showCalendars, true);
 
@@ -63,8 +60,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         )
     );
 
-    $showUserCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
-    //$showUserCalendars = $showCalendars['userCalendars'];
+    $showUserCalendars = $showCalendars['userCalendars'];
     echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
     foreach($this->calendarUsers as $userName=>$user) {
         // check if current user has permission to edit calendar

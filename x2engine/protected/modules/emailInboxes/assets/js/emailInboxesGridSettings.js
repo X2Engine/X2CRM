@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 
 
@@ -621,31 +618,6 @@ $.widget("x2.emailInboxesGridSettings", $.x2.gvSettings, {
             evt.stopPropagation ();
         });
     },
-    
-     /**
-     * makes a new page from the email then prints it 
-     */
-    
-   _openPrintPage: function () {
-        var opened = window.open("");
-        var messageAttrs = this._getMessageAttributes ();
-        var inlineEmailManager = x2.inlineEmailEditorManager;
-        inlineEmailManager.reinstantiateEditorWhenShown = false;
-        
-        var body$ = inlineEmailManager.quoteText (
-        messageAttrs.messageBody, messageAttrs.date, 
-         false);    
-         
-        body$ = inlineEmailManager.addForwardingHeader (
-            body$, messageAttrs.fromField, messageAttrs.date, 
-            messageAttrs.subject, messageAttrs.fromField);
-        
-         opened.document.write("<html>", messageAttrs.fromField, messageAttrs.date , ', ', 
-                messageAttrs.subject,  ', ', auxlib.htmlEncode (messageAttrs.fromField) , ':<br /><br />', messageAttrs.messageBody,   
-          "</html>" , "<script type='text/javascript'> window.print(); </script>");
-         
-   
-     },
     /**
      * Sets up click-to-view-message behavior  
      */
@@ -722,13 +694,6 @@ $.widget("x2.emailInboxesGridSettings", $.x2.gvSettings, {
             'click._setUpMessageView', '.message-forward-button', function (evt) {
 
             that._openReplyEditor ('forward');
-            return false;
-        });
-        // print button behavior
-        $('#message-container').off ('click._setUpMessageView', '.message-print-button').on (
-            'click._setUpMessageView', '.message-print-button', function (evt) {
-
-            that._openPrintPage ();
             return false;
         });
     }

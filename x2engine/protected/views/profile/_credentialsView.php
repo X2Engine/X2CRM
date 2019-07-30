@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Credentials view file for the list view that includes controls for setting defaults.
@@ -120,7 +117,7 @@
 	$defaultOf = array_merge($defaultOf,$defaultOfSys);
 	
 	
-	if(!$data->isBounceAccount && $webUser->checkAccess('CredentialsSetDefault',array('model'=>$data,'userId'=>$webUser->id)) && ($nDefault < $nLabels)){
+	if($webUser->checkAccess('CredentialsSetDefault',array('model'=>$data,'userId'=>$webUser->id)) && ($nDefault < $nLabels)){
         if ($data->modelClass !== 'TwitterApp') {
 		    echo '&nbsp;<div class="default-state">';
             echo CHtml::beginForm(array('setDefaultCredentials','id'=>$data->id), 'post');
@@ -186,9 +183,6 @@
 	if($nDefault) {
 		echo '<strong>'.Yii::t('app','Default').'</strong>&nbsp;'.implode('&nbsp;',array_map(function($l){return '<div class="default-state default-state-set">'.$l.'</div>';},$defaultOf));
 	}
-    if($data->isBounceAccount) {
-        echo '<div class="default-state default-state-set">Bounce Handling Account</div>';
-    }
 	?>
 	</div>
 </div>

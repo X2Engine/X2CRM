@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (100,	'Product Status',	'{"Active":"Active","Inactive":"Inactive"}'),
 (101,	'Currency List',	'{"USD":"USD","EUR":"EUR","GBP":"GBP","CAD":"CAD","JPY":"JPY","CNY":"CNY","CHF":"CHF","INR":"INR","BRL":"BRL"}'),
@@ -58,9 +55,7 @@ INSERT INTO x2_dropdowns (`id`, `name`, `options`) VALUES
 (121,   'Event Subtypes',    '{\"Meeting\":\"Meeting\",\"Appointment\":\"Appointment\",\"Call\":\"Call\"}'),
 (122,   'Event Statuses',    '{\"Confirmed\":\"Confirmed\",\"Cancelled\":\"Cancelled\"}'),
 (123,   "Event Colors",    '{"#6389de":"Blue","#a9c1fd":"Light Blue","#5de1e5":"Turquoise","#82e7c2":"Light Green","#6bc664":"Green","#fddb68":"Yellow","#ffbc80":"Orange","#ff978c":"Pink","#e74046":"Red","#d9adfb":"Purple","#dedddd":"Gray"}'),
-(124,   'Priority',    '{"1":"Low","2":"Medium","3":"High"}'),
-(-1,   'Preferred Email',    '{"Default":"Default","email":"Email","businessEmail":"Business Email","personalEmail":"Personal Email","alternativeEmail":"Alternative Email"}'),
-(155,   'Campagn Category',    '{"Marketing":"Marketing","Sales":"Sales"}');
+(124,   'Priority',    '{"1":"Low","2":"Medium","3":"High"}');
 /*&*/
 INSERT INTO x2_dropdowns (`id`, `name`, `options`, `parent`, `parentVal`) VALUES
 (118,	'Contacted Quick Note','{"Not interested.":"Not interested.","Requested follow up call.":"Requested follow up call.","Contact made.":"Contact made."}', 117, 'Contacted'),
@@ -111,7 +106,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 );
 /*&*/
 UPDATE x2_profile SET `widgets`='0:1:1:1:1:1:0:0:0:0:0:0:0:0',
-	`widgetOrder`='OnlineUsers:TimeZone:LinkedInFeed:DropboxFeed:GoogleMaps:SmallCalendar:ChatBox:TagCloud:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
+	`widgetOrder`='OnlineUsers:TimeZone:GoogleMaps:SmallCalendar:ChatBox:TagCloud:TwitterFeed:MessageBox:QuickContact:NoteBox:ActionMenu:MediaBox:DocViewer:TopSites';
 /*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable, moduleType)

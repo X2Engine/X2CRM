@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.modules.docs.controllers
@@ -96,10 +93,8 @@ class DocsController extends x2base {
      */
     public function actionView($id) {
         $model = $this->loadModel($id);
-        if (!$this->checkPermissions($model, 'view')) {
+        if (!$this->checkPermissions($model, 'view'))
             $this->denied();
-        }
-        
 
         // add doc to user's recent item list
         User::addRecentItem('d', $id, Yii::app()->user->getId());
@@ -120,11 +115,9 @@ class DocsController extends x2base {
             'subject' => $model->subject,
             'to' => $model->emailTo
         );
-        if ($replace) {
-            foreach (array_keys($response) as $key) {
+        if ($replace)
+            foreach (array_keys($response) as $key)
                 $response[$key] = str_replace('{signature}', Yii::app()->params->profile->signature, $response[$key]);
-            }
-        }
         if ($json) {
             header('Content-type: application/json');
             echo json_encode($response);
@@ -143,11 +136,9 @@ class DocsController extends x2base {
         if ($duplicate) {
             $copiedModel = Docs::model()->findByPk($duplicate);
             if (!empty($copiedModel)) {
-                foreach ($copiedModel->attributes as $name => $value) {
-                    if ($name !== 'id') {
+                foreach ($copiedModel->attributes as $name => $value)
+                    if ($name != 'id')
                         $model->$name = $value;
-                    }
-                }
             }
             $model->name .= ' (' . Yii::t('docs', 'copy') . ')';
         }
@@ -157,9 +148,8 @@ class DocsController extends x2base {
 
         if (isset($_POST['Docs'])) {
             $model->setX2Fields($_POST['Docs']);
-            if ($model->save()) {
+            if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
-            }
         }
 
         $this->render('create', array(
@@ -203,9 +193,8 @@ class DocsController extends x2base {
 
         if (isset($_POST['Docs'])) {
             $model->setX2Fields($_POST['Docs']);
-            if ($model->save()) {
+            if ($model->save())
                 $this->redirect(array('view', 'id' => $model->id));
-            }
         }
 
         $this->render('create', array(
@@ -257,39 +246,36 @@ class DocsController extends x2base {
         }
     }
 
-    public function actionGetFolderSelector($id = null, array $selectedFolders = array()) {
-        if (!$id) {
-            $id = 'root';
-        }
-        if (is_numeric($id)) {
-            $folder = DocFolders::model()->findByPk($id);
-            if (!$folder) {
+    public function actionGetFolderSelector ($id=null, array $selectedFolders=array ()) {
+        if (!$id) $id = 'root';
+        if (is_numeric ($id)) {
+            $folder = DocFolders::model ()->findByPk ($id);
+            if (!$folder)
                 throw new CHttpException(
-                404, Yii::t('app', 'The requested page does not exist.'));
-            }
+                    404, Yii::t('app', 'The requested page does not exist.'));
         } elseif ($id === 'root') {
             $folder = $id;
         } else {
             throw new CHttpException(
-            400, Yii::t('app', 'Bad request'));
+                400, Yii::t('app', 'Bad request'));
         }
-        $children = DocFolders::model()->findChildren($folder, array(
+        $children = DocFolders::model ()->findChildren ($folder, array (
             'folder'
-                ), array(
+        ), array (
             DocFolders::TEMPLATES_FOLDER_ID,
             $id
         ));
-        $dataProvider = new CArrayDataProvider($children, array(
+        $dataProvider = new CArrayDataProvider ($children, array (
             'id' => 'folder-selector',
-            'pagination' => array(
+            'pagination' => array (
                 'pageSize' => 10,
             )
         ));
-        $this->renderPartial('_folderSelector', array(
+        $this->renderPartial ('_folderSelector', array (
             'dataProvider' => $dataProvider,
             'folder' => $folder,
             'selectedFolders' => $selectedFolders,
-                ), false, true);
+        ), false, true);
     }
 
     /**
@@ -321,8 +307,7 @@ class DocsController extends x2base {
                 $event->visibility = $model->visibility;
                 $event->save();
                 $this->redirect(
-                        array('update', 'id' => $model->id, 'saved' => true, 'time' => time())
-                );
+                        array('update', 'id' => $model->id, 'saved' => true, 'time' => time()));
             }
         }
 
@@ -345,13 +330,11 @@ class DocsController extends x2base {
 
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect 
             // the browser
-            if (!isset($_GET['ajax'])) {
+            if (!isset($_GET['ajax']))
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-            }
-        } else {
+        } else
             throw new CHttpException(
-            400, 'Invalid request. Please do not repeat this request again.');
-        }
+                400, 'Invalid request. Please do not repeat this request again.');
     }
 
     /**
@@ -361,43 +344,39 @@ class DocsController extends x2base {
     public function actionIndex($id = null) {
         $model = new DocFolders;
         $model->parentFolder = $id;
-        if (isset($_GET['code']) && isset($_GET['state'])) {
-            Yii::app()->session['dropbox_code'] = $_GET['code'];
-            Yii::app()->session['dropbox_status'] = $_GET['state'];
-        }
         if (Yii::app()->request->isAjaxRequest && isset($_POST['DocFolders'])) {
             $model->setAttributes($_POST['DocFolders']);
-            if ($model->parentFolder == 0) {
+            if($model->parentFolder == 0){
                 $model->parentFolder = null;
             }
             if ($model->save()) {
-                echo CJSON::encode(array(
+                echo CJSON::encode (array (
                     'success' => 1
                 ));
-            } else {
-                $form = $this->renderPartial('_folderCreate', array(
+            }else{
+                $form = $this->renderPartial ('_folderCreate', array (
                     'model' => $model
-                        ), true, true);
-                echo CJSON::encode(array(
+                ), true, true);
+                echo CJSON::encode (array (
                     'form' => $form
                 ));
-                Yii::app()->end();
+                Yii::app()->end ();
             }
-        } else {
-            if (empty($id)) {
+        }else{
+            if(empty($id)){
                 $folderDataProvider = DocFolders::model()->getRootFolderContents();
             } elseif ($id == -1) {
-                $folderDataProvider = DocFolders::model()->getTemplatesFolderContents();
+                $folderDataProvider = DocFolders::model ()->getTemplatesFolderContents();
             } else {
                 $folder = DocFolders::model()->findByPk($id);
-                if (!$this->checkPermissions($folder, 'view')) {
+                if(!$this->checkPermissions($folder,'view')){
                     $this->denied();
                 }
-                if (isset($folder)) {
+                if(isset($folder)){
                     $folderDataProvider = $folder->getContents();
-                } else {
+                }else{
                     throw new CHttpException(
-                    404, Yii::t('app', 'The requested page does not exist.'));
+                        404, Yii::t('app', 'The requested page does not exist.'));
                 }
             }
             $attachments = new CActiveDataProvider('Media', array(
@@ -414,33 +393,34 @@ class DocsController extends x2base {
             ));
         }
     }
-
-    public function actionMoveFolder($type, $objId, $destId = null) {
-        if ($destId == -1) {
+    
+    public function actionMoveFolder($type, $objId, $destId = null){
+        if($destId == -1){
             $destination = null;
         } else {
             $destination = DocFolders::model()->findByPk($destId);
-        }
+        } 
 
-        if ($type === 'doc') {
+        if($type==='doc'){
             $model = Docs::model()->findByPk($objId);
-        } elseif ($type === 'folder') {
+        }elseif($type==='folder'){
             $model = DocFolders::model()->findByPk($objId);
         }
-        if (!isset($model)) {
-            throw new CHttpException(404, Yii::t('docs', 'Object or destination not found.'));
+        if(!isset($model)){
+            throw new CHttpException(404, Yii::t('docs','Object or destination not found.'));
         }
-        if (!$this->checkPermissions($model, 'edit') ||
-                ($destination instanceof DocFolders) &&
-                !$this->checkPermissions($destination, 'edit')) {
+        if(!$this->checkPermissions($model,'edit') ||
+            ($destination instanceof DocFolders) &&
+             !$this->checkPermissions($destination,'edit')){
 
             $this->denied();
         }
-        if ($model->moveTo($destination)) {
+        if ($model->moveTo ($destination)) {
             echo 1;
         }
+        
     }
-
+    
     public function actionDeleteFileFolder() {
         if (Yii::app()->request->isAjaxRequest && isset($_POST['type'], $_POST['id'])) {
             if ($_POST['type'] === 'folder') {
@@ -508,7 +488,7 @@ class DocsController extends x2base {
     }
 
     /**
-     * Create a menu for docs
+     * Create a menu for Docs
      * @param array Menu options to remove
      * @param X2Model Model object passed to the view
      * @param array Additional menu parameters

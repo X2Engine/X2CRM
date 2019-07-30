@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
 
 
 
-
-
-
 /*
 Child prototype of X2Chart
 */
@@ -68,8 +65,7 @@ function X2CampaignChart (argsDict) {
 		'#7EB2E6', // pale blue
 		'#CEC415', // mustard
         'rgb(80, 177, 56)', // highlight green
-		'#BC0D2C', // pomegranate
-		'#702e7b' //purple
+		'#BC0D2C' // pomegranate
 	];
 
 	this.metricOptionsColors = {}; // used to pair colors with metrics

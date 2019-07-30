@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 @import "colors";
 @import "standards";
@@ -79,8 +76,7 @@ Title bar for sections other than the main section (e.g. widgets)
 */
 
 .submenu-title-bar {
-    padding: 6px 12px 2px 12px;
-    background: #FFFFFF;
+    background: $defaultTitleBar;
 }
 
 .quick-read-link {
@@ -119,19 +115,20 @@ Title bar for sections other than the main section (e.g. widgets)
 .x2-minimal-select {
     height: 20px;
     display: inline-block !important;
+    /*margin-left: 5px !important;*/
     margin-right: 10px !important;
     float: none !important;
     padding: 0 8px;
+    /*padding: 0 21px 0 7px;*/
     outline: none;
-    color: #555555;
+    color: #333;
     text-decoration: none;
-    
     @include border-radius (3px);
 }
 
 .x2-select {
-    background: white;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #BEBDBD;
+    background: #e9e9e9;
 }
 
 .x2-minimal-select {
@@ -205,21 +202,22 @@ CSS "button" links to be used instead of actual buttons
 }
 
 .x2-button, .x2-minimal-button, .button-group-pager li, .ui-dialog .ui-dialog-buttonpane button {
+    /* , a.search-button */
     display: inline-block;
     vertical-align: top;
     padding: 0 8px;
-    border: 1px solid #e0e0e0;
-    background: white;
-    color: #555555;
+    border: 1px solid #BEBDBD;
+    background: $titleBarButtonColor;
+    color: #333;
     font-size: 80%;
     line-height: 24px;
     font-weight: bold;
     text-decoration: none;
     text-align: center;
+    /*text-shadow: 0 1px 0 #fff;*/
     -webkit-appearance: none;
-    cursor: pointer;
-    
     @include border-radius (3px);
+    cursor: pointer;
 }
 
 .x2-minimal-button {
@@ -229,44 +227,41 @@ CSS "button" links to be used instead of actual buttons
 }
 
 .x2-button.disabled-link, .x2-minimal-button.disabled-link {
-    color: #555555;
+    color: black;
     background-color: #FAFAFA;
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#ccc));
+    background: -moz-linear-gradient(top,  #bbb,  #ccc);*/
+    @include box-shadow(inset 0 1px 1px 0 #999);
     pointer-events: none;
     cursor: default;
-    
-    @include box-shadow(inset 0 1px 1px 0 #999);
 }
 
 .x2-button {
     &.hover, &:hover {
         color: #000;
-        background: $lightBabyBlue;
+        background: rgb(228, 228, 228);
     }
 }
 
 .x2-minimal-button:hover, input.hover, .button-group-pager li:hover, .x2-select:hover, .x2-minimal-select:hover, .ui-dialog .ui-dialog-buttonpane button:hover {
     color: #000;
-    background: $lightBabyBlue;
+    background: rgb(228, 228, 228);
 }
 
 .x2-button.active {
     color: black;
     border-color: #A7A7A7;
     background: #cccccc;
-    
     @include box-shadow(inset 0 1px 1px 0 #999);
-    
     /* @theme background light_content */
 }
 
 .x2-minimal-button {
     &:active, &.clicked {
         color: black;
-        border-color: darken($lightBabyBlue, 10%);
-        background: darken($lightBabyBlue, 10%);
-        
+        border-color: #A7A7A7;
+        background: #cccccc;
         @include box-shadow(inset 0 1px 1px 0 #999);
-        
         /* @theme background light_content */
     }
 }
@@ -274,9 +269,9 @@ CSS "button" links to be used instead of actual buttons
 .x2-button {
   &:active:not(.disabled), &.clicked {
     color: black;
+    border-color: #A7A7A7;
     background: #cccccc;
-    background: darken($lightBabyBlue, 10%);
-    
+    @include box-shadow(inset 0 1px 1px 0 #999);
     /* @theme background light_highlight1 */
   }
   &.disabled {
@@ -697,7 +692,7 @@ small x2-button
         z-index: 1000;
         border: 1px solid #999;
         padding: 4px 2px;
-        background-color: #F4F4F4;
+        background-color: #eee;
         background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#F5F5F5));
         background: -moz-linear-gradient(top, #f0f0f0, #F5F5F5);
         span {
@@ -742,15 +737,17 @@ small x2-button
         margin: 0 0 0 0;
         padding: 0;
         > li {
-            background: white;
+            /* top: 0px !important; */
+            background: #f8f8f8;
             font-size: 10pt;
             margin: 0 2px 0 0;
-            border-color: #e0e0e0 !important;
+            
+            border-color: #E1E1E1 !important;
+            /* @theme border-color: border */
+
             border-bottom: none;
             font-family: Arial, Helvetica, sans-serif;
-            
-            /* @theme border-color: border */
-            
+            /* font-weight: bold; */
             @include border-radius (4px 4px 0 0);
         }
     }
@@ -765,6 +762,7 @@ small x2-button
             line-height: 12px;
             margin-top: -2px;
             display: inline-block;
+            /* font-weight: bold; */
             vertical-align: middle;
             color: #579100;
         }
@@ -779,8 +777,8 @@ small x2-button
 
     &.ui-state-active {
         border-color: #D1D1D1;
-        border-bottom-color: #F4F4F4;
-        background: $lightBabyBlue;
+        border-bottom-color: #eee;
+        background: $lightestGray;
 
         /* @theme border-bottom-color: content */
         /* @theme background: content */
@@ -790,18 +788,16 @@ small x2-button
         background: #fff;
     }
     &.ui-state-active.ui-state-hover {
-        background: $lightBabyBlue;
+        background: #eee;
     }
 }
 
 #publisher .form2 {
-    background: #F4F4F4;
+    background: #eee;
     border-color: #D1D1D1;
-    position: relative;
-    padding: 10px;
-    z-index: 1;
-    
     @include border-radius (4px);
+    position: relative;
+    z-index: 1;
 }
 
 .history .ui-tabs .form2 {
@@ -1075,7 +1071,7 @@ div {
     }
     .view.top-level {
         /*top level comment*/
-        //border-top: 1px solid #F5F5F5;
+        border-top: 1px solid #F5F5F5;
         padding: 2px 5px 10px 5px;
         &.activity-feed {
             padding: 10px 10px 10px 5px;
@@ -1083,9 +1079,8 @@ div {
         &.date-break {
             text-align: center;
             font-weight: bold;
+            background-color: #eee;
             padding: 2px 5px 5px 5px;
-            background-color: white;
-            color: #555555;
         }
         .list-view {
             margin: 0 -5px;
@@ -1098,11 +1093,11 @@ div {
         }
         .view {
             /*second level comment*/
-            background: #F4F4F4;
+            background: #eee;
             margin: 0;
             padding: 2px 5px 2px 20px;
             border: solid #F5F5F5;
-            border-width: 0 0 0 0;
+            border-width: 1px 0 0 0;
             @include border-radius (0);
         }
         &:first-child {
@@ -1139,8 +1134,7 @@ div {
 
         .view:hover,
         .important {
-	    background-color: $lightBabyBlue;
-            
+            background-color:#FFFFC2;
             /* @theme background: opaque_highlight2 */
         }
 
@@ -1296,13 +1290,12 @@ Yii pager
         color: rgb(155, 155, 155) !important;
     }
     a:hover, .selected a {
-        color: #3d70b4 !important;
+        /*text-decoration: underline !important;*/
     }
     a {
-        color: #555555 !important;
+        color: #004baf !important;
         border: none !important;
         background: none !important;
-        
         @include border-radius (12px);
     }
 }
@@ -1488,7 +1481,6 @@ Ckeditor
 .cke_toolbox_collapser.cke_toolbox_collapser_min {
     margin: 0 0 2px 0 !important;
     padding: 0 0 0 0 !important;
-    background: white;
     .cke_arrow {
         margin-top: 7px !important;
         border-bottom-color: transparent !important;
@@ -1510,8 +1502,7 @@ Ckeditor
 
 .cke_top {
     border-bottom: 1px solid #cecece !important;
-    //background: #F6F6F6 !important;
-    background: white !important;
+    background: #e4e4e4 !important;
     background-image: none !important;
     -moz-box-shadow: none !important;
     -webkit-box-shadow: none !important;
@@ -1768,7 +1759,7 @@ div {
     .x2-button.disabled {
         color: #bbbbbb;
         &:hover {
-            background-color: #F4F4F4;
+            background-color: #eee;
             background: -webkit-gradient(linear, left top, left bottom, from(#f0f0f0), to(#F5F5F5));
             background: -moz-linear-gradient(top, #f0f0f0, #F5F5F5);
         }
@@ -1789,7 +1780,7 @@ div {
 }
 
 .x2-multiselect-ui-element .irremovable-option {
-    background: #F4F4F4;
+    background: #eee;
     border: none !important;
     > a {
         cursor: default !important;
@@ -1835,7 +1826,7 @@ button.ui-multiselect {
         color: #fff !important;
         font-family: Arial, Helvetica, sans-serif !important;
         border: 1px solid rgb(168, 168, 168);
-        background: #F4F4F4 !important;
+        background: #eee !important;
         /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #F5F5F5 100%) !important;
         background: -webkit-linear-gradient(top,    #f0f0f0 0%, #F5F5F5 100%) !important;
         background: -o-linear-gradient(top,        #f0f0f0 0%, #F5F5F5 100%) !important;
@@ -1850,7 +1841,7 @@ button.ui-multiselect {
         box-shadow:             inset 0 1px 0 0 #fff !important;*/
     }
     .ui-element {
-        background: #F4F4F4 !important;
+        background: #eee !important;
         border: none !important;
         /*background: -moz-linear-gradient(top,    #f0f0f0 0%, #F5F5F5 100%) !important;
         background: -webkit-linear-gradient(top,    #f0f0f0 0%, #F5F5F5 100%) !important;
@@ -2106,7 +2097,7 @@ button.ui-multiselect {
 
 .x2-qtip {
     .qtip-content {
-        padding: 10px 10px 10px 10px;
+        padding: 0px 10px 10px 10px;
     }
     .qtip-loading-text {
         padding: 3px 5px;
@@ -2125,12 +2116,12 @@ button.ui-multiselect {
 
 /*.x2-qtip .qtip-titlebar {
         background-color: rgb(240,240,240) !important;
-}*/
+}
 .x2-qtip,
 .x2-qtip .qtip-content {
-    border-color: darken($lightBabyBlue, 20%) !important;
-    background-color: $lightBabyBlue;
-}
+        border-color: rgb(223,223,223) !important;
+        background-color: white !important;
+}*/
 
 /***********************************************************************
 * dropdown list 
@@ -2156,7 +2147,7 @@ ul.x2-dropdown-list {
             padding-bottom: 5px;
         }
         &:hover {
-            background: #F4F4F4;
+            background: #eee;
         }
     }
 }

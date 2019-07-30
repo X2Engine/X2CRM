@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Simulates campaign email delivery 
  */
@@ -56,15 +53,14 @@ class TestEmailAction extends CAction {
 	}
 
 	public function run(){
-            
         if (Yii::app()->user->isGuest) {
             Yii::app()->controller->redirect(Yii::app()->controller->createUrl('/site/login'));
         }
 
-        $this->attachBehaviors($this->behaviors);
-        // Safety net of handlers - they ensure that errors can be caught and seen easily:
-        
-        $scenario = 'custom';
+		$this->attachBehaviors($this->behaviors);
+		// Safety net of handlers - they ensure that errors can be caught and seen easily:
+
+		$scenario = 'custom';
         $model = new TestEmailActionForm ();
         $model->contactFlag = true;
 		$model->setScenario($scenario);
@@ -80,22 +76,6 @@ class TestEmailAction extends CAction {
             $model->campaign->content = $model->message;
             $model->campaign->sendAs = $model->credId;
             $this->asa ('CampaignMailingBehavior')->setCampaign ($model->campaign);
-            
-        /*
-         * MISSING ATTRIBUTES CHECK
-         */
-        
-        // Check for null attributes
-        $nullVars = Formatter::findNullVariables($model->campaign->content, $model->getTargetModel ());
-        if (!empty($nullVars)) {
-            $message = '';
-            foreach ($nullVars as $val) {
-                $message .= $val . 'is null.</br>';
-            }
-            $this->respond($message, true);
-        };
-        
-            
             list($subject,$message,$uniqueId) = 
                 self::prepareEmail ($model->campaign, $model->getTargetModel ());
 

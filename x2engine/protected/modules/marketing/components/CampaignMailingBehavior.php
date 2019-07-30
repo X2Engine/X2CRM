@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.modules.marketing.models.*');
 Yii::import('application.modules.docs.models.*');
@@ -165,12 +162,6 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      */
     public $undeliverable = false;
 
-    /**
-     * The IDs of suppressed contacts from suppression List
-     * @var array
-     */
-    public $suppressedContactsIds = array();
-
     /////////////////////////
     // INDEPENDENT METHODS //
     /////////////////////////
@@ -207,11 +198,10 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
 
         // Add some newlines to prevent hitting 998 line length limit in
         // phpmailer and rfc2821
-        if ($replaceBreaks) {
+        if ($replaceBreaks)
             $emailBody = StringUtil::pregReplace('/<br>/', "<br>\n", $campaign->content);
-        } else {
+        else
             $emailBody = $campaign->content;
-        }
 
         // Add links to attachments
         try{
@@ -274,11 +264,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
-            'email' => $email,
-            'listModel' => 'Contacts',
-            'contactId' => $contact->id,
-            'campaignId' => $campaign->id,
-
+            'email' => $email
         ));
         $unsubLinkText = Yii::app()->settings->getDoNotEmailLinkText();
         if ($replaceUnsubToken) {
@@ -306,7 +292,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         } else {
             $emailBody .= $trackingImage;
         }
-
+        
         return array($subject, $emailBody, $uniqueId);
     }
 
@@ -316,11 +302,10 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
 
     public static function lockEmail($lock = true) {
         $lf = self::emailLockFile();
-        if($lock) {
+        if($lock)
             file_put_contents($lf,time());
-        } else {
+        else
             unlink($lf);
-        }
     }
 
    /**
@@ -333,9 +318,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             if(time() - (int) $lock > 3600) { // No operation should take longer than an hour
                 unlink($lf);
                 return false;
-            } else {
+            } else
                 return true;
-            }
         }
         return false;
     }
@@ -356,24 +340,17 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @return array An array containing the "id", "sent" and "uniqueId" columns.
      */
     public static function deliverableItems($listId,$unsent = false) {
-        //this first bit is to get the type of stuff the list is made of IE(contacts, leads, ...)
-        $MyType = X2List::model()->findByPk($listId)->modelName;
-        $tableName= 'x2_contacts';
-        if($MyType == 'X2Leads'){$tableName= 'x2_x2leads';}
-        if($MyType == 'Opportunity'){$tableName= 'x2_opportunities';}
-        if($MyType == 'Accounts'){$tableName= 'x2_accounts';}
         $where = ' WHERE 
             i.listId=:listId
             AND i.unsubscribed=0
             AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
             AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
-        if($unsent) {
-            $where .= ' AND i.sent=0 AND i.suppressed=0';
-        }
+        if($unsent)
+            $where .= ' AND i.sent=0';
         return Yii::app()->db->createCommand('SELECT
-            i.id,i.sent,i.uniqueId,i.suppressed
+            i.id,i.sent,i.uniqueId
             FROM x2_list_items AS i
-            LEFT JOIN ' . $tableName . ' AS c ON c.id=i.contactId '.$where)
+            LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
                     ->queryAll(true,array(':listId'=>$listId));
     }
 
@@ -381,27 +358,16 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * Similar to deliverableItems but only retrieves count
      */
     public static function deliverableItemsCount($listId,$unsent = false) {
-                //this first bit is to get the type of stuff the list is made of IE(contacts, leads, ...)
-       $MyType = X2List::model()->findByPk($listId)->modelName;
-       $list = X2List::model()->findByPk($listId);
-        if($MyType == 'Contacts'){$tableName= 'x2_contacts'; $model = new Contacts('search');}
-        if($MyType == 'X2Leads'){$tableName= 'x2_x2leads'; $model = new X2Leads('search');}
-        if($MyType == 'Opportunity'){$tableName= 'x2_opportunities'; $model = new Opportunity('search');}
-        if($MyType == 'Accounts'){$tableName= 'x2_accounts'; $model = new Accounts('search');}
-        if($list->type == 'dynamic'){
-            return $model->searchList($listId)->totalItemCount;
-        }
         $where = ' WHERE 
             i.listId=:listId
             AND i.unsubscribed=0
             AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
             AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
-        if($unsent) {
-            $where .= ' AND i.sent=0 AND i.suppressed=0';
-        }
+        if($unsent)
+            $where .= ' AND i.sent=0';
         return Yii::app()->db->createCommand('SELECT COUNT(*)
             FROM x2_list_items AS i
-            LEFT JOIN ' . $tableName . ' AS c ON c.id=i.contactId '.$where)
+            LEFT JOIN x2_contacts AS c ON c.id=i.contactId '.$where)
                 ->queryScalar(array(':listId'=>$listId));
     }
 
@@ -410,18 +376,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         // Disable the unsightly notifications for loads of emails:
         $action->scenario = 'noNotif';
         $now = time();
-        
-        //this next code will check to make sure the campaign is using contact or other (opp, leads, accounts ....)
         $action->associationType = 'contacts';
-        if($campaign->list->modelName == "Opportunity"){
-            $action->associationType = 'opportunities';
-        }
-        if($campaign->list->modelName == "Accounts"){
-            $action->associationType = 'accounts';
-        }
-        if($campaign->list->modelName == "X2Leads"){
-            $action->associationType = 'x2Leads';
-        }
         $action->associationId = $contact->id;
         $action->associationName = $contact->firstName.' '.$contact->lastName;
         $action->visibility = $contact->visibility;
@@ -430,8 +385,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $action->createDate = $now;
         $action->completeDate = $now;
         $action->complete = 'Yes';
-        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"."<br><br>".Yii::t('marketing', 'Email'). ': '.$contact->email."<br><br>\n\n"
-                .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $contact)."<br><br>\n\n".Docs::replaceVariables($campaign->content, $contact);
+        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"
+                .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $contact)."\n\n".Docs::replaceVariables($campaign->content, $contact);
 
         // Prepare action attributes for direct insertion to skip ActiveRecord overhead
         $attr = $action->attributes;
@@ -439,55 +394,21 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $attr = array_diff_assoc($attr, array_fill_keys($attachedAttr, ''));
         $count = Yii::app()->db->createCommand()
             ->insert('x2_actions', $attr);
-        if($count < 1) {
-            throw new CException('Campaign email action history record failed to save with validation errors: '.CJSON::encode($action));
-        }
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
         $actionId = Yii::app()->db->schema->commandBuilder
             ->getLastInsertId('x2_actions');
         $count = Yii::app()->db->createCommand()
             ->insert('x2_action_text', array('actionId' => $actionId, 'text' => $actionDescription));
-        if($count < 1) {
-            throw new CException('Campaign email action history record failed to save with validation errors: '.CJSON::encode($action));
-        }
-        
+        if($count < 1)
+            throw new CException('Campaing email action history record failed to save with validation errors: '.CJSON::encode($action));
+
         // Manually trigger since hooks won't be called
         $contact->lastActivity = time();
-        //have to update each type 
-        if($campaign->list->modelName == "Contacts"){
-            $contact->update(array('lastActivity'));
+        $contact->update(array('lastActivity'));
         X2Flow::trigger('RecordUpdateTrigger', array(
             'model' => $contact,
         ));
-        }
-        if($campaign->list->modelName == "Opportunity"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_opportunities SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => Opportunity::model()->findByPk($contact->id),
-        ));
-        }
-        if($campaign->list->modelName == "Accounts"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_accounts SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => Accounts::model()->findByPk($contact->id),
-        ));
-        }
-        if($campaign->list->modelName == "X2Leads"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_x2leads SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => X2Leads::model()->findByPk($contact->id),
-        ));
-        }
-        
-
     }
 
     /////////////////////////////////
@@ -547,86 +468,14 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @return type
      */
     public function getRecipient() {
- 
         if(!isset($this->_recipient)) {
- 
-           
-                 if($this->campaign->list->modelName == "Contacts"){
+            if(!empty($this->listItem->contact))
                 $this->_recipient = $this->listItem->contact;
-                 }
-                           //this code is to ensure I can work with accounts
-                    if($this->campaign->list->modelName == "Accounts"){
-
-                        $Acc = Accounts::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->company =  $Acc->company;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-                    if($this->campaign->list->modelName == "X2Leads"){
-
-                        $Acc = X2Leads::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-                    if($this->campaign->list->modelName == "Opportunity"){
-
-                        $Acc = Opportunity::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-
-            if (!isset($this->_recipient)) {
+            else {
                 // Newsletter
                 $this->_recipient = new Contacts;
                 $this->_recipient->email = $this->listItem->emailAddress;
             }
-        }
-        //this code is to change the email 
-        if(!empty($this->_recipient->preferredEmail) && $this->_recipient->preferredEmail !== "Default" && $this->_recipient->preferredEmail !== "email"){
-            $emailType = $this->_recipient->preferredEmail;
-            $this->_recipient->email = $this->_recipient->$emailType;
         }
         return $this->_recipient;
     }
@@ -695,39 +544,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $this->stateChangeType = self::STATE_DONOTEMAIL;
             return false;
         }
-
-        // Contact has been suppressed by another list
-        if (!empty($this->campaign->suppressionListId) && $this->isContactSuppressed()) {
-            $this->status['message'] = Yii::t(
-                'marketing',
-                'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.',
-                array('{address}'=>$this->recipient->email)
-            );
-            // Undeliverable mail. Mark as sent but without unique ID, designating it as a bad address but suppressed
-            $this->undeliverable = true;
-            $this->markEmailSent(null, false, true);
-            $this->status['code'] = 412; // precondition failed
-            return false;
-        }
-
-        // Contact has unsubscribed from this category
-        $userCheck = X2ListItem::model()->findByAttributes(array(
-                'emailAddress' => $this->recipient->email,
-                'listId' => $this->campaign->categoryListId,
-            ));
-        if (!empty($userCheck)) {
-            $this->status['message'] = Yii::t(
-                'marketing',
-                'Skipping email sending to {address}. This Email is skipped as it unsubscribed from this Category.',
-                array('{address}'=>$this->recipient->email)
-            );
-            // Undeliverable mail. Mark as sent but without unique ID, designating it as a bad address but suppressed
-            $this->undeliverable = true;
-            $this->markEmailSent(null, false, false, true);
-            $this->status['code'] = 412; // precondition failed
-            return false;
-        }
-
+        
         // Another mailing process sent it already:
         $this->listItem->refresh();
         if($this->stateChange = $this->stateChange || $this->listItem->sent !=0) {
@@ -736,7 +553,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             $this->stateChangeType = self::STATE_SENT;
             return false;
         }
-
+        
         return true;
     }
 
@@ -754,9 +571,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @param type $uniqueId
      * @param bool $unsent If false, perform the opposite operation (mark as not
      *  currently sending).
-     * @param bool $suppressed true if contact is in suppression List
      */
-    public function markEmailSent($uniqueId,$sent = true, $suppressed=false, $unsubscribed=false) {
+    public function markEmailSent($uniqueId,$sent = true) {
         $params = array(
             ':listId' => $this->listItem->listId,
             ':emailAddress' => $this->recipient->email,
@@ -765,50 +581,21 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
             ':id' => $this->itemId,
             ':sent' => $sent?time():0,
             ':uniqueId' => $sent?$uniqueId:null,
-            ':suppressed' => $suppressed ? time() : 0,
-            ':unsubscribed' => $unsubscribed ? time() : 0,
         );
         $condition = 'i.id=:id OR (i.listId=:listId AND (i.emailAddress=:emailAddress OR c.email=:email))';
-        $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,i.unsubscribed=:unsubscribed,i.suppressed=:suppressed,sending=0,emailAddress=:setEmail';
+        $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,sending=0,emailAddress=:setEmail';
         Yii::app()->db->createCommand('UPDATE x2_list_items AS i LEFT JOIN x2_contacts AS c ON c.id=i.contactId SET '.$columns.' WHERE '.$condition)->execute($params);
-    }
-
-    /**
-     * Checks whether this contact is present is suppressed
-     * @return bool true if contact is in suppression list else false
-     */
-    public function isContactSuppressed() {
-        if (count($this->campaign->suppressionList->listItems) !=count($this->suppressedContactsIds)) {
-            $this->setSuppressedContactIds();
-        }
-        return (in_array($this->recipient->id, $this->suppressedContactsIds));
-    }
-
-    /**
-     * This function set the array for suppression contact for the active campaign
-     */
-    public function setSuppressedContactIds() {
-        foreach ($this->campaign->suppressionList->listItems as $listItem) {
-            $contactId = $listItem->__get('contactId');
-            if (!in_array($contactId, $this->suppressedContactsIds)) {
-                array_push($this->suppressedContactsIds, $contactId);
-            }
-        }
     }
 
     /**
      * Send an email.
      */
     public function sendIndividualMail() {
-        
         if(!$this->mailIsStillDeliverable()) {
             return;
         }
-        
- 
         $addresses = array(array('',$this->recipient->email));
         $deliver = true;
- 
         try {
             list($subject,$message,$uniqueId) = self::prepareEmail(
                 $this->campaign,$this->recipient);
@@ -830,18 +617,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 'type' => 'unsub',
                 'email' => $this->recipient->email
             ));
-            $bounceHandlingEmail = null;
-            $bounceInfo = array(
-                'campaignId' => $this->campaign->id,
-                'contactId' => $this->recipient->id,
-                'listModel' => $this->campaign->list->modelName,
-                'uniqueId' => $uniqueId,
-            );
-            if ($this->campaign->enableBounceHandling && isset($this->campaign->bouncedAccount)) {
-                $credential = Credentials::model ()->findByPk ($this->campaign->bouncedAccount);
-                $bounceHandlingEmail = $credential->getAuthModel()->email;
-            }
-            $this->deliverEmail($addresses, $subject, $message, array(), $unsubUrl, $bounceHandlingEmail, $bounceInfo);
+            $this->deliverEmail($addresses, $subject, $message, array(), $unsubUrl);
         }
         if($this->status['code'] == 200) {
             // Successfully sent email. Mark as sent.

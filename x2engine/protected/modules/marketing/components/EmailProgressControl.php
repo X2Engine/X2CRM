@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  *
  * @property integer $campaignSize The total number of items in the campaign.
@@ -65,7 +62,7 @@ class EmailProgressControl extends X2Widget {
             $this->_listItems = array();
             $this->_sentCount = 0;
             foreach($allListItems as $listItem) {
-                if($listItem['sent'] == 0 && $listItem['suppressed'] == 0)
+                if($listItem['sent'] == 0) 
                     $this->_listItems[] = $listItem['id'];
                 else
                     $this->_sentCount++;

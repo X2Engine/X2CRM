@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,33 +33,21 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 $this->setPageTitle(CHtml::encode($model->name));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
-/**
- * JavaScript
- */
-$vars = "
-    var modelId = $model->id
-";
 
-$clientScript = Yii::app()->getClientScript();
-$url = Yii::app()->getBaseUrl() . '/js/docs.js';
+Yii::app()->getClientScript()->registerScript('docIframeAutoExpand','
+$("#docIframe").load(function() {
+	$(this).height($(this).contents().height());
+});
+$(window).resize(function() {
+	$("#docIframe").height($("#docIframe").height(650).contents().height());
+});
+',CClientScript::POS_READY);
 
-$clientScript->registerScript('vars', $vars, CClientScript::POS_END);
-$clientScript->registerScriptFile($url, CClientScript::POS_END);
-
-/**
- * Header
- */
-$title = Yii::t('docs', 'Document:');
-$this->renderPartial('_docPageHeader', compact('title', 'model'));
-
-/**
- * Doc View
- */
+$title = Yii::t('docs','Document:');
+$this->renderPartial('_docPageHeader',compact('title','model'));
 ?>
-<iframe src="<?php echo $this->createUrl('/docs/docs/fullView', array('id' => $model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>
+
+<iframe src="<?php echo $this->createUrl('/docs/docs/fullView',array('id'=>$model->id)); ?>" id="docIframe" frameBorder="0" scrolling="no" height="650" width="100%" style="background:#fff;overflow:hidden;"></iframe>

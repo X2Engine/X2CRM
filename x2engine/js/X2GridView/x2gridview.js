@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 (function($) {
 
@@ -626,11 +623,6 @@ $.widget("x2.gvSettings", {
             evt.preventDefault ();
             return self._clearFilters (self);
         });
-        this.element.find ('.update-bounced-emails').unbind ('click');
-        this.element.find ('.update-bounced-emails').on ('click', function (evt) {
-            evt.preventDefault ();
-            return self._updateBouncedEmails (evt);
-        });
 
         this.element.find ('.search-button').unbind ('click');
         this.element.find ('.search-button').on ('click', function () {
@@ -755,27 +747,6 @@ $.widget("x2.gvSettings", {
             }
         });
         return false;
-    },
-    /*
-     Clear column filters via ajax and update the grid
-     */
-    _updateBouncedEmails: function (evt) {
-        $('#x2-gridview-updating-anim').show ();
-        auxlib.pageLoading();
-        var url = evt.target.href;
-        $.ajax ({
-            url: url,
-            type: 'GET',
-            complete: function () {
-                auxlib.pageLoadingStop();
-            },
-            success: function () {
-                x2.flashes.displayFlashes({'success':["Campaigns are updated successfully for email bounces!"]});
-            },
-            error: function (error) {
-                x2.flashes.displayFlashes({'error':[error.responseText]});
-            }
-        });
     },
     /*
     Set up grid behavior which enables multiselect using shift + check

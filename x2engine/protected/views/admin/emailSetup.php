@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerScript('toggleAuthInfo', "
     $('#Admin_emailUseAuth').change(function() {
@@ -355,7 +352,6 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             </div>
         </div>
         <br/>
-       
         <div class="row">
             <div class="cell">
                 <?php
@@ -365,33 +361,10 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
                     Yii::t('admin', 'This is the page that will be displayed to contacts after '.
                         'they have clicked the "Do Not Email" link contained in an email.'), 
                         false, null, true);
-                echo '<br>';
-                 echo Yii::t('admin', 'Place the text "(PLACE_OPP)" where you want the list of unsubscribe options to be placed.');
                 echo $form->richTextarea ($model, 'doNotEmailPage'); 
                 ?>
             </div>
         </div>
-        
-        <h4><?php echo Yii::t('admin', '"Email Unsubscribed Page" Link Configuration'); ?></h4>
-        <br/>
-        
-        <div class="row">
-            <div class="cell">
-                <?php
-                echo $form->labelEx(
-                    $model, 'EmailUnSubPage', array ('class' => 'left')); 
-                echo X2Html::hint (
-                    Yii::t('admin', 'This is the page that will be displayed to contacts after '.
-                        'they have picked their unsubscribe options.'), 
-                        false, null, true);
-                echo '<br>';
-
-                echo $form->richTextarea ($model, 'EmailUnSubPage'); 
-                ?>
-            </div>
-        </div>
-         
-        
         <div class="row">
             <div class="cell">
                 <?php

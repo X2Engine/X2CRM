@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,24 +34,15 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
 $menuOptions = array(
-    'all', 'create', 'report', 'import', 'export', 'lists',
+    'all', 'create', 'report', 'import', 'export',
 );
 if ($opportunityModule->visible && $contactModule->visible)
     $menuOptions[] = 'quick';
 $this->insertMenu($menuOptions);
-
-//these hidden field is here to stop google auto fill from filling in the grid
-$ConFields = X2Model::model("Accounts")->getFields();
-foreach($ConFields as $field){
-    echo '<input type="hidden" id="Accounts[' . $field->fieldName . ']" name="Accounts[' . $field->fieldName . ']">';      
-}
 
 
 Yii::app()->clientScript->registerScript('search', "
@@ -66,30 +57,11 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
-$dataProvider=null;
-if ($this->route == 'accounts/accounts/index') {
-    //$heading = Yii::t('contacts', 'All {module}', array('{module}' => $modTitles['contacts']));
-    
-    $dataProvider = $model->search();
-    //$enableSelectAllOnAllPages = true;
-    //unset($menuItems[0]['url']);
-    //unset($menuItems[4]); // View List
-} elseif ($this->route == 'accounts/accounts/myAccounts') {
-    //$heading = Yii::t('contacts', 'My {module}', array('{module}' => $modTitles['contacts']));
-    $dataProvider = $model->searchMyAccounts();
-    //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
-} elseif ($this->route == 'accounts/accounts/newAccounts') {
-    //$heading = Yii::t('contacts', 'Today\'s {module}', array('{module}' => $modTitles['contacts']));
-    $dataProvider = $model->searchNewAccounts();
-    //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
-}
 ?>
 <?php
-$enableSelectAllOnAllPages = true;
 $this->widget('X2GridView', array(
 	'id'=>'accounts-grid',
 	'title'=>Modules::displayName(),
-        'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize', 'showHidden'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
@@ -100,7 +72,7 @@ $this->widget('X2GridView', array(
         '{massActionButtons}'.
         '{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
-    'dataProvider'=>$dataProvider,
+    'dataProvider'=>$model->search(),
     // 'enableSorting'=>false,
     // 'model'=>$model,
     'filter'=>$model,
@@ -125,12 +97,6 @@ $this->widget('X2GridView', array(
             'value'=>'CHtml::link($data->renderAttribute("name"), array("view", "id"=>$data->id))',
             'type'=>'raw',
         ),
-    ),
-    'massActions' => array(
-        'MassDelete', 'MassTag', 'MassTagRemove', 'MassUpdateFields', 
-        'MergeRecords', 'MassPublishNote', 'MassPublishCall', 'MassPublishTime', 
-        'MassPublishAction', 'MassAddRelationship', 
-        'MassAddToList', 'NewListFromSelection', 'MassExecuteMacro'
     ),
     'enableControls'=>true,
     'fullscreen'=>true,

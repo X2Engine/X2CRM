@@ -192,11 +192,4 @@
   'This option allows you to configure whether geolocation will be performed for your visitors.' => '이 옵션을 사용하면 방문자에게 지리적 위치 정보를 제공할지 여부를 구성 할 수 있습니다.',
   'This option allows you to configure whether browser fingerprinting will be performed to attempt to match your visitor.' => '이 옵션을 사용하면 방문자와 일치시키기 위해 브라우저 핑거 프린팅을 수행할지 여부를 구성 할 수 있습니다.',
   'You can also configure the minimum number of browser attributes required to match a visitor. The higher this value is, the more accurate your partial matches will be.' => '방문자와 일치시키는 데 필요한 최소 브라우저 속성 수를 구성 할 수도 있습니다. 이 값이 높을수록 부분 일치가 더 정확합니다.',
-    'Suppressed' => '억제 된',
-    'Suppression List' => '억제 목록',
-    'Suppression List:' => '억제 목록:',
-    'Skipping email sending to {address}. This contact is skipped as it is present in suppressed List.' => "이메일을 {address} (으)로 건너 뜁니다. 이 연락처는 억제 된 목록에 있으므로 건너 뜁니다.",
-    'Select a Suppression List' => '억제 목록 선택',
-    'New Suppression List' => '새로운 억제 목록',
-    'Choose a Suppression list to avoid sending the campaign email, or create one here.' => "캠페인 이메일을 보내지 않으려면 억제 목록을 선택하거나 여기에서 캠페인 이메일을 만드십시오.",
 );

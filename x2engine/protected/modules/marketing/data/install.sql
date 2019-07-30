@@ -6,16 +6,11 @@ CREATE TABLE x2_campaigns (
     name         VARCHAR(250) NOT NULL,
     nameId       VARCHAR(250) DEFAULT NULL,
     assignedTo   VARCHAR(50),
-    email        VARCHAR(250),
-    phone        VARCHAR(40),
-    leadstatus   VARCHAR(250),
     listId       VARCHAR(100),
-    suppressionListId VARCHAR(100),
     active       TINYINT DEFAULT 1,
     description  TEXT,
     type         VARCHAR(100) DEFAULT NULL,
     cost         VARCHAR(100) DEFAULT NULL,
-    leadSource   VARCHAR(40) DEFAULT NULL,
     template     VARCHAR(250) DEFAULT '0',
     subject      VARCHAR(250),
     content      TEXT,
@@ -28,20 +23,13 @@ CREATE TABLE x2_campaigns (
     lastActivity BIGINT,
     updatedBy    VARCHAR(50),
     sendAs       INT DEFAULT NULL,
-    bouncedAccount INT DEFAULT NULL,
     enableRedirectLinks TINYINT DEFAULT 0,
-    enableBounceHandling TINYINT NOT NULL DEFAULT 0,
     openRate     FLOAT DEFAULT NULL,
     clickRate    FLOAT DEFAULT NULL,
     unsubscribeRate FLOAT DEFAULT NULL,
-    category     VARCHAR(250) DEFAULT 'Marketing',
-    categoryListId    VARCHAR(100),
-    parent VARCHAR(250),
-    children VARCHAR(250),
     PRIMARY KEY (id),
     UNIQUE (nameId),
     INDEX(listId),
-    INDEX(suppressionListId),
     INDEX(template),
     FOREIGN KEY (masterId) REFERENCES x2_campaigns(id) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
@@ -95,11 +83,6 @@ VALUES
 ('Campaign', 'nameId',       'NameID',             0, 0, 'varchar',     0, 1, NULL,              1, 0, 'High',   0, 1, 'FIX', NULL),
 ('Campaign', 'assignedTo',   'Assigned To',        0, 0, 'assignment',  1, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
 ('Campaign', 'listId',       'Contact List',       0, 0, 'link',        1, 0, 'X2List',          0, 0, '',       0, 1, 'MUL', NULL),
-('Campaign', 'suppressionListId',
-                             'Suppression List',   0, 0, 'link',        0, 0, 'X2List',          0, 0, '',       0, 1, 'MUL', NULL),
-('Campaign', 'categoryListId',
-                             'category List Id',   0, 0, 'link',        0, 0, 'X2List',          0, 0, '',       0, 1, 'MUL', NULL),
-('Campaign', 'category',       'Category',       0, 0, 'dropdown',        0, 0, '155',          0, 0, '',       0, 1, 'MUL', NULL),
 ('Campaign', 'active',       'Active',             0, 0, 'boolean',     0, 0, NULL,              0, 0, '',       0, 1, NULL, NULL),
 ('Campaign', 'description',  'Description',        0, 0, 'text',        0, 0, NULL,              1, 0, 'Medium', 0, 1, NULL, NULL),
 ('Campaign', 'type',         'Type',               0, 0, 'dropdown',    0, 0, '107',             0, 0, '',       0, 1, NULL, NULL),
@@ -119,16 +102,10 @@ VALUES
 ('Campaign', 'sendAs',       'Send As',            0, 0, 'credentials', 0, 0, 'email:bulkEmail', 0, 0, '',       0, 1, NULL, NULL),
 ('Campaign', 'openRate',     'Open Rate',          0, 0, 'percentage',  0, 1, NULL,              0, 0, '',       0, 0, NULL, NULL),
 ('Campaign', 'clickRate',    'Click Rate',         0, 0, 'percentage',  0, 1, NULL,              0, 0, '',       0, 0, NULL, NULL),
-('Campaign', 'bouncedAccount',
-                             'Bounce Handling Account',
-                                                   0, 0, 'credentials', 0, 0, 'email:bulkEmail:bounced', 0, 0, '',       0, 1, NULL, NULL),
-('Campaign', 'enableBounceHandling',
-                             'Enable bounce handling?',     
-                                                   0, 0, 'boolean',     0, 0, NULL,              0, 0, '',       0, 1, NULL, "When this is enabled, all emails which are sent by campign but unable to deliver to receiver will be catched and reason will be analysed."),
 ('Campaign', 'unsubscribeRate','Unsubscribe Rate', 0, 0, 'percentage',  0, 1, NULL,              0, 0, '',       0, 0, NULL, NULL);
 /*&*/
 INSERT INTO `x2_form_layouts`
 (`id`, `model`, `version`, `scenario`, `layout`, `defaultView`, `defaultForm`, `createDate`, `lastUpdated`)
 VALUES
-(13,'Campaign','Form','Default','{"version":"5.2","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_category","labelType":"left","readOnly":0},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50.16%"},{"items":[{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_enableBounceHandling","labelType":"left","readOnly":0},{"name":"formItem_bouncedAccount","labelType":"left","readOnly":0}],"width":"49.45%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.81%"}]}],"collapsible":false,"title":"Email Template"}]}',0,1,1429041237,1429041237),
-(14, 'Campaign','View','Default','{"version":"5.2","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_name","labelType":"left","readOnly":0},{"name":"formItem_listId","labelType":"left","readOnly":0},{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_category","labelType":"left","readOnly":0},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50.16%"},{"items":[{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_suppressionListId","labelType":"left","readOnly":0},{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_bouncedAccount","labelType":"left","readOnly":0},{"name":"formItem_enableBounceHandling","labelType":"left","readOnly":0}],"width":"49.45%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_active","labelType":"left","readOnly":0},{"name":"formItem_complete","labelType":"left","readOnly":0},{"name":"formItem_launchDate","labelType":"left","readOnly":0},{"name":"formItem_openRate","labelType":"left","readOnly":1},{"name":"formItem_clickRate","labelType":"left","readOnly":1},{"name":"formItem_unsubscribeRate","labelType":"left","readOnly":1}],"width":"99.81%"}]}],"collapsible":false,"title":"Status"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.81%"}]}],"collapsible":true,"collapsedByDefault":false,"title":"Email Template"}]}',1,0,1429041237,1429041237);
+(13,'Campaign','Form','Default','{"version":"1.3","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"}],"width":"50%"},{"items":[{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.83%"}]}],"collapsible":false,"title":"Email Template"}]}',0,1,1429041237,1429041237),
+(14, 'Campaign','View','Default','{"version":"1.3","sections":[{"rows":[{"cols":[{"items":[{"name":"formItem_name","labelType":"left","readOnly":0},{"name":"formItem_listId","labelType":"left","readOnly":0},{"name":"formItem_description","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_assignedTo","labelType":"left","readOnly":"0","tabindex":"0"}],"width":"50%"},{"items":[{"name":"formItem_visibility","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_type","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_sendAs","labelType":"left","readOnly":"0","tabindex":"undefined"},{"name":"formItem_enableRedirectLinks","labelType":"left","readOnly":"0","tabindex":"undefined"}],"width":"50.0%"}]}],"collapsible":false,"title":"Info"},{"rows":[{"cols":[{"items":[{"name":"formItem_active","labelType":"left","readOnly":0},{"name":"formItem_complete","labelType":"left","readOnly":0},{"name":"formItem_launchDate","labelType":"left","readOnly":0},{"name":"formItem_openRate","labelType":"left","readOnly":1},{"name":"formItem_clickRate","labelType":"left","readOnly":1},{"name":"formItem_unsubscribeRate","labelType":"left","readOnly":1}],"width":"99.83%"}]}],"collapsible":false,"title":"Status"},{"rows":[{"cols":[{"items":[{"name":"formItem_subject","labelType":"left","readOnly":"0","tabindex":"0"},{"name":"formItem_content","labelType":"none","readOnly":"0","tabindex":"0"}],"width":"99.83%"}]}],"collapsible":true,"title":"Email Template"}]}',1,0,1429041237,1429041237);

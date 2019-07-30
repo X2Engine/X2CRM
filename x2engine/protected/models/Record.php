@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @package application.models 
@@ -78,30 +75,31 @@ class Record {
      * @param boolean $whatsNew
      * @return array 
      */
-    public static function convert($records, $whatsNew=true) {
-        $arr=array();
-
-        foreach ($records as $record) {
-            $user=User::model()->findByAttributes(array('username'=>$record->updatedBy));
-            if(isset($user)) {
-                $name=$user->firstName." ".$user->lastName;
-                $userId=$user->id;
-            } else {
-                $name='web admin';
-                $userId=1;
-            }
+	public static function convert($records, $whatsNew=true) {
+		$arr=array();
+		
+		foreach ($records as $record) {
+			$user=User::model()->findByAttributes(array('username'=>$record->updatedBy));
+			if(isset($user)) {
+				$name=$user->firstName." ".$user->lastName;
+				$userId=$user->id;
+			} else {
+				$name='web admin';
+				$userId=1;
+			}
             $temp=array();
             if($record->hasAttribute('assignedTo')){
                 $assignment=User::model()->findByAttributes(array('username'=>$record->assignedTo));
                 $temp['assignedTo']=isset($assignment)?CHtml::link($assignment->firstName." ".$assignment->lastName,array('/profile/view','id'=>$assignment->id)):"";
-            } else{
+            }else{
                 $temp['assignedTo']='';
             }
             $linkObject = $record->asa("LinkableBehavior");
             if ($linkObject instanceof CBehavior) {
                 $temp['#recordLink'] = $linkObject->link;
                 $temp['#recordUrl'] = $linkObject->url;
-            } else {
+            }
+            else {
                 if ($record->hasAttribute('name'))
                     $temp['#recordLink'] = $record->name;
                 elseif($record->hasAttribute('id'))
@@ -110,68 +108,68 @@ class Record {
                     $temp['#recordLink'] = '';
             }
             if($record instanceof Contacts) {
-                $temp['id']=$record->id;
-                $temp['name']=$record->firstName.' '.$record->lastName;
-                $temp['description']=$record->backgroundInfo;
-                $temp['link']=array('/contacts/contacts/view','id'=>$record->id);
-                $temp['type']='Contact';
-                $temp['lastUpdated']=$record->lastUpdated;
-                $temp['updatedBy']=CHtml::link($name,array('/profile/view','id'=>$userId));
-
-                while(isset($arr[$temp['lastUpdated']]))
-                    $temp['lastUpdated']++;
-                $arr[$temp['lastUpdated']]=$temp;
-
-            } elseif($record instanceof Actions) {
-                $temp['id']=$record->id;
-                $temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
-                $temp['description']=$record->actionDescription;
-                $temp['link']=array('/actions/actions/view','id'=>$record->id);
-                $temp['type']='Action';
-                $temp['lastUpdated']=$record->lastUpdated;
-                $temp['updatedBy']=$name;
-                while(isset($arr[$temp['lastUpdated']]))
-                        $temp['lastUpdated']++;
-                $arr[$temp['lastUpdated']]=$temp;
-            } else {
-                $temp['id']=$record->id;
-                $temp['name']=$record->name;
-                if(!is_null($record->description))
-                    $temp['description']=$record->description;
-                else
-                    $temp['description']="";
-
-                $temp['lastUpdated']=$record->lastUpdated;
-                $temp['updatedBy']=$name;
-
-                if($record instanceof Opportunity) {
-                    $temp['link']=array('/opportunities/opportunities/view','id'=>$record->id);
-                    $temp['type']='Opportunity';
-                }
-                elseif($record instanceof Accounts) {
-                    $temp['link']=array('/accounts/accounts/view','id'=>$record->id);
-                    $temp['type']='Account';
-                } elseif($record instanceof Quote || $record instanceof Product){
+				$temp['id']=$record->id;
+				$temp['name']=$record->firstName.' '.$record->lastName;
+				$temp['description']=$record->backgroundInfo;
+				$temp['link']=array('/contacts/contacts/view','id'=>$record->id);
+				$temp['type']='Contact';
+				$temp['lastUpdated']=$record->lastUpdated;
+				$temp['updatedBy']=CHtml::link($name,array('/profile/view','id'=>$userId));
+				
+				while(isset($arr[$temp['lastUpdated']]))
+					$temp['lastUpdated']++;
+				$arr[$temp['lastUpdated']]=$temp;
+				
+			} elseif($record instanceof Actions) {
+				$temp['id']=$record->id;
+				$temp['name']=empty($record->type)? Yii::t('actions','Action') : Yii::t('actions','Action: ').ucfirst($record->type);
+				$temp['description']=$record->actionDescription;
+				$temp['link']=array('/actions/actions/view','id'=>$record->id);
+				$temp['type']='Action';
+				$temp['lastUpdated']=$record->lastUpdated;
+				$temp['updatedBy']=$name;
+				while(isset($arr[$temp['lastUpdated']]))
+					$temp['lastUpdated']++;
+				$arr[$temp['lastUpdated']]=$temp;
+			} else {
+				$temp['id']=$record->id;
+				$temp['name']=$record->name;
+				if(!is_null($record->description))
+					$temp['description']=$record->description;
+				else
+					$temp['description']="";
+				
+				$temp['lastUpdated']=$record->lastUpdated;
+				$temp['updatedBy']=$name;
+				
+				if($record instanceof Opportunity) {
+					$temp['link']=array('/opportunities/opportunities/view','id'=>$record->id);
+					$temp['type']='Opportunity';
+				}
+				elseif($record instanceof Accounts) {
+					$temp['link']=array('/accounts/accounts/view','id'=>$record->id);
+					$temp['type']='Account';
+				} elseif($record instanceof Quote || $record instanceof Product){
                     $temp['type']=get_class($record);
-                    $temp['link']=array(str_repeat('/'.strtolower(get_class($record)).'s',2).'/view','id'=>$record->id);
-                } else {
+					$temp['link']=array(str_repeat('/'.strtolower(get_class($record)).'s',2).'/view','id'=>$record->id);
+                }else {
                     $temp['type']=get_class($record);
-                    $temp['link']=array(str_repeat('/'.strtolower(get_class($record)),2).'/view','id'=>$record->id);
-                }
+					$temp['link']=array(str_repeat('/'.strtolower(get_class($record)),2).'/view','id'=>$record->id);
+				}
 
-                while(isset($arr[$temp['lastUpdated']]))
-                    $temp['lastUpdated']++;
-                if($whatsNew)
-                    $arr[$temp['lastUpdated']]=$temp;
-                else
-                    $arr[]=$temp;
-            }
-        }
-        if($whatsNew){
-                ksort($arr);
-                return array_values(array_reverse($arr));
-        }else{
-                return array_values($arr);
-        }
-    }
+				while(isset($arr[$temp['lastUpdated']]))
+					$temp['lastUpdated']++;
+				if($whatsNew)
+					$arr[$temp['lastUpdated']]=$temp;
+				else
+					$arr[]=$temp;
+			}
+		}
+		if($whatsNew){
+			ksort($arr);
+			return array_values(array_reverse($arr));
+		}else{
+			return array_values($arr);
+		}
+	}
 }

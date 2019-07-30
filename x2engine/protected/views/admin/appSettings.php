@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerCss('appSettingsCss',"
 #settings-form {
@@ -295,19 +292,6 @@ $('#currency').change(function() {
         } ?>><?php echo Yii::t('admin', 'Other'); ?></option>
         </select>
         <input type="text" name="currency2" id="currency2" style="width:120px;<?php if($curFound) echo 'display:none;'; ?>" value="<?php echo $curFound ? '' : $model->currency; ?>" />
-    </div>
-    
-    <div class="form">
-        <?php echo $form->labelEx($model, 'duplicateFields'); ?>
-        <?php echo Yii::t('admin', 'To choose which fields are checked for when finding duplicates, enter the fields here separated by commas.'); 
-        ?> 
-        <br />
-            <?php
-              echo $form->textArea ($model, 'duplicateFields', array(
-                   'id' => 'duplicateFields', 'style' => 'height:100px;', 'class'=>'x2-extra-wide-input', 'value' => Yii::app()->settings->duplicateFields
-              ));
-              echo $form->error ($model, 'duplicateFields').'<br /><br />';  
-        ?><br>
     </div>
 
     <div class="error">

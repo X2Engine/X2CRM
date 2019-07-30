@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::setPathOfAlias(
         'Sabre', Yii::getPathOfAlias('application.integration.SabreDAV'));
@@ -153,40 +150,32 @@ abstract class CalDavSync extends CalendarSync {
      * them with an X2 Calendar
      */
     protected function syncWithToken() {
-        
-        for($I = 0; $I < 13; $I++){
-            $time = $I;
-            if($time == 12){
-                $time = NULL;
-        }
-
-            $syncResult = $this->client->sync($this->owner->remoteCalendarUrl, $this->owner->syncToken, $time);
-            $paths = array();
-            foreach ($syncResult as $syncPath => $eventData) {
-                $keys = array_keys($eventData);
-                $statusCode = $keys[0];
-                if ($statusCode == '200') {
-                    $paths[] = $syncPath;
-                } elseif ($statusCode == '404') {
-                    $pieces = explode('/',$syncPath);
-                    $actionUrl = str_replace('.ics', '', urldecode($pieces[count($pieces)-1]));
-                    $actionMetaData = X2Model::model('ActionMetaData')->findByAttributes(array(
-                        'remoteCalendarUrl' => $actionUrl,
-                    ));
-                    if (isset($actionMetaData)) {
-                        $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
-                        if ($action)
-                            $action->delete();
-                    }
+        $syncResult = $this->client->sync($this->owner->remoteCalendarUrl, $this->owner->syncToken);
+        $paths = array();
+        foreach ($syncResult as $syncPath => $eventData) {
+            $keys = array_keys($eventData);
+            $statusCode = $keys[0];
+            if ($statusCode == '200') {
+                $paths[] = $syncPath;
+            } elseif ($statusCode == '404') {
+                $pieces = explode('/',$syncPath);
+                $actionUrl = str_replace('.ics', '', urldecode($pieces[count($pieces)-1]));
+                $actionMetaData = X2Model::model('ActionMetaData')->findByAttributes(array(
+                    'remoteCalendarUrl' => $actionUrl,
+                ));
+                if (isset($actionMetaData)) {
+                    $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
+                    if ($action)
+                        $action->delete();
                 }
             }
-            // Gets all calendar events which were created / updated since the last sync
-            $multigetResult = $this->client->multiget($this->owner->remoteCalendarUrl, $paths, array(
-                self::$xmlProperties['etag'],
-                self::$xmlProperties['calendarData'],
-            ));
-            $this->createUpdateActions($multigetResult);
         }
+        // Gets all calendar events which were created / updated since the last sync
+        $multigetResult = $this->client->multiget($this->owner->remoteCalendarUrl, $paths, array(
+            self::$xmlProperties['etag'],
+            self::$xmlProperties['calendarData'],
+        ));
+        $this->createUpdateActions($multigetResult);
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.models.X2Model');
 
@@ -1038,7 +1035,7 @@ class Actions extends X2Model {
 
         $this->disableBehavior('changelog');
 
-        if($result = $this->save()){
+        if($result = $this->update()){
 
             X2Flow::trigger('ActionCompleteTrigger', array(
                 'model' => $this,
@@ -1091,7 +1088,7 @@ class Actions extends X2Model {
 
         $this->disableBehavior('changelog');
 
-        if($result = $this->save()){
+        if($result = $this->update()){
             X2Flow::trigger('ActionUncompleteTrigger', array(
                 'model' => $this,
                 'user' => Yii::app()->user->getName()
@@ -1177,7 +1174,7 @@ class Actions extends X2Model {
                 $timestamp = $this->completeDate; 
                 break;
             case 'note': 
-                $timestamp = $this->createDate; 
+                $timestamp = $this->completeDate; 
                 break;
             case 'quotesDeleted': 
             case 'quotes': 

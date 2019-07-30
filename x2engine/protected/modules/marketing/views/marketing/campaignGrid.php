@@ -1,7 +1,7 @@
 <?php 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,22 +33,8 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 $contactList = $model->list;
-
-$typeOfList = $contactList->modelName;
-$ModelName;
-if ($typeOfList == 'X2Leads'){
-    $ModelName = '/x2Leads/x2Leads/view';
-} elseif ($typeOfList == 'Contacts'){
-    $ModelName = '/contacts/contacts/view';
-} elseif ($typeOfList == 'Accounts'){
-    $ModelName = '/accounts/accounts/view';
-} elseif ($typeOfList == 'Opportunity'){
-    $ModelName = '/opportunities/opportunities/view';
-} 
+    
 
 //these columns will be passed to gridview, depending on the campaign type
     $displayColumns = array(
@@ -56,7 +42,7 @@ if ($typeOfList == 'X2Leads'){
             'name' => 'name',
             'header' => Yii::t('contacts', 'Name'),
             'headerHtmlOptions' => array('style' => 'width: 15%;'),
-            'value' => 'CHtml::link($data["firstName"] . " " . $data["lastName"],array("'. $ModelName .'","id"=>$data["id"]))',
+            'value' => 'CHtml::link($data["firstName"] . " " . $data["lastName"],array("/contacts/contacts/view","id"=>$data["id"]))',
             'type' => 'raw',
         ),
     );
@@ -68,57 +54,14 @@ if ($typeOfList == 'X2Leads'){
                 'headerHtmlOptions' => array('style' => 'width: 20%;'),
                 //email comes from contacts table, emailAddress from list items table, we could 
                 // have either one or none
-                'value' => '!empty($data["preferredEmail"]) ? 
-                    ($data["preferredEmail"] == "Default" ||  $data["preferredEmail"] == "email") ?
-		    	(!empty($data["email"])) ? 
-                    		$data["email"] 
-				: 
-				(!empty($data["emailAddress"]) ? 
-					$data["emailAddress"] 
-					: 
-					"")
-			:
-			($data["preferredEmail"] == "businessEmail") ?
-				(!empty($data["businessEmail"])) ? 
-					$data["businessEmail"]
-					:
-					(!empty($data["emailAddress"]) ? 
-						$data["emailAddress"] 
-						: 
-						"")
-				:				
-				($data["preferredEmail"] == "personalEmail") ?
-					(!empty($data["personalEmail"])) ? 
-						$data["personalEmail"]
-						:
-						(!empty($data["emailAddress"]) ? 
-							$data["emailAddress"] 
-							: 
-							"")					
-					:
-					(!empty($data["alternativeEmail"])) ? 
-						$data["alternativeEmail"]
-						:
-						(!empty($data["emailAddress"]) ? 
-							$data["emailAddress"] 
-							: 
-							"")	
-
-			
-		    : 
-		    (!empty($data["email"])) ? 
-                    	$data["email"] 
-			: 
-			(!empty($data["emailAddress"]) ? 
-				$data["emailAddress"] 
-				: 
-				"")',
+                'value' => '!empty($data["email"]) ? 
+                    $data["email"] : (!empty($data["emailAddress"]) ? $data["emailAddress"] : "")',
             ),
             array(
                 'name' => 'sent',
                 'header' => Yii::t('marketing', 'Sent').': '.$contactList->statusCount('sent'),
                 'type' => 'raw',
-                'value' => '$data["sent"] ? X2Html::fa("check"):($data["suppressed"] ? X2Html::fa("times") :"")',
+                'value' => '$data["sent"] ? X2Html::fa("check"):""', 
                 'htmlOptions' => array('style' => 'text-align: center;'),
                 'headerHtmlOptions' => array('style' => 'width: 7%;', 'title' => $contactList->statusCount('sent'))
             ),
@@ -154,22 +97,6 @@ if ($typeOfList == 'X2Leads'){
                 'type' => 'raw',
                 'value' => '$data["opened"] ? Formatter::formatDateTime($data["opened"])." ".X2ListItem::getLocationLink($data["uniqueId"]):""',
             ),
-            array(
-                'name' => 'suppressed',
-                'header' => Yii::t('marketing', 'Suppressed').': '.$contactList->statusCount('suppressed'),
-                'type' => 'raw',
-                'value' => '$data["suppressed"] ? X2Html::fa("check"):""',
-                'htmlOptions' => array('style' => 'text-align: center;'),
-                'headerHtmlOptions' => array('style' => 'width: 7%;', 'title' => $contactList->statusCount('suppressed'))
-            ),
-            array(
-                'name' => 'bounced',
-                'header' => Yii::t('marketing', 'Delivered').': '.$contactList->statusCount('bounced'),
-                'type' => 'raw',
-                'value' => '$data["bounced"] ? X2Html::fa("times"):""',
-                'htmlOptions' => array('style' => 'text-align: center;'),
-                'headerHtmlOptions' => array('style' => 'width: 7%;', 'title' => $contactList->statusCount('bounced'))
-            ),
         ));
 
         if ($model->enableRedirectLinks) {
@@ -182,8 +109,8 @@ if ($typeOfList == 'X2Leads'){
                 'htmlOptions'=>array('style'=>'text-align: center;'),
                 'headerHtmlOptions'=>array('style'=>'width: 7%;')
             );
-            
         }
+
     } elseif ($model->type == 'Call List') {
         $displayColumns = array_merge($displayColumns, array(
             array(

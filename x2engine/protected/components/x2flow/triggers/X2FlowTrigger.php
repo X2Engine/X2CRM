@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Color utilities (unused)
  *
@@ -64,7 +61,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
         "Newsletter Email Clicked", "Newsletter Email Opened", "Splitter",
         "Unsubscribed from Newsletter", "Periodic Trigger", "Conditional Switch",
         "Campaign Web Activity (no contact available)", 
-        "User Signed In", "User Signed Out"
+        "Macro Executed", "User Signed In", "User Signed Out"
     );
     private static $actionModelTriggers = array(
         "Action Completed", "Action Overdue", "Action Marked Incomplete"
@@ -81,8 +78,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
         "Unsubscribed from Campaign", "Campaign Web Activity", "Inbound Email",
         "Outbound Email", "Record Created", "Record Deleted", "Tag Added",
         "Tag Removed", "Record Updated", "Record Viewed", "New Web Lead",
-        "Targeted Content Requested", "Contact Web Activity", "Macro Executed",
-        "Voip Inbound"
+        "Targeted Content Requested", "Contact Web Activity", "Voip Inbound"
     );
 
     /**

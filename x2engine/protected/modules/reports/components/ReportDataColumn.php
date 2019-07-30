@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 class ReportDataColumn extends CDataColumn {
 
@@ -140,17 +137,10 @@ class ReportDataColumn extends CDataColumn {
             $attr = $this->attribute;
             $model->$attr = $data[$this->name];
             if ($attr === 'name') {
-                //$model->id = $data[X2Report::HIDDEN_ID_ALIAS];
-                $modelRecord = $model::model()->findByAttributes(array('name' => $model->$attr));
-                $model->id = $modelRecord->id;
+                $model->id = $data[X2Report::HIDDEN_ID_ALIAS];
                 $value = $model->link;
             } else {
                 $value = $model->renderAttribute ($attr);
-                if($attr === "stageNumber") {
-                    $records = Yii::app()->db->createCommand('SELECT * FROM x2_workflow_stages WHERE id='.(string)$model->$attr)->queryAll();
-                    if (!empty($records))
-                        $value = $records[0]['name'];
-                }
             }
         } elseif (isset ($data[$this->name])) {
             if ($this->getDateFn ()) {

@@ -55,7 +55,7 @@ class SigningKeyTest extends HolodeckTestCase {
         
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->signingKeys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                     ->signingKeys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -79,7 +79,7 @@ class SigningKeyTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->signingKeys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                           ->signingKeys("SKaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

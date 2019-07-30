@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * This is the model class for table "x2_list_items".
@@ -96,9 +93,6 @@ class X2ListItem extends CActiveRecord {
 		return array(
 			'list'=>array(self::BELONGS_TO, 'X2List', 'listId'),
 			'contact'=>array(self::BELONGS_TO, 'Contacts', 'contactId'),
-                        'account'=>array(self::BELONGS_TO, 'Accounts', 'accountId'),
-                        'opportunity'=>array(self::BELONGS_TO, 'Opportunities', 'opportunityId'),
-                        'x2Lead'=>array(self::BELONGS_TO, 'X2Leads', 'x2LeadId'),
 		);
 	}
 
@@ -161,32 +155,10 @@ class X2ListItem extends CActiveRecord {
 		
 		if($this->list->campaign !== null) {
 			if($this->contact !== null) {
-                            if($this->list->modelName == "Contacts"){
-       				X2Flow::trigger('CampaignEmailOpenTrigger',array(
+				X2Flow::trigger('CampaignEmailOpenTrigger',array(
 					'model'=>$this->contact,
 					'campaign'=>$this->list->campaign->name
 				));
-                                
-                            }
-                            if($this->list->modelName == "Accounts"){
-       				X2Flow::trigger('CampaignEmailOpenTrigger',array(
-					'model'=> Accounts::model()->findByPk($this->contact->id),
-					'campaign'=>$this->list->campaign->name
-				));                                
-                            }
-                            if($this->list->modelName == "X2Leads"){
-       				X2Flow::trigger('CampaignEmailOpenTrigger',array(
-					'model'=>X2Leads::model()->findByPk($this->contact->id),
-					'campaign'=>$this->list->campaign->name
-				));                                
-                            }
-                            if($this->list->modelName == "Opportunity"){
-        				X2Flow::trigger('CampaignEmailOpenTrigger',array(
-					'model'=>Opportunity::model()->findByPk($this->contact->id),
-					'campaign'=>$this->list->campaign->name
-				));                               
-                            }
-
 			} else {
 				X2Flow::trigger('NewsletterEmailOpenTrigger',array(
 					'item'=>$this,

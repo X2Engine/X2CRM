@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
 /**
  * For code shared between mobile and full app site controllers
@@ -50,97 +47,36 @@ class CommonSiteControllerBehavior extends CBehavior {
      */
     public function login (LoginForm $model, $isMobile=false){
         ob_start();
-        if($isMobile && SessionToken::cleanSessionTokenCookie()) {
+        if(SessionToken::cleanSessionTokenCookie()) {
             unset(Yii::app()->request->cookies['sessionToken']);
+            setcookie("sessionToken", "", time() - 3600);
+           echo "<script type=\"text/javascript\">
+                window.localStorage.removeItem(\"sessionToken\");
+                </script>";
         }
         Session::cleanUpSessions();
-        if($isMobile) {
-            SessionToken::cleanUpSessions();
-        }
+        SessionToken::cleanUpSessions();
         $ip = $this->owner->getRealIp();
         $this->verifyIpAccess ($ip);
         $activeUser = null;
         $sessionToken = null;
         $sessionIdToken = null;
-        if($isMobile) {
-            if(empty(Yii::app()->request->cookies['sessionToken']->value)){
-                if(isset($_POST['LoginForm']))
-                    $model->attributes = $_POST['LoginForm']; // get user input data
-
-                $userModel = $model->getUser();
-                $isRealUser = $userModel instanceof User;
-                $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
-                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
-                /* increment count on every session with this user/IP, to prevent brute force attacks 
-                   using session_id spoofing or whatever */
-                Yii::app()->db->createCommand(
-                    'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
-                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                        ->bindValues(
-                            array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
-                        ->execute();
-
-                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                        ->select('username')
-                        ->from('x2_users')
-                        ->where('username=:name AND status=1', array(':name' => $model->username))
-                        ->limit(1)
-                        ->queryScalar(); // get the correctly capitalized username  
-
-                //create new sessionToken and save to server
-                $sessionIdToken = PasswordUtil::getToken(32);
-
-                $sessionToken = new SessionToken;
-                $sessionToken->id = $sessionIdToken;
-                $sessionToken->user = $model->getSessionUserName();
-                $sessionToken->lastUpdated = time();
-                $sessionToken->status = 0;
-                $sessionToken->IP = $ip;
-                $sessionToken->save();
-
-            } else {
-
-                $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
-                $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
-
-                $userModel =  User::model()->findByAlias($sessionTokenModel->user);
-                $isRealUser = $userModel instanceof User;
-                $effectiveUsername = $isRealUser ? $userModel->username : null;
-                $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
-
-                /* increment count on every session with this user/IP, to prevent brute force attacks 
-                   using session_id spoofing or whatever */
-                if($sessionTokenModel !== null){
-                    Yii::app()->db->createCommand(
-                        'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
-                        CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                            ->bindValues(
-                                array(':name' => $sessionTokenModel->user, ':ip' => $ip))
-                            ->execute();
-                }
-
-                $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
-                        ->select('username')
-                        ->from('x2_users')
-                        ->where('username=:name AND status=1', array(':name' => $sessionTokenModel->user))
-                        ->limit(1)
-                        ->queryScalar(); // get the correctly capitalized username 
-
-            }
-        } else {
+        if(empty(Yii::app()->request->cookies['sessionToken']->value)){
             if(isset($_POST['LoginForm']))
                 $model->attributes = $_POST['LoginForm']; // get user input data
 
             $userModel = $model->getUser();
             $isRealUser = $userModel instanceof User;
             $effectiveUsername = $isRealUser ? $userModel->username : $model->username;
-            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;            
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
             Yii::app()->db->createCommand(
-                    'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
-                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
-                        ->bindValues(
-                            array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
-                        ->execute();
+                'UPDATE x2_sessions SET status=status-1,lastUpdated=:time WHERE user=:name AND 
+                CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                    ->bindValues(
+                        array(':time' => time(), ':name' => $effectiveUsername, ':ip' => $ip))
+                    ->execute();
 
             $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
                     ->select('username')
@@ -148,6 +84,46 @@ class CommonSiteControllerBehavior extends CBehavior {
                     ->where('username=:name AND status=1', array(':name' => $model->username))
                     ->limit(1)
                     ->queryScalar(); // get the correctly capitalized username  
+
+            //create new sessionToken and save to server
+            $sessionIdToken = PasswordUtil::getToken(32);
+
+            $sessionToken = new SessionToken;
+            $sessionToken->id = $sessionIdToken;
+            $sessionToken->user = $model->getSessionUserName();
+            $sessionToken->lastUpdated = time();
+            $sessionToken->status = 0;
+            $sessionToken->IP = $ip;
+            $sessionToken->save();
+
+        } else {
+
+            $sessionTokenCookie = Yii::app()->request->cookies['sessionToken']->value;
+            $sessionTokenModel = X2Model::model('SessionToken')->findByPk($sessionTokenCookie);
+
+            $userModel =  User::model()->findByAlias($sessionTokenModel->user);
+            $isRealUser = $userModel instanceof User;
+            $effectiveUsername = $isRealUser ? $userModel->username : null;
+            $isActiveUser = $isRealUser && $userModel->status == User::STATUS_ACTIVE;
+
+            /* increment count on every session with this user/IP, to prevent brute force attacks 
+               using session_id spoofing or whatever */
+            if($sessionTokenModel !== null){
+                Yii::app()->db->createCommand(
+                    'UPDATE x2_sessions_token SET status=status-1 WHERE user=:name AND 
+                    CAST(IP AS CHAR)=:ip AND status BETWEEN -2 AND 0')
+                        ->bindValues(
+                            array(':name' => $sessionTokenModel->user, ':ip' => $ip))
+                        ->execute();
+            }
+
+            $activeUser = Yii::app()->db->createCommand() // see if this is an actual, active user
+                    ->select('username')
+                    ->from('x2_users')
+                    ->where('username=:name AND status=1', array(':name' => $sessionTokenModel->user))
+                    ->limit(1)
+                    ->queryScalar(); // get the correctly capitalized username 
+
         }
 
 
@@ -197,6 +173,12 @@ class CommonSiteControllerBehavior extends CBehavior {
             $this->recordSuccessfulLogin ($activeUser, $ip);
             $userModel->logLocation('login', 'POST');
 
+            $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
+            $cookie->expire = time () + 518400; // //60*60*24*6 = 6 days
+            Yii::app()->request->cookies['sessionToken'] = $cookie;
+            echo "<script type=\"text/javascript\">
+                    window.localStorage.setItem(\"sessionToken\","+$sessionIdToken +");
+                    </script>";
 
             if($model->rememberMe){
                 foreach(array('username','rememberMe') as $attr) {
@@ -206,12 +188,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                     $cookie->expire = time () + 2592000; //60*60*24*30 = 30 days
                     Yii::app()->request->cookies[$cookieName] = $cookie; // save cookie
                 }
-                if($isMobile){
-                    $cookie = new CHttpCookie('sessionToken', $sessionIdToken);
-                    $cookie->expire = time()+60*60*24*180; 
-                    Yii::app()->request->cookies['sessionToken'] = $cookie;            
-                }
-            } else{
+            }else{
                 foreach(array('username','rememberMe') as $attr) {
                     // Remove the cookie if they unchecked the box
                     AuxLib::clearCookie(CHtml::resolveName($model, $attr));
@@ -249,7 +226,8 @@ class CommonSiteControllerBehavior extends CBehavior {
                 }
             }
 
-        } else if ($isMobile && $model->loginSessionToken() && $isActiveUser){ 
+            $model->rememberMe = false;
+        } else if ($model->loginSessionToken() && $isActiveUser){ 
                 
             //refresh the number of tokens a user owns
             SessionToken::cleanUpUserTokens (Yii::app()->user->name);
@@ -267,7 +245,7 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             $session->status = 1;
             $session->save();
-            if($isMobile && Yii::app()->request->cookies['sessionToken']->value != null){
+            if(Yii::app()->request->cookies['sessionToken']->value != null){
                 SessionLog::logSession(Yii::app()->user->name, Yii::app()->request->cookies['sessionToken']->value, 'login');
             }
             $_SESSION['playLoginSound'] = true;
@@ -300,6 +278,7 @@ class CommonSiteControllerBehavior extends CBehavior {
                 $model->setScenario('loginWithCaptcha');
                     $session->status = -2;
             }
+            $model->rememberMe = false;
         }
         
        

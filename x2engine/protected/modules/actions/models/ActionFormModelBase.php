@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 abstract class ActionFormModelBase extends X2FormModel {
     public $associationType;
@@ -88,7 +85,7 @@ abstract class ActionFormModelBase extends X2FormModel {
      */
     public function validateCompleteDate ($attribute) {
         $value = $this->$attribute;
-        if (strtotime($this->dueDate) > strtotime($this->completeDate))
+        if ($this->dueDate > $this->completeDate)
             // User specified a negative time range! Let's say that the
             // starting time is equal to when it ended (which is earlier)
             $this->dueDate = $this->completeDate;

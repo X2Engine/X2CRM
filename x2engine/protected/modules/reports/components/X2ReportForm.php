@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 class X2ReportForm extends X2ActiveForm {
 
@@ -204,7 +201,7 @@ class X2ReportForm extends X2ActiveForm {
      * Renders report generation submit button 
      */
     public function generateReportButton () {
-        echo "<button type='submit' id='x2-generate-report-button' class='x2-button'>".
+        echo "<button type='submit' class='x2-button'>".
             Yii::t('reports', 'Generate')."</button>";
     }
 

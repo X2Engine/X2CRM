@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -31,4 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#emailProgressControl-title{margin-left:5px}#emailProgressControl div.emailProgressControl-section{padding:5px}#emailProgressControl button{display:inline-block}#emailProgressControl button .fa{margin-right:2px;margin-left:-2px}#emailProgressControl-bar{position:relative}#emailProgressControl-text{position:absolute;left:50%;font-weight:bold;padding-top:5px;color:black;background:none !important}#emailProgressControl-textStatus{display:inline-block;margin-left:20px;margin-top:6px}#emailProgressControl-throbber{display:inline-block;height:20px;width:20px;margin-top:6px}#emailProgressControl-errors{padding:5px;border:1px dashed red;margin-top:5px;max-height:250px;overflow:auto}#emailProgressControl-errors .emailFail{color:red}#emailProgressControl-errors .warning{color:#FFC107}#emailProgressControl-errorContainer{display:none}
+ **********************************************************************************/#emailProgressControl-title{margin-left:5px}#emailProgressControl div.emailProgressControl-section{padding:5px}#emailProgressControl button{display:inline-block}#emailProgressControl button .fa{margin-right:2px;margin-left:-2px}#emailProgressControl-bar{position:relative}#emailProgressControl-text{position:absolute;left:50%;font-weight:bold;padding-top:5px;color:black;background:none !important}#emailProgressControl-textStatus{display:inline-block;margin-left:20px;margin-top:6px}#emailProgressControl-throbber{display:inline-block;height:20px;width:20px;margin-top:6px}#emailProgressControl-errors{padding:5px;border:1px dashed red;margin-top:5px}#emailProgressControl-errors .emailFail{color:red}#emailProgressControl-errorContainer{display:none}

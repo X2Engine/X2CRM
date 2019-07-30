@@ -171,7 +171,7 @@ class CredentialTest extends HolodeckTestCase {
         $this->holodeck->mock(new Response(500, ''));
         
         try {
-            $this->twilio->chat->v1->credentials("CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+            $this->twilio->chat->v1->credentials("CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -198,7 +198,7 @@ class CredentialTest extends HolodeckTestCase {
             '
         ));
         
-        $actual = $this->twilio->chat->v1->credentials("CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+        $actual = $this->twilio->chat->v1->credentials("CRaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

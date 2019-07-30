@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,36 +34,42 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Manages record view widget settings
  */
-class RecordViewWidgetLayout extends WidgetLayout {
 
+class RecordViewWidgetLayout extends WidgetLayout {
     protected $alias = 'application.components.sortableWidget.recordViewWidgets';
 
-    protected function widgetOrder() {
-        return array(
+    protected function widgetOrder () {
+        return array (
+              
             'CampaignChartWidget',
+             
             'InlineRelationshipsWidget',
-            'TwitterFeedWidget',
+             
             'ActionHistoryChartWidget',
+             
             'PublisherWidget',
             'InlineTagsWidget',
+             
             'ImageGalleryWidget',
+             
             'WorkflowStageDetailsWidget',
+            'TwitterFeedWidget',
             'ActionsWidget',
             'CallsWidget',
             'CommentsWidget',
             'EmailsWidget',
             'EventsWidget',
             'LoggedTimeWidget',
+             
             'ProductsWidget',
+             
             'QuotesWidget',
             'WebActivityWidget',
         );
     }
-
 }
+
+?>

@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 @import "colors.scss";
 @import "standards.scss";
@@ -94,13 +91,12 @@
         cursor: pointer;
         cursor: hand;
         &:hover {
-            background: $lightBabyBlue;
+            background: $lightGray;
         }
     }
     .day-number-link {
-        font-size: 12px !important;
+        font-size: 14pt;
         text-decoration: none;
-        color: #555555;
     }
     .fc-day-number {
         float: none;
@@ -116,13 +112,15 @@
             color: white;
         }
     }
+    .day-number-link:hover {
+        /* color: #666666; */
+    }
 
     .ui-widget-content {
         border-bottom: none;
     }
     .ui-widget-header, .fc-first {
         border-left: none;
-        color: #555555;
     }
     .fc-last {
         border-right: none;
@@ -143,6 +141,7 @@
         background: #4078C3;
         margin: auto;
         border-radius: 5px;
+        // float:left;
         display: inline-block;
     }
     .fc-indicator-container {

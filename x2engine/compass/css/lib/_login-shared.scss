@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 @import "colors";
 
 $loginText: #444343;
@@ -52,10 +49,10 @@ $defaultBgColor: $lightestGray;
     @include linear-gradient(lighten($defaultBgColor, 8%), darken($defaultBgColor, 0%)); 
     border-color: #203079;
     &:hover {
-        background: darken($defaultBgColor, 10%);
+        @include box-shadow (inset 0 1px 1px rgba(0, 0, 0, 0.25));
     }
     &:active {
-        background: darken($defaultBgColor, 10%);
+        @include box-shadow (inset 0 1px 1px rgba(0, 0, 0, 0.45));
     }
 }
 

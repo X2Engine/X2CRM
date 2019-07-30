@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,36 +33,35 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 ?>
 <div class="view">
-    <b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-    <?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id' => $data->id)); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
+	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('text')); ?>:</b>
-    <?php echo CHtml::encode($data->text); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('text')); ?>:</b>
+	<?php echo CHtml::encode($data->text); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('createdBy')); ?>:</b>
-    <?php echo CHtml::encode($data->createdBy); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('createdBy')); ?>:</b>
+	<?php echo CHtml::encode($data->createdBy); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('updatedBy')); ?>:</b>
-    <?php echo CHtml::encode($data->updatedBy); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('updatedBy')); ?>:</b>
+	<?php echo CHtml::encode($data->updatedBy); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('createDate')); ?>:</b>
-    <?php echo CHtml::encode($data->createDate); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('createDate')); ?>:</b>
+	<?php echo CHtml::encode($data->createDate); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('lastUpdated')); ?>:</b>
-    <?php echo CHtml::encode($data->lastUpdated); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('lastUpdated')); ?>:</b>
+	<?php echo CHtml::encode($data->lastUpdated); ?>
+	<br />
 
-    <b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
-    <?php echo CHtml::encode($data->name); ?>
-    <br />
+	<b><?php echo CHtml::encode($data->getAttributeLabel('name')); ?>:</b>
+	<?php echo CHtml::encode($data->name); ?>
+	<br />
+
+
 </div>

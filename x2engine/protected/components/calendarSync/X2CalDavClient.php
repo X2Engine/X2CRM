@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::setPathOfAlias(
         'Sabre', Yii::getPathOfAlias('application.integration.SabreDAV'));
@@ -267,7 +264,7 @@ class X2CalDavClient extends Client {
      * @param type $syncToken
      * @return type
      */
-    public function sync($url, $syncToken, $time = NULL) {
+    public function sync($url, $syncToken) {
         $body = '<?xml version="1.0"?>' . "\n";
         $body.= '<d:sync-collection xmlns:d="DAV:">' . "\n";
 
@@ -278,12 +275,8 @@ class X2CalDavClient extends Client {
         $body.= '    <d:getetag/>' . "\n";
         $body.= '  </d:prop>' . "\n";
 
-        
-        if($time != NULL){
-            $body.= '<C:filter><C:time-range start="' . date("Y") . (date('M') - 6 + $time) . '00T000000Z"' . 
-                    ' end="' . date("Y") . (date('M') - 5 + $time) . '00T000000Z"/> </C:filter>' . "\n";
-        }
         $body.= '</d:sync-collection>';
+
         $headers = array(
             'Content-Type' => 'application/xml'
         );
@@ -291,7 +284,7 @@ class X2CalDavClient extends Client {
             $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
         }
 
-        $response = $this->request('REPORT', $url, $body, $headers, $time);
+        $response = $this->request('REPORT', $url, $body, $headers);
         return $this->parseMultiStatus($response['body']);
     }
 
@@ -311,87 +304,7 @@ class X2CalDavClient extends Client {
         }
         return array('etag' => '', 'body' => '');
     }
-    
-    /*
-     * Custom get function for outlook
-     */
-    public function getOutlook($url, $eventPath) {
-        $body = '';
-        $headers = array();
-        if ($this->oAuthToken) {
-            $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
-        }
 
-        $response = $this->request('GET', $url, $body, $headers);
-        if ($response['statusCode'] === 200) {
-            return array(
-                'body' => $response['body'],
-            );
-        }
-        
-        return array('body' => '');
-    }
-    
-    /*
-     * Custom put function for outlook
-     */
-    public function patchOutlook($url, $data, $timezone) {
-        
-        $subject = $data->actionDescription;
-        
-        //send as UTC
-        $dueDate = gmdate('Y-m-d\TH:i:s', $data->dueDate);
-        $completeDate = gmdate('Y-m-d\TH:i:s', $data->completeDate);
-        
-        $start = "'start': {'dateTime': " . CJSON::encode($dueDate) .",'timeZone': " . CJSON::encode($timezone) . "},";
-        $end = "'end': {'dateTime': " . CJSON::encode($completeDate) .",'timeZone': " . CJSON::encode($timezone) . "}";
-        $body = "{'subject': '" . $subject . "'," . $start . $end.  "}";
-
-        $headers = array(
-            'Content-Type' => 'application/json',
-        );
-
-        if ($this->oAuthToken) {
-            $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
-        }
-        
-        $response = $this->request('PATCH', $url, $body, $headers);
-        
-        return ($response['statusCode'] === 204 || $response['statusCode'] === 201 || $response['statusCode'] === 200);
-    }
-    
-    /*
-     * CUSTOM post function for outlook
-     */
-    public function postOutlook($url, $data, $timezone){
-                
-        $subject = $data->actionDescription;
-       
-        //send as UTC
-        $dueDate = gmdate('Y-m-d\TH:i:s', $data->dueDate);
-        $completeDate = gmdate('Y-m-d\TH:i:s', $data->completeDate);
-        
-        $start = "'start': {'dateTime': " . CJSON::encode($dueDate) .",'timeZone': " . CJSON::encode($timezone) . "},";
-        $end = "'end': {'dateTime': " . CJSON::encode($completeDate) .",'timeZone': " . CJSON::encode($timezone) . "}";
-        $body = "{'subject': '" . $subject . "'," . $start . $end.  "}";
-        
-        $headers = array(
-            'Content-Type' => 'application/json',
-        );
-
-        if ($this->oAuthToken) {
-            $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
-        }
-        
-        $response = $this->request('POST', $url, $body, $headers);
-        
-        if ($response['statusCode'] === 204 || $response['statusCode'] === 201 || $response['statusCode'] === 200){
-            return $response;
-        }else{
-            return false;
-        }
-    }
-    
     public function multiget($url, $eventPaths, array $properties) {
         $body = '<?xml version="1.0"?>' . "\n";
         $body.= '<c:calendar-multiget xmlns:d="DAV:"  xmlns:c="urn:ietf:params:xml:ns:caldav">' . "\n";
@@ -463,20 +376,6 @@ class X2CalDavClient extends Client {
         }
 
         $response = $this->request('DELETE', $url . $eventPath, $body, $headers);
-
-        return $response['statusCode'] === 204;
-    }
-    
-    public function deleteOutlook($url) {
-        $body = '';
-        $headers = array(
-            'Content-Type' => 'application/json',
-        );
-        if ($this->oAuthToken) {
-            $headers['Authorization'] = 'Bearer ' . $this->oAuthToken;
-        }
-
-        $response = $this->request('DELETE', $url, $body, $headers);
 
         return $response['statusCode'] === 204;
     }

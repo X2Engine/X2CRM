@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,26 +34,13 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $this->pageTitle = CHtml::encode (
     Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'Leads'));
 
 $menuOptions = array(
-    'index', 'create', 'import', 'export', 'lists',
+    'index', 'create', 'import', 'export',
 );
 $this->insertMenu($menuOptions);
-
- //these hidden field is here to stop google auto fill from filling in the grid
-$ConFields = X2Model::model("X2Leads")->getFields();
-foreach($ConFields as $field){
-    echo '<input type="hidden" id="X2Leads[' . $field->fieldName . ']" name="X2Leads[' . $field->fieldName . ']">';      
-}  
-    
-    
-$enableSelectAllOnAllPages = true;
-
 
 Yii::app()->clientScript->registerScript('search', "
 $('.search-button').click(function(){
@@ -71,7 +58,6 @@ $('.search-form form').submit(function(){
 $this->widget('X2GridView', array(
 	'id'=>'x2Leads-grid',
 	'title'=>Yii::t('x2Leads','{leads}', array('{leads}' => Modules::displayName())),
-        'enableSelectAllOnAllPages' => $enableSelectAllOnAllPages,
 	'buttons'=>array('advancedSearch','clearFilters','columnSelector','autoResize','showHidden'),
 	'template'=>
         '<div id="x2-gridview-top-bar-outer" class="x2-gridview-fixed-top-bar-outer">'.
@@ -117,12 +103,6 @@ $this->widget('X2GridView', array(
 			'type'=>'raw',
 		),
 	),
-        'massActions' => array(
-        'MassDelete', 'MassTag', 'MassTagRemove', 'MassUpdateFields', 
-        'MergeRecords', 'MassPublishNote', 'MassPublishCall', 'MassPublishTime', 
-        'MassPublishAction', 'MassAddRelationship', 
-        'MassAddToList', 'NewListFromSelection', 'MassExecuteMacro'
-        ),
 	'enableControls'=>true,
 	'fullscreen'=>true,
 ));

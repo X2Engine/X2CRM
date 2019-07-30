@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * This is the model class for table "x2_flows".
@@ -290,7 +287,7 @@ class X2Flow extends X2ActiveRecord {
                 $params['model']->asa('LinkableBehavior')) {
             $triggerInfo['modelLink'] = Yii::t('studio', 'View record: ') . $params['model']->getLink();
         }
- 
+
         // find all flows matching this trigger and modelClass
         $triggerLog;
         $flowTrace;
@@ -399,14 +396,14 @@ class X2Flow extends X2ActiveRecord {
             $triggerInfo['modelLink'] = Yii::t('studio', 'View record: ') .
                     $params['model']->getLink();
         }
-        
+
         $triggerLog = new TriggerLog;
         $triggerLog->triggeredAt = time();
         $triggerLog->flowId = $flow->id;
         $triggerLog->save();
         $flowRetArr = self::_executeFlow($flow, $params, $actionId, $triggerLog->id);
         $flowTrace = $flowRetArr['trace'];
-        
+
         // save log for triggered flow
         $triggerLog->triggerLog = CJSON::encode(
                         array_merge(array($triggerInfo), array($flowTrace)));
@@ -520,8 +517,9 @@ class X2Flow extends X2ActiveRecord {
      * @param array &$params an associative array of params, usually including 'model'=>$model,
      * @param integer $start the position in the branch to start at, defaults to 0
      */
-    public function executeBranch(&$flowItems, &$params, $triggerLogId = null, $id = null) {
+    public function executeBranch(&$flowItems, &$params, $triggerLogId = null) {
         $results = array();
+
         for ($i = 0; $i < count($flowItems); $i++) {
             $item = &$flowItems[$i];
             if (!isset($item['type']) || !class_exists($item['type']))
@@ -537,13 +535,13 @@ class X2Flow extends X2ActiveRecord {
                         $results[] = array(
                             $item['type'], true,
                             $this->executeBranch(
-                                    $item['trueBranch'], $params, $triggerLogId, $id)
+                                    $item['trueBranch'], $params, $triggerLogId)
                         );
                     } elseif (isset($item['falseBranch'])) {
                         $results[] = array(
                             $item['type'], false,
                             $this->executeBranch(
-                                    $item['falseBranch'], $params, $triggerLogId, $id)
+                                    $item['falseBranch'], $params, $triggerLogId)
                         );
                     }
                 }
@@ -556,14 +554,14 @@ class X2Flow extends X2ActiveRecord {
                         $results[] = array(
                             $item['type'], true,
                             $this->executeBranch(
-                                    $item[X2FlowSplitter::getRightChildName()], $params, $triggerLogId, $id)
+                                    $item[X2FlowSplitter::getRightChildName()], $params, $triggerLogId)
                         );
                     }
                     if (isset($item[X2FlowSplitter::getLeftChildName()])) {
                         $results[] = array(
                             $item['type'], false,
                             $this->executeBranch(
-                                    $item[X2FlowSplitter::getLeftChildName()], $params, $triggerLogId, $id)
+                                    $item[X2FlowSplitter::getLeftChildName()], $params, $triggerLogId)
                         );
                     }
                 }
@@ -572,18 +570,18 @@ class X2Flow extends X2ActiveRecord {
                 if ($item['type'] === 'X2FlowWait') {
                     $node->flowId = $this->id;
                     $results[] = $this->validateAndExecute(
-                            $item, $node, $params, $triggerLogId, $id);
+                            $item, $node, $params, $triggerLogId);
                     break;
                 } else {
                     $results[] = $this->validateAndExecute(
-                            $item, $node, $params, $triggerLogId, $id);
+                            $item, $node, $params, $triggerLogId);
                 }
             }
         }
         return $results;
     }
 
-    public function validateAndExecute($item, $flowAction, &$params, $triggerLogId = null, $id = null) {
+    public function validateAndExecute($item, $flowAction, &$params, $triggerLogId = null) {
         $logEntry;
         $validationRetStatus = $flowAction->validate($params, $this->id);
         if ($validationRetStatus[0] === true) {
@@ -591,7 +589,6 @@ class X2Flow extends X2ActiveRecord {
         } else {
             $logEntry = array($item['type'], $validationRetStatus);
         }
-        
         return $logEntry;
     }
 
@@ -665,8 +662,9 @@ class X2Flow extends X2ActiveRecord {
      */
     private static function _executeFlow(&$flow, &$params, $actionId = null, $triggerLogId = null) {
         $error = ''; //array($flow->name);
+
         $flowData = $flow->getFlow();
-        
+
         if ($flowData !== false &&
                 isset($flowData['trigger']['type'], $flowData['items'][0]['type'])) {
 
@@ -695,7 +693,7 @@ class X2Flow extends X2ActiveRecord {
                 if (empty($error)) {
                     try {
                         $flowTrace = array(true, $flow->executeBranch(
-                                    $flowData['items'], $params, $triggerLogId, $flow->id));
+                                    $flowData['items'], $params, $triggerLogId));
                         $flowRetVal = self::extractRetValFromTrace($flowTrace);
                         if (!$flowRetVal) {
                             $flowRetVal = $trigger->getDefaultReturnVal($flow->id);

@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
  @import "colors";
  @import "standards";
@@ -125,14 +122,18 @@ ul.column-selector {
     clear: both;
     td {
         padding: 3px 5px;
-	border-right: 1px solid #eee;
+        border-right: 1px solid #ccc;
+        /* border-top:1px solid #dbdad3 */
+        /* rgb(196,214,235) */
         overflow: hidden;
         white-space: nowrap;
         word-wrap: normal;
     }
     th {
         padding: 3px 5px;
-        border-right: 1px solid #eee;
+        border-right: 1px solid #ccc;
+        /* border-top:1px solid #dbdad3 */
+        /* rgb(196,214,235) */
         overflow: hidden;
         white-space: nowrap;
         word-wrap: normal;
@@ -148,33 +149,37 @@ ul.column-selector {
     thead th {
         line-height: 25px;
         padding: 0;
-        border-right-color: #eee;
-        border-bottom: 1px solid #eee;
+        /*border-left:1px solid #e6e6e6;*/
+        border-right-color: #b3b3b3;
+        border-bottom: 1px solid #b3b3b3;
         color: #333;
         text-align: center;
         font-size: 11px;
         font-weight: bold;
         -webkit-appearance: none;
         cursor: default;
-        background: white;
+        background: #F5F5F5;
+        /*background:-moz-linear-gradient(top,  #FAFAFA 0%, #ccc 100%);
+        background:-webkit-linear-gradient(top, #FAFAFA 0%, #ccc 100%);
+        background:-o-linear-gradient(top,      #FAFAFA 0%, #ccc 100%);
+        background:-ms-linear-gradient(top,     #FAFAFA 0%, #ccc 100%);
+        background:linear-gradient(to bottom,   #FAFAFA 0%, #ccc 100%);*/
     }
     th {
         a {
             display: block;
-            color: #555555;
+            color: #333;
             font-size: 11px;
             text-decoration: none;
         }
         &:hover {
-            color: #3d70b4;
-            text-decoration: none;
+            /* background-color:#f8f8f8; */
         }
     }
     td a {
         text-decoration: none;
         &:hover {
-            color: #3d70b4;
-            text-decoration: none;
+            text-decoration: underline;
         }
     }
 }
@@ -228,7 +233,10 @@ ul.column-selector {
     table.items {
         tr {
             &.odd {
-                background: white;
+                background: #F5F4DE;
+                /* #dce7f0; */
+                /* #dce7f0; */
+                /* background:#f7f6f0; */
             }
             &.unviewed td {
                 background: #eef0ff;
@@ -238,11 +246,11 @@ ul.column-selector {
                 background: #fff;
                 td {
                     padding: 0;
-                    border: solid #e0e0e0;
+                    border: solid #b3b3b3;
                     border-width: 0 1px 1px 0;
-                    border-bottom-color: #e0e0e0;
-                    border-right-color: #e0e0e0;
-                    background: white;
+                    border-bottom-color: #b3b3b3;
+                    border-right-color: #b3b3b3;
+                    background: #d8d8d8;
                 }
                 input, select {
                     width: 100%;
@@ -254,22 +262,20 @@ ul.column-selector {
                 }
                 select {
                     height: $gridViewCellHeight - 1px;
-                    padding: 0;
-                    background: white;
                 }
             }
         }
         th {
             &.asc, &.desc {
+                // border-color: #3577d1;
                 @include dark-border($lightBlue);
-                border: none;
-                background: $lightBabyBlue;
-                text-shadow: none;
+                // border-left-color: #79b4ff;
+                background: $lightBlue;
             }
 
             &.asc a, &.desc a {
-                color: #555555;
-                text-shadow: none;
+                color: #fff;
+                text-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
             }
             
             &.asc a {
@@ -289,10 +295,14 @@ ul.column-selector {
         &.x2grid-header-container {
             overflow: hidden;
             position: relative;
+            /* border-bottom:1px solid #666; */
         }
         &.x2grid-body-container {
             overflow-x: auto;
             overflow-y: hidden;
+            /* border-top:1px solid #666; */
+            /*  overflow-y:scroll;
+                max-height:710px; */
         }
     }
     table.items.x2grid-resizable {
@@ -305,7 +315,6 @@ ul.column-selector {
         border-left: none;
         border-right: none;
         border-top: none;
-            
         border-bottom: 1px solid #D5D5D5;
     }
     table.items.x2grid-resizable tr:first-child td {
@@ -617,5 +626,5 @@ Remove extra border when pager isn't shown
 
 
 .sortable-widget-container .x2grid-header-container {
-    border-top: 1px solid #eee;
+    border-top: 1px solid $gray;
 }

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerScript('deleteActionJs', "
 function deleteAction(actionId, type) {
@@ -268,14 +265,8 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
     echo $data->actionDescription;
 }elseif($data->type == 'quotes'){
     $data->renderInlineViewLink ();
-} else {
-    if (isset($data->subject) && $data->subject !== '' && !ctype_space($data->subject)) {
-        echo '<b>'.Yii::t('actions', 'Subject: ').'</b>'. Yii::app()->controller->convertUrls($data->subject);
-        echo '<br />';
-        echo '<br />';
-    }
+} else
     echo Yii::app()->controller->convertUrls($data->actionDescription); // convert LF and CRLF to <br />
-}
 ?>
     </div>
 

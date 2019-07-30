@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 class WebFormAction extends CAction {
 
     public static function sanitizeGetParams() {
@@ -57,13 +54,10 @@ class WebFormAction extends CAction {
             $taglist = explode(',', $_POST['tags']);
             if ($taglist !== false) {
                 foreach ($taglist as &$tag) {
-                    $tag = trim($tag);
-                    if ($tag === '') {
+                    if ($tag === '')
                         continue;
-                    }
-                    if (substr($tag, 0, 1) !== '#') {
+                    if (substr($tag, 0, 1) != '#')
                         $tag = '#' . $tag;
-                    }
                     $tagModel = new Tags;
                     $tagModel->taggedBy = 'API';
                     $tagModel->timestamp = time();
@@ -767,7 +761,7 @@ class WebFormAction extends CAction {
                         $extractedParams['userEmailTemplate'] = $webForm->userEmailTemplate;
                     if (!empty($webForm->webleadEmailTemplate))
                         $extractedParams['webleadEmailTemplate'] = $webForm->webleadEmailTemplate;
-                    if (!empty($webForm->fingerprintDetection))
+                    if (empty($webForm->fingerprintDetection))
                         $extractedParams['fingerprintDetection'] = $webForm->fingerprintDetection;
                 } else { // legacy method
                     if (isset($_GET['header'])) {

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 class WebFormBehavior extends CBehavior {
 
@@ -102,21 +99,6 @@ class WebFormBehavior extends CBehavior {
      */
     protected static function generateLead (Contacts $contact, $leadSource=null) {
         $lead = new X2Leads ('webForm');
- 
-        $ConFields = X2Model::model("Contacts")->getFields();
-        $LeadFields = X2Model::model("X2Leads")->getFields();
-        $FieldNames = array();
-        //added code so it will check for all shareded fields
-        foreach($ConFields as $field){
-            array_push($FieldNames , $field->fieldName);
-        }
-        foreach($LeadFields as $field) {
-            if(in_array($field->fieldName, $FieldNames)  && (($field->fieldName) != 'id') && (($field->fieldName) != 'nameId')){
-                $nameHere = $field->fieldName;
-                $lead->$nameHere = $contact->$nameHere;
-            }
-        
-        }
         $lead->firstName = $contact->firstName;
         $lead->lastName = $contact->lastName;
         $lead->leadSource = $leadSource;
@@ -138,20 +120,6 @@ class WebFormBehavior extends CBehavior {
             if ($account->save ()) {
                 $account->refresh ();
                 $contact->company = $account->nameId;
-                $ConFields = X2Model::model("Contacts")->getFields();
-                $AccFields = X2Model::model("Accounts")->getFields();
-                $FieldNames = array();
-                //added code so it will check for all shareded fields
-                foreach ($ConFields as $field) {
-                    array_push($FieldNames, $field->fieldName);
-                }
-                foreach($AccFields as $field) {
-                    if(in_array($field->fieldName, $FieldNames)  && (($field->fieldName) != 'id') && (($field->fieldName) != 'name')  && (($field->fieldName) != 'nameId')){
-                        $nameHere = $field->fieldName;
-                        $account->$nameHere = $contact->$nameHere;
-                     }
-        
-                }
                 $contact->update ();
                 return $account;
             }
@@ -231,23 +199,6 @@ class WebFormBehavior extends CBehavior {
             if ($status['code'] !== '200') {
                                 /**/AuxLib::debugLog (
                                     'Error: sendUserEmail: '.$status['message']);
-            } else {
-                    //record the email 
-                    $action = new Actions;
-                     $now = time();
-                    // These attributes will be the same regardless of the type of
-                    // email being sent:
-                    $action->createDate = $now;
-                    $action->dueDate = $now;
-                    $action->subject = $subject;
-                    $action->completeDate = $now;
-                    $action->complete = 'Yes';
-                    $action->actionDescription = $emailBody;
-                    $action->associationId = $model->id;
-                    $action->associationType = ucfirst($model->module);
-                    $action->type = 'email';
-                    $action->visibility =  1;
-                    $action->save();
             }
         }
     }

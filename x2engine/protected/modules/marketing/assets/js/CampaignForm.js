@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  * Static Class to handle everything on the campaign form.
  * This class is the result of making the old Campaign form code object oriented. 
@@ -59,33 +56,16 @@ x2.CampaignForm = (function() {
         // Old Code in this function
         CF.setUpForm();
 
-        // quick create form for contact lists and Suppression List
+        // quick create form for contact lists
         CF.quickCreateForm = $('#quick-create-list-form');
-        CF.quickSuppressionCreateForm = $('#quick-create-suppression-list-form');
 
         // Set up Quick Create Form
         CF.setUpQuickCreate();
 
         // Setup the button that lets the user save the template
         CF.setUpTemplateSubmit();
-        
-        //set up the button the hides supprestion list
-        CF.setUpHide();
 
     };
-     /**
-     * make it so the suppression list is hiddin
-     */
-    CampaignForm.setUpHide = function (){
-        $('#supButton').click(function(){
-            
-            var elem = document.getElementById("supButton");
-            elem.style.display = "none";
-            var elem = document.getElementById("supRow");
-            elem.style.display = "";
-        });
-    }
-    
 
     /**
      * Because some fields are added outside of the form view, 
@@ -208,40 +188,30 @@ x2.CampaignForm = (function() {
     }    
 
     /**
-     * function called on the click of contact list/suppression list button with appropriate params.
+     * Sets up the behavior of the quick create contact list button.
+     * The form is loaded lazily. 
      */
     CampaignForm.setUpQuickCreate = function() {
-        $('#quick-create-list').click({formId: 'quickCreateForm', formField: 'listId'}, CF.quickCreateFromFunction);
-        $('#quick-create-suppression-list').click(
-            {formId: 'quickSuppressionCreateForm', formField: 'suppressionListId'},
-            CF.quickCreateFromFunction
-        );
-    }
+        $('#quick-create-list').click(function(){
 
-    /**
-     * Sets up the behavior of the quick create contact list/suppression list button.
-     * The form is loaded lazily.
-     * @param event Data from the click event
-     */
-    CampaignForm.quickCreateFromFunction = function(event) {
-        // Only append form if one isn't there already.
-        var CFformID = CF[event.data.formId];
-        if (CFformID.find('.form').length > 0) {
-            CFformID.slideToggle();
-            return;
-        }
-
-        // This action was modified to allow for ajax
-        $.ajax({
-            url: yii.scriptUrl + '/contacts/createList',
-            data: {
-                ajax: 1
-            },
-            success: function(data) {
-                if (CFformID.find('.form').length == 0) {
-                    CF.appendQuickCreate (data, CFformID, event.data.formField);
-                }
+            // Only append form if one isn't there already.
+            if (CF.quickCreateForm.find('.form').length > 0) {
+                CF.quickCreateForm.slideToggle();
+                return
             }
+
+            // This action was modified to allow for ajax
+            $.ajax({
+                url: yii.scriptUrl + '/contacts/createList',
+                data: {
+                    ajax: 1
+                },
+                success: function(data) {
+                    if (CF.quickCreateForm.find('.form').length == 0) {
+                        CF.appendQuickCreate (data);
+                    }
+                }
+            });
         });
     }
 
@@ -249,19 +219,17 @@ x2.CampaignForm = (function() {
      * Appends the quick create form to the DOM and sets up
      * handlers on its submit function
      * @param data Data from the AJAX Request
-     * @param CFformID form id name
-     * @param formField field name
      */
-    CampaignForm.appendQuickCreate = function(data, CFformID, formField) {
-        $(data).appendTo (CFformID);
+    CampaignForm.appendQuickCreate = function(data) {
+        $(data).appendTo (CF.quickCreateForm);
 
         // remove the page title from the response
-        CFformID.find('.page-title').remove();
+        CF.quickCreateForm.find('.page-title').remove();
 
         // Open the form 
-        CFformID.slideToggle();
+        CF.quickCreateForm.slideToggle();
 
-        var form = CFformID.find('form');
+        var form = CF.quickCreateForm.find('form');
 
         // rename submit button to avoid collision with submit button on page. 
         var submit = form.find('#save-button').attr('id', 'contact-list-save-button');
@@ -282,12 +250,12 @@ x2.CampaignForm = (function() {
                         .html(data.name);
 
                     // Append the new option to the select dropdown
-                    $('#Campaign_' + formField).append (option).val(data.id);
+                    $('#Campaign_listId').append (option).val(data.id);
 
                     // Close the form
-                    CFformID.slideToggle();
+                    CF.quickCreateForm.slideToggle();
 
-                    CFformID.find('.form').remove();
+                    CF.quickCreateForm.find('.form').remove();
                 }
             });
         });
@@ -336,21 +304,12 @@ x2.CampaignForm = (function() {
                 success: function(data) {
                     // Show success
                     x2.topFlashes.displayFlash(data.name + " Created.", 'success');
-                    
+
                     // Append option to the dropdown of templates
                     $('<option></option>').appendTo ('#Campaign_template')
                         .attr ('value', data.id)
                         .html (data.name)
                         .parent().val (data.id);
-                    
-                    // Sort dropdown by lower lex, 'Custom' on top
-                    var select = $('#Campaign_template');
-                    select.html(select.find('option').sort(function(x, y) {
-                        if ($(x).text() === 'Custom') return -1;
-                        if ($(y).text() === 'Custom') return 1;
-                        return $(x).text().toLowerCase() > $(y).text().toLowerCase() ? 1 : -1;
-                    }));
-                
                 }
             });
         });

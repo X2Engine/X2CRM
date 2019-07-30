@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 $migrationScript2plaphp = function () {
     Yii::app()->db->createCommand ("INSERT INTO `x2_fields` (`attributeLabel`,`custom`,`data`,`defaultValue`,`fieldName`,`isVirtual`,`keyType`,`linkType`,`modelName`,`modified`,`readOnly`,`relevance`,`required`,`safe`,`searchable`,`type`,`uniqueConstraint`) VALUES ('Subtype',0,NULL,NULL,'eventSubtype',0,NULL,'121','Actions',0,0,'',0,1,0,'dropdown',0),('Status',0,NULL,NULL,'eventStatus',0,NULL,'122','Actions',0,0,'',0,1,0,'dropdown',0)")->execute ();

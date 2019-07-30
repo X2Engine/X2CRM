@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,16 +34,14 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 $menuOptions = array('all', 'create');
 $this->insertMenu($menuOptions);
-?>
 
-<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts', 'Create {module}', array('{module}' => Modules::displayName(false))); ?></h2></div>
+?>
+<div class="page-title icon accounts"><h2><?php echo Yii::t('accounts','Create {module}', array('{module}'=>Modules::displayName(false))); ?></h2></div>
 
 <?php
-$this->widget('FormView', array(
-    'model' => $model
+$this->widget ('FormView', array(
+	'model' => $model
 ));
+// echo $this->renderPartial('application.components.views.@FORMVIEW', array('model'=>$model, 'users'=>$users,'modelName'=>'accounts')); ?>

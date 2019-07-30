@@ -235,44 +235,32 @@ class Modules extends CActiveRecord {
      * Populate a list of available modules to import/export
      */
     public static function getExportableModules() {
-        
         $modules = Modules::model()->findAll();
         $moduleList = array();
         $skipModules = array(
             'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
         
         $skipModules[] = 'EmailInboxes';
-
-        foreach($modules as $module){
-
         
+        foreach($modules as $module){
             $name = ucfirst($module->name);
-            
             if (in_array($name, $skipModules)) {
                 continue;
             }
-
             if($name != 'Document'){
                 $controllerName = $name.'Controller';
                 if(file_exists(
                     'protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
-                    
+
                     Yii::import("application.modules.$module->name.controllers.$controllerName");
-
                     $controller = new $controllerName($controllerName);
-
-                    
                     $model = $controller->modelClass;
-                    
                     if(class_exists($model)){
-                        
                         $moduleList[$model] = Yii::t('app', $module->title);
-                        
                     }
                 }
             }
         }
-        
         return $moduleList;
     }
 
@@ -326,19 +314,8 @@ class Modules extends CActiveRecord {
 
         if (Yii::app()->locale->id === 'en') {
             // Handle silly English pluralization
-            $isVowelTrue = false;
-            if (preg_match('/y$/', $moduleTitle)) {
-                $moduleTitleExploded = explode('y', $moduleTitle);
-                // Get 'a' in 'days'
-                $isVowel = substr($moduleTitleExploded[count($moduleTitleExploded) - 2], -1);
-                if ($isVowel === 'a' || $isVowel === 'e' ||
-                        $isVowel === 'i' || $isVowel === 'o' ||
-                        $isVowel === 'u') {
-                    $isVowelTrue = true;
-                }
-            }
             if ($plural === false) {
-                if (preg_match('/ies$/', $moduleTitle) && !$isVowelTrue) {
+                if (preg_match('/ies$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/ies$/', 'y', $moduleTitle);
                 } else if (preg_match('/ses$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/es$/', '', $moduleTitle);
@@ -347,7 +324,7 @@ class Modules extends CActiveRecord {
                     $moduleTitle = trim($moduleTitle, 's');
                 }
             } elseif ($plural === 'optional') {
-                if (preg_match('/y$/', $moduleTitle) && !$isVowelTrue) {
+                if (preg_match('/y$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/y$/', '(ies)', $moduleTitle);
                 } else if (preg_match('/ss$/', $moduleTitle)) {
                     $moduleTitle .= '(es)';
@@ -357,7 +334,7 @@ class Modules extends CActiveRecord {
                     $moduleTitle = preg_replace('/s$/', '(s)', $moduleTitle);
                 }
             } else {
-                if (preg_match('/y$/', $moduleTitle) && !$isVowelTrue) {
+                if (preg_match('/y$/', $moduleTitle)) {
                     $moduleTitle = preg_replace('/y$/', 'ies', $moduleTitle);
                 } else if (preg_match('/ss$/', $moduleTitle)) {
                     $moduleTitle .= 'es';

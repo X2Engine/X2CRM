@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,9 +37,6 @@
 
 
 
-
-
-
 //Yii::import('application.modules.actions.models.*');
 
 /**
@@ -49,27 +46,6 @@
  * @author Raymond Colebaugh <raymond@x2engine.com>
  */
 class HubConnectionBehavior extends CModelBehavior {
-    
-    /**
-     * Creates an instance of FacebookBehavior
-     * 
-     * @param array params: Parameters for behavior fields
-     * @return HubConnectionBehavior: Instance of FacebookBehavior
-     */
-    public static function createHubInstance() {
-        $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
-        return $hub;
-    }
-    
-    public static function checkHubEnabled() {
-        $hubId = Yii::app()->settings->hubCredentialsId;
-        
-        if (isset($hubId)) {
-            $creds = Credentials::model()->findByPk($hubId);
-            return isset($creds) && isset($creds->auth) && isset($creds->auth->hubEnabled) && $creds->auth->hubEnabled;
-        }
-        return false;
-    }
 
     public function getHubServerUrl() {
         return 'https://hub.x2crm.com/index.php';
@@ -77,9 +53,8 @@ class HubConnectionBehavior extends CModelBehavior {
 
     public function pingHub() {
         $response = $this->hubRequest('site/ping');
-        if (isset($response['error']) && $response['error'] === false) {
+        if (isset($response['error']) && $response['error'] === false)
             return $response['message'] === 'enabled';
-        }
     }
 
     /**
@@ -92,12 +67,12 @@ class HubConnectionBehavior extends CModelBehavior {
             'userId' => $user->id,
             'phone' => $user->cellPhone,
         ));
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
     }
 
     /**
      * Request a Google API key from X2Hub for a user
-     * 
      * @param int $userId User id requesting service
      * @param string $type X2Hub Activity type
      * @return string API Key
@@ -107,13 +82,12 @@ class HubConnectionBehavior extends CModelBehavior {
             'userId' => $userId,
             'type' => $type,
         ));
-
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
     }
 
     /**
      * Request a Google OAuth access token from X2Hub for a user
-     * 
      * @param int $userId User id requesting service
      * @param string $type X2Hub Activity type
      * @return string Access token
@@ -126,81 +100,23 @@ class HubConnectionBehavior extends CModelBehavior {
             'refreshToken' => $refreshToken,
             'redirectUri' => $redirectUri,
         ));
-
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
     }
 
     public function getGoogleAuthorizationUrl($userId, $type, $redirectUri, $state) {
         $response = $this->hubRequest('google/getAuthorizationUrl', array(
             'userId' => $userId,
+            'type' => $type,
             'state' => $state,
             'redirectUri' => $redirectUri,
         ));
-        
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
-    }
-
-    /**
-     * Request Facebook credentials from X2Hub for user
-     * 
-     * @return string API Key
-     */
-    public function getFacebookCredentials() {
-        $response = $this->hubRequest('facebook/getCredentials');
-        
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
-    }
-
-    /**
-     * Request a Twitter access token from X2Hub for a user
-     * 
-     * @param int $userId User id requesting service
-     * @param string $type X2Hub Activity type
-     * @return string API Key
-     */
-    public function getTwitterCredentials() {
-        $response = $this->hubRequest('twitter/getCredentials');
-
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
-    }
-    
-    /**
-     * Request a LinkedIn access token from X2Hub for a user
-     * 
-     * @param int $userId User id requesting service
-     * @param string $type X2Hub Activity type
-     * @return string API Key
-     */
-    public function getLinkedInCredentials() {
-        $response = $this->hubRequest('linkedin/getCredentials');
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
-    }
-    
-    /**
-     * Request a Dropbox access token from X2Hub for a user
-     */
-    public function getDropboxCredentials() {
-        $response = $this->hubRequest('dropbox/getCredentials');
-        
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
-    }
-
-    /**
-     * Request docusign account id from x2hub for a user
-     * 
-     * @param int $userId User id requesting service
-     * @param string $type X2Hub Activity type
-     * @return string API Key
-     */
-    public function getDocusignAccountId() {
-        $response = $this->hubRequest('docusign/getAccountId');
-        
-        return isset($response['error']) && $response['error'] === false ? $response['message'] : '';
+        if (isset($response['error']) && $response['error'] === false)
+            return $response['message'];
     }
 
     /**
      * Issue a request to X2Hub
-     * 
      * @param string $action X2Hub Action to perform
      * @param array $params Request parameters
      * @return array Response details
@@ -212,16 +128,18 @@ class HubConnectionBehavior extends CModelBehavior {
                 'unique_id' => $creds->auth->unique_id,
             ));
             $query = http_build_query($params);
-            $url = $this->hubServerUrl . '/' . $action . '?' . $query;
+            $url = $this->hubServerUrl.'/'.$action.'?'.$query;
             $response = RequestUtil::request(array(
-                        'timeout' => 15,
-                        'url' => $url,
-                        'header' => array(
-                            'Content-Type' => 'application/json',
-                        ),
+                'timeout' => 15,
+                'url' => $url,
+                'header' => array(
+                    'Content-Type' => 'application/json',
+                ),
             ));
             return CJSON::decode($response, true);
         }
     }
 
 }
+
+?>

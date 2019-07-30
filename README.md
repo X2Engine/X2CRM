@@ -28,6 +28,15 @@ THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT c
     * Account, Lead and Opportunity lists can now all be used in campaigns
   * Miscellaneous bug fixes
 
+# 6.9 #
+08/22/2017
+* General Changelog / Developer Notes
+  * Miscellaneous UI enhancements
+    * Green login logo
+  * Miscellaneous bug fixes
+    * Login token bug fix
+    * UI bug fixes
+
 # Introduction #
 Welcome to X2CRM!
 X2CRM is a next-generation,  open source social sales application for small and 

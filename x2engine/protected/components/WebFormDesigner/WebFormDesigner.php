@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.components.WebFormDesigner.views.*');
 
@@ -151,10 +148,9 @@ class WebFormDesigner extends X2Widget {
 
     public function getJSClassParams () {
         $this->_JSClassParams = array_merge (parent::getJSClassParams(), array(
-            'baseUrl'                 => Yii::app()->request->getBaseUrl(true),
             'iframeSrc'               => Yii::app()->createExternalUrl($this->url),
             'externalAbsoluteBaseUrl' => Yii::app()->getExternalAbsoluteBaseUrl (),
-            'saveUrl'                 => Yii::app()->createAbsoluteUrl ($this->saveUrl),
+            'saveUrl'                => Yii::app()->createAbsoluteUrl ($this->saveUrl),
             'savedForms'              => $this->formAttrs,
             'deleteFormUrl'           => Yii::app()->createAbsoluteUrl (
                                             '/marketing/marketing/deleteWebForm'),

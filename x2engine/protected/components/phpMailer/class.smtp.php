@@ -128,7 +128,6 @@ class SMTP
 
     /**
      * Whether to use VERP.
-     * Default is changed to true for bounce handling
      * @link http://en.wikipedia.org/wiki/Variable_envelope_return_path
      * @link http://www.postfix.org/VERP_README.html Info on VERP
      * @var boolean

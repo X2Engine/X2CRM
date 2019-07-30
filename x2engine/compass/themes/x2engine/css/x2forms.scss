@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 @import "standards";
 @import "colors";
 @import "fonts";
@@ -50,7 +47,7 @@ h2 .x2-button {
 }
 
 #main-column {
-    margin-top: 20px;
+    margin-top: 5px;
     > {
         div, form {
             margin: 0 0px 5px 0px;
@@ -71,16 +68,15 @@ h2 .x2-button {
 
 .x2-layout {
     width: auto;
+    margin-bottom: 5px;
     overflow: hidden;
     background: #fafafa;
-    margin: 0px 20px 20px 0px;
-    
     @include border-radius;
 
     a {
         text-decoration: none;
         &:hover {
-            color: #3d70b4;
+            text-decoration: underline;
         }
     }
 
@@ -95,31 +91,19 @@ h2 .x2-button {
 
     // Border stuff
     .formSectionRow .formSectionColumn .formItem .label{
-        border-left: none;
-        min-width: 70px;
+        border-left: 1px solid $gray;
     }
 
     .formSectionRow .formSectionColumn:first-child .formItem .label{
         border-left: none;
-        min-width: 70px;
     }
 
     .formSectionRow .formItem:first-child .label {
         border-top: none;
-        border-left: none;
-        border-bottom: none;
-    }
-    
-    .formSectionRow .formItem .label {
-        border-top: none;
-        border-left: none;
-        border-bottom: none;
     }
 
     .formSectionRow .formItem:last-child .label {
-        border-top: none;
-        border-left: none;
-        border-bottom: none;
+        border-bottom: 1px solid $gray;
     }
 
     .formSectionRow .formItem.topLabel .label {
@@ -131,18 +115,15 @@ h2 .x2-button {
     }
 
     .formSection {
-        margin-right: 0px !important;
-        background: white; 
-        border-top: 1px solid #e0e0e0;
+        background: lighten($lightGray,10%);
 
         .formSectionShow, 
         .formSectionHide {
             display: inline-block;
+            margin-left: 2px;
+            margin-top: 2px;
             opacity: 0.6;
             height: 15px;
-            margin-left: 0px;
-            margin-top: 0px;
-            margin-right: 2px;
         }
         .formSectionShow {
             display: inline-block;
@@ -167,10 +148,6 @@ h2 .x2-button {
             border-collapse: collapse;
         }
     }
-
-    .formSection:first-child {
-        border-top: none;
-    }
     
     .tableWrapper {
         width: auto;
@@ -191,20 +168,18 @@ h2 .x2-button {
     }
 
     .formSectionHeader {
-        background: white; 
-	border-bottom: none;
-        border-top: none;
-        padding-top: 0px;
-        padding-bottom: 0px;
-        padding-left: 0px;
-        padding-right: 0px;
-        padding: 6px 12px 2px 12px;
         display: block;
-        margin-right: 0px !important;
+        background: lighten($lightGray, 5%);
+    
+        border-bottom: 1px solid darken($lightGray, 5%);
+        border-top: 1px solid lighten($lightGray, 3%);
 
         /* @theme background: content */
         /* @theme color: text */
         /* @theme border-color: border */
+
+        padding-top: 2px;
+        padding-bottom: 2px;
 
         a {
             width: 20px;
@@ -217,15 +192,16 @@ h2 .x2-button {
 
     .sectionTitle {
         display: inline-block;
-        margin-left: 0px;
-        padding-left: 0px;
+
+        margin-left: 2px;
+        padding-left: 4px;
+
         font-family: Montserrat;
         font-weight: normal !important;
     }
 
     &.form-view .formItem:nth-child(odd) {
         background: lighten($lightGray,10%);
-        
         /* @theme background: content */
     }
 
@@ -236,14 +212,12 @@ h2 .x2-button {
         /* @theme background: content */
 
         &:nth-child(odd) {
-            background: white;
-            
+            background: lighten($lightGray,100%);
             /* @theme background: content */
         }
 
         &:nth-child(even) {
-            background: white;
-            
+            background: lighten($lightGray,10%);
             /* @theme background: content */
         }
 
@@ -259,7 +233,7 @@ h2 .x2-button {
 
             box-sizing: border-box;
 
-            background: white;
+            background: lighten($lightGray,10%);
             border: 1px solid $gray;
 
             /* @theme background: light_content */
@@ -270,8 +244,6 @@ h2 .x2-button {
         }
 
         .attribute {
-            position: relative;
-            
             /* @theme color: text */
         }
 
@@ -320,6 +292,10 @@ h2 .x2-button {
 
             font-size: 12px;
             @include border-radius(3px);
+        }
+
+        input[type=text] {
+            min-width: 200px;
         }
     
         textarea {
@@ -836,6 +812,10 @@ div.half-width > div.form {
 }
 
 @media (min-width: 1403px) {
+    .history {
+        //width: 35%;
+        margin-top: 5px;
+    }
     #main-column {
         width: 65%;
         float: left;
@@ -859,6 +839,10 @@ div.half-width > div.form {
             &.form {
                 background: #fff;
             }
+            margin: 0 5px 5px 0px;
+        }
+        form {
+            margin: 0 5px 5px 0px;
         }
     }
 }
@@ -866,6 +850,7 @@ div.half-width > div.form {
 @media (min-width: 1122px) {
     .no-widgets {
         .history {
+            //width: 35%;
             margin-top: 5px;
         }
         #main-column {
@@ -891,7 +876,7 @@ div.half-width > div.form {
                 &.form {
                     background: #fff;
                 }
-                margin: 0 0px 0px 0px;
+                margin: 0 5px 5px 0px;
             }
             form {
                 margin: 0 5px 5px 0px;

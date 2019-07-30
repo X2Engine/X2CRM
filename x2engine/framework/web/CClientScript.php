@@ -550,29 +550,6 @@ class CClientScript extends CApplicationComponent
 		return $this->coreScripts[$name]['baseUrl']=$baseUrl;
 	}
 
-    /**
-     * Checks if package is available.
-     * @param string $name the name of the script package.
-     * @return bool
-     * @since 1.1.18
-     * @see registerPackage
-     */
-	public function hasPackage($name)
-    {
-        if(isset($this->coreScripts[$name]))
-            return true;
-        if(isset($this->packages[$name]))
-            return true;
-        else
-        {
-            if($this->corePackages===null)
-                $this->corePackages=require(YII_PATH.'/web/js/packages.php');
-            if(isset($this->corePackages[$name]))
-                return true;
-        }
-        return false;
-    }
-
 	/**
 	 * Registers a script package that is listed in {@link packages}.
 	 * This method is the same as {@link registerCoreScript}.
@@ -591,7 +568,6 @@ class CClientScript extends CApplicationComponent
 	 * @param string $name the name of the script package.
 	 * @return static the CClientScript object itself (to support method chaining, available since version 1.1.5).
 	 * @see renderCoreScript
-	 * @throws CException
 	 */
 	public function registerCoreScript($name)
 	{
@@ -601,8 +577,12 @@ class CClientScript extends CApplicationComponent
 			$package=$this->packages[$name];
 		else
 		{
-			if($this->corePackages===null)
+			if($this->corePackages===null) {
 				$this->corePackages=require(YII_PATH.'/web/js/packages.php');
+				$this->corePackages = array_merge( $this->corePackages, 
+					require('protected/data/packages.php')
+				);
+			}
 			if(isset($this->corePackages[$name]))
 				$package=$this->corePackages[$name];
 		}
@@ -671,8 +651,6 @@ class CClientScript extends CApplicationComponent
 	 */
 	public function registerScriptFile($url,$position=null,array $htmlOptions=array())
 	{
-		$params=func_get_args();
-
 		if($position===null)
 			$position=$this->defaultScriptFilePosition;
 		$this->hasScripts=true;
@@ -684,6 +662,7 @@ class CClientScript extends CApplicationComponent
 			$value['src']=$url;
 		}
 		$this->scriptFiles[$position][$url]=$value;
+		$params=func_get_args();
 		$this->recordCachingAction('clientScript','registerScriptFile',$params);
 		return $this;
 	}
@@ -703,12 +682,9 @@ class CClientScript extends CApplicationComponent
 	 * @param array $htmlOptions additional HTML attributes
 	 * Note: HTML attributes are not allowed for script positions "CClientScript::POS_LOAD" and "CClientScript::POS_READY".
 	 * @return static the CClientScript object itself (to support method chaining, available since version 1.1.5).
-	 * @throws CException
 	 */
 	public function registerScript($id,$script,$position=null,array $htmlOptions=array())
 	{
-		$params=func_get_args();
-
 		if($position===null)
 			$position=$this->defaultScriptPosition;
 		$this->hasScripts=true;
@@ -724,6 +700,7 @@ class CClientScript extends CApplicationComponent
 		$this->scripts[$position][$id]=$scriptValue;
 		if($position===self::POS_READY || $position===self::POS_LOAD)
 			$this->registerCoreScript('jquery');
+		$params=func_get_args();
 		$this->recordCachingAction('clientScript','registerScript',$params);
 		return $this;
 	}
@@ -748,8 +725,6 @@ class CClientScript extends CApplicationComponent
 	 */
 	public function registerMetaTag($content,$name=null,$httpEquiv=null,$options=array(),$id=null)
 	{
-		$params=func_get_args();
-
 		$this->hasScripts=true;
 		if($name!==null)
 			$options['name']=$name;
@@ -757,6 +732,7 @@ class CClientScript extends CApplicationComponent
 			$options['http-equiv']=$httpEquiv;
 		$options['content']=$content;
 		$this->metaTags[null===$id?count($this->metaTags):$id]=$options;
+		$params=func_get_args();
 		$this->recordCachingAction('clientScript','registerMetaTag',$params);
 		return $this;
 	}
@@ -772,8 +748,6 @@ class CClientScript extends CApplicationComponent
 	 */
 	public function registerLinkTag($relation=null,$type=null,$href=null,$media=null,$options=array())
 	{
-		$params=func_get_args();
-
 		$this->hasScripts=true;
 		if($relation!==null)
 			$options['rel']=$relation;
@@ -784,6 +758,7 @@ class CClientScript extends CApplicationComponent
 		if($media!==null)
 			$options['media']=$media;
 		$this->linkTags[serialize($options)]=$options;
+		$params=func_get_args();
 		$this->recordCachingAction('clientScript','registerLinkTag',$params);
 		return $this;
 	}

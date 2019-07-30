@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 class X2WebUser extends CWebUser {
 
     /**
@@ -46,7 +43,7 @@ class X2WebUser extends CWebUser {
      */
     private $_roles;
 
-    public function checkAccess($operation, $params = array(), $allowCaching = true) {
+    public function checkAccess($operation, $params = array()) {
         return Yii::app()->getAuthManager()->checkAccess($operation, $this->getId(), $params);
     }
 

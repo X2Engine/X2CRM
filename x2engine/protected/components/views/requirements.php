@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * @file protected/components/views/requirements.php
@@ -558,7 +555,7 @@ if($tryAccess){
         if($requirements['environment']['outbound_connection'] = tryGetRemote('http://www.google.com')){
             // Can connect to Google OK. Can connect to the updates server?
             if($requirements['environment']['updates_connection'] = checkDNS('x2planet.com')){
-                if(!($requirements['environment']['updates_connection'] = tryGetRemote('http://52.33.121.218/x2planet.com/installs/registry/reqCheck'))){
+                if(!($requirements['environment']['updates_connection'] = tryGetRemote('https://x2planet.com/installs/registry/reqCheck'))){
                     // 
                     $reqMessages[2][] = installer_t('Could not reach the updates server from this web server.')
                             .' '.$firewallMsg

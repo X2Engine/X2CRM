@@ -34,7 +34,6 @@ CREATE TABLE x2_actions (
     allDay                    TINYINT,
     color                     VARCHAR(20),
     syncGoogleCalendarEventId TEXT,
-    syncOutlookCalendarEventId TEXT,
     sticky                    TINYINT DEFAULT 0,
     flowTriggered             TINYINT DEFAULT 0,
     timeSpent                 INT DEFAULT 0,

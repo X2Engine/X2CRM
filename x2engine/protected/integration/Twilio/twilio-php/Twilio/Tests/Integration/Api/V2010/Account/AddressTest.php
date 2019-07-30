@@ -143,7 +143,7 @@ class AddressTest extends HolodeckTestCase {
         
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->addresses("ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                     ->addresses("ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -175,7 +175,7 @@ class AddressTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->addresses("ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                           ->addresses("ADaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

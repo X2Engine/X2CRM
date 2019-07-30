@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 x2.EmailProgressControl = (function() {
 
@@ -247,9 +244,6 @@ x2.EmailProgressControl = (function() {
                 that.bar.progressbar({'value':that.sentCount});
                 if(response.undeliverable) { // List it as undeliverable and keep going
                     that.errorMessage(response.message);
-                }
-                if (response.warning) {
-                    that.errorMessage('<span class="warning">'+response.message+'</span>');
                 }
                 if(!that.paused) { // Send the next one!
                     that.send();

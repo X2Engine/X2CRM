@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::import('application.modules.docs.models.*');
 Yii::import('application.modules.actions.models.*');
@@ -1119,7 +1116,7 @@ class InlineEmail extends CFormModel {
      * will be set to 1.
      * @param Contacts $contact
      */
-    public function appendDoNotEmailLink (X2Model $contact) {
+    public function appendDoNotEmailLink (Contacts $contact) {
         // Insert unsubscribe link placeholder in the email body if there is
         // none already:
         if(!preg_match('/\{doNotEmailLink\}/', $this->message)){
@@ -1140,7 +1137,6 @@ class InlineEmail extends CFormModel {
         $doNotEmailUrl = Yii::app()->createExternalUrl(
             '/marketing/marketing/doNotEmailLinkClick', array(
                 'x2_key' => $contact->trackingKey,
-                'email' =>$contact->email,
             ));
         if (Yii::app()->settings->doNotEmailLinkText !== null) {
             $linkText = Yii::app()->settings->doNotEmailLinkText;

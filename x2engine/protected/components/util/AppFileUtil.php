@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /**
  * Originally a copy of FileUtil.php to remove app's dependencies on updater
@@ -684,23 +681,20 @@ class AppFileUtil {
      */
 	public static function sizeToBytes($sizeStr, $coerceToInt=true)
 	{
-                // get the numbers
-                $size = substr($sizeStr, 0, -1);
-            
 		// get the latest character
 		switch (strtolower(substr($sizeStr, -1)))
 		{
 			case 'm': 
-                $bytes = $size * 1048576; // 1024 * 1024
+                $bytes = $sizeStr * 1048576; // 1024 * 1024
                 break;
 			case 'k': 
-                $bytes = $size * 1024; // 1024
+                $bytes = $sizeStr * 1024; // 1024
                 break;
 			case 'g': 
-                $bytes = $size * 1073741824; // 1024 * 1024 * 1024
+                $bytes = $sizeStr * 1073741824; // 1024 * 1024 * 1024
                 break;
 			default: 
-                $bytes = $size; // do nothing
+                $bytes = $sizeStr; // do nothing
 		}
         if ($coerceToInt)
             $bytes = (int) $bytes;

@@ -14,7 +14,6 @@ CREATE TABLE x2_calendars (
     updatedBy          VARCHAR(40),
     syncType           VARCHAR(255),
     remoteCalendarId   VARCHAR(255),
-    remoteCalOutlook   VARCHAR(255),
     remoteCalendarUrl  VARCHAR(512),
     syncToken          VARCHAR(255),
     ctag               VARCHAR(255),

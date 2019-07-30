@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 @import "standards";
 
 /*
@@ -46,7 +43,7 @@ $right-margin: 3px;
 $left-margin: 3px;
 @media (min-width: 658px) {
   .no-widgets .x2-gridview-fixed-top-bar-outer {
-    padding-right: 21px;
+    padding-right: 5px;
   }
   .grid-view .mobile-dropdown-button {
     display: none !important;
@@ -58,6 +55,8 @@ $left-margin: 3px;
     margin: 0 6px 0 $left-margin;
     width: auto;
     @include border-radius(0);
+    // border-left: 1px solid #b3b3b3;
+    // border-right: 1px solid #b3b3b3;
   }
   .no-widgets .x2-gridview-fixed-top-bar-outer .x2grid-header-container {
     margin: 0 0px 0 $left-margin;
@@ -65,14 +64,16 @@ $left-margin: 3px;
   .x2-gridview-fixed-top-bar-outer {
     .x2grid-header-container {
       margin: 0 6px 0 $left-margin;
+      // border-left: 1px solid #b3b3b3;
+      // border-right: 1px solid #b3b3b3;
     }
     + .x2grid-body-container .x2grid-grips div {
       top: $gridViewCellHeight + 56px !important;
     }
     .x2-gridview-fixed-top-bar-inner {
       width: 100%;
-      padding-right: calc(22% + 3px);
-      padding-left: 9px;
+      padding-right: 22%;
+      padding-left: 11px;
       height: 0;
       box-sizing: border-box;
     }
@@ -81,13 +82,13 @@ $left-margin: 3px;
     position: fixed;
     z-index: 800;
     left: 0;
-    top: 47px;
-    padding-left: 181px;
-    padding-right: 44px;
+    top: 32px;
+    padding-left: 151px;
+    padding-right: 9px;
     box-sizing: border-box;
   }
   .x2-gridview-body-with-fixed-header {
-    padding-top: $gridViewCellHeight + 61px;
+    padding-top: $gridViewCellHeight + 56px;
   }
 }
 
@@ -98,6 +99,9 @@ $left-margin: 3px;
 }
 
 @media (max-width: 1040px) and (min-width: 658px) {
+  /*.x2-gridview-fixed-top-bar-outer div.x2grid-header-container, .x2-gridview-fixed-title + div.x2grid-header-container {
+    margin-left: 5px;
+  }*/
   .x2-gridview-fixed-top-bar-outer {
     .x2-gridview-fixed-title, .x2grid-header-container {
       margin: 0 -4px 0 $left-margin;
@@ -152,5 +156,6 @@ $left-margin: 3px;
   }
   .x2-gridview-mass-action-buttons .more-drop-down-list {
     position: absolute !important;
+    /*top: 74px;*/
   }
 }

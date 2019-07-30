@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,9 +32,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 /*
  * Styling page for publishers (e.g., Action history publisher).
@@ -101,18 +98,16 @@
             }
         }
         #publisher-tabs-row-2 {
+            background: #f8f8f8;
             width: 100%;
             box-sizing: border-box;
+            border-radius: 4px 4px 0 0;
             height: 32px;
+            border: 1px solid #ccc;
+            border-bottom: none;
             margin-bottom: -6px !important;
             margin-top: 0px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 0px;
-            border-left: none;
-            border-right: none;
-            border-bottom: none;
-            
+            /*display: block !important;*/
             li {
                 &:first-child {
                     margin-left: 3px;
@@ -122,7 +117,7 @@
             }
 
             &.unselected-tab-row {
-                background: white;
+                background: #eee;
             }
         }
 
@@ -187,68 +182,5 @@ $x2-map: (
     ("campaignEmailOpened" "open-envelope")
     ("emailOpened" "open-envelope")
 );
+ #publisher .icon,.action.list-view .icon {@include generate-icons($fa-map);@include generate-icons($x2-map, 'x2');}
 
- #publisher .icon,
- .action.list-view .icon {
-         &.action {
-                 background: url(../images/actions.png) no-repeat center center;
-         }
-         &.attachment {
-                 background: url(../images/action_attachment.png) no-repeat center center;
-         }
-         &.complete {
-                 @include stacked-icon('check');
-                 background: url(../images/eventIcons/action_complete.png) no-repeat center center;
-         }
-         &.workflow {
-                 background: url(../images/action_workflow.png) no-repeat center center;
-         }
-         &.email {
-                 background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-         }
-         &.email_quote {
-                 background: url(../images/action_email_quote.png) no-repeat center center;
-         }
-         &.email_invoice {
-                background: url(../images/action_email_invoice.png) no-repeat center center;
-         }
-         &.campaignEmailOpened, &.emailOpened {
-                 background: url(../images/eventIcons/email_opened.png) no-repeat center center;
-         }
-         &.note {
-                 background: url(../images/x2flow/X2FlowRecordComment.png) no-repeat center center;
-         }
-         &.emailOpened_quote {
-                 background: url(../images/eventIcons/email_opened_quote.png) no-repeat center center;
-         }
-         &.emailOpened_invoice {
-                 background: url(../images/eventIcons/email_opened_invoice.png) no-repeat center center;
-         }
-         &.call {
-                 background: url(../images/action_call.png) no-repeat center center;
-         }
-         &.marketing {
-                 background: url(../images/action_marketing.png) no-repeat center center;
-         }
-         &.event {
-                 background: url(../images/calendar.png) no-repeat center center;
-         }
-         &.emailFrom {
-                 background: url(../images/eventIcons/email_sent.png) no-repeat center center;
-         }
-         &.quotes {
-                 background: url(../images/quotes.png) no-repeat center center;
-         }
-         &.webactivity {
-                 background: url(../images/action_webactivity.png) no-repeat center center;
-         }
-         &.overdue {
-                 background: url(../images/actions.png) no-repeat center center;
-         }
-         &.time {
-                 background: url(../images/action_time.png) no-repeat center center;
-         }
-         &.products {
-                 background: url(../images/quotes.png) no-repeat center center;
-         }
- }

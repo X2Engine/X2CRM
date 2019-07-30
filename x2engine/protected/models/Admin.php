@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,11 +35,7 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 Yii::import('application.components.behaviors.JSONEmbeddedModelFieldsBehavior');
-Yii::import('application.components.TwitterAPI.TwitterAPIExchange');
 
 /**
  * This is the model class for table "x2_admin".
@@ -53,41 +49,30 @@ class Admin extends X2ActiveRecord {
      * Returns the static model of the specified AR class.
      * @return Admin the static model class
      */
-    public static function model($className = __CLASS__) {
+    public static function model($className = __CLASS__){
         return parent::model($className);
     }
 
-    public static function getDoNotEmailLinkDefaultText() {
+    public static function getDoNotEmailLinkDefaultText () {
         return Yii::t('admin', 'I do not wish to receive these emails.');
     }
 
-    public static function getDoNotEmailDefaultPage() {
+    public static function getDoNotEmailDefaultPage () {
         $message = Yii::t(
-                        'admin', 'You will no longer receive emails from this sender.');
-        return '<html><head><title>' . $message .
-                '</title></head><body>' . $message . '</body></html>';
+            'admin', 'You will no longer receive emails from this sender.');
+        return '<html><head><title>'.$message.
+            '</title></head><body>'.$message.'</body></html>';
     }
 
-    /**
-     * @return string the associated database table name
-     */
-    public function tableName() {
-        return 'x2_admin';
-    }
-
-    /**
-     * Gets Google integration credentials
-     * 
-     * @var boolean $refresh Specify if refresh enabled 
-     */
     private $_googleIntegrationCredentials;
-
-    public function getGoogleIntegrationCredentials($refresh = false) {
-        if (!isset($this->_googleIntegrationCredentials) || $refresh) {
+    public function getGoogleIntegrationCredentials ($refresh=false) {
+        if (!isset ($this->_googleIntegrationCredentials) || $refresh) {
             $credId = Yii::app()->settings->googleCredentialsId;
-            if ($credId && ($credentials = Credentials::model()->findByPk($credId))) {
-                $this->_googleIntegrationCredentials = array(
+            if ($credId && ($credentials = Credentials::model ()->findByPk ($credId))) {
+                $this->_googleIntegrationCredentials = array (
+                     
                     'apiKey' => $credentials->auth->apiKey,
+                     
                     'clientId' => $credentials->auth->clientId,
                     'clientSecret' => $credentials->auth->clientSecret,
                 );
@@ -97,61 +82,46 @@ class Admin extends X2ActiveRecord {
     }
 
     /**
-     * Check if hub is enabled
-     * 
-     * @return boolean If hub enabled
-     */
-    public function checkHubEnabled() {
-        if ($this->hubCredentialsId) {
-            $creds = Credentials::model()->findByPk($this->hubCredentialsId);
-            return $creds && $creds->auth && $creds->auth->hubEnabled;
-        }
-        return false;
-    }
-    
-    /**
-     * @param string $type Specify optional activity type
+     * @param string $type X2Hub Activity type (optional)
      */
     public function getGoogleApiKey($type = null) {
-        $types = array('maps', 'staticmap', 'directions', 'geocoding');
-
-        // Check hub first
         $apiKey = null;
-        if (HubConnectionBehavior::checkHubEnabled()) {
+        if ($this->hubCredentialsId) {
             $creds = Credentials::model()->findByPk($this->hubCredentialsId);
-            if (!(in_array($type, $types) && !$creds->auth->enableGoogleMaps)) {
-                $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
-                $apiKey = $hub->getGoogleApiKey(Yii::app()->user->id, $type);
+            if ($creds && $creds->auth && $creds->auth->hubEnabled) {
+                $disabled = false;
+                if (in_array($type, array('maps', 'staticmap', 'directions', 'geocoding')) && !$creds->auth->enableGoogleMaps)
+                    $disabled = true;
+                if (!$disabled) {
+                    $hub = Yii::app()->controller->attachBehavior('HubConnectionBehavior', new HubConnectionBehavior);
+                    $apiKey = $hub->getGoogleApiKey(Yii::app()->user->id, $type);
+                }
             }
         }
-
-        // Use google integration settings if hub not enabled
         if (empty($apiKey)) {
             $creds = $this->getGoogleIntegrationCredentials();
-            if ($creds && isset($creds['apiKey'])) {
+            if ($creds && isset($creds['apiKey']))
                 $apiKey = $creds['apiKey'];
-            }
         }
-
         return $apiKey;
     }
 
-    /**
-     * Checks if Google Maps API is enabled
-     * 
-     * @return boolean If maps is enabled
-     */
     public function getEnableMaps() {
-        // Check hub first
-        if (HubConnectionBehavior::checkHubEnabled()) {
-            $hubCreds = Credentials::model()->findByPk(Yii::app()->settings->hubCredentialsId);
-            if ($hubCreds instanceof X2HubConnector && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps) {
+        $settings = Yii::app()->settings;
+        if ($settings->hubCredentialsId) {
+            $hubCreds = Credentials::model()->findByPk($settings->hubCredentialsId);
+            if ($hubCreds && $hubCreds instanceof X2HubConnector && $hubCreds->auth && $hubCreds->auth->enableGoogleMaps)
                 return true;
-            }
         }
+        if ($settings->googleIntegration)
+            return true;
+    }
 
-        // Use google integration settings if hub not enabled
-        return Yii::app()->settings->googleIntegration;
+    /**
+     * @return string the associated database table name
+     */
+    public function tableName(){
+        return 'x2_admin';
     }
 
     /**
@@ -162,14 +132,12 @@ class Admin extends X2ActiveRecord {
         parent::afterFind();
     }
 
-    public function behaviors() {
+    public function behaviors(){
         $behaviors = array(
-            'JSONFieldsBehavior' => array(
+            'JSONFieldsBehavior' => array (
                 'class' => 'application.components.behaviors.JSONFieldsBehavior',
-                'transformAttributes' => array(
+                'transformAttributes' => array (
                     'twitterRateLimits',
-                    'linkedInRateLimits',
-                    'dropboxRateLimits',
                     'assetBaseUrls',
                 ),
             ),
@@ -184,6 +152,7 @@ class Admin extends X2ActiveRecord {
                         'PublisherEventTab' => true,
                         'PublisherProductsTab' => false,
                     ),
+                    
                     'passwordRequirements' => array(
                         'minLength' => 0,
                         'requireMixedCase' => false,
@@ -191,52 +160,54 @@ class Admin extends X2ActiveRecord {
                         'requireSpecial' => false,
                         'requireCharClasses' => 1,
                     ),
+                    
                 ),
                 'maintainCurrentFieldsOrder' => true
             ),
         );
-
+        
         $behaviors['JSONEmbeddedModelFieldsBehavior'] = array(
             'class' => 'application.components.behaviors.JSONEmbeddedModelFieldsBehavior',
             'fixedModelFields' => array('emailDropbox' => 'EmailDropboxSettings'),
             'transformAttributes' => array('emailDropbox'),
         );
         $behaviors['JSONFieldsBehavior']['transformAttributes'][] = 'appliedPackages';
-
+        
         $behaviors['JSONEmbeddedModelFieldsBehavior']['fixedModelFields']['api2'] = 'Api2Settings';
         $behaviors['JSONEmbeddedModelFieldsBehavior']['transformAttributes'][] = 'api2';
         $behaviors['JSONFieldsBehavior']['transformAttributes'][] = 'ipWhitelist';
         $behaviors['JSONFieldsBehavior']['transformAttributes'][] = 'ipBlacklist';
+        
 
-
-
+        
         return $behaviors;
     }
 
-    public function validateUniqueId($attr) {
+    public function validateUniqueId ($attr) {
         $value = $this->$attr;
         // flush license key info cache when license key changes
-        if (!isset($this->_oldAttributes[$attr]) || $value !== $this->_oldAttributes[$attr]) {
-            Yii::app()->cache2->delete($this->getLicenseKeyInfoCacheKey());
+        if (!isset ($this->_oldAttributes[$attr]) || $value !== $this->_oldAttributes[$attr]) {
+            Yii::app()->cache2->delete ($this->getLicenseKeyInfoCacheKey ());
         }
     }
 
     /**
      * Custom validator for an array of URLs
      */
-    public function validateUrlArray($attr, $params) {
+    public function validateUrlArray ($attr, $params) {
         $values = $this->$attr;
         $urlValidator = new CUrlValidator;
-        $allowEmpty = array_key_exists('allowEmpty', $params) && $params['allowEmpty'];
+        $allowEmpty = array_key_exists ('allowEmpty', $params) && $params['allowEmpty'];
 
-        if (is_array($values)) {
+        if (is_array ($values)) {
             foreach ($values as $url) {
-                if ($urlValidator->validateValue($url) || ($allowEmpty && empty($url)))
+                if ($urlValidator->validateValue ($url) || ($allowEmpty && empty($url)))
                     continue;
-                $this->addError(
-                        $attr, Yii::t('admin', 'The specified URL "{url}" is not in the correct format.', array(
-                            '{url}' => CHtml::encode($url),
-                        ))
+                $this->addError (
+                    $attr,
+                    Yii::t('admin', 'The specified URL "{url}" is not in the correct format.', array(
+                        '{url}' => CHtml::encode($url),
+                    ))
                 );
             }
         }
@@ -245,7 +216,7 @@ class Admin extends X2ActiveRecord {
     /**
      * @return array validation rules for model attributes.
      */
-    public function rules() {
+    public function rules(){
         // NOTE: you should only define rules for those attributes that
         // will receive user inputs.
         return array(
@@ -260,7 +231,6 @@ class Admin extends X2ActiveRecord {
                 'numerical', 'integerOnly' => true),
             // accounts, sales,
             array('loginCredsTimeout', 'numerical', 'max' => 365, 'min' => 1),
-            array('duplicateFields', 'length', 'max' => 255),
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
             array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
             array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
@@ -270,36 +240,40 @@ class Admin extends X2ActiveRecord {
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
             array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
-            array('massActionsBatchSize', 'numerical', 'integerOnly' => true, 'min' => 5, 'max' => 100,),
+            array('massActionsBatchSize','numerical','integerOnly' => true,'min' => 5,'max' => 100,),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
-            array('emailDropbox' . ',api2', 'safe'),
+            array('emailDropbox'  .',api2' ,'safe'),          
             array('emailBulkAccount', 'setDefaultEmailAccount', 'alias' => 'bulkEmail'),
             array('serviceCaseEmailAccount', 'setDefaultEmailAccount', 'alias' => 'serviceCaseEmail'),
-            array('webLeadEmailAccount', 'setDefaultEmailAccount', 'alias' => 'systemResponseEmail'),
-            array('emailNotificationAccount', 'setDefaultEmailAccount', 'alias' => 'systemNotificationEmail'),
+            array('webLeadEmailAccount','setDefaultEmailAccount','alias' => 'systemResponseEmail'),
+            array('emailNotificationAccount','setDefaultEmailAccount','alias'=>'systemNotificationEmail'),
             array('emailSignature', 'length', 'max' => 4096),
-            array('externalBaseUrl', 'url', 'allowEmpty' => true),
-            array('assetBaseUrls', 'validateUrlArray', 'allowEmpty' => false),
-            array('externalBaseUrl', 'match', 'pattern' => ':/$:', 'not' => true, 'allowEmpty' => true, 'message' => Yii::t('admin', 'Value must not include a trailing slash.')),
+            array('externalBaseUrl','url','allowEmpty'=>true),
+            array('assetBaseUrls','validateUrlArray','allowEmpty'=>false),
+            array('externalBaseUrl','match','pattern'=>':/$:','not'=>true,'allowEmpty'=>true,'message'=>Yii::t('admin','Value must not include a trailing slash.')),
             array('enableWebTracker, disableAnonContactNotifs, locationTrackingSwitch, quoteStrictLock, workflowBackdateReassignment,disableAutomaticRecordTagging,enableAssetDomains, enableUnsubscribeHeader, checkinByDefault, sessionLog, userActionBackdating, properCaseNames', 'boolean'),
             array('historyPrivacy', 'in', 'range' => array('default', 'user', 'group')),
             array('contactNameFormat', 'in', 'range' => array('firstName lastName', 'lastName, firstName')),
             array('corporateAddress', 'length', 'max' => 4096),
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
-            array('appDescription', 'length', 'max' => 255),
-            array(
-                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText,EmailUnSubPage',
+            array ('appDescription', 'length', 'max' => 255),
+            array (
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
                 'safe'
             ),
+            
             array('imapPollTimeout', 'numerical', 'max' => 30, 'min' => 5),
             array('triggerLogMax', 'numerical', 'allowEmpty' => true),
+            
+            
             array('maxFailedLogins,failedLoginsBeforeCaptcha', 'numerical', 'min' => 1, 'max' => 100),
             array('maxLoginHistory', 'numerical', 'min' => 10, 'max' => 10000),
             array('loginTimeout', 'numerical', 'min' => 5, 'max' => 1440),
             array('failedLoginsBeforeCaptcha', 'compare', 'compareAttribute' => 'maxFailedLogins',
-                'operator' => '<=', 'message' => Yii::t('admin', 'Failed logins before CAPTCHA ' .
-                        'must be less than the maximum number of failed logins.'),
+                'operator' => '<=', 'message' => Yii::t('admin', 'Failed logins before CAPTCHA '.
+                'must be less than the maximum number of failed logins.'),
             ),
+            
                 // The following rule is used by search().
                 // Please remove those attributes that should not be searched.
                 // array('id, accounts, sales, timeout, webLeadEmail, menuOrder, menuNicknames, chatPollTime, menuVisibility, currency', 'safe', 'on'=>'search'),
@@ -309,7 +283,7 @@ class Admin extends X2ActiveRecord {
     /**
      * @return array customized attribute labels (name=>label)
      */
-    public function attributeLabels() {
+    public function attributeLabels(){
         return array(
             'id' => Yii::t('admin', 'ID'),
             // 'accounts' => Yii::t('admin','Accounts'),
@@ -326,9 +300,8 @@ class Admin extends X2ActiveRecord {
             'rrId' => Yii::t('admin', 'Round Robin ID'),
             'leadDistribution' => Yii::t('admin', 'Lead Distribution'),
             'onlineOnly' => Yii::t('admin', 'Online Only'),
-            'disableAutomaticRecordTagging' =>
-            Yii::t('profile', 'Disable automatic record tagging?'),
-            'duplicateFields' => Yii::t('admin', 'Duplicate Fields'),
+            'disableAutomaticRecordTagging' => 
+                Yii::t('profile', 'Disable automatic record tagging?'),
             'emailBulkAccount' => Yii::t('admin', 'Send As (when sending bulk email)'),
             'emailFromName' => Yii::t('admin', 'Sender Name'),
             'emailFromAddr' => Yii::t('admin', 'Sender Email Address'),
@@ -348,7 +321,6 @@ class Admin extends X2ActiveRecord {
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
-            'outlookIntegration' => Yii::t('admin', 'Activate Outlook Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
             'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),
             'workflowBackdateRange' => Yii::t('admin', 'Process Backdate Range'),
@@ -366,47 +338,51 @@ class Admin extends X2ActiveRecord {
             'eventDeletionTypes' => Yii::t('admin', 'Event Deletion Types'),
             'properCaseNames' => Yii::t('admin', 'Proper Case Names'),
             'contactNameFormat' => Yii::t('admin', 'Contact Name Format'),
-            'webLeadEmailAccount' => Yii::t('admin', 'Send As (to web leads)'),
-            'emailNotificationAccount' => Yii::t('admin', 'Send As (when notifying users)'),
-            'batchTimeout' => Yii::t('admin', 'Time limit on batch actions'),
-            'massActionsBatchSize' => Yii::t('admin', 'Batch size for grid view mass actions'),
+            'webLeadEmailAccount' => Yii::t('admin','Send As (to web leads)'),
+            'emailNotificationAccount' => Yii::t('admin','Send As (when notifying users)'),
+            'batchTimeout' => Yii::t('admin','Time limit on batch actions'),
+            'massActionsBatchSize' => Yii::t('admin','Batch size for grid view mass actions'),
             'maxUserCount' => Yii::t('admin', 'Manage User Count'),
-            'externalBaseUrl' => Yii::t('admin', 'External / Public Base URL'),
-            'externalBaseUri' => Yii::t('admin', 'External / Public Base URI'),
-            'appName' => Yii::t('admin', 'Application Name'),
+            'externalBaseUrl' => Yii::t('admin','External / Public Base URL'),
+            'externalBaseUri' => Yii::t('admin','External / Public Base URI'),
+            'appName' => Yii::t('admin','Application Name'),
             'x2FlowRespectsDoNotEmail' => Yii::t(
-                    'app', 'Respect contacts\' "Do not email" settings?'),
-            'doNotEmailLinkText' => Yii::t('admin', '"Do not email" Link Text'),
-            'doNotEmailLinkPage' => Yii::t('admin', '"Do not email" Page'),
-            'doNotEmailPage' => Yii::t('admin', 'Do Not Email Page'),
-            'enableAssetDomains' => Yii::t('admin', 'Enable Asset Domains'),
-            'twoFactorCredentialsId' => Yii::t('admin', 'Two Factor Auth Credentials'),
-            'imapPollTimeout' => Yii::t('admin', 'Email Polling Timeout'),
-            'ipBlacklist' => Yii::t('admin', 'IP Blacklist'),
-            'ipWhitelist' => Yii::t('admin', 'IP Whitelist'),
-            'triggerLogMax' => Yii::t('admin', 'Maximum number of X2Workflow trigger logs'),
-            'locationTrackingFrequency' => Yii::t('admin', 'Location Tracking Frequency'),
-            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'),
-            'locationTracking' => Yii::t('admin', 'Location Tracking'),
+                'app','Respect contacts\' "Do not email" settings?'),
+            'doNotEmailLinkText' => Yii::t('admin','"Do not email" Link Text'),
+            'doNotEmailLinkPage' => Yii::t('admin','"Do not email" Page'),
+            'doNotEmailPage' => Yii::t('admin','Do Not Email Page'),
+            'enableAssetDomains' => Yii::t('admin','Enable Asset Domains'),
+            'twoFactorCredentialsId' => Yii::t('admin','Two Factor Auth Credentials'),
+             
+            'imapPollTimeout' => Yii::t('admin','Email Polling Timeout'),
+            'ipBlacklist' => Yii::t('admin','IP Blacklist'),
+            'ipWhitelist' => Yii::t('admin','IP Whitelist'),
+            'triggerLogMax' => Yii::t('admin','Maximum number of X2Workflow trigger logs'),
+            
+            'locationTrackingFrequency' => Yii::t('admin', 'Location Tracking Frequency'), 
+            'locationTrackingDistance' => Yii::t('admin', 'Location Tracking Distance'), 
+            'locationTracking' => Yii::t('admin', 'Location Tracking'), 
+             
             'enableFingerprinting' => Yii::t('marketing', 'Enable Fingerprinting'),
             'performHostnameLookups' => Yii::t('marketing', 'Perform Hostname Lookups'),
-            'identityThreshold' => Yii::t('marketing', 'Identity Threshold'),
+            'identityThreshold' => Yii::t('marketing','Identity Threshold'),
             'maxAnonContacts' => Yii::t('marketing', 'Max Anon Contacts'),
             'maxAnonActions' => Yii::t('marketing', 'Max Anon Actions'),
+            
         );
     }
 
-    public function requiredIfSysDefault($attribute, $params) {
-        if (empty($this->$attribute) && $this->{$params['field']} == Credentials::LEGACY_ID)
+    public function requiredIfSysDefault($attribute, $params){
+        if(empty($this->$attribute) && $this->{$params['field']} == Credentials::LEGACY_ID)
             $this->addError($attribute, Yii::t('yii', '{attribute} cannot be blank.', array('{attribute}' => $this->getAttributeLabel($attribute))));
     }
 
-    public function setDefaultEmailAccount($attribute, $params) {
-        if ($this->$attribute != Credentials::LEGACY_ID) {
+    public function setDefaultEmailAccount($attribute, $params){
+        if($this->$attribute != Credentials::LEGACY_ID){
             $cred = Credentials::model()->findByPk($this->$attribute);
-            if ($cred)
+            if($cred)
                 $cred->makeDefault(Credentials::$sysUseId[$params['alias']], 'email', false);
-        } else {
+        } else{
             Yii::app()->db->createCommand()->delete('x2_credentials_default', 'userId=:uid AND serviceType=:st', array(':uid' => Credentials::$sysUseId[$params['alias']], ':st' => 'email'));
         }
     }
@@ -419,15 +395,15 @@ class Admin extends X2ActiveRecord {
      */
     public function countEmail($nEmail = 1) {
         $now = time();
-        if (empty($this->emailStartTime))
+        if(empty($this->emailStartTime))
             $this->emailStartTime = $now;
-        if ($now - $this->emailStartTime > $this->emailInterval) {
+        if($now-$this->emailStartTime > $this->emailInterval) {
             // Reset
             $this->emailStartTime = $now;
             $this->emailCount = 0;
         }
         $this->emailCount += $nEmail;
-        $this->update(array('emailCount', 'emailStartTime'));
+        $this->update(array('emailCount','emailStartTime'));
         return $this->emailCount;
     }
 
@@ -437,9 +413,9 @@ class Admin extends X2ActiveRecord {
      *
      * @param integer $nEmail Number of emails to be sent
      */
-    public function emailCountWillExceedLimit($nEmail = 1) {
+    public function emailCountWillExceedLimit($nEmail=1) {
         $now = time();
-        if ($now - $this->emailStartTime > $this->emailInterval) {
+        if($now-$this->emailStartTime > $this->emailInterval) {
             $this->emailStartTime = $now;
             $this->emailCount = 0;
         }
@@ -450,33 +426,36 @@ class Admin extends X2ActiveRecord {
      * @param array $value This should match the structure of the actionPublisherTabs property
      *  specified in the JSONFieldsDefaultValuesBehavior configuration
      */
-    public function setActionPublisherTabs($value) {
+    public function setActionPublisherTabs ($value) {
         $this->actionPublisherTabs = $value;
-        $this->save();
+        $this->save ();
     }
 
+    
     /**
      * Render button for the advanced security failed logins grid to ban or whitelist
      * an IP address or disable a user account
      */
-    public static function renderACLControl($type, $target) {
+    public static function renderACLControl ($type, $target) {
         // If this is a disable user button, Just render the disable user button and return
         if ($type === 'disable') {
             $user = $target;
             $active = Yii::app()->db->createCommand()
-                            ->select('status')
-                            ->from('x2_users')
-                            ->where('username = :user', array(
-                                ':user' => $user,
-                            ))->queryScalar();
+                ->select ('status')
+                ->from ('x2_users')
+                ->where ('username = :user', array(
+                    ':user' => $user,
+                ))->queryScalar();
             if ($active === '1') {
-                return CHtml::link(Yii::t('admin', 'Disable'), array('/admin/disableUser?username=' . $target), array('class' => 'x2-button')
+                return CHtml::link (Yii::t('admin', 'Disable'),
+                    array('/admin/disableUser?username='.$target),
+                    array('class' => 'x2-button')
                 );
             } else {
-                $placeholder = Yii::t('admin', 'User is already disabled');
-                return '<div class="x2-button disabled" title="' . $placeholder . '">' .
-                        Yii::t('admin', 'Disable') .
-                        '</div>';
+                $placeholder = Yii::t ('admin', 'User is already disabled');
+                return '<div class="x2-button disabled" title="'.$placeholder.'">'.
+                    Yii::t('admin', 'Disable').
+                    '</div>';
             }
         }
 
@@ -497,76 +476,79 @@ class Admin extends X2ActiveRecord {
         $method = Yii::app()->settings->accessControlMethod;
         $class = 'x2-button';
         if ($method !== $type) {
-            $placeholder = Yii::t('admin', 'You must change your access control method for ' .
-                            'this action to be effective.');
-            return '<a class="x2-button disabled" title="' . $placeholder . '">' . $buttonText . '</a>';
+            $placeholder = Yii::t ('admin', 'You must change your access control method for '.
+                                    'this action to be effective.');
+            return '<a class="x2-button disabled" title="'.$placeholder.'">'.$buttonText.'</a>';
         } else {
-            return CHtml::link($buttonText, $actionUrl, array(
-                        'class' => 'x2-button',
+            return CHtml::link ($buttonText, $actionUrl , array(
+                'class' => 'x2-button',
             ));
         }
     }
-
-    public function getDoNotEmailLinkText() {
-        if (!empty($this->doNotEmailLinkText)) {
+    
+    
+    public function getDoNotEmailLinkText(){
+        if(!empty($this->doNotEmailLinkText)){
             return $this->doNotEmailLinkText;
         }
-        return self::getDoNotEmailLinkDefaultText();
+        return self::getDoNotEmailLinkDefaultText ();
     }
 
+     
     /**
      * @return string 
      */
-    public function renderProductKeyExpirationDate($refresh = false) {
+    public function renderProductKeyExpirationDate ($refresh=false) {
         $html = '';
-        $expirationDate = $this->getProductKeyExpirationDate($refresh);
+        $expirationDate = $this->getProductKeyExpirationDate ($refresh);
         if ($expirationDate === 'invalid') {
-            return '<div class="error-text">' .
-                    CHtml::encode(Yii::t('admin', 'Invalid license key')) .
-                    '</div>';
-        } elseif (!is_numeric($expirationDate)) {
+            return '<div class="error-text">'.
+                CHtml::encode (Yii::t('admin', 'Invalid license key')).
+            '</div>';
+        } elseif (!is_numeric ($expirationDate)) {
             return '';
         }
 
-        $html .= '<strong>' . Yii::t('admin', 'License Expiration Date') . '</strong>:&nbsp;';
-        if ($expirationDate < time()) {
-            $html .= '<span class="error-text">' . Yii::app()->dateFormatter->formatDateTime(
-                            $expirationDate, 'long', null) . '</span>&nbsp;' .
-                    CHtml::encode(Yii::t('admin', '(expired)')) .
-                    '<br />';
+        $html .= '<strong>'.Yii::t('admin','License Expiration Date').'</strong>:&nbsp;';
+        if ($expirationDate < time ()) {
+            $html .= 
+                '<span class="error-text">'.Yii::app()->dateFormatter->formatDateTime (
+                    $expirationDate,'long',null).'</span>&nbsp;'.
+                    CHtml::encode (Yii::t('admin', '(expired)')).
+                '<br />';
         } else {
-            $html .= Yii::app()->dateFormatter->formatDateTime(
-                            $expirationDate, 'long', null) .
-                    '<br />';
+            $html .= 
+                Yii::app()->dateFormatter->formatDateTime (
+                    $expirationDate,'long',null).
+                '<br />';
         }
         return $html;
     }
 
-    public function renderMaxUsers($refresh = false) {
+    public function renderMaxUsers ($refresh=false) {
         $html = '';
-        $maxUsers = $this->getMaxUsers($refresh);
-        $html .= '<strong>' . Yii::t('admin', 'License Max Users') . '</strong>:&nbsp;';
-        if (!is_numeric($maxUsers))
-            return '';
-        $html .= CHtml::encode($maxUsers) . '<br />';
+        $maxUsers = $this->getMaxUsers ($refresh);
+        $html .= '<strong>'.Yii::t('admin','License Max Users').'</strong>:&nbsp;';
+        if (!is_numeric ($maxUsers)) return '';
+        $html .= CHtml::encode ($maxUsers).'<br />';
         return $html;
     }
 
     /**
      * @return string|null expiration date for app product key
      */
-    public function getProductKeyExpirationDate($refresh = false) {
-        $licenseKeyInfo = $this->getLicenseKeyInfo($refresh);
-        if (isset($licenseKeyInfo['dateExpires'])) {
+    public function getProductKeyExpirationDate ($refresh=false) {
+        $licenseKeyInfo = $this->getLicenseKeyInfo ($refresh);
+        if (isset ($licenseKeyInfo['dateExpires'])) {
             return $licenseKeyInfo['dateExpires'];
-        } else if (isset($licenseKeyInfo['errors']) && $licenseKeyInfo['errors'] === 'invalid') {
+        } else if (isset ($licenseKeyInfo['errors']) && $licenseKeyInfo['errors'] === 'invalid') {
             return 'invalid';
         }
     }
 
-    public function getMaxUsers($refresh = false) {
-        $licenseKeyInfo = $this->getLicenseKeyInfo($refresh);
-        if (isset($licenseKeyInfo['maxUsers'])) {
+    public function getMaxUsers ($refresh=false) {
+        $licenseKeyInfo = $this->getLicenseKeyInfo ($refresh);
+        if (isset ($licenseKeyInfo['maxUsers'])) {
             return $licenseKeyInfo['maxUsers'];
         }
     }
@@ -575,48 +557,48 @@ class Admin extends X2ActiveRecord {
      * @return array|null expiration date for app product key
      */
     private $_licenseKeyInfo;
-
-    public function getLicenseKeyInfo($refresh = false) {
+    public function getLicenseKeyInfo ($refresh=false) {
         // two-layer caching
-        if (!isset($this->_licenseKeyInfo) || $refresh) {
-            $cacheKey = $this->getLicenseKeyInfoCacheKey();
-            $licenseKeyInfo = Yii::app()->cache2->get($cacheKey);
+        if (!isset ($this->_licenseKeyInfo) || $refresh) {
+            $cacheKey = $this->getLicenseKeyInfoCacheKey ();
+            $licenseKeyInfo = Yii::app()->cache2->get ($cacheKey);
 
-            if (is_array($licenseKeyInfo)) {
+            if (is_array ($licenseKeyInfo)) {
                 $this->_licenseKeyInfo = $licenseKeyInfo;
             } else {
-                $url = Yii::app()->getUpdateServer() . '/installs/registry/getLicenseKeyInfo';
-                $this->_licenseKeyInfo = array();
-                if ($licenseKeyInfo = RequestUtil::request(array(
-                            'url' => $url,
-                            'method' => 'POST',
-                            'content' => array(
-                                'unique_id' => $this->unique_id,
-                            )
-                        ))) {
-                    $tryJson = json_decode($licenseKeyInfo, 1);
-                    if (isset($tryJson['errors'])) {
+                $url = Yii::app()->getUpdateServer ().'/installs/registry/getLicenseKeyInfo';
+                $this->_licenseKeyInfo = array ();
+                if ($licenseKeyInfo = RequestUtil::request (array (
+                        'url' => $url,
+                        'method' => 'POST', 
+                        'content' => array (
+                            'unique_id' => $this->unique_id,
+                        )
+                    ))) {
+                    $tryJson = json_decode ($licenseKeyInfo, 1);
+                    if (isset ($tryJson['errors'])) {
                         if ($tryJson['errors'] === 'invalid') {
-                            $this->_licenseKeyInfo = array(
+                            $this->_licenseKeyInfo = array (
                                 'errors' => 'invalid',
                             );
                         }
-                    } elseif (isset($tryJson['dateExpires']) && isset($tryJson['maxUsers'])) {
-                        $this->_licenseKeyInfo = array(
+                    } elseif (isset ($tryJson['dateExpires']) && isset ($tryJson['maxUsers'])) {
+                        $this->_licenseKeyInfo = array (
                             'dateExpires' => $tryJson['dateExpires'],
                             'maxUsers' => $tryJson['maxUsers'],
                             'hubEnabled' => (isset($tryJson['hubEnabled']) ? $tryJson['hubEnabled'] : false),
                         );
                     }
                 }
-                Yii::app()->cache2->set($cacheKey, $this->_licenseKeyInfo, 60 * 15);
+                Yii::app()->cache2->set ($cacheKey, $this->_licenseKeyInfo, 60 * 15);
             }
         }
         return $this->_licenseKeyInfo;
     }
+     
 
-    private function getLicenseKeyInfoCacheKey() {
+    private function getLicenseKeyInfoCacheKey () {
         return 'Admin::getLicenseKeyInfoCacheKey';
     }
-
 }
+

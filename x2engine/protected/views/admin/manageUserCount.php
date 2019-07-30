@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerCss('appSettingsCss',"
 #settings-form {
@@ -72,7 +69,7 @@ $('#maxUserCount').change(function(){
             // additional javascript options for the slider plugin
             'options' => array(
                 'min' => 1,
-                'max' => 200,
+                'max' => 100000,
                 'step' => 1,
                 'change' => "js:function(event,ui) {
 					$('#maxUserCount').val(ui.value);

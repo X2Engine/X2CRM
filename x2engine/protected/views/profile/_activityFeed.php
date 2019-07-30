@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 Yii::app()->clientScript->registerScriptFile(
     Yii::app()->getBaseUrl().'/js/activityFeed.js', CClientScript::POS_END);
@@ -105,7 +102,7 @@ x2.activityFeed = new x2.ActivityFeed ({
 <div id='activity-feed-container' class='x2-layout-island'>
 <div id='page-title-container'>
     <div class="page-title icon rounded-top activity-feed x2Activity">
-        <h2 style="padding-left: 5px;"><?php echo Yii::t('app','Activity Feed'); ?></h2>
+        <h2><?php echo Yii::t('app','Activity Feed'); ?></h2>
         <span title='<?php echo Yii::t('app', 'Feed Settings'); ?>'>
         <?php
         echo X2Html::settingsButton (Yii::t('app', 'Feed Settings'), 

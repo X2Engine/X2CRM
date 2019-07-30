@@ -86,20 +86,6 @@ class PHPMailer
     public $Sender = '';
 
     /**
-     * The bounce handling email (Return-Path) of the message if bounce handling enabled.
-     * If empty, (Return-Path) will be set to sender
-     * @var string
-     */
-    public $bounceAccount = '';
-
-    /**
-     * The bounce handling email data to send in custom headers related to campaign information
-     * @var array
-     */
-
-    public $bounceInfo = array();
-
-    /**
      * The Return-Path of the message.
      * If empty, it will be set to either From or Sender.
      * @var string
@@ -383,7 +369,6 @@ class PHPMailer
 
     /**
      * Whether to generate VERP addresses on send.
-     * Default is set to true for bounce handling
      * Only applicable when sending via SMTP.
      * @link https://en.wikipedia.org/wiki/Variable_envelope_return_path
      * @link http://www.postfix.org/VERP_README.html Postfix VERP info
@@ -1487,13 +1472,12 @@ class PHPMailer
      */
     protected function mailSend($header, $body)
     {
-
         $toArr = array();
         foreach ($this->to as $toaddr) {
             $toArr[] = $this->addrFormat($toaddr);
         }
         $to = implode(', ', $toArr);
-        
+
         $params = null;
         //This sets the SMTP envelope sender which gets turned into a return-path header by the receiver
         if (!empty($this->Sender) and $this->validateAddress($this->Sender)) {
@@ -1519,8 +1503,6 @@ class PHPMailer
         if (isset($old_from)) {
             ini_set('sendmail_from', $old_from);
         }
-        
-
         if (!$result) {
             throw new phpmailerException($this->lang('instantiate'), self::STOP_CRITICAL);
         }
@@ -1558,9 +1540,7 @@ class PHPMailer
         if (!$this->smtpConnect($this->SMTPOptions)) {
             throw new phpmailerException($this->lang('smtp_connect_failed'), self::STOP_CRITICAL);
         }
-        if (!empty($this->bounceAccount) and $this->validateAddress($this->bounceAccount)) {
-            $smtp_from = $this->bounceAccount;
-        } else if (!empty($this->Sender) and $this->validateAddress($this->Sender)) {
+        if (!empty($this->Sender) and $this->validateAddress($this->Sender)) {
             $smtp_from = $this->Sender;
         } else {
             $smtp_from = $this->From;
@@ -2090,20 +2070,7 @@ class PHPMailer
         if ($this->Mailer != 'mail') {
             $result .= $this->headerLine('Subject', $this->encodeHeader($this->secureHeader($this->Subject)));
         }
-        if (is_array($this->bounceInfo) && count($this->bounceInfo)>0) {
-            if (isset($this->bounceInfo['campaignId'])) {
-                $result .= $this->headerLine('X-Campaign-ID', $this->bounceInfo['campaignId']);
-            }
-            if (isset($this->bounceInfo['contactId'])) {
-                $result .= $this->headerLine('X-Contact-ID', $this->bounceInfo['contactId']);
-            }
-            if (isset($this->bounceInfo['uniqueId'])) {
-                $result .= $this->headerLine('X-Unique-ID', $this->bounceInfo['uniqueId']);
-            }
-            if (isset($this->bounceInfo['listModel'])) {
-                $result .= $this->headerLine('X-List-Model', $this->bounceInfo['listModel']);
-            }
-        }
+
         // Only allow a custom message ID if it conforms to RFC 5322 section 3.6.4
         // https://tools.ietf.org/html/rfc5322#section-3.6.4
         if ('' != $this->MessageID and preg_match('/^<.*@.*>$/', $this->MessageID)) {

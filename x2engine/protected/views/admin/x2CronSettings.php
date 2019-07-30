@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,9 +37,6 @@
 
 
 
-
-
-
 Yii::app()->clientScript->registerScript('x2CronSettingsJS',"
 $(function () {
     // show cron log
@@ -52,13 +49,14 @@ $(function () {
                     '/admin/viewLog',
                     array('name' => 'automation.log'))).",
             'success': function (data) {
-                console.log('huh');
-                var dia = $('<div>', {
+                $('body').append($('<div>', {
                     id: 'cron-log-dialog',
                     html: data
-                });
-                $('body').append(dia);
-                dia.dialog ({
+                }).css({
+                    'max-height':'500px',
+                    'overflow-x':'hidden'
+                }));
+                $('#cron-log-dialog').dialog ({
                     autoOpen: true,
                     maxHeight: '500px',
                     title: ".CJSON::encode(
@@ -72,7 +70,6 @@ $(function () {
                         $('#view-log-button').removeAttr ('disabled');
                     }
                 });
-                dia.attr('style', 'max-height:500px;overflow-x:hidden;overflow-y:scrollable;');
             }
         });
     });
@@ -87,8 +84,8 @@ $(function () {
         <?php echo Yii::t('studio', 'View Cron Log'); ?>
     </a>
 </div>
-<div class="span-24" style="width:99%;">
-    <div class="form" style="width:100%;">
+<div class="span-24">
+    <div class="form">
 
         <h3><?php echo Yii::t('admin','Disclaimer'); ?></h3>
         <p><?php echo Yii::t('admin','Using this form may interfere with third-party cron table managers.')
@@ -121,11 +118,6 @@ $(function () {
                 'email_logInbound' => array(
                     'title' => Yii::t('admin','Auto-Log Emails'),
                     'longdesc' => Yii::t('admin','If enabled, X2Engine will automatically poll for new inbound and outbound email messages in all of the Email Inboxes with inbound or outbound logging enabled.'),
-                    'instructions' => Yii::t('admin', ''),
-                ),
-                'app_emailBounceHandling' => array(
-                    'title' => Yii::t('admin','Run Bounce Handling Process'),
-                    'longdesc' => Yii::t('admin','X2Engine will automatically poll for new inbound bounced email messages and update the related campaigns and contacts.'),
                     'instructions' => Yii::t('admin', ''),
                 ),
             ),

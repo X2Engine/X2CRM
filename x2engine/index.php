@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-
-
-
 
 // change the following paths if necessary
 $constants = __DIR__.DIRECTORY_SEPARATOR.'constants.php';
@@ -69,14 +66,6 @@ if(!empty($_SERVER['REMOTE_ADDR'])){
 
 function printR($obj, $die = false){
     echo "<pre>".print_r($obj, true)."</pre>";
-    if($die){
-        die();
-    }
-}
-
-function filePutContents($file = '', $data = null, $mode = null, $context = null, $die = false){
-    $message=PHP_EOL.print_r($data, true).PHP_EOL;
-    file_put_contents($file,$message,$mode,$context);
     if($die){
         die();
     }

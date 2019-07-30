@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,9 +34,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 /**
  *
  * @package application.components.x2flow
@@ -50,8 +47,7 @@ abstract class X2FlowAction extends X2FlowItem {
      */
     private static $anyModelActions = array(
         "Remote API Call", "Create Action", "Send SMS", "Wait", "Push Web Content",
-        "Post to Activity Feed", "Create Notification", "Email", "Complete Process Stage", 
-        "Revert Process Stage", "Start Process Stage"
+        "Post to Activity Feed", "Create Notification", "Email"
     );
 
     private static $recordModelActions = array(
@@ -61,7 +57,7 @@ abstract class X2FlowAction extends X2FlowItem {
     );
 
     private static $processModelActions = array(
-        
+        "Complete Process Stage", "Revert Process Stage", "Start Process Stage"
     );
     
     /**
@@ -108,7 +104,7 @@ abstract class X2FlowAction extends X2FlowItem {
             if(!isset($params['model']))    // model not provided when required
                 return array (false, Yii::t('admin', "Flow item validation error"));
             if($paramRules['modelRequired'] != 1 && 
-                    !in_array(get_class($params['model']), $paramRules['modelRequired'])) {
+                $paramRules['modelRequired'] !== get_class($params['model'])) {
 
                 // model is not the correct type
                 return array (false, Yii::t('admin', "Flow item validation error"));

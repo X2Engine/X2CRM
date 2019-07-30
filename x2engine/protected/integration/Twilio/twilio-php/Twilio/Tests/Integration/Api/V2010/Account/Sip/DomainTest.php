@@ -214,7 +214,7 @@ class DomainTest extends HolodeckTestCase {
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                      ->sip
-                                     ->domains("SDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                     ->domains("SDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -254,7 +254,7 @@ class DomainTest extends HolodeckTestCase {
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                            ->sip
-                                           ->domains("SDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                           ->domains("SDaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

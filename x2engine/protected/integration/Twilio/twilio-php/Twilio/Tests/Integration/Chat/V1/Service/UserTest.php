@@ -212,7 +212,7 @@ class UserTest extends HolodeckTestCase {
         
         try {
             $this->twilio->chat->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                   ->users("USaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                   ->users("USaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -242,7 +242,7 @@ class UserTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->chat->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                         ->users("USaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
+                                         ->users("USaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
         
         $this->assertNotNull($actual);
     }

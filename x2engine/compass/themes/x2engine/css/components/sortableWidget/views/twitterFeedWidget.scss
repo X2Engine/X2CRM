@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,9 +33,6 @@
  * "Powered by X2 Engine".
  **********************************************************************************/
 
-
-
-
 @import "colors.scss";
 
 $borderGray: #e1e1e1;
@@ -60,6 +57,8 @@ $borderGray: #e1e1e1;
 
 .twitter-timeline-container-outer {
     .twitter-timeline-container {
+        //max-height: 486px;
+        //overflow-y: scroll;
         .load-more-tweets-button {
             margin: 0;
             width: 100%;
@@ -92,9 +91,10 @@ $borderGray: #e1e1e1;
 
 .tweet-container {
     .tweet-container-inner {
+        /*max-width: 495px;*/
     }
     padding: 14px;
-    padding-bottom: 14px;
+    padding-bottom: 24px;
     border-bottom: 1px solid $borderGray;
     .x2-col:first-child {
         width: 58px;
@@ -109,7 +109,7 @@ $borderGray: #e1e1e1;
     }
     .button-row {
         .buttons-container {
-            //visibility: hidden;
+            visibility: hidden;
             float: right;
             a {
                 display: inline-block;
@@ -142,7 +142,7 @@ $borderGray: #e1e1e1;
     }
     &:hover {
         .buttons-container {
-            //visibility: visible;
+            visibility: visible;
         }
     }
     .tweet-timestamp {

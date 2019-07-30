@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,7 +33,7 @@
  * "Powered by X2 Engine".
  **********************************************************************************//*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -66,7 +66,7 @@
  * "Powered by X2 Engine".
  **********************************************************************************/.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}.responsive-menu-items{display:inline-block;float:right}.fc-header .responsive-menu-items{display:table-cell}.responsive-page-title>.mobile-dropdown-button,.fc-header.responsive-page-title .mobile-dropdown-button{display:none;margin-top:11px}.responsive-page-title>.mobile-dropdown-button>.x2-bar,.fc-header.responsive-page-title .mobile-dropdown-button>.x2-bar{width:20px;background-color:#e4e4e4}@media (max-width: 451px){.icon.services>.icon.edit,.icon.opportunities>.icon.edit{display:none !important}}@media (min-width: 658px){div.responsive-page-title>h2{display:inline-block !important}}@media (max-width: 657px){#page{min-width:0px !important}.fc-header.responsive-page-title .mobile-dropdown-button{display:table-cell;float:right !important;margin-right:7px}.fc-header .responsive-menu-items{display:none;float:right !important;position:relative;top:33px;right:163px;width:0px}.responsive-page-title>.mobile-dropdown-button{display:block;float:right;margin-top:-25px}div.responsive-page-title>.responsive-menu-items{display:none}#search-bar button.x2-button{border-radius:0px 3px 3px 0px;-moz-border-radius:0px 3px 3px 0px;-webkit-border-radius:0px 3px 3px 0px;-o-border-radius:0px 3px 3px 0px}#fullscreen-button{display:none !important}#main-menu-notif{margin-right:-5px}.ui-dialog{max-width:95% !important}#top-menus-container-inner{overflow-y:scroll;height:100vh;width:172px;overflow-x:hidden}#top-menus-container{width:150px;margin-left:-150px;overflow:hidden;position:absolute;background-color:gray;float:left;opacity:1;height:100vh;clear:both}#main-menu{padding-left:0;margin-top:130px}#main-menu li{float:none}#main-menu li.top-bar-module-link{width:142px;display:block !important}#user-menu li{float:none}#search-bar-box{display:block !important;width:100px !important;margin-left:3px}#search-bar{position:absolute;top:5px;margin:0}#user-menu{position:absolute;z-index:5000;background-color:gray;border-bottom:1px solid #6f6f6f;width:150px;height:125px;right:0;top:0}#user-menu .user-menu-link{position:absolute}#user-menu .x2-first{top:36px}#user-menu .x2-first+.user-menu-link{top:64px}#user-menu .x2-first+.user-menu-link+.user-menu-link{top:92px}#user-menu .x2-first+.user-menu-link+.user-menu-link+.user-menu-link{top:92px}#header.defaultBg #main-menu>li:hover,#header.defaultBg #main-menu>li.active{background:#8F8F8F}#header.defaultBg #user-menu>li:hover,#header.defaultBg #user-menu>li.active{background:#8F8F8F}#more-menu{display:none !important}#user-menu-2{position:fixed;right:2px;top:0}body.show-right-bar #sidebar-right{display:block !important;position:absolute;top:31px;right:0;width:288px;max-width:288px}body.show-right-bar #content-container{position:relative;right:294px}body.show-right-bar #sidebar-left-widget-box{position:relative;right:306px}body.show-left-bar{overflow-x:hidden;overflow-y:hidden}body.show-left-bar #page{overflow-x:hidden}body.show-left-bar #header{margin-left:150px}body.show-left-bar #top-menus-container{display:block}body.show-left-bar .page-title-fixed-inner{padding-left:161px}body.show-left-bar #sidebar-left-widget-box{padding-left:150px}body.show-left-bar #content-container,body.show-left-bar #footer{margin-left:151px}.page-title-placeholder{display:none}#sidebar-left-widget-box{padding-right:12px}.sidebar-left{float:none;width:100%;text-align:center}#show-left-menu-button{display:inline}div.page-title-fixed-outer{padding-left:0px;left:-6px}body.no-widgets div.page-title-fixed-outer div.page-title{margin-right:-6px;margin-left:0}#notif-box{right:4px;width:96%}#notif-box:after{right:136px}#search-bar-title{margin-left:4px}}@media (max-width: 1040px){#sidebar-right{display:none}}/*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -99,7 +99,7 @@
  * "Powered by X2 Engine".
  **********************************************************************************/@media (max-width: 657px){.x2-button,select.x2-select{margin-bottom:5px}}@media (max-width: 527px){.ui-multiselect .selected,.ui-multiselect .available{width:auto !important;min-width:170px !important}}/*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
