@@ -768,7 +768,6 @@ class X2List extends X2Model {
                 if ($email)
 				    $listItem->emailAddress = $email;
             }
-            file_put_contents('/tmp/test_out.txt',"Emailed     " ,FILE_APPEND);
       
             $listItem->contactId = $id;
             $listItem->save();
