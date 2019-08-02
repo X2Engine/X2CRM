@@ -12,7 +12,7 @@ CREATE TABLE x2_quotes(
     email              VARCHAR(250),
     phone              VARCHAR(40),
     leadstatus         VARCHAR(250),
-    modelName   VARCHAR(100) NOT NULL,
+    modelName          VARCHAR(100),
     description        TEXT,
     assignedTo         TEXT,
     createDate         BIGINT,
