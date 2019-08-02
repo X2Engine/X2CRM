@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 $jsVars = "modelId = '$model->id'; modelName = '$model->name'; modelEmail = '$model->email'";
 Yii::app()->clientScript->registerScript('jsVars', $jsVars);
@@ -85,7 +88,7 @@ $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'))
 
 $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
-    'email', 'attach', 'quotes', 'print', 'viewOnMap', 'editLayout', 'addRecordAlias',
+    'email', 'attach', 'quotes', 'print', 'viewOnMap', 'editLayout', 'addRecordAlias', 'convertToLead', 'convertToAccount'
 );
 $menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
 if ($opportunityModule->visible && $accountModule->visible) {
@@ -299,4 +302,18 @@ $this->widget('X2WidgetList', array(
             )
         )
     )
+));
+
+$this->widget('X2ModelConversionWidget', array(
+    'buttonSelector' => '#convert-contact-to-lead-button',
+    'targetClass' => 'X2Leads',
+    'namespace' => 'X2Leads',
+    'model' => $model,
+));
+
+$this->widget('X2ModelConversionWidget', array(
+    'buttonSelector' => '#convert-contact-to-account-button',
+    'targetClass' => 'Accounts',
+    'namespace' => 'Accounts',
+    'model' => $model,
 ));

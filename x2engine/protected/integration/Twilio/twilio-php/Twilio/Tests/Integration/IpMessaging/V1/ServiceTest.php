@@ -226,7 +226,7 @@ class ServiceTest extends HolodeckTestCase {
         $this->holodeck->mock(new Response(500, ''));
         
         try {
-            $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+            $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -263,7 +263,7 @@ class ServiceTest extends HolodeckTestCase {
             '
         ));
         
-        $actual = $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+        $actual = $this->twilio->ipMessaging->v1->services("ISaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

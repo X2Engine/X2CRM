@@ -1,74 +1,32 @@
-# 6.9.3 #
-1/3/2018
-* Fixed unrecognized field lastModifies bug
+NOTE: IF YOU ARE UPDATING FROM <7.0 YOU WILL NEED TO RE-ENTER YOUR THIRD-PARTY APP CREDENTIALS! 
+THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT customersupport@x2engine.com
 
-# 6.9.2 #
-12/29/2017
-* Fixed email bug
+# 7.1 #
 
-# 6.9.1 #
-11/20/2017
+1/3/2019
 * General Changelog / Developer Notes
-  * New Enterprise UI
-    * New Paper-White UI default theme
-    * Revamped Landing Page Designer
-    * Top Menu Dropdowns
-  * New X2HubServices integrations
-    * Contact Twitter feed
-    * LinkedIn user information autofill
-    * Dropbox integration
-    * Docusign Integration
-  * Miscellaneous bug fixes
-    * Workflow tag bug fix
-    * Calendar empty tables bug fix
+  * X2CRM is now compatible with PHP 7.1+
 
-# 6.9 #
-08/22/2017
-* General Changelog / Developer Notes
-  * Miscellaneous UI enhancements
-    * New Green login logo
-  * New Enterprise edition released
-    * The enterprise edition of X2CRM is developed with enterprise users in mind
-      * New colorful icons for actions (these can be seen in the activity feed)
-      * New Native Code Editor
-        * The code editor allows the modification of the application code through the app itself. This allows power users to customize the app like never before! The code editor can be accessed via the X2Studio tools in the admin section of the app
-      * X2Workflows
-        * New stock X2Workflow rules added to the workflow system
-        * Restricted non-compatible actions from being attached to triggers, this is introduced in order to prevent users from making broken workflows.
-  * Miscellaneous bug fixes
-    * Fixed an issue with login where users would get immediately get logged out
-    * Fixed a UI bug where some smaller screens would prevent parts of the app from showing.
+* Miscellaneous bug fixes
+  * Fixed issue with emailing where mail servers which are not configured to use VERP can still send email
+  * Removed list option from the reporting module
+  * A/B campaigns now work with dynamic lists
+  * Fixed issue where 'do not email' settings would get incorrectly set
+  * Fixed issue where a 500 error would occur if the 'maxFileSize' attribute was not created correctly
+  * Fixed issue where X2Flow would incorrectly reference a workflow ID
+  * Fixed issue where logging time on a record would incorrectly calculate time spent
+  * Fixed front-end with the complete stage action in X2Workflow where the note textarea was covering the stage selection dropdown
 
-# 6.6 #
-5/17/2017
+# 7.0 #
+10/19/2018
+
 * General Changelog / Developer Notes
-  * Campaign Improvements
-    * Email campaigns can now be scheduled
-    * Added email opened time and location to campaign launch grid
-    * Improved database performance of campaign email sends
-  * X2Touch Improvements
-    * Added barcode scanner to import product barcode identifier
-    * Mobile publisher now supports voice to text notes
-  * X2Workflow Improvements
-    * New Location Trigger to support general workflow operations when a Location is logged
-    * Added AddToNewsletter workflow action to manage web leads on newsletter contact lists
-  * Added new feature tours
-  * Improved email client IMAP server compatibility, including with Dovecot, Exchange, Office365, and Rackspace
-  * Added new import console command with 'rollback' operation
-  * Added an admin page to locate missing records that may have been inadvertently hidden
-  * New RackspaceEmail account type
-  * Fixed bug in email subject replacement
-  * Enabled mass execute macro on Contact list grids
-  * Added option to weblead form designer to disable dupe detection by X2Identity on a per-form basis
-  * X2Packager stability fixes
-  * Fixed date format issue under French locale
-  * Miscellaneous UI enhancements
+  * Accounts, Leads and Opportunities are now listable
+  * Contacts can now be converted to leads
+  * Campaigns
+    * A/B testing for campaigns added
+    * Account, Lead and Opportunity lists can now all be used in campaigns
   * Miscellaneous bug fixes
-* Tracked Bug Fixes:
-  * [3703](http://x2software.com/index.php/bugReports/3703): Undefined index: X2List
-  * [5825](http://x2software.com/index.php/bugReports/5825): Call to a member function asa() on null
-  * [5966](http://x2software.com/index.php/bugReports/5966): Trying to get property of non-object
-  * [5971](http://x2software.com/index.php/bugReports/5971): Function mcrypt_create_iv() is deprecated
 
 # Introduction #
 Welcome to X2CRM!

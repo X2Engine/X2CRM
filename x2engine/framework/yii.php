@@ -25,6 +25,7 @@ if(!class_exists('YiiBase', false))
  */
 class Yii extends YiiBase
 {
+    /* x2modstart */
     public static $paths = array();
     public static $systemuser;
     public static $translationLog = array();
@@ -42,7 +43,7 @@ class Yii extends YiiBase
             return self::$_scriptFile;
         else
             return self::$_scriptFile=realpath($_SERVER['SCRIPT_FILENAME']);
-    }
+}
 
     /**
      * Precondition: Request component has already been created. If it hasn't, infinite recursion 
@@ -283,7 +284,9 @@ class Yii extends YiiBase
         }
         Yii::$translationLog[$category][$message] = '';
     }
-
+/* x2modend */ 
 }
 
+/* x2modstart */ 
 spl_autoload_register(array('Yii','x2_autoload'));
+/* x2modend */ 

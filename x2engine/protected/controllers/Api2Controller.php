@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * 2nd generation REST API for X2Engine.
@@ -311,8 +314,35 @@ class Api2Controller extends CController {
                 // Validate/save
                 $saved = false;
                 if($method == 'POST') {
-                    // Save new
+                    if($this->model->asa('DuplicateBehavior') && $this->model->checkForDuplicates()){
+                        $duplicates = $this->model->getDuplicates();
+                        $oldest = $duplicates[0];
+                        $fields = $this->model->getFields(true);
+                        foreach ($fields as $field) {
+                            if (!in_array($field->fieldName,
+                                            $this->model->MergeableBehavior->restrictedFields)
+                                    && !is_null($this->model->{$field->fieldName})) {
+                                if ($field->fieldName === 'assignedTo' &&
+                                        !in_array($oldest->{$field->fieldName}, array('Anyone', ''))) {
+                                    // Don't resassign if the duplicate was already assigned
+                                    continue;
+                                }
+                                if ($field->type === 'text' && !empty($oldest->{$field->fieldName})) {
+                                    $oldest->{$field->fieldName} .= "\n--\n" . $this->model->{$field->fieldName};
+                                } else {
+                                    $oldest->{$field->fieldName} = $this->model->{$field->fieldName};
+                                }
+                            }
+                        }
+                        $this->model = $oldest;
+                    }
+
+                    // Save the model, check for errors, and respond if necessary.
                     $saved = $this->model->save( !$this->settings->rawInput );
+                    if($this->model->hasErrors()) {
+                        $this->response['errors'] = $this->model->errors;
+                        $this->send(422,"Model failed validation.");
+                    }
                 } else {
                     // Update existing
                     $attributes = array_intersect(array_keys($this->jpost),

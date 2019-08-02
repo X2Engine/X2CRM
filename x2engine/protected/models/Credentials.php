@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * Model implementing encrypted, generic credentials storage.
@@ -149,10 +152,21 @@ class Credentials extends CActiveRecord {
         'DropboxAccount',
         'TwitterApp',
         'GoogleProject',
+        'OutlookProject',
         'JasperServer',
         'X2HubConnector',
     );
 
+    /**
+     * Model to chose for Bounce Handling Accounts
+     * @var array
+     */
+    public $validBouncedModels = array(
+        'GMailAccount' => 'Google Email Account',
+        'YahooEmailAccount' => 'Yahoo Email Account',
+        'OutlookEmailAccount' => 'Outlook Email Account',
+        'Office365EmailAccount' => 'Office 365 Email Account'
+    );
     /**
      * Model classes which support the IMAP protocol
      * @var array
@@ -206,7 +220,7 @@ class Credentials extends CActiveRecord {
 
     public function afterSave() {
         if ($this->modelClass &&
-                in_array($this->modelClass, array('TwitterApp', 'GoogleProject', 'JasperServer', 'X2HubConnector'))) {
+                in_array($this->modelClass, array('TwitterApp', 'GoogleProject', 'OutlookProject', 'JasperServer', 'X2HubConnector'))) {
 
             $modelClass = $this->modelClass;
             $prop = $modelClass::getAdminProperty();
@@ -345,6 +359,9 @@ class Credentials extends CActiveRecord {
             'googleProject' => array(
                 'GoogleProject'
             ),
+            'outlookProject' => array(
+                'OutlookProject'
+            ),
             'jasperServer' => array(
                 'JasperServer'
             ),
@@ -378,6 +395,7 @@ class Credentials extends CActiveRecord {
             'LinkedInAccount' => array('linkedIn'),
             'DropboxAccount' => array('dropbox'),
             'GoogleProject' => array('googleProject'),
+            'OutlookProject' => array('outlookProject'),
             'JasperServer' => array('jasperServer'),
             'X2HubConnector' => array('x2HubConnector'),
         );
@@ -466,6 +484,7 @@ class Credentials extends CActiveRecord {
             'dropbox' => Yii::t('app', 'Dropbox App'),
             'linkedIn' => Yii::t('app', 'LinkedIn App'),
             'googleProject' => Yii::t('app', 'Google Project'),
+            'outlookProject' => Yii::t('app', 'Outlook Project'),
             'jasperServer' => Yii::t('app', 'Jasper Server'),
             'doc' => Yii::t('app', 'Document Account'),
             'x2HubConnector' => Yii::t('app', 'X2Hub Connector'),
@@ -518,7 +537,15 @@ class Credentials extends CActiveRecord {
      *  attributes.
      */
     public static function getCredentialOptions(
-    $model, $name, $type = 'email', $uid = null, $htmlOptions = array(), $excludeLegacy = false, $imapOnly = false) {
+        $model,
+        $name,
+        $type = 'email',
+        $uid = null,
+        $htmlOptions = array(),
+        $excludeLegacy = false,
+        $imapOnly = false,
+        $isBouncedAccount = false
+    ) {
 
         // First get credentials available to the user:
         $defaultUserId = in_array($uid, self::$sysUseId) ?
@@ -526,21 +553,27 @@ class Credentials extends CActiveRecord {
                 ($uid !== null ? $uid : Yii::app()->user->id); // The "user" (actual user or system role)
         $uid = Yii::app()->user->id; // The actual user
         // Users can always use their own credentials, it's assumed
-        $criteria = new CDbCriteria(array('params' => array(':uid' => $uid)));
+        $criteria = $isBouncedAccount ?  new CDbCriteria() : new CDbCriteria(array('params' => array(':uid' => $uid)));
         $staticModel = self::model();
-        $staticModel->userId = self::SYS_ID;
-        $criteria->addCondition('userId=:uid');
+        if (!$isBouncedAccount) {
+            $staticModel->userId = self::SYS_ID;
+            $criteria->addCondition('userId=:uid');
+        }
 
         // Exclude accounts types that do not support IMAP if requested
         if ($imapOnly) {
             $criteria->addInCondition('modelClass', self::$imapModels);
         }
+        $isBouncedAccount = $isBouncedAccount ? 1:0;
+        // Exclude accounts types that do not support IMAP if requested
+        $criteria->addCondition("isBounceAccount=$isBouncedAccount");
 
         // Include system-owned credentials
         if (Yii::app()->user->checkAccess(
                         'CredentialsSelectSystemwide', array('model' => $staticModel))) {
 
             $criteria->addCondition('userId=' . self::SYS_ID, 'OR');
+            $criteria->addCondition("isBounceAccount=$isBouncedAccount", 'AND');
         } else { // Select the user's own default
             $defaultUserId = $uid;
         }
@@ -550,6 +583,7 @@ class Credentials extends CActiveRecord {
         if (Yii::app()->user->checkAccess(
                         'CredentialsSelectNonPrivate', array('model' => $staticModel))) {
             $criteria->addCondition('private=0', 'OR');
+            $criteria->addCondition("isBounceAccount=$isBouncedAccount", 'AND');
         }
         /* Cover only credentials for the given type of third-party service for which the selector 
           field is being used: */
@@ -604,7 +638,7 @@ class Credentials extends CActiveRecord {
         $htmlOptions['options'] = $options;
 
         $retDict = array(
-            'credentials' => $credentials,
+            'credentials' => $isBouncedAccount ? array('' => ' - select bounce handling account - ')+$credentials : $credentials,
             'htmlOptions' => $htmlOptions,
             'selectedOption' => $selectedOption
         );
@@ -622,12 +656,21 @@ class Credentials extends CActiveRecord {
      * @param array $htmlOptions HTML options to pass to {@link CHtml::activeDropDownList()}
      * @param array $excludeLegacy Exclude the sendmail legacy option
      * @param array $imapOnly Hide models which do not support IMAP
+     * @param boolean $isBouncedAccount is current email is serving as Bounced Account
      * @return string
      */
     public static function selectorField(
-    $model, $name, $type = 'email', $uid = null, $htmlOptions = array(), $excludeLegacy = false, $imapOnly = false) {
+        $model,
+        $name,
+        $type = 'email',
+        $uid = null,
+        $htmlOptions = array(),
+        $excludeLegacy = false,
+        $imapOnly = false,
+        $isBouncedAccount = false
+    ) {
 
-        $retDict = self::getCredentialOptions($model, $name, $type, $uid, $htmlOptions, $excludeLegacy, $imapOnly);
+        $retDict = self::getCredentialOptions($model, $name, $type, $uid, $htmlOptions, $excludeLegacy, $imapOnly, $isBouncedAccount);
         $credentials = $retDict['credentials'];
         $htmlOptions = $retDict['htmlOptions'];
         return CHtml::activeDropDownList($model, $name, $credentials, $htmlOptions);

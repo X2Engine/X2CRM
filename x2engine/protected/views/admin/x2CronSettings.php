@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 
 
@@ -118,6 +121,11 @@ $(function () {
                 'email_logInbound' => array(
                     'title' => Yii::t('admin','Auto-Log Emails'),
                     'longdesc' => Yii::t('admin','If enabled, X2Engine will automatically poll for new inbound and outbound email messages in all of the Email Inboxes with inbound or outbound logging enabled.'),
+                    'instructions' => Yii::t('admin', ''),
+                ),
+                'app_emailBounceHandling' => array(
+                    'title' => Yii::t('admin','Run Bounce Handling Process'),
+                    'longdesc' => Yii::t('admin','X2Engine will automatically poll for new inbound bounced email messages and update the related campaigns and contacts.'),
                     'instructions' => Yii::t('admin', ''),
                 ),
             ),

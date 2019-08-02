@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,9 @@
 
 
 
+
+
+
 Yii::app()->clientScript->registerCssFiles('SummationReportCss', array(
     Yii::app()->controller->module->getAssetsUrl() . '/css/gridReportsGridView.css',
     Yii::app()->controller->module->getAssetsUrl() . '/css/summationReport.css',
@@ -46,6 +49,12 @@ Yii::app()->clientScript->registerCss('gridReportCSS',"
     border: 1px solid #e0e0e0 !important;
 }
 ");
+
+Yii::app()->clientScript->registerScript('automaticallyGenerateReport', "
+$(function() {
+    $('#x2-generate-report-button').click();
+});
+", CClientScript::POS_READY);
 ?>
 
 <div id='content-container-inner'>

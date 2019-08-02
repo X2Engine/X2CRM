@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
  ?>
 <div class="page-title"><h2><?php echo Yii::t('admin', 'Updater Settings'); ?></h2></div>
 <div class='span-24'>
@@ -122,7 +125,7 @@
                 <ul>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Update Package for Version {version}',array('{version}'=>Yii::app()->params->version)),$this->updateServer.'/'.$this->getUpdateDataRoute()); ?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Updater Utility Patch'),$edition=='opensource' ? "https://x2planet.com/installs/updater.zip" : "https://x2planet.com/installs/{$uniqueId}/updater-{$edition}.zip");?></li>
-                    <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource'?"https://x2planet.com/installs/refresh.zip":"https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
+                    <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource' ? "https://x2planet.com/installs/refresh.zip" : "https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest updater utility version number'),$this->updateServer.'/installs/updates/updateCheck'); ?></li>
                 </ul>
         <hr />

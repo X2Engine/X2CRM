@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 
 Yii::import ('application.components.behaviors.S3Behavior');
@@ -615,7 +618,7 @@ class ImportExportBehavior extends CBehavior {
         if (ctype_digit($importAttribute) && !isset($linkMatchAttribute)) {
             $lookup = X2Model::model($className)->findByPk($importAttribute);
             $model->$fieldName = $importAttribute;
-            if (!empty($lookup)) {
+            if (!empty($lookup) && isset($lookup)) {
                 // Create a link to the existing record
                 $model->$fieldName = $lookup->nameId;
                 $relationship = new Relationships;
@@ -627,14 +630,14 @@ class ImportExportBehavior extends CBehavior {
         } else {
             $lookupAttr = isset($linkMatchAttribute) ? $linkMatchAttribute : 'name';
             $lookup = X2Model::model($className)->findByAttributes(array($lookupAttr => $importAttribute));
-            if (isset($lookup)) {
+            if (!empty($lookup) && isset($lookup)) {
                 $model->$fieldName = $lookup->nameId;
                 $relationship = new Relationships;
                 $relationship->firstType = $modelName;
                 $relationship->secondType = $className;
                 $relationship->secondId = $lookup->id;
                 $this->importRelations[$this->recordsImported][] = $relationship->attributes;
-            } elseif (isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
+            } elseif (!empty($lookup) && isset($lookup) && isset($_SESSION['createRecords']) && $_SESSION['createRecords'] == 1 &&
                     !($modelName === 'BugReports' && $fieldRecord->linkType === 'BugReports')) {
                 // Skip creating related bug reports; the created report wouldn't hold any useful info.
                 $className = ucfirst($fieldRecord->linkType);
@@ -1529,7 +1532,7 @@ class ImportExportBehavior extends CBehavior {
         $command = Yii::app()->db->createCommand($sqlQuery);
         return $command->execute();
     }
-    
+
 }
 
 ?>

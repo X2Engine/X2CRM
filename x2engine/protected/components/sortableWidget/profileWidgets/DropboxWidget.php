@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * Class for displaying contact dropbox feeds
@@ -301,7 +304,7 @@ class DropboxWidget extends SortableWidget {
             return;
         }
         $hubCreds = Credentials::model()->findByPk(Yii::app()->settings->hubCredentialsId);
-        if ($hubCreds->auth->enableDropbox) {
+        if ($hubCreds->auth->enableDropbox && $dropbox !== "fail") {
             echo CHtml::link('Merge In Dropbox Folder to Docs', $dropbox->getLoginUrl(), array('id' => 'refresh-dropbox-profile-button', 'class' => 'x2-button'));
         }
         if (!$dataProvider || array_key_exists("Info", $dataProvider)) {

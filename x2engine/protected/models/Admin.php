@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 Yii::import('application.components.behaviors.JSONEmbeddedModelFieldsBehavior');
 Yii::import('application.components.TwitterAPI.TwitterAPIExchange');
@@ -257,6 +260,7 @@ class Admin extends X2ActiveRecord {
                 'numerical', 'integerOnly' => true),
             // accounts, sales,
             array('loginCredsTimeout', 'numerical', 'max' => 365, 'min' => 1),
+            array('duplicateFields', 'length', 'max' => 255),
             array('chatPollTime', 'numerical', 'max' => 100000, 'min' => 100),
             array('locationTrackingFrequency', 'numerical', 'max' => 60, 'min' => 1),
             array('locationTrackingDistance', 'numerical', 'max' => 10, 'min' => 1),
@@ -284,7 +288,7 @@ class Admin extends X2ActiveRecord {
             array('gaTracking_internal,gaTracking_public', 'match', 'pattern' => "/'/", 'not' => true, 'message' => Yii::t('admin', 'Invalid property ID')),
             array('appDescription', 'length', 'max' => 255),
             array(
-                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText',
+                'appName,x2FlowRespectsDoNotEmail,doNotEmailPage,doNotEmailLinkText,EmailUnSubPage',
                 'safe'
             ),
             array('imapPollTimeout', 'numerical', 'max' => 30, 'min' => 5),
@@ -324,6 +328,7 @@ class Admin extends X2ActiveRecord {
             'onlineOnly' => Yii::t('admin', 'Online Only'),
             'disableAutomaticRecordTagging' =>
             Yii::t('profile', 'Disable automatic record tagging?'),
+            'duplicateFields' => Yii::t('admin', 'Duplicate Fields'),
             'emailBulkAccount' => Yii::t('admin', 'Send As (when sending bulk email)'),
             'emailFromName' => Yii::t('admin', 'Sender Name'),
             'emailFromAddr' => Yii::t('admin', 'Sender Email Address'),
@@ -343,6 +348,7 @@ class Admin extends X2ActiveRecord {
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
+            'outlookIntegration' => Yii::t('admin', 'Activate Outlook Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
             'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),
             'workflowBackdateRange' => Yii::t('admin', 'Process Backdate Range'),

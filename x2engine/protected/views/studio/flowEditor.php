@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 Tours::loadTips('studio.flowEditor');
 
@@ -96,11 +99,12 @@ Yii::app()->clientScript->registerPackages(array(
 // Declare variables to pass to JS files
 $passVarsToClientScript = '
     x2.flow = {};
+    x2.flow_counter = {};
     x2.flow.modelClass = "' . $model->modelClass . '";
     x2.flow.translations = {};
     x2.flow.requiresCron = ' . CJSON::encode($requiresCron) . ';
     x2.flow.showLabels = ' . ($showLabels ? 'true' : 'false') . ';
-    x2.flow.insertableAttributes = ' . CJSON::encode($insertableAttributes) . ';
+    x2.flow.insertableAttributes = ' . CJSON::encode($insertableAttributes) . ';   
     x2.flowData = ' . CJSON::encode($model->flow) . ';
     x2.fieldUtils = new x2.FlowFields ({
         operatorList: ' . CJSON::encode(X2FlowTrigger::getFieldComparisonOptions()) . ',
@@ -131,6 +135,8 @@ foreach ($translations as $key => $val) {
 
 // Include variable script
 Yii::app()->clientScript->registerScript('passVarsToX2FlowScript', $passVarsToClientScript, CClientScript::POS_END);
+
+
 
 $assets = Yii::app()->getAssetManager()->publish(
         Yii::getPathOfAlias('application.extensions.CJuiDateTimePicker') . DIRECTORY_SEPARATOR . 'assets'
@@ -228,14 +234,14 @@ echo X2Html::getFlashes();
 
         <div class="row">
             <div class="cell">
-        <?php
-        asort($triggerTypes);
-        $allTriggers = array_merge(array('x2flow-empty' => Yii::t(
-                    'studio', 'Select a trigger')), $triggerTypes);
-        echo $form->label($model, 'triggerType');
-        echo CHtml::dropdownList('trigger-selector', '', $allTriggers, array('id' => 'trigger-selector'
-        ));
-        ?>
+                <?php
+                asort($triggerTypes);
+                $allTriggers = array_merge(array('x2flow-empty' => Yii::t(
+                            'studio', 'Select a trigger')), $triggerTypes);
+                echo $form->label($model, 'triggerType');
+                echo CHtml::dropdownList('trigger-selector', '', $allTriggers, array('id' => 'trigger-selector'
+                ));
+                ?>
             </div>
             <div class="cell">
                 <?php echo $form->label($model, 'active'); ?>
@@ -254,9 +260,8 @@ echo X2Html::getFlashes();
         <div class="row">
             <div class="cell">
                     <?php echo $form->label($model, 'name'); ?>
-<?php echo $form->textField($model, 'name'); ?>
-<?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField'));
-?>
+                    <?php echo $form->textField($model, 'name'); ?>
+                    <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
             </div>
         </div>
         <div class="row" style="width:100%">
@@ -311,7 +316,7 @@ echo X2Html::getFlashes();
     $actions = array_filter($actionTypes, function($element) {
         return in_array($element, array_merge(X2FlowAction::getAnyModelActions(), X2FlowAction::getRecordModelActions(), X2FlowAction::getProcessModelActions()));
     });
-
+    
     /**
      * Actions bank
      */
@@ -378,7 +383,7 @@ foreach ($actions as $type => $title):
         <div class="x2flow-node x2flow-trigger x2flow-empty
 <?php echo ($showLabels ? "" : " no-label"); ?>" id="trigger"
              title="<?php echo addslashes(Yii::t('studio', 'Select a trigger')); ?>">
-
+            
             <div class="x2flow-icon-label"
 <?php echo ($showLabels ? "" : "style='display: none;'") ?>>
             </div>

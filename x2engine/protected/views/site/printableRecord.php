@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 ?>
 
@@ -70,16 +73,18 @@ $this->widget('DetailView', array(
     'modelName' => $modelClass
 ));
 
-$actions = Actions::model()->findAll('associationId=' . $model->id);
+// Actions of type emailOpened is not as significant as the other types of Actions when it comes up Notes
+$actions = Actions::model()->findAll(array('condition'=>'type!="emailOpened" AND associationId='.$model->id,'order'=>'createDate DESC'));
 $notes = array();
 
 echo '<h3 style="margin-top: 100px;">Notes</h3>';
 echo '<div style="width: 100%; min-height: 200px; list-style: none;">';
 foreach ($actions as $action) {
     $note = ActionText::model()->find('actionId=' . $action->id)->text;
-
+    $noteType = $action->type;
     if ($note && trim($note) !== '') {
         $notes[] = $note;
+	echo '<div style="padding: 20px 0px;">' . $noteType . '</div>';
         echo '<div style="padding: 20px 0px;">' . $note . '</div>';
     }
 }

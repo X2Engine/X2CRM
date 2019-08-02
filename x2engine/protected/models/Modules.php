@@ -235,32 +235,44 @@ class Modules extends CActiveRecord {
      * Populate a list of available modules to import/export
      */
     public static function getExportableModules() {
+        
         $modules = Modules::model()->findAll();
         $moduleList = array();
         $skipModules = array(
             'Calendar', 'Charts', 'Groups', 'Reports', 'Media', 'Users', 'Workflow');
         
         $skipModules[] = 'EmailInboxes';
-        
+
         foreach($modules as $module){
+
+        
             $name = ucfirst($module->name);
+            
             if (in_array($name, $skipModules)) {
                 continue;
             }
+
             if($name != 'Document'){
                 $controllerName = $name.'Controller';
                 if(file_exists(
                     'protected/modules/'.$module->name.'/controllers/'.$controllerName.'.php')){
-
+                    
                     Yii::import("application.modules.$module->name.controllers.$controllerName");
+
                     $controller = new $controllerName($controllerName);
+
+                    
                     $model = $controller->modelClass;
+                    
                     if(class_exists($model)){
+                        
                         $moduleList[$model] = Yii::t('app', $module->title);
+                        
                     }
                 }
             }
         }
+        
         return $moduleList;
     }
 

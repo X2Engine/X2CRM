@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * @package application.modules.contacts.controllers
@@ -1074,6 +1077,7 @@ class ContactsController extends x2base {
     public function actionLists() {
         $filter = new X2List('search');
         $criteria = new CDbCriteria();
+        $criteria->addCondition('modelName = "Contacts"');
         $criteria->addCondition('type="static" OR type="dynamic"');
         if (!Yii::app()->params->isAdmin) {
             $condition = 'visibility="1" OR assignedTo="Anyone" OR 
@@ -1645,6 +1649,22 @@ class ContactsController extends x2base {
                 'name' => 'export',
                 'label' => Yii::t('contacts', 'Export {module}', array('{module}' => $Contacts)),
                 'url' => array('admin/exportModels', 'model' => 'Contacts')
+            ),
+            array(
+                'name'=>'convertToLead',
+                'label' => Yii::t('x2Leads', 'Convert to {leads}', array(
+                    '{leads}' => Modules::displayName(false, "X2Leads"),
+                )),
+                'url' => '#',
+                'linkOptions' => array ('id' => 'convert-contact-to-lead-button'),
+            ),
+            array(
+                'name'=>'convertToAccount',
+                'label' => Yii::t('Accounts', 'Convert to {account}', array(
+                    '{account}' => Modules::displayName(false, "Accounts"),
+                )),
+                'url' => '#',
+                'linkOptions' => array ('id' => 'convert-contact-to-account-button'),
             ),
             array(
                 'name' => 'viewOnMap',

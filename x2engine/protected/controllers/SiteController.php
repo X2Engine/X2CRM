@@ -1,8 +1,7 @@
 <?php
-
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * Primary/default controller for the web application.
@@ -83,9 +85,9 @@ class SiteController extends x2base {
         return array(
             array('allow',
                 'actions' => array(
-                    'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
+                    'unsubscribe', 'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
                     'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
-                    'mobileResetPassword', 'webleadCaptcha', 'needsTwoFactor'),
+                    'mobileResetPassword', 'webleadCaptcha', 'needsTwoFactor', 'unsubscribe'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -142,6 +144,89 @@ class SiteController extends x2base {
             ),
         ));
     }
+
+
+    public function actionUnsubscribe() {
+          if (isset( $_GET["unsubscribeALL"])){
+                Contacts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $_GET["email"]));
+                Accounts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $_GET["email"]));
+                X2Leads::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $_GET["email"]));
+                Opportunity::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'email=:email', array(':email' => $_GET["email"]));
+               X2ListItem::model()
+                        ->updateAll(
+                                array('unsubscribed' => time()), 'emailAddress=:email AND unsubscribed=0', array('email' => $_GET["email"]));
+                                            
+                Contacts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $_GET["email"]));
+                Accounts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $_GET["email"]));
+                X2Leads::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $_GET["email"]));
+                Opportunity::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $_GET["email"]));
+                         
+                           
+                Contacts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $_GET["email"]));
+                Accounts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $_GET["email"]));
+                X2Leads::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $_GET["email"]));
+                Opportunity::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $_GET["email"]));
+                           
+                             
+                Contacts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $_GET["email"]));
+                Accounts::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $_GET["email"]));
+                X2Leads::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $_GET["email"]));
+                Opportunity::model()
+                        ->updateAll(
+                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $_GET["email"]));
+          }
+          $categories = Yii::app()->db->createCommand()
+                    ->select('options')
+                        ->from('x2_dropdowns')
+                        ->where('id=155')
+                        ->queryRow();
+         $maillist = json_decode($categories["options"]);
+         foreach($maillist as $key => $value) {
+             $FullName = 'Unsubscribe_' . $value . '_X2_internal_list';
+             $list = CActiveRecord::model('X2List')->findByAttributes(array('name' => $FullName));
+             $item = CActiveRecord::model('X2ListItem')->findByAttributes(array('emailAddress' => $_GET["email"], 'listId' => $list->id));
+            
+             
+             if(!isset($item) && isset($_GET[str_replace(' ', '_', $value)])){
+                 $unSub = new X2ListItem;
+                $unSub->emailAddress =  $_GET["email"];
+                $unSub->listId = $list->id;
+                $unSub->save();
+                
+             }
+         }
+          echo Yii::app()->settings->EmailUnSubPage;
+      }
 
     public function actionSendErrorReport() {
         if (isset($_POST['report'])) {
@@ -311,7 +396,7 @@ class SiteController extends x2base {
             $motd = $_POST['message'];
             $temp = Social::model()->findByAttributes(array('type' => 'motd'));
             $temp->data = $motd;
-            if ($temp->update())
+            if ($temp->save())
                 echo $motd;
             else
                 echo "An error has occured.";
@@ -656,7 +741,7 @@ class SiteController extends x2base {
             }
 
             Yii::app()->params->profile->widgetSettings = json_encode($widgetSettings);
-            Yii::app()->params->profile->update();
+            Yii::app()->params->profile->save();
         }
     }
 
@@ -674,17 +759,38 @@ class SiteController extends x2base {
             if ($upload) {
                 $name = str_replace(' ', '_', $upload->getName());
                 $temp = TempFile::createTempFile($name);
-
-                if ($temp && $upload->saveAs($temp->fullpath())) { // temp file saved
-                    echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
+                if (!$temp) {
+                    echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Temp file not created')));
                 } else {
-                    echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+                    if ($upload->saveAs($temp->fullpath())) { // temp file saved
+                        echo json_encode(array('status' => 'success', 'id' => $temp->id, 'name' => $name));
+                    } else {
+                        $error = $upload->getError();
+                        if ($error == UPLOAD_ERR_NO_FILE) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. No file found')));
+                        } elseif ($error == UPLOAD_ERR_INI_SIZE) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Temp file is larger than the max upload ini size')));
+                        } elseif ($error == UPLOAD_ERR_FORM_SIZE) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Temp file is larger than the max upload form size')));
+                        } elseif ($error == UPLOAD_ERR_PARTIAL) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. The File was only partially uploaded')));
+                        } elseif ($error == UPLOAD_ERR_NO_TMP_DIR) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Missing the temporary folder to store the uploaded file')));
+                        } elseif ($error == UPLOAD_ERR_CANT_WRITE) {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Failed to write the uploaded file to disk')));
+                        } elseif (defined('UPLOAD_ERR_EXTENSION') && $error == UPLOAD_ERR_EXTENSION) {
+                            // available for PHP 5.2.0 or above
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. A PHP extension stopped the file upload.')));
+                        } else {
+                            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. Temp file not saved')));
+                        }
+                    }
                 }
             } else {
                 echo json_encode(array('status' => 'notsent', 'message' => Yii::t('media', 'File was not sent to server.')));
             }
         } else {
-            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file.')));
+            echo json_encode(array('status' => 'fail', 'message' => Yii::t('media', 'Failed to upload file. HTTP File Upload variables not set')));
         }
     }
 
@@ -1173,10 +1279,10 @@ class SiteController extends x2base {
                 Yii::app()->session['alertUpdate'] = false;
             }
             if (isset($_GET['code']) && isset($_GET['state'])) {
-                if ($_GET['redirectedFrom'] === 'dropbox'){
+                if ($_GET['redirectedFrom'] === 'dropbox') {
                     Yii::app()->session['dropbox_code'] = $_GET['code'];
                     Yii::app()->session['dropbox_status'] = $_GET['state'];
-                } else if ($_GET['redirectedFrom'] === 'linkedIn'){
+                } else if ($_GET['redirectedFrom'] === 'linkedIn') {
                     Yii::app()->session['linkedIn_code'] = $_GET['code'];
                     Yii::app()->session['linkedIn_status'] = $_GET['state'];
                 }
@@ -1478,7 +1584,7 @@ class SiteController extends x2base {
      */
     public function actionForgetMe() {
         $loginForm = new LoginForm;
-        foreach (array('username', 'rememberMe','sessionToken') as $attr) {
+        foreach (array('username', 'rememberMe', 'sessionToken') as $attr) {
             // Remove the cookie if they unchecked the box
             $cookieName = CHtml::resolveName($loginForm, $attr);
             $cookie = new CHttpCookie($cookieName, '');
@@ -1526,10 +1632,10 @@ class SiteController extends x2base {
         }
 
         /*
-        $facebook = FacebookBehavior::createFacebookInstance();
-        if (!$facebook->checkIfLoggedIn()) {
-            printR($facebook->requestAccess(), true);
-        }
+          $facebook = FacebookBehavior::createFacebookInstance();
+          if (!$facebook->checkIfLoggedIn()) {
+          printR($facebook->requestAccess(), true);
+          }
          *
          */
 

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 Yii::app()->clientScript->registerCssFile(Yii::app()->theme->baseUrl . '/css/views/admin/index.css');
 
@@ -590,6 +593,11 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins', array(
                     ?><br><?php
                     echo Yii::t('admin', 'Configure and enable Google integration');
                     ?></div>
+                 <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Outlook Integration'), array('/admin/outlookIntegration'));
+                    ?><br><?php
+                    echo Yii::t('admin', 'Configure and enable Outlook Calender integration');
+                    ?></div>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Twitter Integration'), array('/admin/twitterIntegration'));
                     ?><br><?php
@@ -600,6 +608,12 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins', array(
                     echo CHtml::link(Yii::t('admin', 'Jasper Server Integration'), array('/admin/jasperIntegration'));
                     ?><br><?php
                     echo Yii::t('admin', 'Enter your Jasper Server settings for external reporting');
+                    ?></div>
+
+                <div class="cell span-6"><?php
+                    echo CHtml::link(Yii::t('admin', 'Email Bounce Handling Setup'), array('/admin/bounceHandlingSetup'));
+                    ?><br><?php
+                    echo Yii::t('admin', 'Configure bounce handling accounts to analyze the failure notifications and bounces for emails run in campaigns');
                     ?></div>
 
             </div>
@@ -816,6 +830,16 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins', array(
 </div>     
 <br><br>
 <script>
+
+    $(function(){
+       $('#tabs #admin-tab-list li').on('click', function(){
+           var index = $(this).index();
+           $("#tabs").tabs({active: index});
+        });
+    });
+  
+// FIX IF BROKEN });
+
     $(function () {
         var ordering = $.cookie('admin-tab-ordering');
         if (ordering !== null) {
@@ -853,6 +877,17 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins', array(
         });
         $("#main-admin-panel").show();
     });
+
+    // Refreshes gauges
+    setInterval(function() {
+        $.get("/index.php/admin/getDashboardMetrics", function(data, status) {
+           console.log(data);
+           var json = JSON.parse(data)
+           x2.yw0.refresh(json["cpu"]);
+           x2.yw1.refresh(json["mem"]);
+           x2.yw2.refresh(json["disk"]); 
+        });
+    }, 5000);
     
     $('#admin-tab-list').on('resize', function() {
         $('.admin-tab-content').height($(this).height());

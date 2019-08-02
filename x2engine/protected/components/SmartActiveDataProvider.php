@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2018 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,9 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
+
+
 
 /**
  * CActiveDataProvider with persistent sort order and filters and optional id checksum calculation
@@ -127,10 +130,12 @@ class SmartActiveDataProvider extends CActiveDataProvider {
 	/**
 	 * Returns the pagination object.
 	 * @return CPagination the pagination object. If this is false, it means the pagination is 
-     *  disabled.
+         *  disabled.
 	 */
-	public function getPagination() {
-		if($this->_pagination===null) {
+        /* x2modstart */ 
+	public function getPagination($className = 'CActiveDataProvider') {
+        /* x2modend */ 
+            if($this->_pagination===null) {
             $this->_pagination = $this->getSmartPagination ();
         } 
         return $this->_pagination;
@@ -202,6 +207,7 @@ class SmartActiveDataProvider extends CActiveDataProvider {
             $ids = $command->queryColumn ();
 
             // attempt to verify ids array
+            
             if (count ($ids) !== intval ($this->totalItemCount)) {
                 throw new CException ('could not generate checksum');
             }
