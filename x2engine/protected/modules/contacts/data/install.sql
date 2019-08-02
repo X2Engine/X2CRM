@@ -76,7 +76,7 @@ CREATE TABLE x2_lists (
     description VARCHAR(250) NULL,
     type        VARCHAR(20) NULL,
     logicType   VARCHAR(20) DEFAULT "AND",
-    modelName   VARCHAR(100) NOT NULL,
+    modelName   VARCHAR(100),
     visibility  INT NOT NULL DEFAULT 1,
     count       INT UNSIGNED NOT NULL DEFAULT 0,
     createDate  BIGINT NOT NULL,
