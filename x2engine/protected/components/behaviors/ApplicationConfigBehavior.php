@@ -148,7 +148,7 @@ class ApplicationConfigBehavior extends CBehavior {
     }
 
     public function getUpdateServer() {
-        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'http://52.33.121.218/x2planet.com';
+        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'https://x2planet.com';
     }
 
     /**
