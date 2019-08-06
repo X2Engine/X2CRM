@@ -62,7 +62,7 @@ class ConnectAppTest extends HolodeckTestCase {
         
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->connectApps("CNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                     ->connectApps("CNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -93,7 +93,7 @@ class ConnectAppTest extends HolodeckTestCase {
         ));
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->connectApps("CNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                           ->connectApps("CNaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }
