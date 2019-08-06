@@ -1853,7 +1853,7 @@ class Actions extends X2Model {
         if (!isset ($this->_notificationTime)) {
             $reminders = $this->getReminders ();
             if(count($reminders) > 0){
-                $notifTime = ($this->dueDate - $reminders[0]->createDate) / 60;
+                $notifTime = (strtotime($this->dueDate) - $reminders[0]->createDate) / 60;
             }else{
                 $notifTime = 15;
             }
