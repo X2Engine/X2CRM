@@ -891,7 +891,6 @@ abstract class X2Model extends X2ActiveRecord {
      * http://www.yiiframework.com/license/
      */
     public function save($runValidation = true, $attributes = null) {
-        //printR($this->attributes, $die = TRUE);
         if (!$runValidation || $this->validate($attributes)) {
             /* x2modstart */
             if ($this->asa('FlowTriggerBehavior') &&

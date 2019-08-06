@@ -623,7 +623,7 @@ class AdminController extends X2Controller {
             $behaviors = array();
             $maxTries = 3;
             $GithubUrl = 'https://raw.github.com/X2Engine/X2Engine/master/x2engine/protected';
-            $x2planUrl = 'http://52.33.121.218/x2planet.com/updates/x2engine/protected'; // NOT using UpdaterBehavior.updateServer because that behavior may not yet exist
+            $x2planUrl = 'https://x2planet.com/updates/x2engine/protected'; // NOT using UpdaterBehavior.updateServer because that behavior may not yet exist
             $files = array_merge(array_fill_keys(array_keys(self::$behaviorClasses), 'behavior'), array_fill_keys(self::$dependencies, 'dependency'));
             $tryCurl = in_array(ini_get('allow_url_fopen'), array(0, 'Off', 'off'));
             foreach ($files as $class => $type) {
@@ -2834,7 +2834,6 @@ class AdminController extends X2Controller {
             $params = array('class' => 'GoogleProject');
         }
         $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
-        file_put_contents("/tmp/Justin.txt", CJSON::encode($url));
         $this->redirect($url);
     }
     
@@ -6390,7 +6389,7 @@ class AdminController extends X2Controller {
     public function missingClassesException($classes) {
         $message = Yii::t('admin', 'One or more dependencies of AdminController are missing and could not be automatically retrieved. They are {classes}', array('{classes}' => implode(', ', $classes)));
         $message .= "\n\n" . Yii::t('admin', 'To diagnose this error, please upload and run the requirements check script on your server.');
-        $message .= "\nhttp://52.33.121.218/x2planet.com/installs/requirements.php";
+        $message .= "\nhttps://x2planet.com/installs/requirements.php";
         $message .= "\n\n" . Yii::t('admin', 'The error is most likely due to one of the following things:');
         $message .= "\n(1) " . Yii::t('admin', 'PHP processes run by the web server do not have permission to create or modify files');
         $message .= "\n(2) " . Yii::t('admin', 'x2planet.com and raw.github.com are currently unavailable');

@@ -262,9 +262,8 @@ echo X2Html::getFlashes();
                     <?php echo $form->label($model, 'name'); ?>
                     <?php echo $form->textField($model, 'name'); ?>
                     <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
-                    <?php  ?>
             </div>
-            <?php  ?>
+        </div>
         <div class="row" style="width:100%">
             <div class="cell" style="width:99%">
                 <?php echo $form->label($model, 'description'); ?>
