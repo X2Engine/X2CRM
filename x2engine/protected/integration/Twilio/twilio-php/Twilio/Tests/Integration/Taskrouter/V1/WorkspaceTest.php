@@ -69,7 +69,7 @@ class WorkspaceTest extends HolodeckTestCase {
         $this->holodeck->mock(new Response(500, ''));
         
         try {
-            $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+            $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -109,7 +109,7 @@ class WorkspaceTest extends HolodeckTestCase {
             '
         ));
         
-        $actual = $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+        $actual = $this->twilio->taskrouter->v1->workspaces("WSaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

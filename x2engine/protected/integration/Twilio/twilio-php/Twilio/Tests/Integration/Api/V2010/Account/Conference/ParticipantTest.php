@@ -64,7 +64,7 @@ class ParticipantTest extends HolodeckTestCase {
         try {
             $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                      ->conferences("CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                     ->participants("CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                     ->participants("CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         } catch (DeserializeException $e) {}
           catch (TwilioException $e) {}
         
@@ -95,7 +95,7 @@ class ParticipantTest extends HolodeckTestCase {
         
         $actual = $this->twilio->api->v2010->accounts("ACaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                                            ->conferences("CFaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-                                           ->participants("CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->update();
+                                           ->participants("CAaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")->save();
         
         $this->assertNotNull($actual);
     }

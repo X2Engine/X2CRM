@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2017 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,9 +35,13 @@
  **********************************************************************************/
 
 
+
+
+
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
 Yii::import('application.models.Modules');
+Yii::import('application.components.util.EncryptUtil');
 Yii::import('application.components.util.FileUtil');
 Yii::import('application.components.util.ResponseUtil');
 Yii::import('application.modules.users.models.*');
@@ -144,7 +148,7 @@ class ApplicationConfigBehavior extends CBehavior {
     }
 
     public function getUpdateServer() {
-        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'https://x2planet.com';
+        return X2_UPDATE_BETA ? 'http://beta.x2planet.com' : 'http://52.33.121.218/x2planet.com';
     }
 
     /**
@@ -544,9 +548,11 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         if(!$this->_cryptInit){
             $key = $this->owner->basePath.'/config/encryption.key';
             $iv = $this->owner->basePath.'/config/encryption.iv';
-            if(extension_loaded('openssl') && extension_loaded('mcrypt') && file_exists($key) && file_exists($iv)){
+            if(extension_loaded('openssl') && file_exists($key) && file_exists($iv)){
                 EncryptedFieldsBehavior::setup($key, $iv);
-            }else{
+            }else if (extension_loaded('openssl') && file_exists($key) && file_exists($iv)) {
+                EncryptedFieldsBehavior::setup($key, $iv);
+            }else {
                 // Use unsafe method with encryption
                 EncryptedFieldsBehavior::setupUnsafe();
             }

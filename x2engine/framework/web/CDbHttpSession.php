@@ -228,7 +228,7 @@ class CDbHttpSession extends CHttpSession
 			->from($this->sessionTableName)
 			->where('expire>:expire AND id=:id',array(':expire'=>time(),':id'=>$id))
 			->queryScalar();
-		return $data===false?'':$data;
+		return ($data===null || $data===false)?'':$data;
 	}
 
 	/**
@@ -247,7 +247,7 @@ class CDbHttpSession extends CHttpSession
 			$expire=time()+$this->getTimeout();
 			$db=$this->getDbConnection();
 			if($db->getDriverName()=='pgsql')
-				$data=new CDbExpression("convert_to(".$db->quoteValue($data).", 'UTF8')");
+				$data=new CDbExpression($db->quoteValueWithType($data, PDO::PARAM_LOB)."::bytea");
 			if($db->getDriverName()=='sqlsrv' || $db->getDriverName()=='mssql' || $db->getDriverName()=='dblib')
 				$data=new CDbExpression('CONVERT(VARBINARY(MAX), '.$db->quoteValue($data).')');
 			if($db->createCommand()->select('id')->from($this->sessionTableName)->where('id=:id',array(':id'=>$id))->queryScalar()===false)
