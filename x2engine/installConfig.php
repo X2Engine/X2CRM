@@ -1,27 +1,29 @@
 <?php
-$host = 'localhost';
-$db='';
-$user='';
-$pass='';
-$app='X2CRM';
-$currency = 'USD';
-$lang = '';
-$timezone = 'UTC';
-$adminEmail = '';
-$adminPassword = 'admin';
+// Placeholders in brackets will be replaced in a strtr during automated trial installation
+// They should correspond to keys of $_GET and $sendargPatterns (in secrets.php)
+$host = '127.0.0.1';
+$db='{dbname}';
+$user='{dbuser}';
+$pass='{dbpass}';
+$app='{name}';
+$currency = '{currency}';
+$lang = '{language}';
+$timezone = '{timezone}';
+$adminEmail = '{email}';
+$adminPassword = '{sitepass}';
 $adminUsername = 'admin';
-$dummyData = 0;
+$dummyData = {dummydata};
+$webLeadUrl = '';
+$unique_id = 'TTTT-TRIAL-TRIAL';
+$visibleModules = '{visibleModules}';
 $baseUrl = '';
 $baseUri = '';
-$unique_id = 'none';
-// Default visible modules (set manually to a comma-delineated list as desired)
-$visibleModules = implode(',',(array) require(dirname(__FILE__).implode(DIRECTORY_SEPARATOR,array('','protected','data','')).'enabledModules.php'));
 // Unit & functional testing configuration (auto-config for phpunit.xml not 
 // implemented yet; edit protected/tests/phpunit.xml as desired for Selenium 
 // configuration)
 $test_db = 0;
 $test_url = '';
-$installType = 'Silent';
+$installType = 'Trial';
 // Cron settings. 
 //
 // These settings have no effect except in X2Engine Professional Edition.
