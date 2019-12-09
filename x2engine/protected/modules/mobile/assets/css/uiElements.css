@@ -32,13 +32,3 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
-/* line 40, ../../../../../compass/protected/modules/mobile/assets/css/uiElements.scss */
-body.mobile-body [data-role='button'], body.mobile-body .ui-btn {
-  /* @theme background: highlight1 */
-  /* @theme color: smart_text */
-  /* @theme border-color: light_highlight1 */
-}
-/* line 45, ../../../../../compass/protected/modules/mobile/assets/css/uiElements.scss */
-body.mobile-body input[type='text'], body.mobile-body textarea {
-  /* @theme color: text */
-}

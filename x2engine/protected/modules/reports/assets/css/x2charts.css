@@ -31,17 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/
-/* line 25, ../../../../../compass/sass/protected/modules/reports/assets/css/x2charts.scss */
-/* line 25, ../../../../../compass/sass/protected/modules/reports/assets/css/x2charts.scss */
-/* line 43, ../../../../../compass/protected/modules/reports/assets/css/x2charts.scss */
-a.x2-pie-chart-button, a.x2-bar-graph-button {
-  font-size: 0.9em;
-}
-
-/* line 30, ../../../../../compass/sass/protected/modules/reports/assets/css/x2charts.scss */
-/* line 32, ../../../../../compass/sass/protected/modules/reports/assets/css/x2charts.scss */
-/* line 51, ../../../../../compass/protected/modules/reports/assets/css/x2charts.scss */
-.jqplot-data-label {
-  color: #333;
-}
+ **********************************************************************************/a.x2-pie-chart-button,a.x2-bar-graph-button{font-size:0.9em}.jqplot-data-label{color:#333}

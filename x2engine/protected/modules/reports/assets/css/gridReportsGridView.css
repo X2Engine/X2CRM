@@ -31,43 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/
-/* line 24, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 44, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-.grid-report-items {
-  /*display: block;*/
-  overflow-x: hidden;
-}
-/* line 47, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-.grid-report-items thead th a {
-  /*padding: 5px 15px !important;*/
-}
-
-/* line 27, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 32, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 39, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 58, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-#generated-report .pager {
-  /*position: relative; */
-  /*top: 24px;*/
-}
-/* line 61, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-#generated-report .pager.empty-pager {
-  height: 15px;
-}
-
-/* line 42, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 47, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 52, ../../../../../compass/sass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-/* line 72, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-.column-selector-link {
-  float: left;
-  position: relative;
-  top: 7px;
-}
-
-/* line 79, ../../../../../compass/protected/modules/reports/assets/css/gridReportsGridView.scss */
-#report-settings .workflow-id-dropdown-container {
-  display: inline-block;
-  margin-left: 8px;
-}
+ **********************************************************************************/.grid-report-items{overflow-x:hidden}#generated-report .pager.empty-pager{height:15px}.column-selector-link{float:left;position:relative;top:7px}#report-settings .workflow-id-dropdown-container{display:inline-block;margin-left:8px}

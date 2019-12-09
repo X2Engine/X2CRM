@@ -31,8 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/
-/* line 40, ../../../../../../compass/themes/x2engine/css/components/X2GridView/massActions/MassPublish.scss */
-form.mass-publish-form input[type="submit"] {
-  display: none;
-}
+ **********************************************************************************/form.mass-publish-form input[type="submit"]{display:none}

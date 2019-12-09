@@ -31,29 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/
-/* line 24, ../../../../../compass/sass/protected/modules/reports/assets/css/printReport.scss */
-/* line 44, ../../../../../compass/protected/modules/reports/assets/css/printReport.scss */
-table.print-report {
-  border-collapse: collapse;
-  width: 100%;
-}
-/* line 47, ../../../../../compass/protected/modules/reports/assets/css/printReport.scss */
-table.print-report th, table.print-report td {
-  border: 1px solid black;
-}
-/* line 50, ../../../../../compass/protected/modules/reports/assets/css/printReport.scss */
-table.print-report td {
-  /*min-height: 20px;*/
-}
-/* line 53, ../../../../../compass/protected/modules/reports/assets/css/printReport.scss */
-table.print-report th {
-  background-color: #eee;
-}
-/* line 56, ../../../../../compass/protected/modules/reports/assets/css/printReport.scss */
-table.print-report tr.group-header-row {
-  background-color: #eee;
-}
-
-/* line 27, ../../../../../compass/sass/protected/modules/reports/assets/css/printReport.scss */
-/* line 30, ../../../../../compass/sass/protected/modules/reports/assets/css/printReport.scss */
+ **********************************************************************************/table.print-report{border-collapse:collapse;width:100%}table.print-report th,table.print-report td{border:1px solid black}table.print-report th{background-color:#eee}table.print-report tr.group-header-row{background-color:#eee}

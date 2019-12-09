@@ -31,16 +31,4 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/
-/* line 39, ../../../../../compass/protected/modules/media/assets/css/media.scss */
-#media-form .media-association-type {
-  background: none !important;
-}
-/* line 41, ../../../../../compass/protected/modules/media/assets/css/media.scss */
-#media-form .media-association-type select, #media-form .media-association-type input {
-  display: inline-block !important;
-}
-/* line 44, ../../../../../compass/protected/modules/media/assets/css/media.scss */
-#media-form .media-association-type input {
-  width: auto !important;
-}
+ **********************************************************************************/#media-form .media-association-type{background:none !important}#media-form .media-association-type select,#media-form .media-association-type input{display:inline-block !important}#media-form .media-association-type input{width:auto !important}
