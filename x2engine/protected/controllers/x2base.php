@@ -122,6 +122,10 @@ abstract class x2base extends X2Controller {
     }
 
     public function denied() {
+        //portal users should not wander away from the portal page
+        if (Yii::app()->user->isPortal) {
+            $this->owner->redirect(array('/services/portal'));
+        }
         throw new CHttpException(
             403, Yii::t('app','You are not authorized to perform this action.'));
     }
@@ -729,6 +733,7 @@ abstract class x2base extends X2Controller {
         {
             
             $output=$this->renderPartial($view,$data,true);
+            //printR($output, 1);
             /* x2modstart */ 
             if(($layoutFile=$this->getLayoutFile($this->layout))!==false) {
                 $output = $this->renderLayout ($layoutFile, $output);

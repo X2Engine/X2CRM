@@ -168,7 +168,7 @@ if(empty($report)) {
 			}
 		}
 
-		chartArray.push(c3.generate(settings));
+		chartArray.push(bb.generate(settings));
 	}
 
 	// Change the height of charts
@@ -189,7 +189,7 @@ if(empty($report)) {
 
 	// Toggle Data values
 	$('#show-values').change(function() {
-		$('.c3-chart-texts').toggle();
+		$('.bb-chart-texts').toggle();
 	});
 	<?php endif; ?>
 

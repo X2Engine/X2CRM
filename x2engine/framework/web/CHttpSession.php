@@ -355,7 +355,9 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function setTimeout($value)
 	{
-		ini_set('session.gc_maxlifetime',$value);
+		if(!headers_sent()){	
+		   ini_set('session.gc_maxlifetime',$value);
+		}
 	}
 
 	/**

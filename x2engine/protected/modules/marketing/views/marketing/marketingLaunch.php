@@ -37,7 +37,7 @@
 
 
 
-echo '<div>';
+echo '<div style="overflow:auto;">';
 if ($model->launchDate == 0) {
     echo CHtml::beginForm(array('launch', 'id' => $model->id));
     echo CHtml::submitButton(

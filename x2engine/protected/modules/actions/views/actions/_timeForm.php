@@ -46,6 +46,7 @@ $form = $this->beginWidget ('TimeActiveForm', array (
     'htmlOptions' => $htmlOptions,
     'namespace' => $namespace,
 ));
+    echo $form->label ($model,'Description');
     echo $form->textArea ($model, 'actionDescription');
     echo $form->dateRangeInput ($model, 'dueDate', 'completeDate');
     echo $form->hiddenField($model, 'associationType'); 
@@ -57,4 +58,9 @@ $form = $this->beginWidget ('TimeActiveForm', array (
 
 $this->endWidget ();
 
+Yii::app()->clientScript->registerCss('timeFormCSS',"
+    #TimeFormModel_actionDescription {
+        resize:vertical;
+    }
+");
 ?>

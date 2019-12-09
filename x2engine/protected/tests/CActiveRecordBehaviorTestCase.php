@@ -44,13 +44,13 @@
 abstract class CActiveRecordBehaviorTestCase extends X2TestCase {
 
 	public static function setUpBeforeClass() {
-		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS `'.CActiveMock::MOCK_TABLE.'`')->execute();
 		Yii::app()->db->createCommand('CREATE TABLE `'.CActiveMock::MOCK_TABLE.'` (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, foo BLOB,bar TEXT, flag TINYINT NOT NULL DEFAULT 0)')->execute();
 		parent::setUpBeforeClass();
 	}
 
 	public static function tearDownAfterClass(){
-		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS `'.CActiveMock::MOCK_TABLE.'`')->execute();
 		parent::tearDownAfterClass();
 	}
 }

@@ -1333,6 +1333,10 @@ class CHttpRequest extends CApplicationComponent
 			$cookies=$this->getCookies();
 
 			$method=$this->getRequestType();
+                        /* x2modstart */
+                        // if the POST body is 'empty' JSON may be getting passed instead
+                        if (empty($_POST)) $_POST = json_decode(file_get_contents('php://input'), true);
+                        /* x2modend */
 			switch($method)
 			{
 				case 'POST':

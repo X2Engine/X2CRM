@@ -42,7 +42,7 @@ Tours::loadTips('marketing.create');
 $this->pageTitle = Yii::t('marketing', 'Create Campaign');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
-    
+     'helpGuide',
 );
 
 $plaOptions = array(

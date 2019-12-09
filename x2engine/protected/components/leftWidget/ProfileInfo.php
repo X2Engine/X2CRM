@@ -92,6 +92,10 @@ class ProfileInfo extends LeftWidget {
 			array (
 				'id' => 'edit-layout',
 				'content' => Yii::t('app', 'Edit Layout')
+			),
+			array (
+				'id' => 'save-layout',
+				'content' => Yii::t('app', 'Save Layout')
 			)
 		);
 	}

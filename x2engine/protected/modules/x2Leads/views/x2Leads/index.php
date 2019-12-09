@@ -41,7 +41,7 @@ $this->pageTitle = CHtml::encode (
     Yii::app()->settings->appName . ' - '.Yii::t('x2Leads', 'Leads'));
 
 $menuOptions = array(
-    'index', 'create', 'import', 'export', 'lists',
+    'index', 'create', 'import', 'export', 'lists','helpGuide',
 );
 $this->insertMenu($menuOptions);
 

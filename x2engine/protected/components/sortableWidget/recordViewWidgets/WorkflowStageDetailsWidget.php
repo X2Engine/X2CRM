@@ -216,6 +216,9 @@ class WorkflowStageDetailsWidget extends SortableWidget {
                 revertStageUrl: "'.
                     CHtml::normalizeUrl(array('/workflow/workflow/revertStage')).
                 '",
+                terminateStageUrl: "'.
+                    CHtml::normalizeUrl(array('/workflow/workflow/terminateProcess')).
+                '",    
                 getStageDetailsUrl: "'.
                     CHtml::normalizeUrl(array('/workflow/workflow/getStageDetails')).
                 '",

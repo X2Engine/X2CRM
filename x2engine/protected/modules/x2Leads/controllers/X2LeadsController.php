@@ -627,6 +627,10 @@ class X2LeadsController extends x2base {
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
             array(
+                'name' => 'email',
+                'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+                'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
+            array(
                 'name' => 'lists',
                 'label' => Yii::t('contacts', 'Lists'),
                 'url' => array('lists')
@@ -707,6 +711,15 @@ class X2LeadsController extends x2base {
                 'linkOptions' => array(
                     'submit' => array('deleteList', 'id' => $modelId),
                     'confirm' => 'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Leads Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-leads',
+                'linkOptions' => array(
+                    'id' => 'x2lead-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );

@@ -68,9 +68,10 @@ class MarketingController extends x2base {
             array('allow', // allow authenticated user to perform the following actions
                 'actions' => array(
                     'index', 'view', 'create', 'createFromTag', 'update', 'search', 'delete',
-                    'launch',
+                    'launch', 
+                    
                     'toggle', 'complete', 'getItems', 'inlineEmail', 'mail', 'deleteWebForm',
-                    'webleadForm', 'getCampaignChartData'),
+                    'webleadForm', 'getCampaignChartData', 'getHeatMapData', 'numberOfOpens'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' action
@@ -95,6 +96,22 @@ class MarketingController extends x2base {
             ),
         ));
     }
+
+    /**
+     * Nexmo Integration (Aug 2019)
+     * creator: Justin Toyomitsu
+     * Post Request from Nexmo Arrives here
+     * @return none 
+     */
+    
+
+    /**
+     * Nexmo Integration (Aug 2019)
+     * creator: Justin Toyomitsu
+     * Notification checks here every few seconds
+     * @return none
+     */
+    
 
     
 
@@ -185,7 +202,7 @@ class MarketingController extends x2base {
      */
     public function actionView($id) {
         $model = $this->loadModel($id);
-        //printR($model, 1);
+
         if (!$this->checkPermissions($model, 'view')) {
             $this->denied();
         }
@@ -229,9 +246,133 @@ class MarketingController extends x2base {
     }
 
     /**
+     * Helper function to actionGetHeatMapData and regenHeatMapLegend
+     * that returns array of the opens for regenHeatMapLegend, or
+     * opens, clicks, or sents for actionGetHeatMapData
+     */
+    public function getEmailEventTimes($listId, $condition = '', $clicks = 0) {
+        // Find all list items from current campaign
+        $listItems = X2ListItem::model()->findAllByAttributes(array(
+            'listId' => substr($listId, strrpos($listId, '_') + 1)
+        ), $condition);
+
+        // $emailEventTimes = associative array to keep track of how
+        // many opens there are for a given day/hour
+        $emailEventTimes;
+        
+        // Initializing associative array to keep track of
+        // the values for any hour of any day of the week
+        for($i = 1; $i <= 7; $i++) {
+            for($j = 1; $j <= 25; $j++) {
+                // Reset hour counter if we've hit 24 hours
+                if($j % 25 != 0) {
+                    // Make the default value for all days/hours
+                    // of the week 0
+                    $emailEventTimes[$i][$j] = 0;
+                }
+            }
+        }
+
+        // Iterate over all recipients for the campaign to find
+        // what time they opened it if they did, and increment the
+        // value for the given day/hour
+        $dOTW;             // Day of the week
+        $hOTD;             // Hour of the day
+        $timeOfEmailEvent; // Temporary variable to use if we are using opens, clicks, or sent times
+        foreach($listItems as $listItem) {
+            // Ensure that the timestamp is
+            // interpreted as an integer
+            if($clicks == 0) {
+                $timeOfEmailEvent = (int) $listItem->opened;
+            } else if($clicks == 1) {
+                $timeOfEmailEvent = (int) $listItem->clicked;
+            } else {
+                $timeOfEmailEvent = (int) $listItem->sent;
+            }
+
+            if(isset($timeOfEmailEvent) && !empty($timeOfEmailEvent)) {
+                $dOTW = date('N', $timeOfEmailEvent);
+                $hOTD =  date('G', $timeOfEmailEvent);
+                $emailEventTimes[$dOTW][$hOTD + 1] += 1;
+            }
+        }
+
+        return $emailEventTimes;
+    }
+
+    /**
+     * Returns data for campaign emails to create heat map
+     * using the list id from the campaign
+     */
+    public function actionGetHeatMapData() {
+        $startDate = (date('D', $_GET['launchDate']) == 'Mon') ? 
+            strtotime('This Monday +' . $_GET['dateRange'] . ' weeks', $_GET['launchDate']) 
+            : strtotime('Last Monday +' . $_GET['dateRange'] . ' weeks', $_GET['launchDate']);
+        $endDate = strtotime('This Sunday', $startDate);
+        $clicks = $_GET['clicks'];
+        $condition = "";
+
+        if($clicks == 0) {
+            $condition = 'opened >= ' . $startDate . ' AND opened <= ' . $endDate;
+        } else if($clicks == 1) {
+            $condition = 'clicked >= ' . $startDate . ' AND clicked <= ' . $endDate;
+        } else {
+            $condition = 'sent >= ' . $startDate . ' AND sent <= ' . $endDate;
+        }
+
+        // $openedTimes = associative array to keep track of how
+        // many opens there are for a given day/hour
+        $openedTimes = $this->getEmailEventTimes($_GET['listId'], $condition, $clicks);
+
+        // Initialize string that will be used as a pseudo csv file
+        $heatMapValues = "day,hour,value\n";
+
+        // Create csv formatted string with the heatmap values
+        for($i = 1; $i <= 7; $i++) {
+            for($j = 1; $j <= 25; $j++) {
+                // Add to heat map string if we haven't hit 24 hours
+                if($j % 25 != 0) {
+                    $heatMapValues .= "$i,$j," . $openedTimes[$i][$j] . "\n";
+                }
+            }
+        }
+
+        $heatMapData = array("values" => $heatMapValues, "legendValues" => $this->regenHeatMapLegend($_GET['listId'], $clicks));
+
+        echo json_encode($heatMapData);
+    }
+
+    /**
+     * Helper function that recalculates the heat map legend values
+     * and returns the new legend values to be used
+     */
+    public function regenHeatMapLegend($listId, $clicks) {
+        $openedTimes = $this->getEmailEventTimes($listId, '', $clicks);
+
+        // Find both the max and min number of opens to be used
+        // as the range for the heat map legend
+        $secMin = PHP_INT_MAX;
+        $totalOpens = 0;
+        for($i = 1; $i <= 7; $i++) {
+            for($j = 1; $j <= 25; $j++) {
+                if($j % 25 != 0) {
+                    if($openedTimes[$i][$j] < $secMin && $openedTimes[$i][$j] != 0) $secMin = $openedTimes[$i][$j];
+                    $totalOpens += $openedTimes[$i][$j];
+                }
+            }
+        }
+        
+        if(!($secMin < PHP_INT_MAX)) $secMin = 1;
+        if(!($totalOpens > 10)) $totalOpens = 10;
+        $legendValues = range($secMin, $totalOpens, count(range($secMin, $totalOpens)) / 9);
+
+        return $legendValues;
+    }
+
+    /**
      * Override of {@link CommonControllerBehavior::loadModel()}; expected
      * behavior is in this case deference to the campaign model's
-     * {@link Campagin::load()} function.
+     * {@link Campaign::load()} function.
      *
      * @param type $id
      * @return type
@@ -642,6 +783,43 @@ class MarketingController extends x2base {
         $this->render('index', array('model' => $model));
     }
 
+    /**
+     * Return the modelName for a specified list
+     */
+    public function actionGetListModelAttr() {
+        // Get the list id passed from javascript in _form
+        $listId = $_GET['listId'];
+        // Get the modelname given our listId
+        $modelName = Yii::app()->db->createCommand()
+            ->select('modelName')
+            ->from('x2_lists')
+            ->where('id = :id', array(':id' => $listId))
+            ->queryRow();
+
+        // Get the fieldNames and attributeLabels for the model
+        $attr = Yii::app()->db->createCommand()
+            ->select('fieldName, attributeLabel')
+            ->from('x2_fields')
+            ->where('modelName = :modelName', array(':modelName' => $modelName['modelName']))
+            ->queryAll();
+
+        // Create the insertable attributes  array
+        $insertableAttributes = array();
+        foreach($attr as $index => $column) {
+            $insertableAttributes[$column['attributeLabel']] = '{' . $column['fieldName'] . '}';
+        }
+
+        $moduleName = Yii::t('contacts','{module} Attributes', array (
+            '{module}' => Modules::displayName (false, $modelName['modelName']))
+        );
+
+        $JSParams = CJSON::encode (array(
+               $moduleName => $insertableAttributes
+        ));
+        
+        // Return the encoded array
+        echo $JSParams;
+    }
     
     /**
      * Return a JSON encoded list of Contact lists
@@ -1115,25 +1293,12 @@ class MarketingController extends x2base {
             'trackingKey' => $x2_key,
         ));
         
-
-        
         if ($contact !== null) {
             
             if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $contact->email));
-                            echo "You have been successfully unsubscribed.";
-                            return;
+                $this->UnSubAll($contact->email);
+                echo "You have been successfully unsubscribed.";
+                return;
             }
             
             $baseURL = Yii::app()->request->getBaseUrl(true);
@@ -1152,7 +1317,7 @@ class MarketingController extends x2base {
 
             $pageUNSUB = str_replace("(PLACE_OPP)", $listOfOpp, $pageUNSUB);
             echo $pageUNSUB;
-        }else {
+        } else {
             
             if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
                             $this->UnSubAll($email);
@@ -1186,62 +1351,12 @@ class MarketingController extends x2base {
     }
     
     public function UnSubAll($email){
-                        Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'email=:email', array(':email' => $email));
-                           
-                             
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'businessEmail=:email', array(':email' => $email));
-                         
-                           
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'personalEmail=:email', array(':email' => $email));
-                           
-                             
-                Contacts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                Accounts::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                X2Leads::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                Opportunity::model()
-                        ->updateAll(
-                                array('doNotEmail' => true), 'alternativeEmail=:email', array(':email' => $email));
-                           
-                             return;
+        $condition = 'email=:email OR businessEmail=:email OR personalEmail=:email OR alternativeEmail=:email';
+        foreach (['Contacts', 'Accounts', 'X2Leads', 'Opportunity'] as $x2Model) {
+            $x2Model::model()->updateAll(
+                ['optIn' => false, 'doNotEmail' => true], $condition, array(':email' => $email));
+        }
+                    
     }
     
     //check to make sure unsubscribe list exsist, if not make the list
@@ -1381,6 +1496,14 @@ class MarketingController extends x2base {
                 //return a one pixel transparent gif
                 header('Content-Type: image/gif');
                 echo base64_decode('R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==');
+            } elseif ($type == 'opt-in') {
+                $condition = 'email=:email OR businessEmail=:email OR personalEmail=:email OR alternativeEmail=:email';
+                foreach (['Contacts', 'Accounts', 'X2Leads', 'Opportunity'] as $x2Model) {
+                    $x2Model::model()->updateAll(
+                        array('optIn' => true, 'doNotEmail' => false), $condition, array(':email' => $email));
+                }
+                echo "You have been successfully opted in.";
+                return;
             } elseif ($type == 'unsub' && !empty($email)) {
                // Contacts::model()
                 //        ->updateAll(
@@ -1414,9 +1537,9 @@ class MarketingController extends x2base {
                 $pageUNSUB = str_replace("(PLACE_OPP)",$listOfOpp,$pageUNSUB);
                 
                 if (strpos(Yii::app()->settings->doNotEmailPage, '(PLACE_OPP)') == false || !isset(Yii::app()->settings->doNotEmailPage)) {
-                            $this->UnSubAll($email);
-                            echo "You have been successfully unsubscribed.";
-                            return;
+                    $this->UnSubAll($email);
+                    echo "You have been successfully unsubscribed.";
+                    return;
                 }
                 
                 echo $pageUNSUB;
@@ -1516,6 +1639,16 @@ class MarketingController extends x2base {
             $action->associationName = $list->name;
             $action->visibility = $list->visibility;
             $action->assignedTo = $list->assignedTo;
+        }
+
+        if ($type == 'opt-in') {
+            $condition = 'email=:email OR businessEmail=:email OR personalEmail=:email OR alternativeEmail=:email';
+            foreach (['Contacts', 'Accounts', 'X2Leads', 'Opportunity'] as $x2Model) {
+                $x2Model::model()->updateAll(
+                    array('optIn' => true, 'doNotEmail' => false), $condition, array(':email' => $email));
+            }
+            echo "You have been successfully opted in.";
+            return;
         }
 
         if ($type == 'unsub') {
@@ -1770,7 +1903,9 @@ class MarketingController extends x2base {
     }
 
     
-    
+        /**
+     * take an AB Campaign and make it into a full Campaign with the rest of the list
+     */
     public function actionMakeFull() {
         $ParentCamp = Campaign::model()->findByPk($_GET['id']);
         $KidToUse =  $_GET['Campaign']['children'];
@@ -1785,6 +1920,7 @@ class MarketingController extends x2base {
         $fullCamp->lastUpdated = time();
         $fullCamp->lastActivity = time();
         $fullCamp->content = $TestCamp->content;
+        $fullCamp->subject = $TestCamp->subject;
         $fullCamp->createdBy = Yii::app()->user->getName();
         $fullCamp->assignedTo = Yii::app()->user->getName();
         $fullCamp->list = $ParentCamp->list;
@@ -1950,6 +2086,15 @@ class MarketingController extends x2base {
                 'name' => 'email',
                 'label' => Yii::t('app', 'Send Email'), 'url' => '#',
                 'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('app', 'Marketing Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2marketing',
+                'linkOptions' => array(
+                    'id' => 'marketing-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );

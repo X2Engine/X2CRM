@@ -307,7 +307,7 @@ $cGridViewParams = array (
                         "onclick" => "
                             openTriggerLogDialog (".$data["triggerLog"].",
                                 \'".Formatter::formatLongDateTime ($data["triggeredAt"])."\',
-                                \'".(X2Flow::model()->findByPk ($data["flowId"])->name)."\');
+                                \'".addslashes((X2Flow::model()->findByPk ($data["flowId"])->name))."\');
                         "
                     )
                 )',

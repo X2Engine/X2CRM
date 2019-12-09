@@ -131,6 +131,21 @@ WorkflowManager.prototype.completeWorkflowStage = function (workflowId,stageNumb
     });
 };
 
+WorkflowManager.prototype.terminateWorkflowStage = function (workflowId,stageNumber,callback) {
+    var that = this;
+    $.ajax({
+        url: that.terminateStageUrl,
+        type: 'GET',
+        dataType: 'json',
+        data: "workflowId="+workflowId+"&stageNumber="+stageNumber+"&modelId="+
+            that.modelId + '&type=' + that.modelName + '&renderFlag=0',
+        success: function(response) {
+            callback (response['workflowStatus'], response['flashes']);
+            x2.Notifs.updateHistory();
+        }
+    });
+};
+
 WorkflowManager.prototype.workflowCommentDialog = function (workflowId,stageNumber,callback) {
     var that = this;
 

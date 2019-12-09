@@ -40,7 +40,7 @@
 class RecordAliasesDeleteAction extends CAction {
 
     public function run ($id) {
-        if (Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isLoggedOut) {
             Yii::app()->controller->redirect(Yii::app()->controller->createUrl('/site/login'));
         }
 

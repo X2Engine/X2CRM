@@ -152,6 +152,7 @@ class Credentials extends CActiveRecord {
         'DropboxAccount',
         'TwitterApp',
         'GoogleProject',
+        
         'OutlookProject',
         'JasperServer',
         'X2HubConnector',
@@ -220,7 +221,9 @@ class Credentials extends CActiveRecord {
 
     public function afterSave() {
         if ($this->modelClass &&
-                in_array($this->modelClass, array('TwitterApp', 'GoogleProject', 'OutlookProject', 'JasperServer', 'X2HubConnector'))) {
+                in_array($this->modelClass, array('TwitterApp', 'GoogleProject', 
+                
+                'OutlookProject', 'JasperServer', 'X2HubConnector'))) {
 
             $modelClass = $this->modelClass;
             $prop = $modelClass::getAdminProperty();
@@ -359,9 +362,11 @@ class Credentials extends CActiveRecord {
             'googleProject' => array(
                 'GoogleProject'
             ),
+            
             'outlookProject' => array(
                 'OutlookProject'
             ),
+            
             'jasperServer' => array(
                 'JasperServer'
             ),
@@ -395,7 +400,9 @@ class Credentials extends CActiveRecord {
             'LinkedInAccount' => array('linkedIn'),
             'DropboxAccount' => array('dropbox'),
             'GoogleProject' => array('googleProject'),
+            'SlackProject' => array('slackProject'),
             'OutlookProject' => array('outlookProject'),
+            
             'JasperServer' => array('jasperServer'),
             'X2HubConnector' => array('x2HubConnector'),
         );
@@ -484,6 +491,7 @@ class Credentials extends CActiveRecord {
             'dropbox' => Yii::t('app', 'Dropbox App'),
             'linkedIn' => Yii::t('app', 'LinkedIn App'),
             'googleProject' => Yii::t('app', 'Google Project'),
+            
             'outlookProject' => Yii::t('app', 'Outlook Project'),
             'jasperServer' => Yii::t('app', 'Jasper Server'),
             'doc' => Yii::t('app', 'Document Account'),

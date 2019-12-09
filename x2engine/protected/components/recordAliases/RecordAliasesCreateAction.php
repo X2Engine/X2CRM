@@ -40,7 +40,7 @@
 class RecordAliasesCreateAction extends CAction {
 
     public function run (array $RecordAliases) {
-        if (Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isLoggedOut) {
             Yii::app()->controller->redirect(Yii::app()->controller->createUrl('/site/login'));
         }
 

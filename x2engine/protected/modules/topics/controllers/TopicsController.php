@@ -373,6 +373,15 @@ class TopicsController extends x2base {
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('calendar', 'Topics Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-topics',
+                'linkOptions' => array(
+                    'id' => 'topic-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
         );
         $this->prepareMenu($menuItems, $selectOptions);
         $this->actionMenu = $this->formatMenu($menuItems, $menuParams);

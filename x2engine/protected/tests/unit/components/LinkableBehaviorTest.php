@@ -42,6 +42,10 @@ Yii::import ('application.components.permissions.*');
 
 class LinkableBehaviorTest extends X2DbTestCase {
 
+    public $fixtures = array (
+        'products' => 'Product',
+    );
+
     public function testGetItems2 () {
         // test attribute retrieval
         $prefix = 't';

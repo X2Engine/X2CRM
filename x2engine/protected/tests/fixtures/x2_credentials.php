@@ -11,7 +11,7 @@ return array_merge($customCreds,array(
 		'modelClass' => 'EmailAccount',
 		'createDate' => NULL,
 		'lastUpdated' => NULL,
-		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/iiviG5IMtNBHWQxnp/33BzEehNv893SUjZYmhAWMcixx/qsr1SVOGeH52Ho7NMPSHPUAGK8x1Aqd77VPh3d9jR++asU/H80cswjr8Vyu2h1UeBtWzYP0LYR0Bsn1HPrC54ouFy2wgtse5YOfBAOE6tNhsgISAH066jfLryOsYZlg==',
+		'auth' => 'yimf3vRGlOktLg2f1E424CRIH67Nx3E4STM15MAWtvXDQ7+pBJq1UIQobuOUx5iJXP4vYhCms7owtKRgAUfRqYTq3DFM0t/wOSO6ABKWjSa7uWBL8OpHnp5iEeo04RP+jObCJlCoSUev70TeE7Y3G9RkdU6T28RPURf8/H0jtcWIu42RzVCoEpLwpyuU0LBznYB3BvaMJJtsnDeArGNsuMI/UbnvvSR3Z4Xkkr1YLLCL2j5GKqBp8faruFe5h+rrh/QZnwSB7rdGH9vLwLQm/6onBnamx7clBf5GkYNf9bFWrvF+6nTz7QpBq6WiFeUTlPiEu9iYDfm5NgaMkUwJ9gvV41QISBrqmxIgWnI=',
 	),
 	'gmail1' => array(
 		'id' => '2',
@@ -22,7 +22,7 @@ return array_merge($customCreds,array(
 		'modelClass' => 'GMailAccount',
 		'createDate' => NULL,
 		'lastUpdated' => NULL,
-		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/gPDU43IhOgEPVozjUZXw1qNWZsxw3+0dV5wGkyRsXnVbqh7ik7/D0J0sNJCyHmB/Gnrna4IRiLnpbEqGChcbw2',
+		'auth' => 'yimf3vRGlOktLg2f1E425yBXDqTN2HccDmxj5N8EsPfDVb+/CJe5T+ZgKcff14OdPrd1cBikqbps9fEvUAaHqcvryjYNw9S/IS3sFQ6QnHf1/iUJ5P9H29FwBNku4Q6oz+bBPRfmFkfqoFDdJaFnV5NlNhjUwelcREm18nMn+8fJpIHAkgWuDZeizmzGl/Eu3JUgW7OeMJJsnDearHZsuMI/UbnvvSR3Z4Xkkr1YLLCG3ixXGKN+zLrz9R6vjur3h+A=',
 	),
 	'gmail2' => array(
 		'id' => '3',
@@ -33,7 +33,7 @@ return array_merge($customCreds,array(
 		'modelClass' => 'GMailAccount',
 		'createDate' => NULL,
 		'lastUpdated' => NULL,
-		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/gPDU43IhOgEPVozjUZXw1qNWZsxw3+0dV5wGkyRsXnVbqh7ik7/D0J0sNJCyHmB/Gnrna4IRiLnpbEqGChcbw2',
+		'auth' => 'yimf3vRGlOktLg2f1E425yBXDqTN2HccDmxj5N8EsPfDVb+/CJe5T+ZgKcff14OdPrd1cBikqbps9fEvUAaHqcvryjYNw9S/IS3sFQ6QnHf1/iUJ5P9H29FwBNku4Q6oz+bBPRfmFkfqoFDdJaFnV5NlNhjUwelcREm18nMn+8fJpIHAkgWuDZeizmzGl/Eu3JUgW7OeMJJsnDearHZsuMI/UbnvvSR3Z4Xkkr1YLLCG3ixXGKN+zLrz9R6vjur3h+A=',
 	),
 	'backupUser' => array(
 		'id' => '4',
@@ -44,7 +44,7 @@ return array_merge($customCreds,array(
 		'modelClass' => 'GMailAccount',
 		'createDate' => NULL,
 		'lastUpdated' => NULL,
-		'auth' => 'DjFnHn8VbWx0qEWmDeEfV4zECPDOEZA27vMtNKxgw/gPDU43IhOgEPVozjUZXw1qNWZsxw3+0dV5wGkyRsXnVbqh7ik7/D0J0sNJCyHmB/Gnrna4IRiLnpbEqGChcbw2',
+		'auth' => 'yimf3vRGlOktLg2f1E425yBXDqTN2HccDmxj5N8EsPfDVb+/CJe5T+ZgKcff14OdPrd1cBikqbps9fEvUAaHqcvryjYNw9S/IS3sFQ6QnHf1/iUJ5P9H29FwBNku4Q6oz+bBPRfmFkfqoFDdJaFnV5NlNhjUwelcREm18nMn+8fJpIHAkgWuDZeizmzGl/Eu3JUgW7OeMJJsnDearHZsuMI/UbnvvSR3Z4Xkkr1YLLCG3ixXGKN+zLrz9R6vjur3h+A=',
 	),
 ));
 ?>

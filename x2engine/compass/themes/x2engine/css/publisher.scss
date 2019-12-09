@@ -45,6 +45,7 @@
 @import "icons";
 
 #history {
+    box-shadow: 3px 3px 5px #b3b8bd;
     .pager {
         border: none;
         margin: 0;
@@ -59,7 +60,8 @@
 
 #publisher {
     & > .form2 {
-        background: $background; 
+        //background: $background; 
+	background: #FFFFFF;
         /* @theme background: content */
         textarea, label, .action-duration-display, .reminder-config {
             /* @theme color: text */

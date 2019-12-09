@@ -98,7 +98,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl ().'/js/X2Di
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
 $menuOptions = array(
-    'index', 'create'
+    'index', 'create','helpGuide',
 );
 $this->insertMenu($menuOptions);
 
@@ -116,8 +116,7 @@ if(!isset($showCalendars['groupCalendars'])){
     $user->save();
 }
 
-$userCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
-//$userCalendars = $showCalendars['userCalendars'];
+$userCalendars = $showCalendars['userCalendars'];
 
 $checkedUserCalendars = '';
 foreach($userCalendars as $user){

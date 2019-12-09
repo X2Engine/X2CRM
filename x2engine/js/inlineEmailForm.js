@@ -542,7 +542,7 @@ InlineEmailEditorManager.prototype._init = function () {
             that._setUpEmailSettingsMenuBehavior ();
         }
         that._setUpSubjectFieldBehavior ();
-        that._setUpAddresseeRowsBehavior ();
+        //that._setUpAddresseeRowsBehavior ();
         that._setUpFileUpload ();
         that._setUpCloseFunctionality ();
         if (that.enableResizability)

@@ -593,11 +593,13 @@ $failedLoginsDataProvider = new CActiveDataProvider('FailedLogins', array(
                     ?><br><?php
                     echo Yii::t('admin', 'Configure and enable Google integration');
                     ?></div>
+                <?php  ?>
                  <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Outlook Integration'), array('/admin/outlookIntegration'));
                     ?><br><?php
                     echo Yii::t('admin', 'Configure and enable Outlook Calender integration');
                     ?></div>
+                <?php  ?>
                 <div class="cell span-6"><?php
                     echo CHtml::link(Yii::t('admin', 'Twitter Integration'), array('/admin/twitterIntegration'));
                     ?><br><?php

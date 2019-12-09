@@ -31,4 +31,318 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/.chart-container{border:none !important;padding-bottom:0px !important;padding-left:6px !important;padding-right:6px !important;overflow:hidden !important}.chart-container .chart{width:98%;height:200px;text-align:center;margin:0 auto}.chart-container .date-range-selector{transition:opacity .2s;border-top-left-radius:0px;border-bottom-left-radius:0px;margin-left:-5px !important}.chart-container .date-range-type-selector{transition:border-radius 0.5s;border-top-right-radius:0px;border-bottom-right-radius:0px;margin-right:0px !important}.chart-container .date-range-type-selector.rounded{border-radius:3px}.jqplot-pie-series.jqplot-data-label{color:#ffffff}.chart-container .chart.pie{height:235px !important}.chart-container .chart-legend.pie{margin-top:-15px}.chart-container .bin-size-button-set.pie{display:none}.chart-container .top-button-row.pie{display:none}.chart-container .ui-multiselect.pie{display:none}.chart-container .predefined-settings.pie{position:relative;z-index:100}.chart-container .rel-chart-data-checkbox-container{margin-top:4px;height:20px}.chart-container .rel-chart-data-checkbox-container>input{margin:0 0 0 3px}.chart-container .rel-chart-data-checkbox-container>label{margin:0 0 0 0}.chart-setting-name-input-container{margin-top:9px !important;margin-bottom:0px !important}.create-chart-setting-dialog input{margin-top:0px !important}.chart-setting-name{width:170px !important;margin-left:4px !important;margin-bottom:4px !important}.chart-legend{padding-top:7px;padding-left:15px;table-layout:fixed;width:80%;border-spacing:4px}.chart-legend .chart-color-label{font-size:12px;color:#505050}.chart-legend .chart-color-swatch{width:10px;height:10px;margin-right:4px;float:left;-moz-border-radius:5px;-o-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;margin-top:2px}.chart-tooltip{padding:4px;min-width:100px;background:white;border:1px solid #ccc}.chart-tooltip .chart-tooltip-date{font-weight:bold;color:.424242}.chart-container .delete-setting-button{margin-top:6px;margin-left:-2px;margin-right:11px}.chart-container .create-setting-button{margin-bottom:0;margin-top:2px}.chart-container .predefined-settings{width:100px;margin-top:4px;margin-right:4px}.chart-container .bin-size-button-set{margin-top:1px}.chart-container a{text-decoration:none}.chart-container button.selected{border:1px solid black}.chart-container a.x2-button{margin:0px -4px 0 0}.chart-container .datepicker-row{margin-top:-0px}.chart-container .datepicker-row button{margin-right:0}.chart-container .chart-filters-container{height:30px;display:block}.chart-container .chart-filters-container button.ui-multiselect{margin-right:5px;margin-bottom:2px}.chart-container button.show-chart-filters-button,.chart-container button.hide-chart-filters-button{margin:1px 0 0 5px}.chart-container button.ui-multiselect{float:left;margin-top:2px}.chart-container button.x2-small-button{font-size:80%}.chart-container .chart-datepicker-to,.chart-container .chart-datepicker-from{width:100px}.pie-chart-count-container{display:inline;margin-left:67%;bottom:50px;background:#E6E6E6;padding:3px 4px;position:relative}.x2-chart-multiselect{max-width:225px;width:30%;min-width:150px}@media (max-width: 543px){.chart-legend{width:100%}}@media (max-width: 470px){#actionHistoryChart-bin-size-button-set{margin:auto;left:0;right:0;position:absolute;text-align:center}body.show-left-bar #actionHistoryChart-bin-size-button-set{left:161px;width:300px}.x2-chart-multiselect{margin-top:33px !important}}
+ **********************************************************************************/
+/* line 39, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container {
+  border: none !important;
+  padding-bottom: 0px !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+  overflow: hidden !important;
+}
+/* line 45, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart {
+  width: 98%;
+  height: 200px;
+  text-align: center;
+  margin: 0 auto;
+}
+/* line 53, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .date-range-selector {
+  transition: opacity .2s;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  margin-left: -5px !important;
+}
+/* line 62, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .date-range-type-selector {
+  transition: border-radius 0.5s;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  margin-right: 0px !important;
+}
+/* line 67, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .date-range-type-selector.rounded {
+  border-radius: 3px;
+}
+
+/* Pie chart data labels */
+/* line 76, ../../../compass/themes/x2engine/css/x2chart.scss */
+.jqplot-pie-series.jqplot-data-label {
+  color: #ffffff;
+}
+
+/*
+Pie chart overrides
+*/
+/* line 85, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart.pie {
+  height: 235px !important;
+  /*margin-top: 28px;*/
+}
+/* line 89, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart-legend.pie {
+  margin-top: -15px;
+  /*position: relative;
+  top: 5px;*/
+}
+/* line 94, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .bin-size-button-set.pie {
+  display: none;
+}
+/* line 98, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .datepicker-row.pie {
+  /*float: right;
+  clear: none;*/
+}
+/* line 102, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .datepicker-row.action-history-pie {
+  /*float: right;
+  clear: none;
+  position: relative;
+  z-index: 100;*/
+}
+/* line 109, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .rel-chart-data-checkbox-container.pie {
+  /*clear: both;*/
+}
+/* line 113, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .top-button-row.pie {
+  /*float: left;
+  clear: none;*/
+  display: none;
+}
+/* line 118, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .top-button-row.feed-pie {
+  /*float: left;
+  clear: none;*/
+}
+/* line 123, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .create-setting-button.pie {
+  /*clear: both;
+  position: relative;
+  z-index: 100;*/
+}
+/* line 128, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .ui-multiselect.pie {
+  display: none;
+}
+/* line 131, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .predefined-settings.pie {
+  position: relative;
+  z-index: 100;
+}
+/* line 135, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .rel-chart-data-checkbox-container {
+  margin-top: 4px;
+  height: 20px;
+}
+/* line 139, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .rel-chart-data-checkbox-container > input {
+  margin: 0 0 0 3px;
+}
+/* line 142, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .rel-chart-data-checkbox-container > label {
+  margin: 0 0 0 0;
+}
+
+/*
+Related records' data option
+*/
+/*
+Chart setting dialog
+*/
+/* line 157, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-setting-name-input-container {
+  margin-top: 9px !important;
+  margin-bottom: 0px !important;
+}
+
+/* line 162, ../../../compass/themes/x2engine/css/x2chart.scss */
+.create-chart-setting-dialog input {
+  margin-top: 0px !important;
+}
+
+/* line 166, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-setting-name {
+  width: 170px !important;
+  margin-left: 4px !important;
+  margin-bottom: 4px !important;
+}
+
+/*
+Chart legend
+*/
+/* line 176, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-legend {
+  padding-top: 7px;
+  padding-left: 15px;
+  table-layout: fixed;
+  width: 80%;
+  border-spacing: 4px;
+}
+/* line 182, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-legend .chart-color-label {
+  font-size: 12px;
+  color: #505050;
+}
+/* line 186, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-legend .chart-color-swatch {
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  float: left;
+  -moz-border-radius: 5px;
+  -o-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  margin-top: 2px;
+}
+
+/*
+data point tooltip
+*/
+/* line 203, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-tooltip {
+  padding: 4px;
+  min-width: 100px;
+  background: white;
+  border: 1px solid #ccc;
+}
+/* line 208, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-tooltip .chart-tooltip-date {
+  font-weight: bold;
+  color: .424242;
+}
+
+/*
+Chart settings
+*/
+/* line 219, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .delete-setting-button {
+  margin-top: 6px;
+  margin-left: -2px;
+  margin-right: 11px;
+}
+/* line 224, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .create-setting-button {
+  margin-bottom: 0;
+  margin-top: 2px;
+}
+/* line 228, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .predefined-settings {
+  width: 100px;
+  margin-top: 4px;
+  margin-right: 4px;
+}
+/* line 233, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .bin-size-button-set {
+  margin-top: 1px;
+}
+/* line 236, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container a {
+  text-decoration: none;
+}
+/* line 239, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container button.selected {
+  border: 1px solid black;
+}
+/* line 242, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container a.x2-button {
+  margin: 0px -4px 0 0;
+}
+/* line 245, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .datepicker-row {
+  margin-top: -0px;
+}
+/* line 247, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .datepicker-row button {
+  margin-right: 0;
+}
+/* line 251, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart-filters-container {
+  height: 30px;
+  display: block;
+}
+/* line 254, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart-filters-container button.ui-multiselect {
+  margin-right: 5px;
+  margin-bottom: 2px;
+}
+/* line 260, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container button.show-chart-filters-button, .chart-container button.hide-chart-filters-button {
+  margin: 1px 0 0 5px;
+}
+/* line 263, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container button.ui-multiselect {
+  float: left;
+  margin-top: 2px;
+}
+/* line 267, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container button.x2-small-button {
+  font-size: 80%;
+}
+/* line 271, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .datepicker-row, .chart-container .top-button-row {
+  /*position: relative;
+  z-index: 100;*/
+}
+/* line 275, ../../../compass/themes/x2engine/css/x2chart.scss */
+.chart-container .chart-datepicker-to, .chart-container .chart-datepicker-from {
+  width: 100px;
+}
+
+/*
+bin size selection buttons
+*/
+/*
+date pickers
+*/
+/*
+advanced settings
+*/
+/* line 292, ../../../compass/themes/x2engine/css/x2chart.scss */
+.pie-chart-count-container {
+  display: inline;
+  margin-left: 67%;
+  bottom: 50px;
+  background: #E6E6E6;
+  padding: 3px 4px;
+  position: relative;
+}
+
+/* ie8 fixes */
+/* line 303, ../../../compass/themes/x2engine/css/x2chart.scss */
+.x2-chart-multiselect {
+  max-width: 225px;
+  width: 30%;
+  min-width: 150px;
+}
+
+@media (max-width: 543px) {
+  /* line 310, ../../../compass/themes/x2engine/css/x2chart.scss */
+  .chart-legend {
+    width: 100%;
+  }
+}
+@media (max-width: 470px) {
+  /* line 316, ../../../compass/themes/x2engine/css/x2chart.scss */
+  #actionHistoryChart-bin-size-button-set {
+    margin: auto;
+    left: 0;
+    right: 0;
+    position: absolute;
+    text-align: center;
+  }
+
+  /* line 323, ../../../compass/themes/x2engine/css/x2chart.scss */
+  body.show-left-bar #actionHistoryChart-bin-size-button-set {
+    left: 161px;
+    width: 300px;
+  }
+
+  /* line 327, ../../../compass/themes/x2engine/css/x2chart.scss */
+  .x2-chart-multiselect {
+    margin-top: 33px !important;
+  }
+}

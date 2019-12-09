@@ -49,36 +49,14 @@ abstract class BaseX2FlowWorkflowStageAction extends X2FlowAction {
     public $info;
 
     public function paramRules() {
-        $workflows = Workflow::getList(false); // no "none" options
-        $workflowIds = array_keys($workflows);
-        $stages = count($workflowIds) ? Workflow::getStagesByNumber($workflowIds[0]) : array('---');
+        //$workflows = Workflow::getList(false); // no "none" options
+        //$workflowIds = array_keys($workflows);
+        //$stages = count($workflowIds) ? Workflow::getStagesByNumber($workflowIds[0]) : array('---');
 
         return array_merge(parent::paramRules(), array(
             'title' => $this->title,
             'modelClass' => 'modelClass',
             'modelRequired' => 1,
-            'options' => array(
-                array(
-                    'name' => 'workflowId',
-                    'label' => 'Process',
-                    'type' => 'dropdown',
-                    'options' => $workflows
-                ),
-                array(
-                    'name' => 'stageNumber',
-                    'label' => 'Stage',
-                    'type' => 'dependentDropdown',
-                    'dependency' => 'workflowId',
-                    'options' => $stages,
-                    'optionsSource' => Yii::app()->createUrl('/workflow/workflow/getStageNames')
-                ),
-                array(
-                     'name' => 'stageComment',
-                     'label' => Yii::t('studio', 'Stage Comment'),
-                     'optional' => 1,
-                     'type' => 'text'
-                 ),
-            )
         ));
     }
 

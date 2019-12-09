@@ -35,10 +35,14 @@
  **********************************************************************************/
 
 
+$responsive = false;
 
 
 if($this->action->id == 'createEmail'){
     $title = Yii::t('docs', 'Create Email Template');
+}else if ($this->action->id === 'createResponsiveEmail') {
+    $title = Yii::t('docs', 'Create Responsive Email Template');
+    $responsive = true;
 }else if($this->action->id == 'createQuote'){
     $title = Yii::t('docs', 'Create {quote} Template', array(
         '{quote}' => Modules::displayName(false, "Quotes"),
@@ -48,5 +52,6 @@ if($this->action->id == 'createEmail'){
 }
 
 $this->renderPartial('_docPageHeader',compact('title','model'));
+$partialName = Yii::app()->getEdition() === 'ent' ? '_responsiveEmailForm' : '_form';
+$this->renderPartial($partialName, array('model'=>$model));
 
-echo $this->renderPartial('_form', array('model'=>$model));

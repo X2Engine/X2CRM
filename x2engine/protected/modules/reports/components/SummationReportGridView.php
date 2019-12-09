@@ -88,7 +88,7 @@ class SummationReportGridView extends ReportGridView {
 
     public function registerClientScript() {
         parent::registerClientScript();
-        if($this->enableGvSettings) {
+        if($this->enableGvSettings && Yii::app()->controller->module != null ) {
             Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().
                 '/js/X2GridView/x2gridview.js', CCLientScript::POS_END);
             Yii::app()->clientScript->registerScriptFile(

@@ -153,12 +153,11 @@ abstract class CalDavSync extends CalendarSync {
      * them with an X2 Calendar
      */
     protected function syncWithToken() {
-        
-        for($I = 0; $I < 13; $I++){
-            $time = $I;
+        for($i = 0; $i < 13; $i++){
+            $time = $i;
             if($time == 12){
                 $time = NULL;
-        }
+            }
 
             $syncResult = $this->client->sync($this->owner->remoteCalendarUrl, $this->owner->syncToken, $time);
             $paths = array();
@@ -175,8 +174,15 @@ abstract class CalDavSync extends CalendarSync {
                     ));
                     if (isset($actionMetaData)) {
                         $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
+                        $event = X2Model::model('Events')->findByAttributes(array(
+                            'associationType' => 'Actions',
+                            'associationId' => $actionMetaData->actionId,
+                            'type' => 'calendar_event',
+                        ));
                         if ($action)
                             $action->delete();
+                        if ($event)
+                            $event->delete();
                     }
                 }
             }
@@ -220,7 +226,7 @@ abstract class CalDavSync extends CalendarSync {
             $reminderIds = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from('x2_events')
-                    ->where('associationType = "Actions" AND associationId IN '. AuxLib::arrToStrList($actionIdParams). ' AND type = "action_reminder"')
+                    ->where('associationType = "Actions" AND associationId IN '. AuxLib::arrToStrList($actionIdParams). ' AND type = "calendar_event"')
                     ->queryColumn();
             X2Model::model('Events')->deleteByPk($reminderIds);
             X2Model::model('Actions')->deleteByPk($deletedActions);

@@ -478,7 +478,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $sourcePath = $ube->sourceDir;
         $pkgFile = $ube->webRoot.DIRECTORY_SEPARATOR.UpdaterBehavior::PKGFILE;
         // Set up all files for the test:
-        $setupApplyFiles = function() use($ube, $newDirPath, $ube, $basePathNodes, $copiedBasePath, $newFileContents,$sourcePath,$pkgFile){
+        $setupApplyFiles = function() use($ube, $newDirPath, $basePathNodes, $copiedBasePath, $newFileContents,$sourcePath,$pkgFile){
                     mkdir($ube->updateDir);
                     mkdir($ube->sourceDir);
                     foreach($basePathNodes as $node){
@@ -1059,13 +1059,14 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'json' => true,
                         'hash' => true,
                         'curl' => true,
-                        'mcrypt' => true,
                         'openssl' => true,
                         'zip' => true,
                         'fileinfo' => true,
                         'gd' => true,
                         'posix' => true,
-                        'imap' => true
+			'imap' => true,
+                        'ssh2' => true,
+                        'iconv' => true,
                     ),
                     'environment' =>
                     array(

@@ -51,7 +51,7 @@ $this->setPageTitle(Yii::t('workflow', '{process}', array(
 )));
 
 $menuOptions = array(
-    'index', 'create',
+    'index', 'create','helpGuide',
 );
 $this->insertMenu($menuOptions);
 

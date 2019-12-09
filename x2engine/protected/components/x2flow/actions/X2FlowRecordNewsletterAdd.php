@@ -68,7 +68,7 @@ class X2FlowRecordNewsletterAdd extends X2FlowAction {
                     'type' => 'link',
                     'linkType' => 'X2List',
                     'linkSource' => Yii::app()->controller->createUrl(
-                            CActiveRecord::model('X2List')->autoCompleteSource, array(
+                            '/workflow/workflow/getLists', array(
                         'weblist' => 1
                             )
                     )
@@ -90,10 +90,13 @@ class X2FlowRecordNewsletterAdd extends X2FlowAction {
             $list = CActiveRecord::model('X2List')->findByAttributes(
                     array('name' => $listIdentifier));
         }
-        if ($list !== null && $list->modelName === get_class($params['model'])) {
+        if ($list !== null && "Contacts" === get_class($params['model'])) {
             if ($list->addIds($params['model']->id, true)) {
                 return array(true, "");
             }
+        }
+        if("Contacts" != get_class($params['model'])) {
+            return array(false, "The model passed in was not a supported type for newsletters.");
         }
         return array(false, "");
     }

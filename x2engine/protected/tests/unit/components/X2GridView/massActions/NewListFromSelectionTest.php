@@ -86,7 +86,8 @@ class NewListFromSelectionTest extends X2DbTestCase {
     }
 
     /**
-     * Super mass update firstName and lastName for fixture records 
+     * Super mass update firstName and lastName for fixture records
+     * @runInSeparateProcess 
      */
     public function testSuperExecute () {
         X2List::model ()->deleteAllByAttributes (array ('name' => 'test'));

@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'upload',
+    'index', 'upload','helpGuide',
 );
 $this->insertMenu($menuOptions);
 

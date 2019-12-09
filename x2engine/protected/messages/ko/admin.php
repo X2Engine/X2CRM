@@ -190,7 +190,7 @@
   'Global account' => '글로벌 계정',
   'Bulk Email Settings' => '대량 메일 설정',
   'Service Case Email Settings' => '서비스 케이스 이메일 설정',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => '이 템플릿에서 다음 변수를 사용할 수 있습니다 : {first} , {last} , {phone} , {email} , {description} , 그리고 {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => '이 템플릿에서 다음 변수를 사용할 수 있습니다 : {first} , {last} , {phone} , {email} , {description} , {case} , 그리고 {link} .',
   'Introduction' => '소개',
   'This feature allows X2Engine to receive and record emails at a special address.' => '이 기능은 특별한 주소에서 이메일을 수신하고 기록 할 X2Engine 수 있습니다.',
   'Filesystem ownership and permissions' => '파일 시스템 소유권과 권한',

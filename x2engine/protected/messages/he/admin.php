@@ -190,7 +190,7 @@
   'Global account' => 'חשבון עולמי',
   'Bulk Email Settings' => 'הגדרות דואר אלקטרוני בתפוצה רחבה',
   'Service Case Email Settings' => 'הגדרות דואר אלקטרוני מקרה שירות',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'אתה יכול להשתמש במשתנים הבאים בתבנית זו: {first} {last} {phone} {email} {description} {case}',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'אתה יכול להשתמש במשתנים הבאים בתבנית זו: {first} {last} {phone} {email} {description} {case} {link}',
   'Introduction' => 'מבוא',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'תכונה זו מאפשרת X2Engine לקבל ולהקליט הודעות דוא&quot;ל בכתובת מיוחדת.',
   'Filesystem ownership and permissions' => 'בעלות מערכת קבצים והרשאות',

@@ -89,6 +89,7 @@ $(function() {
                 $formModel, 'groupsAnyFilters', array(), $groupsFilterFieldOptions);
         ?>
         <br/>
+        <div id="quick-create-list-form" style="display:none"></div>
         <?php
         echo $form->label($formModel, 'groups');
         echo $form->sortByAttrPillBox($formModel, 'groups', $attributeOptions, array(
@@ -135,6 +136,11 @@ echo $form->filterConditionList($formModel, 'allFilters');
                 <?php
                 echo $form->label($formModel, 'anyFilters');
                 echo $form->filterConditionList($formModel, 'anyFilters');
+                ?>
+                <br/>
+                <?php
+                echo $form->label($formModel, 'relativeFilters');
+                echo $form->filterConditionTimeList($formModel, 'relativeFilters');
                 ?>
                 <br/>
                 <?php

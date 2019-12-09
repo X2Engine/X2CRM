@@ -252,5 +252,10 @@ class Groups extends X2Model {
         if($cache === true)
             Yii::app()->cache->set('user_groupmates',$groupmates,259200);
         return $groupmates[$userId];
-    }
+	}
+	
+	public function setDefaultLayout($layout) {
+		if (isset($layout) || json_decode($layout))
+			$this->layout = $layout;
+	}
 }

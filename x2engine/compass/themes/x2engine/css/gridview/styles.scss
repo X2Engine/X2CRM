@@ -58,6 +58,16 @@
         line-height: 24px;
 }
 
+/* disable selected for merged cells */
+#Stage-Complete-Widget.grid-view td.merge {
+    background: none repeat scroll 0 0 #F8F8F8;
+}
+
+/* grid border */
+#Stage-Complete-Widget.grid-view td {
+    border: 1px solid #E4E4E4 !important;
+}
+
 
 /*.grid-view-loading {background:url(loading.gif) no-repeat;}*/
 

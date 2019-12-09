@@ -57,7 +57,11 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
-
+//these hidden field are here to stop google auto fill from filling in the grid
+$ConFields = X2Model::model("Templates")->getFields();
+foreach ($ConFields as $field) {
+    echo '<input type="hidden" id="Templates[' . $field->fieldName . ']" name="Templates[' . $field->fieldName . ']">';
+}
 ?>
 <div class="search-form" style="display:none">
 <?php $this->renderPartial('_search',array(

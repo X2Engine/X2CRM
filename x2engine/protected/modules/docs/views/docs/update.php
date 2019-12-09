@@ -43,4 +43,7 @@ $title = (in_array($model->type,array('email'))) ? Yii::t('docs','Edit Template:
 <?php $this->renderPartial('_docPageHeader',compact('title','model')); ?>
 
 
-<?php $this->renderPartial('_form', array('model'=>$model)); ?>
+<?php
+    $partialName = Yii::app()->getEdition() === 'ent' ? '_responsiveEmailForm' : '_form';
+    $this->renderPartial($partialName, array('model'=>$model)); 
+?>

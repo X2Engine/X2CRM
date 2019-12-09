@@ -77,3 +77,28 @@
 	, 'x2-minimal-button');
 	?>
 </div>
+<div id='profile-layout'>
+	<center>
+        <div id='profile-layout-selector' style='padding:5px;'>
+        <?php
+        $choice = '';
+        $myGroups = Groups::model()->getUserGroups(Yii::app()->user->getId(), false);
+        if(isset($myGroups) || count($myGroups) > 0) {
+            $groupsWithLabel = array();
+            foreach($myGroups as $groupsId){
+                $groupsWithLabel[$groupsId] = Groups::model()->findByPk($groupsId)->name;
+            }
+            $myGroups = $groupsWithLabel;
+        }
+
+        if(isset($this->model->currentLayout) && !empty($this->model->currentLayout)){
+            $choice = $this->model->currentLayout;
+        }
+
+        $myGroups['personal'] = 'personal';
+
+        echo CHtml::dropDownList('currentLayout', $choice, $myGroups);
+        ?>
+        </div>
+        </center>
+</div>

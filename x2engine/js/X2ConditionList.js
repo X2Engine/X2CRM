@@ -168,7 +168,19 @@ ConditionList.prototype._addPreexistingValues = function () {
         that._sortList$.children ('ol').append (field$);
         field$.find ('.x2fields-attribute :input').val (val.name).change ();
         field$.find ('.x2fields-operator :input').val (val.operator).change;
-        field$.find ('.x2fields-value :input').val (val.value);
+        //field$.find ('.x2fields-value :input').val (val.value);
+
+        /**
+         * replacing value on type checkbox does not check the box.
+         * October 3rd 2019, Justin T
+         */
+        if(field$.find ('.x2fields-value :input[type=checkbox]').val () == '1'){
+            if(val.value == true){
+                field$.find ('.x2fields-value :input[type=checkbox]').attr("checked", "checked");
+            }
+        }else{
+            field$.find ('.x2fields-value :input').val (val.value);
+        }
     }
     this._reindexInputs ();
 };

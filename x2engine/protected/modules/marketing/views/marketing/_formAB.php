@@ -91,6 +91,8 @@ $form = $this->beginWidget('CActiveForm', array(
             if (isset($model->list)) {
                 $model->listId = $model->list->id;
             }
+
+            asort($contactLists);
             echo X2Html::activeDropDownList ($model, 'listId', $contactLists, array(
                 'prompt' => Yii::t('marketing','Select a Contact List'),
             ))?>
@@ -164,6 +166,7 @@ $form = $this->beginWidget('CActiveForm', array(
                 <th>Send Date</th>
             </tr>
             <?php 
+                asort($templates);
                 echo '<tr><td>';
                 echo Credentials::selectorField(new InlineEmail, 'credId' , 'email', null, array ('id' => 'sendAsA', 'name' => 'sendAsA' )); 
                 echo '</td><td>';

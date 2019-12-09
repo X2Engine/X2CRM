@@ -31,4 +31,8 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#trigger-log-dialog .trigger-log-edge{display:inline-block}
+ **********************************************************************************/
+/* line 42, ../../../../../compass/themes/x2engine/css/views/studio/triggerLogs.scss */
+#trigger-log-dialog .trigger-log-edge {
+  display: inline-block;
+}

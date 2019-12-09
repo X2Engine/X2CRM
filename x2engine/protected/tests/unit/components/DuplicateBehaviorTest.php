@@ -50,6 +50,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         'accounts' => array('Accounts', '.DuplicateTest'),
     );
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testCheckDuplicates() {
         // First contact has duplicates
         $contact = $this->contacts('contact1');
@@ -65,6 +68,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertFalse($uniqueAccount->checkForDuplicates());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testDuplicateField() {
         $contact = $this->contacts('contact1');
         $this->assertTrue($contact->checkForDuplicates());
@@ -86,6 +92,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertTrue($account->checkForDuplicates());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testAfterSave() {
         // After save if a duplicate defining field (name, email) is changed,
         // dupeCheck should be reset
@@ -111,6 +120,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertTrue($account->checkForDuplicates());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testGetDuplicates() {
         // We have 8 total duplicates
         $contact = $this->contacts('contact1');
@@ -123,6 +135,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertEquals(8, count($allDuplicates));
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testMarkDuplicate() {
         // Confirm that markDuplicate field sets all relevant fields correctly
         Yii::app()->params->adminProf = Profile::model()->findByPk(1);
@@ -152,6 +167,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertEquals(null, $account);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testHideDuplicates() {
         // Hiding duplicates shouldn't delete any contacts
         Yii::app()->params->adminProf = Profile::model()->findByPk(1);
@@ -174,6 +192,9 @@ class DuplicateBehaviorTest extends X2DbTestCase {
         $this->assertEquals('Anyone', $dupeContact->assignedTo);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function testDeleteDuplicates() {
         // Deleting duplicates should remove them
         $contact = $this->contacts('contact1');

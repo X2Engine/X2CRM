@@ -137,7 +137,7 @@ abstract class X2DbTestCase extends CDbTestCase {
 
     public static function tearDownAppEnvironment() {
         foreach(array('iv','key') as $ext) {
-            rename(self::${$ext}.'.bak',self::${$ext});
+            file_exists(self::${$ext}.'.bak') ? rename(self::${$ext}.'.bak',self::${$ext}) : 'empty';
         }
     }
 

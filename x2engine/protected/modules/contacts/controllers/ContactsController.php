@@ -1719,11 +1719,39 @@ class ContactsController extends x2base {
                     'id' => 'record-aliases-action-menu-link'
                 )
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Contacts Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-contacts',
+                'linkOptions' => array(
+                    'id' => 'contact-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);
         $this->actionMenu = $this->formatMenu($menuItems, $menuParams);
     }
+    
+    /**
+     * An AJAX called function to get a list of contact options for the selectize email fields
+     * @param string $query The current search term
+     */
+    public function actionGetInlineEmailContacts() {
+        $query = isset($_POST['query']) ? $_POST['query'] : "";
+        Fields::getPurifier()->purify($query);
+        $sql = 'SELECT CONCAT("""", name, """ <", email, ">") AS text, '
+                . 'CONCAT(name, " <", email, ">") AS value '
+                . 'FROM x2_contacts WHERE email LIKE "_%" '
+                . 'AND name LIKE CONCAT("%", :query, "%") '
+                . 'OR (EMAIL LIKE CONCAT("%", :query, "%")) LIMIT 10;';
+        $command = Yii::app()->db->createCommand($sql);
+        $command->bindParam(":query", $query, PDO::PARAM_STR);
+        $results = $command->queryAll();
+        echo CJSON::encode($results);
+    }
+
 
 }

@@ -48,6 +48,7 @@ class MergeableBehaviorTest extends X2DbTestCase {
         'account' => 'Accounts',
         'events' => array('Events','.DummyData'),
         'relationships' => 'Relationships',
+        'notification' => array('Notification','empty'),
     );
 
     

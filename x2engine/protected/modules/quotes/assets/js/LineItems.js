@@ -71,13 +71,14 @@ function LineItems (argsDict) {
         titleTranslations: null,
         productNames: null,
         productPrices: null,
-        productDescriptions: null,
+        //productDescriptions: null,
         /**
          * @param string (optional) Used to determine view-dependent behavior of quotes table
          */
         view: 'default',
         productLines: null,
-        adjustmentLines: null,
+        quoteTax: null,
+        // adjustmentLines: null,
         /**
          * @param string used to prefix unique identifiers (e.g. html element ids)
          */
@@ -95,11 +96,12 @@ function LineItems (argsDict) {
 
     this._containerElemSelector = '#' + this.namespacePrefix + '-line-items-table';
     this._lineItemsSelector = this._containerElemSelector + ' .line-items';
-    this._adjustmentsSelector = this._containerElemSelector + ' .adjustments';
+    // this._adjustmentsSelector = this._containerElemSelector + ' .adjustments';
     this._productMenuSelector = this._containerElemSelector + ' .product-menu';
-    this._subtotalRowSelector = this._containerElemSelector + ' .subtotal-row';
+    // this._subtotalRowSelector = this._containerElemSelector + ' .subtotal-row';
     this._subtotalSelector = '#' + this.namespacePrefix + '-subtotal';
     this._totalSelector = '#' + this.namespacePrefix + '-total';
+    this._taxSelector = '#' + this.namespacePrefix + '-tax';
 
     this._lineCounter = 0; // used to differentiate name values of input fields
     this._clickedLineItem = null;
@@ -241,7 +243,11 @@ LineItems.prototype.calculateLineTotals = function () {
     var that = this;
     var lineTotals = [];
     $(that._containerElemSelector + ' .line-item').each (function (index, element) {
-        lineTotals.push (that.calculateLineTotal (element));
+        if($(element).hasClass('comment')) {
+            lineTotals.push(0.00);
+        } else {
+            lineTotals.push (that.calculateLineTotal (element));
+        }
     });
     return lineTotals;
 };
@@ -255,10 +261,28 @@ Parameter:
 */
 LineItems.prototype.setLineTotals = function (lineTotals) {
     var that = this;
+    var tempPrice;
     $(that._containerElemSelector + ' .line-item').each (function (index, element) {
         total = lineTotals.shift ();
         that.DEBUG && console.log ('setLineTotals: setting total to ' + total);
         that.DEBUG && console.log (typeof total);
+
+        // If the line item is not an adjustment or comment, we'll store the price in a temporary
+        // variable to use if there is an adjustment line with a percentage
+        if(!($(element).hasClass('adjustment') || $(element).hasClass('comment'))) {
+            tempPrice = that.getPrice(element);
+        } else if($(element).hasClass('adjustment') && tempPrice != null) {
+            // If we hit an adjustment line and we have the price of a previous line item,
+            // check if the adjustment is a percentage
+            var adjustmentType = $(element).find(".adjustment-type").val();
+            if (adjustmentType === 'percent') {
+                var adjustment = that.getAdjustment (element, adjustmentType);
+                // Get percentage of the previous line items' price in currency to use for the
+                // adjustment
+                var adjustmentTotal = tempPrice * (adjustment / 100);
+                total = Math.round(adjustmentTotal * 100) / 100;
+            }
+        }
         $(element).find ('.line-item-total').val (that.fmtAsDecimal (total)).maskMoney ('mask');/*.formatCurrency (
             {'region': that.currency});*/
     });
@@ -359,9 +383,18 @@ Returns:
 LineItems.prototype.calculateTotal = function (subtotal) {
     var that = this;
     var total = subtotal;
-    $(that._containerElemSelector + ' .adjustment').each (function (index, element) {
-        total = that.applyAdjustmentToTotal (total, subtotal, element);
-    });
+    var tax = parseFloat($(that._taxSelector).val());
+ 
+    // If the tax field is not null and greater than zero,
+    // apply the tax to the subtotal
+    if(!isNaN(tax) && tax > 0.00) {
+        // Calculate the monetary amount in tax
+        tax = Math.floor(tax * total) / 100;
+        
+        // Calculate total taking tax into account
+        total = total + tax;
+    }
+
     return total;
 };
 
@@ -377,9 +410,7 @@ LineItems.prototype.addLineItem = function (
             "product-name": ['' /* default input value */, false /* validation error */],
             "price": ['0', false],
             "quantity": ['1', false],
-            "adjustment": ['0', false],
-            "description": ['', false],
-            "adjustment-type": ['linear', false]
+            "description": ['', false]
         }
     }
 
@@ -392,6 +423,7 @@ LineItems.prototype.addLineItem = function (
             $("<span>", {'class': 'fa fa-sort handle arrow-both-handle'})
         );
     }
+
     $inputCell = lineItemRow.append ($("<td>", {'class': 'x2-2nd-child input-cell'}).append (
         $("<input>", {
             type: 'text',
@@ -401,11 +433,7 @@ LineItems.prototype.addLineItem = function (
             name: this.resolveName ('lineitem[' + ++that._lineCounter + '][name]') 
         })
     ));
-    if (!that.readOnly) {
-        /*$inputCell.find ('input').after (
-            $("<button>", {'class': 'x2-button product-select-button', 'type': 'button'}).
-                append ($("<img>", { src: that.arrowDownImageSource })));*/
-    }
+    
     lineItemRow.append ($("<td>", {'class': 'x2-3rd-child input-cell'}).append (
         $("<input>", {
             type: 'text',
@@ -414,6 +442,7 @@ LineItems.prototype.addLineItem = function (
             name: this.resolveName ('lineitem[' + that._lineCounter + '][price]')
         }))
     );
+
     lineItemRow.append ($("<td>", {'class': 'x2-4th-child input-cell'}).append (
         $("<input>", {
             type: 'text',
@@ -422,42 +451,36 @@ LineItems.prototype.addLineItem = function (
             name: this.resolveName ('lineitem[' + that._lineCounter + '][quantity]') 
         }))
     );
+
+    // lineItemRow.append ($("<td>"));
     lineItemRow.append ($("<td>", {'class': 'x2-5th-child input-cell'}).append (
         $("<input>", {
-            type: 'text',
-            'class': 'line-item-field adjustment',
-            value: values['adjustment'][0],
-            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustment]') 
-        }))
-    );
-    lineItemRow.append ($("<td>", {'class': 'x2-6th-child input-cell'}).append (
-        $("<input>", {
-            type: 'text',
+            type: 'hidden',
             'class': 'line-item-field description',
             'value': values['description'][0],
             name: this.resolveName ('lineitem[' + that._lineCounter + '][description]') 
         }))
     );
-    lineItemRow.append ($("<td>", {
-        'class': 'input-cell line-item-field x2-7th-child'}).append (
-            $("<input>", {
-                type: 'text',
-                'class': 'line-item-total',
-                readonly: 'readonly',
-                onfocus: 'this.blur();',
-                name: this.resolveName ('lineitem[' + that._lineCounter + '][total]') 
-            }),
-            $("<input>", {
-                type: 'hidden',
-                'class': 'adjustment-type',
-                value: values['adjustment-type'][0],
-                name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') 
-            }),
-            $("<input>", {
-                type: 'hidden',
-                'class': 'line-number',
-                name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') 
-            }))
+    lineItemRow.append($("<td>"));
+    lineItemRow.append ($("<td>", {'class': 'input-cell line-item-field x2-7th-child'}).append (
+        $("<input>", {
+            type: 'text',
+            'class': 'line-item-total',
+            readonly: 'readonly',
+            onfocus: 'this.blur();',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][total]') 
+        }),
+        // $("<input>", {
+        //     type: 'hidden',
+        //     'class': 'adjustment-type',
+        //     value: values['adjustment-type'][0],
+        //     name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') 
+        // }),
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-number',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') 
+        }))
     );
 
     if (fillLineItem) { // add error class if server side validation failed
@@ -584,19 +607,21 @@ LineItems.prototype.maskMoney = function (elem) {
 Insert a new adjustment row into the quotes line item table
 */
 LineItems.prototype.addAdjustment = function (
-    fillAdjustment, values /* set if fillAdjustment is true */) {
+    fillLineItem, values /* set if fillLineItem is true */) {
 
     var that = this;
-    if (!fillAdjustment) {
+    if (!fillLineItem) {
             values = { // default values
-                "adjustment-name": ['' /* default input value */, false /* validation error */],
+                "product-name": ['' /* default input value */, false /* validation error */],
+                "price": ['0', false],
+                "quantity": ['1', false],
                 "adjustment": ['0', false],
                 "description": ['', false],
-                "adjustment-type": ['totalLinear', false]
+                "adjustment-type": ['linear', false]
             }
     }
 
-    var lineItemRow = $("<tr>", {'class': 'adjustment'});
+    var lineItemRow = $("<tr>", {'class': 'line-item adjustment'});
 
     $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
     if (!that.readOnly) {
@@ -605,41 +630,200 @@ LineItems.prototype.addAdjustment = function (
             $("<span>", {'class': 'fa fa-sort handle arrow-both-handle'})
         );
     }
-    lineItemRow.append ($("<td>"));
-    lineItemRow.append ($("<td>"));
-    lineItemRow.append ($("<td>", {'class': 'input-cell x2-4th-child'}).append (
-        $("<input>", {
+
+    lineItemRow.append ($("<td>", {'class': 'input-cell x2-2nd-child'}).append (
+        $("<textarea>", {
             type: 'text',
-            'class': 'line-item-field adjustment-name',
-            maxlength: '100',
-            value: values['adjustment-name'][0],
-            name: this.resolveName ('lineitem[' + ++that._lineCounter + '][name]') }))
+            'class': 'line-item-field description',
+            placeholder: (!that.readOnly) ? 'Adjustment Comment' : '',
+            value: values['description'][0],
+            name: this.resolveName ('lineitem[' + ++that._lineCounter + '][description]') }))
     );
-    lineItemRow.append ($("<td>", {'class': 'input-cell x2-5th-child'}).append (
+    lineItemRow.append ($("<td>", {'class': 'x2-3rd-child input-cell'}).append (
         $("<input>", {
             type: 'text',
             'class': 'line-item-field adjustment',
             value: values['adjustment'][0],
-            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustment]') }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustment]')
+        }))
     );
-    lineItemRow.append ($("<td>", {'class': 'input-cell x2-6th-child'}).append (
-        $("<input>", {
-            type: 'text',
-            'class': 'line-item-field description',
-            value: values['description'][0],
-            name: this.resolveName ('lineitem[' + that._lineCounter + '][description]') }))
-    );
-    lineItemRow.append ($("<td>", {'class': 'input-cell x2-7th-child'}).append (
-        //$("<span></span>", {'class': 'line-item-total'}),
+    lineItemRow.append ($("<td>", {'class': 'x2-4th-child input-cell'}).append (
         $("<input>", {
             type: 'hidden',
+            'class': 'line-item-field product-name',
+            maxlength: '100',
+            value: 'x2adjustment',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][name]') 
+        })
+    ));
+    lineItemRow.append ($("<td>", {'class': 'x2-5th-child input-cell'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-field quantity',
+            value: '1',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][quantity]') 
+        }))
+    );
+    lineItemRow.append ($("<td>", {'class': 'x2-6th-child input-cell'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-field price',
+            value: values['price'][0],
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][price]')
+        }))
+    );
+    lineItemRow.append ($("<td>", {'class': 'input-cell x2-7th-child'}).append (
+        $("<input>", {
+            type: 'text',
+            'class': 'line-item-total',
+            readonly: 'readonly',
+            onfocus: 'this.blur();',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][total]') 
+        }),
+        $("<input>", {
+            type: 'hidden',
+            readonly: 'readonly',
             'class': 'adjustment-type',
             value: values['adjustment-type'][0],
-            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') }),
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') 
+        }),
         $("<input>", {
             type: 'hidden',
             'class': 'line-number',
-            name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') }))
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') 
+        }))
+    );
+    
+
+    if (fillLineItem) { // add error class if server side validation failed
+        for (var inputType in values) {
+            if (values[inputType][1] === true) {
+                $(lineItemRow).find ("." + inputType).addClass ('error');
+            }
+        }
+    }
+    if (that.readOnly) { // make uneditable
+        $(lineItemRow).find ("input").attr ({
+            "readonly": "readonly",
+            "onfocus": "this.blur();"
+        });
+    } else { // add translated title attributes
+        for (var inputType in that.titleTranslations) {
+            var $inputField = $(lineItemRow).find ("." + inputType);
+            if ($inputField.length === 1) {
+                $inputField.attr ("title", that.titleTranslations[inputType]);
+            }
+        }
+
+    }
+    
+    $(that._lineItemsSelector).append (lineItemRow);
+    this.maskMoney ([
+        lineItemRow.find ('.adjustment'),
+        lineItemRow.find ('.price'),
+        lineItemRow.find ('.line-item-total')
+    ]);
+
+    if (!that.readOnly) {
+        $('tbody.sortable').sortable ('refresh');
+    }
+
+    // if (!fillLineItem) { // format default input field values
+    //     lineItemRow.find ('.line-item-total').val (0).maskMoney ('mask');
+    //     if ($(that._containerElemSelector + ' .quote-table').find ('tr.line-item').length === 1 &&
+    //         $(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length > 0) {
+
+    //         $(that._subtotalRowSelector).show ();
+    //     }
+    // }
+
+    that.resetLineNums ();
+    that.updateTotals ();
+};
+
+/*
+Insert a new comment row into the quotes line item table
+*/
+LineItems.prototype.addComment = function (
+    fillAdjustment, values /* set if fillAdjustment is true */) {
+
+    var that = this;
+    if (!fillAdjustment) {
+            values = { // default values
+                "product-name": ['' /* default input value */, false /* validation error */],
+                "price": ['0', false],
+                "quantity": ['1', false],
+                "adjustment": ['0', false],
+                "description": ['', false],
+                "adjustment-type": ['linear', false]
+            }
+    }
+
+    var lineItemRow = $("<tr>", {'class': 'line-item comment'});
+
+    $firstCell = lineItemRow.append ($("<td>", {'class': 'first-cell'}));
+    if (!that.readOnly) {
+        $firstCell.find ('td').append (
+            $("<span>", {'class': 'fa fa-times x2-delete-icon item-delete-button'}),
+            $("<span>", {'class': 'fa fa-sort handle arrow-both-handle'})
+        );
+    }
+
+    lineItemRow.append ($("<td>", {'class': 'input-cell x2-2nd-child'}).append (
+        $("<textarea>", {
+            type: 'text',
+            'class': 'line-item-field description',
+            placeholder: (!that.readOnly) ? 'Comment' : '',
+            value: values['description'][0],
+            name: this.resolveName ('lineitem[' + ++that._lineCounter + '][description]') }))
+    );
+    lineItemRow.append ($("<td>", {'class': 'x2-3rd-child input-cell'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-field product-name',
+            maxlength: '100',
+            value: 'x2comment',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][name]') 
+        })
+    ));
+    
+    lineItemRow.append ($("<td>", {'class': 'x2-4th-child input-cell'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-field price',
+            value: '0.00',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][price]')
+        }))
+    );
+
+    lineItemRow.append ($("<td>", {'class': 'x2-5th-child input-cell'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-field quantity',
+            value: '0',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][quantity]') 
+        }))
+    );
+    lineItemRow.append($("<td>"));
+    lineItemRow.append ($("<td>", {'class': 'input-cell x2-7th-child'}).append (
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-item-total',
+            readonly: 'readonly',
+            onfocus: 'this.blur();',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][total]') 
+        }),
+        // $("<input>", {
+        //     type: 'hidden',
+        //     'class': 'adjustment-type',
+        //     value: values['adjustment-type'][0],
+        //     name: this.resolveName ('lineitem[' + that._lineCounter + '][adjustmentType]') 
+        // }),
+        $("<input>", {
+            type: 'hidden',
+            'class': 'line-number',
+            name: this.resolveName ('lineitem[' + that._lineCounter + '][lineNumber]') 
+        }))
     );
 
     if (fillAdjustment) { // add error class if server side validation failed
@@ -663,57 +847,16 @@ LineItems.prototype.addAdjustment = function (
         }
 
     }
-
-    $(that._adjustmentsSelector).append (lineItemRow);
-    this.maskMoney (lineItemRow.find ('.adjustment'));
+    
+    $(that._lineItemsSelector).append (lineItemRow);
 
     if (!that.readOnly) {
         $('tbody.sortable').sortable ('refresh');
-    }
-    if (!fillAdjustment) { // format default input field values
-        if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 1) {
-            $(that._subtotalRowSelector).show ();
-        }
     }
 
     that.resetLineNums ();
     that.updateTotals ();
 };
-
-//LineItems.prototype.selectProductFromAutocomplete = function (event, ui) {
-//    var that = this;
-//    that.DEBUG && console.log ('selectProductFromAutocomplete');
-//    event.preventDefault ();
-//    var lineItemName = ui.item.label;
-//    $(event.target).val (lineItemName);
-//    var lineItemPrice = $(event.target).attr ('name').replace (/name/, 'price');
-//    var lineItemDescription = $(event.target).attr ('name').replace (/name/, 'description');
-//    this.element$.find ('[name="' + lineItemPrice + '"]').
-//        val (that.productPrices[lineItemName]).maskMoney ('mask');
-//    this.element$.find ('[name="' + lineItemDescription + '"]').
-//        val (that.productDescriptions[lineItemName]);
-//    that.validateName (event.target);
-//    that.updateTotals ();
-//    return false;
-//};
-
-//LineItems.prototype.selectProductFromDropDown = function (item) {
-//    var that = this;
-//    that.DEBUG && console.log ('selectProductFromDropDown');
-//    var lineItemName = item.text ();
-//    $(that._clickedLineItem).val (lineItemName);
-//    var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
-//    var lineItemDescription = 
-//        $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
-//
-//    this.element$.find ('[name="' + lineItemPrice + '"]').
-//        val (that.productPrices[lineItemName]).maskMoney ('mask');
-//    this.element$.find ('[name="' + lineItemDescription + '"]').
-//        val (that.productDescriptions[lineItemName]);
-//    that.validateName (that._clickedLineItem);
-//    that.updateTotals ();
-//    return false;
-//};
 
 LineItems.prototype.selectProductFromDropDown = function (name, attrs) {
     var that = this;
@@ -721,93 +864,16 @@ LineItems.prototype.selectProductFromDropDown = function (name, attrs) {
     var lineItemName = name;
     $(that._clickedLineItem).val (lineItemName);
     var lineItemPrice = $(that._clickedLineItem).attr ('name').replace (/name/, 'price');
-    var lineItemDescription = 
-        $(that._clickedLineItem).attr ('name').replace (/name/, 'description');
 
     this.element$.find ('[name="' + lineItemPrice + '"]').
         val (attrs.price).maskMoney ('mask');
-    this.element$.find ('[name="' + lineItemDescription + '"]').
-        val (attrs.description);
+    if(attrs.description && attrs.description.length != 0) {
+        that.addComment(true, {"description": [attrs.description, false]});
+    }
     that.validateName (that._clickedLineItem);
     that.updateTotals ();
     return false;
 };
-
-//LineItems.prototype.formatAutocompleteWidget = function (element) {
-//    var that = this;
-//    var widget = $(element).autocomplete ("widget");
-//    $(widget).css ({
-//            "font-size": "10px",
-//            "max-height": "16em",
-//            "overflow-y": "scroll"
-//    });
-//    $(window).resize (function () {
-//        $(widget).hide ();
-//    });
-//};
-
-/*
-Sets up a combo box that allows ad-hoc line item names and selection from a
-list of existing products
-*/
-//LineItems.prototype.setupProductSelectMenu = function () {
-//    var that = this;
-//    if (that.productNames) {
-//        $(this._containerElemSelector + ' input.product-name').autocomplete ({
-//            source: that.productNames,
-//            select: function (event, ui) { 
-//                return that.selectProductFromAutocomplete (event, ui); 
-//            },
-//            open: function (evt, ui) {
-//                if ($(that._productMenuSelector).is (":visible")) {
-//                    $(that._productMenuSelector).hide ();
-//                }
-//            }
-//        });
-//        $(this._containerElemSelector + ' input.product-name').each (function () {
-//            that.formatAutocompleteWidget ($(this));
-//        });
-//    }
-//
-//    $(that._lineItemsSelector).on (
-//        'click', '.product-select-button', function (event) {
-//
-//        that._clickedLineItem = $(this).siblings ('.line-item-field');
-//        $(that._productMenuSelector).show ().position ({
-//            my: "left top",
-//            at: "left bottom",
-//            of: $(this).prev ()
-//        });
-//        if (that.element$.closest ('.ui-dialog').length) {
-//            that.element$.closest ('.ui-dialog').one ('click', function (event) {
-//                var target = event.target;
-//                if ($(target).closest ('.ui-menu-item').length || 
-//                    $(target).is ('.ui-menu-item')) {
-//
-//                    // kludge to resolve menu item select event issue
-//                    that.selectProductFromDropDown (
-//                        ($(target).closest ('.ui-menu-item').length && 
-//                        $(target).closest ('.ui-menu-item')) || $(target));
-//                } 
-//                $(that._productMenuSelector).hide ();
-//            });
-//        } else {
-//            $(document).one ('click', function () {
-//                $(that._productMenuSelector).hide ();
-//            });
-//        }
-//        event.stopPropagation ();
-//    });
-//
-//    $(that._productMenuSelector).hide ().menu ({select: function (event, ui) { 
-//        if (!that.element$.closest ('.ui-dialog').length) {
-//            that.selectProductFromDropDown (ui.item); 
-//        }
-//    }});
-//
-//    // kludge to prevent link behavior of menu items when line items are inside action frame
-//    $(that._productMenuSelector).find ('a').attr ('href', 'javascript:void(0)');
-//};
 
 /*
 Recalculate line item total, the subtotal, and the overall total
@@ -816,19 +882,19 @@ LineItems.prototype.updateTotals = function () {
     var that = this;
     lineTotals = that.calculateLineTotals ();
     that.setLineTotals (lineTotals);
-    var subtotal = that.calculateSubtotal ();
-    if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length !== 0 &&
+    var subtotal = that.calculateSubtotal();
+    if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length !== 0 ||
             $(that._containerElemSelector + ' .quote-table').find ('tr.line-item').length !== 0) {
         that.setSubtotal (subtotal);
         var total = that.calculateTotal (subtotal);
         that.setTotal (total);
-    } else {
-        that.setTotal (subtotal);
-    }
+    } 
+    // else {
+    //     console.log("HELLO");
+    //     that.setTotal (subtotal);
+    // }
 
-    if ($(that._containerElemSelector + ' .quote-table').children ().find ('.error').length 
-        !== 0) {
-
+    if ($(that._containerElemSelector + ' .quote-table').children ().find ('.error').length !== 0) {
         var calculationErrors = 0
         $(that._containerElemSelector + ' .quote-table').children ().find ('.error').each (
             function (index, element) {
@@ -897,6 +963,23 @@ LineItems.prototype.validateQuantity = function (element) {
     }
 };
 
+LineItems.prototype.validateTax = function (element) {
+    var that = this;
+    $(element).val (parseFloat (parseFloat ($(element).val ()).toFixed (2)));
+        $(element).removeClass ('error');
+        return true;
+    // if ($(element).val ().match (/^[0-9]+(\.[0-9]+)?$/)) {
+    //     // limit precision
+    //     $(element).val (parseFloat (parseFloat ($(element).val ()).toFixed (2)));
+    //     $(element).removeClass ('error');
+    //     return true;
+    // } else {
+    //     console.log($(element).val());
+    //     $(element).addClass ('error');
+    //     return false;
+    // }
+};
+
 LineItems.prototype.validateName = function (element) {
     var that = this;
     if ($(element).val () === "") {
@@ -936,6 +1019,8 @@ LineItems.prototype.getErrorMessage = function (element) {
             //formatCurrency ({region: that.currency}).val ();
         errorMessage = "Adjustment must be a currency amount or a percentage (e.g. \"" +
             exampleCurrency + "\" or \"-50%\").";
+    } else if (elemClass.match (/tax/)) {
+        errorMessage = "Tax must be positive.";
     }
     return errorMessage;
 };
@@ -984,37 +1069,50 @@ LineItems.prototype.validateAllInputs = function () {
 LineItems.prototype.setupValidationEvents = function () {
     var that = this;
     that.DEBUG && console.log ('setupValidationEvents');
-    $(this._lineItemsSelector+','+this._adjustmentsSelector).on ('change', 
+    $(this._lineItemsSelector + ',' + this._adjustmentsSelector).on ('change', 
         '.line-item-field.adjustment', function (event) {
-
             that.DEBUG && console.log ('setupValidationEvents: change');
             that.checkAdjustment (event.target);
             that.updateTotals ();
     });
+
     $(that._lineItemsSelector).on ('change', '.line-item-field.quantity', function (event) {
         that.validateQuantity (event.target);
         that.updateTotals ();
     });
+
     $(that._lineItemsSelector).on ('change', '.line-item-field.price', function (event) {
-            that.updateTotals ();
+        that.updateTotals ();
     });
+
     $(this._lineItemsSelector+','+this._adjustmentsSelector).on (
         'blur', '.line-item-field.product-name, .line-item-field.adjustment-name', 
         function (event) {
 
         that.validateName (event.target);
     });
+
+    $(that._taxSelector).on ('change', function (event) {
+        // Avoid error by resetting tax field value if user tries making it blank
+        if (isNaN(parseFloat($(that._taxSelector).val()))) $(that._taxSelector).val("0");
+        that.validateTax (event.target);
+        this.value = parseFloat(this.value).toFixed(2);
+        that.updateTotals ();
+    });
 };
 
-LineItems.prototype.deleteAdjustment = function (element) {
-    var that = this;
-    $(element).parents ('.adjustment').remove ();
-    if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 0)
-        $(that._subtotalRowSelector).hide ();
-    that.updateTotals ();
-    that.resetLineNums ();
-};
+// Delete adjustment
+// LineItems.prototype.deleteComment = function (element) {
+//     var that = this;
+    
+//     $(element).parents ('.adjustment').remove ();
+//     if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 0)
+//         $(that._subtotalRowSelector).hide ();
+//     that.updateTotals ();
+//     that.resetLineNums ();
+// };
 
+// Delete a line item
 LineItems.prototype.deleteLineItem = function (element) {
     var that = this;
     $(element).parents ('.line-item').remove ();
@@ -1024,15 +1122,17 @@ LineItems.prototype.deleteLineItem = function (element) {
     that.resetLineNums ();
 };
 
+// Reset the counter for number of lines
 LineItems.prototype.resetLineNums = function () {
     var that = this;
     var lineNum = 1;
-    $(that._containerElemSelector + ' tr.line-item').each (function (index, element) {
+    $(that._containerElemSelector + ' tr').each (function (index, element) {
         $(element).find ('.line-number').val (lineNum++);
     });
-    $(that._containerElemSelector + ' tr.adjustment').each (function (index, element) {
-        $(element).find ('.line-number').val (lineNum++);
-    });
+    // $(that._containerElemSelector + ' tr.adjustment').each (function (index, element) {
+    //     $(element).find ('.line-number').val (lineNum++);
+    // });
+    that.updateTotals ();
 };
 
 /*
@@ -1052,11 +1152,21 @@ Populate quotes table with existing line items and adjustments
 LineItems.prototype.populateQuotesTable = function () {
     var that = this;
     for (var i in that.productLines) {
-        that.addLineItem (true, that.productLines[i]);
+        if (that.productLines[i]['product-name'][0] === 'x2comment') {
+            that.addComment(true, that.productLines[i]);
+        } else if(that.productLines[i]['product-name'][0] === 'x2adjustment') {
+            that.addAdjustment(true, that.productLines[i]);
+        } else {
+            that.addLineItem (true, that.productLines[i]);
+        }
     }
-    for (var i in that.adjustmentLines) {
-        that.addAdjustment (true, that.adjustmentLines[i]);
-    }
+
+    // After adding all the line items, change
+    // the quote's tax field value and recalculate the
+    // total
+    $(that._taxSelector).val(that.quoteTax);
+    that.updateTotals();
+    if(that.readOnly) $(that._taxSelector).val(that.quoteTax + " %");
 };
 
 LineItems.prototype.setupEditingBehavior = function () {
@@ -1079,13 +1189,21 @@ LineItems.prototype.setupEditingBehavior = function () {
     //$('tbody.sortable').disableSelection ();
 
     $(that._containerElemSelector + ' .add-adjustment-button').click (function () {
-        that.addAdjustment (false);});
-    $(that._containerElemSelector + ' .add-line-item-button').click (function (){
-        that.addLineItem (false);});
-
-    $(that._adjustmentsSelector).on ('click', '.item-delete-button', function (event) {
-        that.deleteAdjustment (event.target);
+        that.addAdjustment (false);
     });
+
+    $(that._containerElemSelector + ' .add-comment-button').click (function () {
+        that.addComment (false);
+    });
+
+    $(that._containerElemSelector + ' .add-line-item-button').click (function (){
+        that.addLineItem (false);
+    });
+
+    // $(that._adjustmentsSelector).on ('click', '.item-delete-button', function (event) {
+    //     that.deleteComment (event.target);
+    // });
+
     $(that._lineItemsSelector).on ('click', '.item-delete-button', function (event) {
         that.deleteLineItem (event.target);
     });
@@ -1093,8 +1211,7 @@ LineItems.prototype.setupEditingBehavior = function () {
     that.setupValidationEvents ();
 
     // add a line item if this is the create view
-    if (that.productLines.length === 0 &&
-            that.adjustmentLines.length === 0) {
+    if (that.productLines.length === 0) {
         that.addLineItem ();
     } else {
         that.populateQuotesTable ();
@@ -1112,21 +1229,23 @@ LineItems.prototype._init = function () {
     var that = this;
     $(function () {
         that.element$ = $(that._containerElemSelector);
-        that.maskMoney ([$(that._totalSelector), $(that._subtotalSelector)]);
-
+        that.maskMoney ($(that._totalSelector));
+        that.maskMoney ($(that._subtotalSelector));
+        
         if (that.readOnly) {
             that.populateQuotesTable ();
         } else {
+            $(that._taxSelector).val("0");
             that.setupEditingBehavior ();
         }
 
         // hide subtotal row if there aren't any adjustments
-        if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 0 ||
-                $(that._containerElemSelector + '.quote-table').
-                    find ('tr.line-item').length === 0) {
+        // if ($(that._containerElemSelector + ' .quote-table').find ('tr.adjustment').length === 0 ||
+        //         $(that._containerElemSelector + '.quote-table').
+        //             find ('tr.line-item').length === 0) {
 
-            $(that._subtotalRowSelector).hide ();
-        }
+        //     $(that._subtotalRowSelector).hide ();
+        // }
 
         that.updateTotals ();
         if (that.readOnly) 

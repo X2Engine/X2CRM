@@ -351,7 +351,6 @@ class BarWidget extends DataWidget {
                     'class' => 'display-type fa fa-pie-chart',
                     'title' => Yii::t('charts', 'Pie Chart')
                 ),
-
             )
         );
     }

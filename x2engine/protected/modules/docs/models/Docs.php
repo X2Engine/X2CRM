@@ -104,6 +104,32 @@ class Docs extends X2Model {
         );
     }
 
+    public function afterSave() {
+        $this->infoDocCheck();
+        parent::afterSave();
+    }
+
+    public function infoDocCheck() {
+        $infoDoc = Yii::app()->db->createCommand()
+            ->select('*')
+            ->from('x2_info_docs')
+            ->where("docId = $this->id")
+            ->queryAll();
+        if ($this->info == 1) {
+            if ($infoDoc === null || empty($infoDoc)) {
+                $err = Yii::app()->db->createCommand()->insert('x2_info_docs',
+                    array(
+                        'name'=>$this->name,
+                        'text'=>$this->text,
+                        'docId'=>$this->id,
+                    )
+                );
+            } else {
+                Yii::app()->db->createCommand()->update('x2_info_docs', array('text'=>$this->text), "docId = $this->id");
+            }
+        }
+    }
+
     public function menuCheck($attr,$params=array()) {
         $this->$attr;
         $this->scenario = 'menu';
@@ -157,6 +183,7 @@ class Docs extends X2Model {
                 $quoteTitle = Modules::displayName(false, "Quotes");
                 $quoteParams = array(
                     '{lineItems}' => $model->productTable(true),
+                    '{lineItemsPacking}' => $model->packingSlip(true),
                     '{dateNow}' => date("F d, Y", time()),
                     '{quoteOrInvoice}' => Yii::t('quotes',
                             $model->type == 'invoice' ? 'Invoice' : $quoteTitle),

@@ -63,9 +63,17 @@
 </table><br />
 
 <?php
-echo $model->productTable($email);
+  echo $model->productTable($email);
 ?>
   <?php echo empty($model->description)?'':'<div>'.$model->renderAttribute('description').'</div>'; ?>
-
+  <script type="text/javascript">
+    $("th").click(function () {    
+      var html = $(this).html();
+      var input = $("<div contenteditable>"+html+"</div>");
+      input.val(html);
+      $(this).html(input); 
+      $(this).off()
+    });
+  </script>
   </body>
 </html>

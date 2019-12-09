@@ -31,4 +31,21 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#google-project-form .integration-description{line-height:18px}#google-project-form .config-instructions{line-height:18px}#google-project-form .authorized-js-origins{height:56px}#google-project-form h3.oauth-header{display:inline-block;margin-right:3px}
+ **********************************************************************************/
+/* line 40, ../../../../../compass/themes/x2engine/css/views/profile/googleProjectForm.scss */
+#google-project-form .integration-description {
+  line-height: 18px;
+}
+/* line 43, ../../../../../compass/themes/x2engine/css/views/profile/googleProjectForm.scss */
+#google-project-form .config-instructions {
+  line-height: 18px;
+}
+/* line 46, ../../../../../compass/themes/x2engine/css/views/profile/googleProjectForm.scss */
+#google-project-form .authorized-js-origins {
+  height: 56px;
+}
+/* line 49, ../../../../../compass/themes/x2engine/css/views/profile/googleProjectForm.scss */
+#google-project-form h3.oauth-header {
+  display: inline-block;
+  margin-right: 3px;
+}

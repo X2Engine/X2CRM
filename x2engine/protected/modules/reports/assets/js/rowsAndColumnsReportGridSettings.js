@@ -59,6 +59,12 @@ $.widget('x2.rowsAndColumnsReportGridResizing', $.x2.reportGridResizing, {
  */
 $.widget("x2.rowsAndColumnsReportGridSettings", $.x2.reportGridSettings, {
     _create:function() {
+	
+	$('.subTotalRow').each(function() { //subTotal for rowsAndColumn
+            var tableRow = $(this).closest('tr');
+            tableRow.css('background-color', '#ffff82');
+        });	
+
         x2.DEBUG && console.log ('rowsAndColumnsReportGridSettings');
         // swap class dependencies
         this.options.gridResizingClass = 'rowsAndColumnsReportGridResizing';

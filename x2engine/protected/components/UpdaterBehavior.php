@@ -1055,12 +1055,29 @@ class UpdaterBehavior extends ResponseBehavior {
                                 $sqlRun[] = $sql;
                             else{
                                 $errorInfo = $command->errorInfo();
+                                $sqlErr = implode(" ",$errorInfo);
+                                if(strpos($sqlErr, 'Column already exists') !== false || strpos($sqlErr, 'Duplicate entry') !== false || strpos($sqlErr, 'Duplicate key name') !== false)
+                                    continue;
+                                if(strpos($sqlErr, 'ALTER TABLE') !== false)
+                                    continue;
                                 $this->sqlError($sql, $sqlRun, '('.$errorInfo[0].') '.$errorInfo[2]);
                             }
                         }catch(PDOException $e){ // A database change failed to apply
                             if($skipOnFail[$delta])
                                 continue;
                             $sqlErr = $e->getMessage();
+                            if(strpos($sqlErr, 'Column already exists') !== false || strpos($sqlErr, 'Duplicate entry') !== false || 
+                                    strpos($sqlErr, 'Duplicate key name') !== false)
+                                continue;
+                            if(strpos($sqlErr, 'ALTER TABLE') !== false) {
+                                /**
+                                 * Joseph in 2019 Jan wrote
+                                 * if(strpos($sqlErr, 'ALTER TABLE') !== false || strpos($dbRestoreMessage, 'ALTER TABLE') !== false)
+                                 * This file put contents will be included to figure out where this error happens.
+                                 */
+                                file_put_contents("/tmp/Josef_Alter_Table_Update_Issue.txt", "SQLERROR: " . $sqlErr);
+                                continue;
+                            }
                             try{
                                 $this->handleSqlFailure ($sql, $sqlRun, $sqlErr, $backup);
                             }catch(Exception $re){ // Database recovery failed. We're SOL

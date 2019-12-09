@@ -142,6 +142,12 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
     }
 
     public static function isExcluded($name, $modelType) {
+
+        //filter enterprise exclusive widget(s)
+        if (Yii::app()->edition == 'opensource' && $name == 'ServiceRepliesWidget') {
+            return true;
+        }
+
         if (// Only widgets in Topics module
                 ($modelType === 'Topics' && !in_array($name, array(
                     'InlineTagsWidget',
@@ -190,7 +196,9 @@ class RecordViewWidgetManager extends TwoColumnSortableWidgetManager {
                     'WorkflowStageDetailsWidget',
                     'QuotesWidget',
                     'EmailsWidget',
-                )))
+                ))) ||
+                // Widget exclusive to Service module
+                ($modelType !== 'Services' && $name === 'ServiceRepliesWidget')
         ) {
             return true;
         } else {

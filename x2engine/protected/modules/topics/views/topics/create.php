@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'create',
+    'index', 'create','helpGuide',
 );
 $this->insertMenu($menuOptions);
 ?>

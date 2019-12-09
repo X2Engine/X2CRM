@@ -44,7 +44,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tag
 
 $authParams['X2Model'] = $model;
 $menuOptions = array(
-    'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share', 'delete',
+    'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 

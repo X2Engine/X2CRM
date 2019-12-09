@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'delete',
+    'index', 'create', 'view', 'edit', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model);
 

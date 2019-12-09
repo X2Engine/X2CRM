@@ -1,0 +1,145 @@
+.gjs-pn-devices-c {
+    visibility: hidden; }
+
+/* Let's highlight canvas boundaries */
+#grapes-div {
+    border: 1px solid #d3d3d3;
+}
+
+/* Reset some default styling */
+.gjs-cv-canvas {
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gjs-block {
+  width: auto;
+  height: auto;
+  min-height: auto;
+}
+
+.panel__top {
+    padding: 0;
+    width: 80%;
+    display: flex;
+    position: initial;
+    justify-content: center;
+    justify-content: space-between;
+    border-top: 1px solid #d3d3d3;
+    border-right: 1px solid #d3d3d3;
+    border-left: 1px solid #d3d3d3;
+    margin: auto;
+}
+
+.panel__basic-actions {
+    position: initial;
+}
+
+.editor-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  height: 60em;
+  width: 80%;
+  margin: auto;
+}
+
+.editor-canvas {
+  flex-grow: 1;
+}
+
+.panel__right {
+  flex-basis: 230px;
+  position: relative;
+  overflow-y: auto;
+  border-top: 1px solid #d3d3d3;
+  border-right: 1px solid #d3d3d3;
+  border-bottom: 1px solid #d3d3d3;
+}
+
+.panel__switcher {
+    position: initial;
+}
+
+.panel__devices {
+    position: initial;
+}
+
+.gjs-one-bg {
+    background-color: #f5f5f5;
+}
+
+.gjs-pn-btn {
+    color: black;
+    font-size: 15pt !important;
+}
+
+.gjs-layer-name {
+    color: black;
+}
+
+.gjs-layer-vis {
+    color: black;
+}
+
+.gjs-layer-caret {
+    color: black;
+}
+
+.gjs-layer-count {
+    color: black;
+}
+
+#blocks {
+    border-right: 1px solid #d3d3d3;
+    border-left: 1px solid #d3d3d3;
+    border-bottom: 1px solid #d3d3d3;
+}
+
+.gjs-title {
+    color: black;
+}
+
+gjs-fonts {
+    color: black;
+}
+
+.gjs-block-label {
+    color: black;
+}
+
+.gjs-block {
+    color: black;
+}
+
+.gjs-mdl-btn-close {
+    color: black;
+}
+
+.gjs-mdl-title {
+    color: black;
+}
+
+.gjs-layer-move {
+    color: black;
+}
+
+.gjs-two-color {
+    color: #555555;
+}
+
+.gjs-input-holder > input {
+    color: #555555 !important;
+}
+
+#docs-form {
+    height: 78em; }
+
+.form.no-border {
+    height: 98%;
+    overflow: visible; }
+
+.gjs-four-color-h:hover {
+    color: #3d70b4; }

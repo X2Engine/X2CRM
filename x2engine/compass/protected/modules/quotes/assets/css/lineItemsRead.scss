@@ -60,7 +60,6 @@
       text-overflow: ellipsis;
     }
     tbody.line-items > tr > td.x2-2nd-child {
-      overflow: hidden;
       text-overflow: ellipsis;
       width: 20%;
     }
@@ -73,6 +72,13 @@
         &.x2-2nd-child input {
           width: 95%;
           font-size: 12px;
+        }
+        &.x2-2nd-child textarea.description {
+          resize: none;
+          height: 75px;
+          font-size: 12px;
+          position: relative;
+          left: 15%;
         }
         &.x2-3rd-child {
           width: 17.5%;

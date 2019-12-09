@@ -190,7 +190,7 @@
   'Global account' => 'グローバルアカウント',
   'Bulk Email Settings' => 'バルク電子メール設定',
   'Service Case Email Settings' => 'サービスケースメール設定',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'このテンプレートでは、次の変数を使用することができます： {first} 、 {last} 、 {phone} 、 {email} 、 {description} 、と{case} 。',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'このテンプレートでは、次の変数を使用することができます： {first} 、 {last} 、 {phone} 、 {email} 、 {description} 、 {case} 、と{link} 。',
   'Introduction' => 'はじめに',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'この機能は、特別なアドレスでメールを受信して​​記録するX2Engineできます。',
   'Filesystem ownership and permissions' => 'ファイルシステムの所有権とパーミッション',

@@ -133,6 +133,12 @@ class X2RowsAndColumnsReport extends X2Report {
         $primaryModel = $this->getPrimaryModel ();
         $primaryTableName = $primaryModel->tableName ();
         $joinClause = $this->getJoinClauses ($qpg);
+        
+        //this check will be for dealing will old reports that lack RelativeFilters
+        $relArray = $this->relativeFilters;
+        if(!isset($relArray)){
+            $relArray = array();
+        }
 
         $whereClause = 'WHERE '.$this->buildSQLConditions (array (
             array (
@@ -142,10 +148,32 @@ class X2RowsAndColumnsReport extends X2Report {
                 $this->getFilterConditions ('all', $this->allFilters, $qpg), 'AND',
             ),
             array (
+               $this->getRelativeFilterConditions ('any', $relArray, $qpg), 'AND',
+            ),
+            array (
                 $this->getPermissionsCondition ($qpg), 'AND',
             )
         ));
 
+	//see if subTotals are being passed back
+        if(isset($this->subTotals) && count($this->subTotals) > 0){
+            $subTotal = $this->getSubTotals($this->columns, $primaryTableName, $whereClause, $joinClause, $qpg);
+
+            /**
+             * if subtotal is chosen order the data to be correct
+             */
+            $new_order = array();
+            foreach($this->subTotals as $uni){
+                $each_order  = array();
+                $each_order[] = $uni['name'];
+                $each_order[] = "asc";
+                $new_order[] = $each_order;
+            }
+            $this->orderBy = array_merge($new_order, $this->orderBy);
+        }else{
+            $subTotal = array();
+        }
+	
         $orderByClause = $this->getOrderByClause ($this->orderBy);
 
         if (count ($this->columns)) {
@@ -185,6 +213,10 @@ class X2RowsAndColumnsReport extends X2Report {
                     ($this->includeTotalsRow ? array ($totalsRow) : array ())))));
 
         } else {
+	    //enter the subtotal if there are records and subTotals
+            if(count($subTotal) > 0 && count($records) > 0){
+                $records = $this->enterSubTotal($records, $subTotal);
+            }
             if ($this->includeTotalsRow)
                 $totalsRowGridViewParams = $this->getRowsAndColumnsReportGridViewParams (
                     array ($totalsRow), 'summation-grid');
@@ -200,6 +232,251 @@ class X2RowsAndColumnsReport extends X2Report {
         }
 
     }
+    
+    public function generatePeriodic(){
+        $records = $this->generate();
+
+        if ($this->includeTotalsRow) {
+            $totalsRow = $this->getTotalsRow ($records, $this->columns);
+            $totalsRow = $this->formatData (array ($totalsRow));
+            $totalsRow = array_pop ($totalsRow);
+        }
+        $result = $this->formatData (array_merge (
+                $records, 
+                ($this->includeTotalsRow ? array ($totalsRow) : array ())));
+        
+        $formattedColumnHeaders = $this->getFormattedColumnHeaders ();
+        $columns = array_reverse ($this->columns);
+        $gridColumns = array ();
+        foreach ($formattedColumnHeaders as $header) {
+            $col = array_pop ($columns);
+            list ($columnAttrModel, $columnAttr, $fns) = $this->getModelAndAttr ($col);
+            $gridColumns[] = array (
+                'name' => $col,
+                'fns' => $fns,
+                'header' => $header,
+                'type' => 'raw',
+            );
+        }
+        
+        $htmlBody = "";
+        
+        if( count($result) ){
+            $htmlBody .= '<table style = "border-collapse: collapse; width: 100%;"> <tr>';
+            foreach ($gridColumns as $header){
+                $htmlBody .= '<th style="border: 1px solid black; background-color: rgb(126, 173, 255);">'.
+                        $header['header'].'</th>';
+            }
+            $htmlBody .= '</tr>';
+            foreach ($result as $row){
+                $subHeader = false;
+                $htmlBody .= '<tr>';
+                foreach ($row as $key => $value){
+                    $htmlBody .= '<td style="border: 1px solid black;">'. $value .'</td>';
+                }
+                $htmlBody .= '</tr>';
+            }
+            $htmlBody .= '</table>';
+        }
+        
+        return $htmlBody;
+    }
+
+    /**
+     * @return array
+     */
+    public function enterSubTotal($records, $subTotal) {
+        $new_records = array();
+        foreach($records as $key => $rec){
+
+            $new_records[] = $rec; //first row can not be subTotal
+
+            if($key == (count($records) - 1)){ //last key
+                $new_records[] = $this->_getCorrectSubTotal($records, $subTotal, $key);
+            }else{
+                foreach($this->subTotals as $attr){
+                    if($records[$key + 1][$attr['name']] !== $rec[$attr['name']]){ //must insert subTotal here
+                        $new_records[] = $this->_getCorrectSubTotal($records, $subTotal, $key);
+                        break;
+                    }
+                }
+           }
+        }
+        $records = $new_records;
+        return $records;
+    }
+
+    /**
+     * @return array
+     */
+    public function _getCorrectSubTotal($records, $subTotal, $key) {
+        $columnFields = $this->getAttrFields($this->columns);
+        $correct_subtotal = array();
+        foreach($subTotal as $key2 => $row){ //run through and find correct subTotal
+	    $check = 1; //must match all subtotalled by attr
+            foreach($this->subTotals as $attr){ //check which subTotal - break if it is wrong
+                $field = $columnFields[$attr['name']];
+                $matchAttr = $attr['name'];
+                if(isset($field) && $field !== null && in_array($field->type, array('int', 'currency'))){
+                    $matchAttr = 'SUM('. $attr['name'] . ')';
+                }
+                if($records[$key][$attr['name']] !== $row[$matchAttr]){
+                    $check = 0; //failed
+                    break;
+                }
+            }
+            if($check == 1)
+                return $this->emptyRow($row);
+        }
+        return $correct_subtotal;
+    }
+
+    /**
+     * @return array
+     */
+    public function emptyRow($row) {
+	//only sum by columns who's field type is int or currency
+        $columnFields = $this->getAttrFields($this->columns);
+	$start = 0;
+        foreach($this->columns as $col){
+            $field = $columnFields[$col];
+            if(isset($field) && $field !== null && !in_array($field->type, array('int', 'currency'))){
+		if($start == 0){
+		   $row[$col] = "Total";
+		}else{
+		   $row[$col] = "";
+		}$start++;
+            }
+        }		
+        return $row;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubTotals($columns, $recordType, $whereClause, $joinClause, $qpg) {
+        $subTotal      = array();
+        $groupByClause = '';
+        $columnFields = $this->getAttrFields($columns);
+
+        $whereClause   = str_replace("WHERE", "", $whereClause); //**Where Clause**
+        foreach($this->subTotals as $key => $attr){ //**Group By Clause**
+           $groupByClause .= $this->findAlias($attr['name']);
+           if( $key < (count($this->subTotals)-1) ){
+               $groupByClause .= ', ';
+           }
+        }
+
+        $selectClause = '';
+        foreach($this->subTotals as $key => $attr){ //**Select(start)**
+           $field = $columnFields[$attr['name']];
+           if(isset($field) && $field !== null && in_array($field->type, array('int', 'currency'))){
+               $selectClause .= $this->findAlias($attr['name']) . ' as \'SUM(' . $attr['name'] . ')\'';
+           }else{
+               $selectClause .= $this->findAlias($attr['name'], true);
+           }
+           if( $key < (count($this->subTotals)-1) ){
+               $selectClause .= ', ';
+           }
+        }	
+
+        foreach($columns as $col){ //**Select Clause**
+            $field = $columnFields[$col];
+            if(isset($field) && $field !== null && in_array($field->type, array('int', 'currency'))){
+                $selectClause .= ', SUM(' . $this->findAlias($col) . ') as \'' . $col . '\'';
+            }
+        }
+
+	$joinClause = $this->getSubTotalJoin($qpg);
+
+        $subTotal = Yii::app()->db->createCommand()
+            ->select($selectClause)
+            ->from($recordType . " as t");
+	if(count($joinClause) > 0){
+	    foreach($joinClause as $table => $on){
+	        $subTotal->leftjoin($table, $on);
+	    }	
+	}
+	$subTotal->where($whereClause, $qpg->getParams());
+        $subTotal->group($groupByClause);
+	
+        $subTotal = $subTotal->queryAll();
+
+        return $subTotal;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubTotalJoin($qpg){
+	$joinAliases = $this->getJoinAliases ();
+        $relatedModelsByLinkField = $this->getRelatedModelsByLinkField ();
+        //Assumption (# of params) = (# of params needed for this join)
+        $params = $qpg->getParams();
+
+        assert (count ($relatedModelsByLinkField) === count ($joinAliases));
+        $joinStmt = array();
+        foreach ($relatedModelsByLinkField as $linkField => $relatedModel) {
+            if ($this->primaryModelType === 'Actions' &&
+                (in_array ($linkField, array_keys (X2Model::getModelNames ())) ||
+                $linkField === 'ActionText')) {
+
+                if ($linkField !== 'ActionText') {
+                    $primaryModelField = $linkField;
+                    $joinStmt[($relatedModel->tableName ()) . ' ' . $joinAliases[$linkField]] = 
+		    "t.associationId=".$joinAliases[$linkField].".id AND ".
+                    "t.associationType=". array_search( X2Model::getAssociationType($linkField), $params);
+                } else {
+		    $joinStmt[($relatedModel->tableName ()) . ' ' . $joinAliases[$linkField]] =
+		    $joinAliases[$linkField]."==t.id"; 
+                }
+            } else {
+		    $joinStmt[($relatedModel->tableName ()) . ' ' . $joinAliases[$linkField]] =
+		    "t.".$linkField."=".$joinAliases[$linkField].".nameId ";
+            }
+        }
+        return $joinStmt;
+    }
+
+    /**
+     * @return string
+     * $as -> if true then include the AS.
+     */
+    public function findAlias($columnName , $as = false){
+        $checkDates = array(
+                      '/day\(\w*\)/',
+                      '/hour\(\w*\)/',
+                      '/minute\(\w*\)/',
+                      '/month\(\w*\)/',
+                      '/second\(\w*\)/',
+                      '/year\(\w*\)/'
+        );
+
+        foreach($checkDates as $pat){
+            if(preg_match($pat, $columnName)){
+	        if($as){
+                    return $this->getAliasedAttr ($columnName) . ' AS ' . '\''. $columnName. '\'';
+                }
+                return $this->getAliasedAttr ($columnName);
+            }
+        }
+
+        $correctAlias = "t." . $columnName;
+        $joinAlias = $this->getJoinAliases ();
+        if(count($joinAlias) > 0){
+            foreach($joinAlias as $name => $alias){
+                if(strpos($columnName, $name) !== false) { //ex: accountName.assignedTo -> t0.assignedTo
+                   $correctAlias = str_replace($name, $alias, $columnName);
+		   if($as) {
+                       $correctAlias .= ' AS ' . '\'' . $columnName . '\'';
+                   }
+                   break;
+                }
+            }
+        }
+        return $correctAlias;
+    }
+
 
     /**
      * @return array 
@@ -220,7 +497,7 @@ class X2RowsAndColumnsReport extends X2Report {
         if (!isset ($this->_relatedModelsByLinkField) || $refresh) {
             $this->_relatedModelsByLinkField = $this->_getRelatedModelsByLinkField (
                 array_merge (
-                    $this->columns, $this->getAnyFilterAttrs (), $this->getAllFilterAttrs (),
+                    $this->columns, $this->getAnyFilterAttrs (), $this->getAllFilterAttrs (), $this->getRelativeFilterAttrs(),
                     $this->getOrderByAttributes ()));
         }
         return $this->_relatedModelsByLinkField;

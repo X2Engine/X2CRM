@@ -98,6 +98,7 @@ class MassAddToListTest extends X2DbTestCase {
 
      /**
       * Test new list + add to list super mass actions
+      * @runInSeparateProcess
       */
     public function testSuperExecute () {
         X2List::model ()->deleteAllByAttributes (array ('name' => 'test'));

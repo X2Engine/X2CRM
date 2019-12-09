@@ -48,6 +48,12 @@
  */
 class X2ListItem extends CActiveRecord {
     public $verifyCode; // CAPTCHA for weblead form
+    
+        public function behaviors() {
+            return array_merge(parent::behaviors(), array(
+                'UserAgentBehavior' => array('class' => 'UserAgentBehavior'),
+            ));
+        }
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -156,7 +162,17 @@ class X2ListItem extends CActiveRecord {
 	public function markOpened() {
 		if($this->opened == 0) {
 			$this->opened = time();
-			$this->update(array('opened'));
+                        // set user agent fields
+                        $ua = Yii::app()->request->getUserAgent();
+                        $uaInfo = $this->parse_user_agent($ua);
+                        $this->platform = $uaInfo['platform'];
+                        $this->browser = $uaInfo['browser'];
+                        $this->version = $uaInfo['version'];
+                        Fields::getPurifier()->purify($this->platform);
+                        Fields::getPurifier()->purify($this->browser);
+                        Fields::getPurifier()->purify($this->version);
+                        
+			$this->update(array('opened', 'platform', 'browser', 'version'));
 		}
 		
 		if($this->list->campaign !== null) {

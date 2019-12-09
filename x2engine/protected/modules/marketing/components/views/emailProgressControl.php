@@ -37,7 +37,7 @@
 
 
 ?>
-<div id="emailProgressControl" class="x2-layout form-view">
+<div id="emailProgressControl" class="x2-layout x2-layout-island">
     <div class="formSection">
         <div class="formSectionHeader">
             <span class="sectionTitle"><?php echo Yii::t('marketing', 'Email Delivery Progress'); ?></span>

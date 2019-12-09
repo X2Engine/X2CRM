@@ -484,6 +484,10 @@ class Workflow extends X2ActiveRecord {
     public static function isCompleted ($workflowStatus, $stageNumber) {
         return $workflowStatus['stages'][$stageNumber]['complete'];
     }
+    
+    public static function isTerminated ($workflowStatus, $stageNumber) {
+        return $workflowStatus['stages'][$stageNumber]['terminate'];
+    }
 
     public static function isInProgress ($workflowStatus, $stageNumber) {
         return self::isStarted ($workflowStatus, $stageNumber) && 
@@ -500,19 +504,38 @@ class Workflow extends X2ActiveRecord {
     public static function validateAction (
         $action, $workflowStatus, $stage, $comment='', &$message='') {
 
-        assert (in_array ($action, array ('complete', 'start', 'revert')));
-
+        assert (in_array ($action, array ('complete', 'start', 'revert', 'terminate')));
+    
         if (!isset ($workflowStatus['stages'][$stage])) {
             $message = Yii::t(
                 'workflow', 'Stage {stage} does not exist', 
                 array ('{stage}' => $stage));
             return false;
         }
-
+        
+        if($workflowStatus['terminated'] == true && $action != 'revert'){
+            $message = Yii::t(
+                 'workflow', 'Process has already been terminated');
+            return false;
+        }
+              
         // ensure that the stage is in a valid state
         switch ($action) {
+            case 'terminate':
+                if(self::isTerminated ($workflowStatus, $stage)){
+                    $message = Yii::t(
+                                'workflow', 'Stage {stage} has already been terminated', 
+                                array ('{stage}' => $stage));
+                    return false;
+                }
+                break;
             case 'complete':
-                if (self::isCompleted ($workflowStatus, $stage)) {
+                if(self::isTerminated ($workflowStatus, $stage)){
+                    $message = Yii::t(
+                                'workflow', 'Stage {stage} has already been terminated', 
+                                array ('{stage}' => $stage));
+                    return false;
+                } elseif (self::isCompleted ($workflowStatus, $stage)) {
                     $message = Yii::t(
                         'workflow', 'Stage {stage} has already been completed', 
                         array ('{stage}' => $stage));
@@ -520,7 +543,13 @@ class Workflow extends X2ActiveRecord {
                 }
                 break;
             case 'start':
-                if (self::isStarted ($workflowStatus, $stage)) {
+                if(self::isTerminated ($workflowStatus, $stage)){
+                    $message = Yii::t(
+                                'workflow', 'Stage {stage} has already been terminated', 
+                                array ('{stage}' => $stage));
+                    return false;
+                }
+                elseif (self::isStarted ($workflowStatus, $stage)) {
                     $message = Yii::t(
                         'workflow', 'Stage {stage} has already been started',
                         array ('{stage}' => $stage));
@@ -698,6 +727,86 @@ class Workflow extends X2ActiveRecord {
 
         return array (true);
     }
+    
+    public static function userCheck( $data ){
+        if( X2Model::model($data->associationType)->findByPk($data->associationId) == null){
+        return "No Users Associated";
+        }else{
+             if( X2Model::model($data->associationType)->findByPk($data->associationId)->assignedTo == null ){
+                return "Assigned To Is Blank";
+             }
+             elseif( User::getUserLinks(X2Model::model($data->associationType)->findByPk($data->associationId)->assignedTo) == null ){
+                 return "Assigned To Exists But User Does Not";
+             }else{
+                return User::getUserLinks(X2Model::model($data->associationType)->findByPk($data->associationId)->assignedTo);
+             }
+        }
+    }
+
+    public static function nameCheck( $data ){
+        if( X2Model::model($data->associationType)->findByPk($data->associationId) == null){
+        return "No Record Associated";
+        }else{
+        return X2Model::getModelLinkMock (
+                                $data->associationType,
+                                X2Model::model($data->associationType)->findByPk($data->associationId)->nameId,
+                                array ( 'data-qtip-title' => X2Model::model($data->associationType)->findByPk($data->associationId)->name )
+                     );
+        }
+    }
+    
+    /*
+     *Gets difference via complete Date
+     */
+    public static function getCompleteTime( $data ){
+        $workflowStatus = Workflow::getWorkflowStatus($data->workflowId,$data->associationId,$data->associationType);
+        if( $data->terminatedStage != null ){
+            $name = WorkflowStage::model()->findByAttributes(array("id" => $workflowStatus['stages'][$data->terminatedStage]['id'] , "workflowId" => $data->workflowId))->name;
+            return '<font color="red">Terminated after: ' . Workflow::getCompleteWorkflowDate($data->createDate, $data->terminateDate) . '</font>';
+        }
+        if( $data->completeDate == null ){
+            $start = 'no';
+            $nextStartDate = 'none';
+           foreach ($workflowStatus['stages'] as $stage) {
+               if ( $stage['id'] == $data->stageNumber ){
+                   $start = 'yes';
+               }
+               elseif ( $data->createDate < $stage['createDate'] && $start == 'yes' ){
+                   $nextStartDate = $stage['createDate'];
+               }elseif ( $data->createDate == $stage['createDate'] && $start == 'yes' && $nextStartDate == 'none'){
+                   $nextStartDate = $stage['createDate'];
+               }
+           }
+           if( $nextStartDate == 'none' ){
+               return 'N/C <font color="blue">(Currently In)</font>';
+           }
+           return Workflow::getCompleteWorkflowDate($data->createDate, $nextStartDate, 'no');
+        }else{
+           return Workflow::getCompleteWorkflowDate($data->createDate, $data->completeDate); 
+        }
+    }
+    
+    /**
+     *Retrieves information on how many Days, Hours, Minutes and Seconds it took
+     *
+     */
+    public static function getCompleteWorkflowDate( $createDate, $completeDate, $hasComplete = null ) {
+        $value = 'CreateDate is After CompleteDate';
+        $days = 0;
+        $diff = 0;
+        if($createDate <= $completeDate){
+                $diff = $completeDate - $createDate;
+                if($diff >= 86400){
+                $days = ($diff - $diff % 86400) / 86400;
+                }
+                if( $hasComplete == 'no'){
+                    $value = '<font color="blue">' . $days .'</font> Days <font color="blue">(Start to Start)</font>';
+                }else{
+                    $value = '<font color="blue">' . $days ."</font> Days";
+                }
+        }
+        return $value;
+    }
 
     /**
      * Retrieves information on all stages (their complete state, their stage dependencies,
@@ -714,7 +823,8 @@ class Workflow extends X2ActiveRecord {
             'id'=>$workflowId,
             'stages'=>array(),
             'started'=>false,
-            'completed'=>true
+            'completed'=>true,
+            'terminated'=>false
         );
         
         $workflow = Workflow::model()->findByPk($workflowId);
@@ -737,8 +847,11 @@ class Workflow extends X2ActiveRecord {
                 'requirePrevious'=>$stage->requirePrevious,
                 'roles'=>$stage->roles,
                 'complete' => false,
+                'terminate' => false,
                 'createDate' => null,
+                'terminateDate' => null,
                 'completeDate' => null,
+                'terminatedStage' => null,
                 'requireComment'=>$stage->requireComment,
             );
         }
@@ -758,7 +871,7 @@ class Workflow extends X2ActiveRecord {
                 new CDbCriteria(array('order'=>'createDate ASC'))
             );
         }
-        
+               
         foreach($workflowActions as &$action) {
             
             
@@ -770,12 +883,18 @@ class Workflow extends X2ActiveRecord {
                 // Note: multiple actions with the same stage will overwrite each other
                 $workflowStatus['stages'][$stage]['createDate'] = $action->createDate;        
                 $workflowStatus['stages'][$stage]['completeDate'] = $action->completeDate;
+                $workflowStatus['stages'][$stage]['terminateDate'] = $action->terminateDate;
+                $workflowStatus['stages'][$stage]['terminatedStage'] = $action->terminatedStage;
 
                  /* A stage is considered complete if either its complete attribute is true or if it 
                  has a valid complete date. */
                 $workflowStatus['stages'][$stage]['complete'] = 
                     ($action->complete == 'Yes') || 
-                    (!empty($action->completeDate) && $action->completeDate < time());    
+                    (!empty($action->completeDate) && $action->completeDate < time());
+                
+                $workflowStatus['stages'][$stage]['terminate'] =
+                    ($action->terminate == 'Yes') ||
+                    (!empty($action->terminateDate) && $action->terminateDate < time());
 
                 $workflowStatus['stages'][$stage]['description'] = $action->actionDescription; 
             }
@@ -785,6 +904,10 @@ class Workflow extends X2ActiveRecord {
         foreach($workflowStatus['stages'] as &$stage) { 
             if(!isset($stage['completeDate'])) {
                 $workflowStatus['completed'] = false;
+                break;
+            }//if there was at least 1 stage terminated, whole process is terminated
+            if(isset($stage['terminateDate'])) {
+                $workflowStatus['terminated'] = true;
                 break;
             }
         }
@@ -996,7 +1119,7 @@ class Workflow extends X2ActiveRecord {
                 'x2_actions',
                 'x2_actions.associationId='.$tableName.'.id')
             ->where(
-                "x2_actions.complete != 'Yes' $userString AND 
+                "x2_actions.complete != 'Yes' AND x2_actions.terminate!= 'Yes' $userString AND 
                 (x2_actions.completeDate IS NULL OR x2_actions.completeDate = 0) AND 
                 x2_actions.createDate BETWEEN :start AND :end AND
                 x2_actions.type='workflow' AND workflowId=:workflowId AND 
@@ -1054,7 +1177,7 @@ class Workflow extends X2ActiveRecord {
                         'x2_actions',
                         'x2_actions.associationId='.$tableName.'.id')
                     ->where(
-                        "x2_actions.complete != 'Yes' $userString AND 
+                        "x2_actions.complete != 'Yes' AND x2_actions.terminate != 'Yes' $userString AND 
                         (x2_actions.completeDate IS NULL OR x2_actions.completeDate = 0) AND 
                         x2_actions.createDate BETWEEN :start AND :end AND
                         x2_actions.type='workflow' AND workflowId=:workflowId AND 
@@ -1187,6 +1310,101 @@ class Workflow extends X2ActiveRecord {
         }
 
         return $stageRequirements;
+    }
+    
+    /**
+     * Terminates a process (if completed) and still terminates it (if started).
+     * @param $terminate bool If false, will not attempt to terminate an ongoing stage
+     */
+    public static function terminateProcess (
+        $workflowId,$stageNumber,$model, $workflowStatus=null) {
+        
+        //AuxLib::debugLogR ('completing stage '.$stageNumber.'with comment'.$comment);
+        
+        $modelId = $model->id;
+        $type = lcfirst (X2Model::getModuleName (get_class ($model)));
+
+        if (!$workflowStatus)
+            $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+
+        $stageCount = count($workflowStatus['stages']);
+        
+        $stage = &$workflowStatus['stages'][$stageNumber];
+
+        $terminated = false;
+        
+        // if stage has been not been terminated yet
+        // TODO: verify the assumption that a set createDate indicates a started stage
+        if($model !== null && !self::isTerminated($workflowStatus, $stageNumber)) {
+            
+                /*
+                Find the action associated with the stage and complete it
+                */
+                 $action = X2Model::model('Actions')->findByAttributes(
+                    array(
+                        'associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow',
+                        'workflowId'=>$workflowId,'stageNumber'=>$stage['id']
+                    )
+                );
+
+                $action->setScenario('workflow');
+                
+                // don't genererate normal action changelog/triggers/events
+                $action->disableBehavior('changelog');    
+                $action->disableBehavior('TagBehavior'); // no tags
+                $action->dueDate=null;
+                $action->terminate = 'Yes';
+                $action->terminatedBy = Yii::app()->user->getName();
+                $action->terminateDate = time();
+                $action->terminatedStage = $stageNumber;
+                $action->save();
+               
+                $model->updateLastActivity();
+                
+                self::updateWorkflowChangelog($action,'terminate',$model);
+                
+                 for($i=1; $i<=$stageCount; $i++) {
+                    $pastAction = X2Model::model('Actions')->findByAttributes(
+                     array(
+                            'associationId'=>$modelId,'associationType'=>$type,'type'=>'workflow',
+                            'workflowId'=>$workflowId,'stageNumber'=>$workflowStatus['stages'][$i]['id']
+                        )
+                    );
+                    if($pastAction != null && $pastAction['terminate'] != 'Yes'){
+                        $pastAction->setScenario('workflow');
+                
+                        // don't genererate normal action changelog/triggers/events
+                        $pastAction->disableBehavior('changelog');    
+                        $pastAction->disableBehavior('TagBehavior'); // no tags
+                        $pastAction->terminate = 'Yes';
+                        $pastAction->terminatedBy = Yii::app()->user->getName();
+                        $pastAction->terminateDate = time();
+                        $pastAction->save();
+                    }
+                }
+                              
+                // refresh the workflow status
+                $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);    
+                $terminated = true;
+
+                X2Flow::trigger('WorkflowTerminateStageTrigger',array(
+                    'workflow'=>$action->workflow,
+                    'model'=>$model,
+                    'workflowId'=>$action->workflow->id,
+                    'stageNumber'=>$stageNumber,
+                ));
+                
+                
+                if(!$workflowStatus['terminated'])
+                    X2Flow::trigger('WorkflowTerminateTrigger',array(
+                        'workflow'=>$action->workflow,
+                        'model'=>$model,
+                        'workflowId'=>$action->workflow->id
+                    ));
+
+        }
+        //AuxLib::debugLogR ((int) $completed);
+        return array ($terminated, $workflowStatus);
     }
 
     /**
@@ -1447,6 +1665,9 @@ class Workflow extends X2ActiveRecord {
                 // don't genererate normal action changelog/triggers/events
                 $action->disableBehavior('changelog');    
                 $action->disableBehavior('TagBehavior'); // no tags up in here
+                $action->terminate = 'No';
+                $action->terminateDate = null;
+                $action->terminatedBy = '';
                 $action->complete = 'No';
                 $action->completeDate = null;
                 $action->completedBy = '';
@@ -1546,6 +1767,11 @@ class Workflow extends X2ActiveRecord {
             //$trigger = 'WorkflowRevertStageTrigger';
             $event->type = 'workflow_revert';
             $changelog->newValue = 'Workflow Stage Reverted: '.$stageName;
+            
+        } elseif($changeType === 'terminate') {
+            //$trigger = 'WorkflowRevertStageTrigger';
+            $event->type = 'workflow_terminate';
+            $changelog->newValue = 'Workflow Stage Terminated: '.$stageName;
             
         } else {
             return;

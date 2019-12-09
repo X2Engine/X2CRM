@@ -1,4 +1,4 @@
-.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}.pseudo-link{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover{color:#006cfc}.opacity-hover{opacity:0.3}.opacity-hover:hover{opacity:1}/*!*********************************************************************************
+/***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
  * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
  * 
@@ -31,4 +31,1499 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/.profile-mobilePublisher,.profile-mobileCheckInPublisher{background:white}.profile-mobileActivity,.profile-mobileViewEvent,.profile-mobilePublisher,.profile-mobileCheckInPublisher{background:#fff}.profile-mobileActivity #header .post-event-button,.profile-mobileViewEvent #header .post-event-button,.profile-mobilePublisher #header .post-event-button,.profile-mobileCheckInPublisher #header .post-event-button{color:#fff;font-size:19px;padding:0 10px;cursor:pointer}.profile-mobileActivity #header .post-event-button.disabled,.profile-mobileViewEvent #header .post-event-button.disabled,.profile-mobilePublisher #header .post-event-button.disabled,.profile-mobileCheckInPublisher #header .post-event-button.disabled{color:#fff}.profile-mobileActivity .record-list-item,.profile-mobileViewEvent .record-list-item,.profile-mobilePublisher .record-list-item,.profile-mobileCheckInPublisher .record-list-item{background:white;padding:15px 0;cursor:default;overflow-y:hidden;height:auto;margin-bottom:10px;border-top:1px solid #E9E9E9;-webkit-box-shadow:0px 1px 2px #ececec;-moz-box-shadow:0px 1px 2px #ececec;-ms-box-shadow:0px 1px 2px #ececec;-o-box-shadow:0px 1px 2px #ececec;box-shadow:0px 1px 2px #ececec}.profile-mobileActivity .record-list-item>*:not(.event-attachments),.profile-mobileViewEvent .record-list-item>*:not(.event-attachments),.profile-mobilePublisher .record-list-item>*:not(.event-attachments),.profile-mobileCheckInPublisher .record-list-item>*:not(.event-attachments){padding-left:10px;padding-right:10px}.profile-mobileActivity .record-list-item.more-button,.profile-mobileViewEvent .record-list-item.more-button,.profile-mobilePublisher .record-list-item.more-button,.profile-mobileCheckInPublisher .record-list-item.more-button{cursor:pointer}.profile-mobileActivity .event-publisher,.profile-mobileViewEvent .event-publisher,.profile-mobilePublisher .event-publisher,.profile-mobileCheckInPublisher .event-publisher{background:white;padding:15px 10px;height:100%;position:relative}.profile-mobileActivity .event-publisher .avatar,.profile-mobileViewEvent .event-publisher .avatar,.profile-mobilePublisher .event-publisher .avatar,.profile-mobileCheckInPublisher .event-publisher .avatar{top:15px;left:10px;display:block;float:left;position:absolute}.profile-mobileActivity .event-publisher textarea.event-text-box,.profile-mobileViewEvent .event-publisher textarea.event-text-box,.profile-mobilePublisher .event-publisher textarea.event-text-box,.profile-mobileCheckInPublisher .event-publisher textarea.event-text-box{width:100%;margin-left:55px;margin-top:12px;padding:0;padding-right:65px;border:none}.profile-mobileActivity .event-publisher textarea.event-text-box-location,.profile-mobileViewEvent .event-publisher textarea.event-text-box-location,.profile-mobilePublisher .event-publisher textarea.event-text-box-location,.profile-mobileCheckInPublisher .event-publisher textarea.event-text-box-location{width:100%;margin-left:55px;margin-top:12px;padding:0;padding-right:65px;border:none}.profile-mobileActivity .event-publisher-dummy,.profile-mobileViewEvent .event-publisher-dummy,.profile-mobilePublisher .event-publisher-dummy,.profile-mobileCheckInPublisher .event-publisher-dummy{cursor:pointer}.profile-mobileActivity .event-publisher-dummy>*,.profile-mobileViewEvent .event-publisher-dummy>*,.profile-mobilePublisher .event-publisher-dummy>*,.profile-mobileCheckInPublisher .event-publisher-dummy>*{display:inline-block;vertical-align:top}.profile-mobileActivity .event-publisher-dummy .dummy-publisher-input,.profile-mobileViewEvent .event-publisher-dummy .dummy-publisher-input,.profile-mobilePublisher .event-publisher-dummy .dummy-publisher-input,.profile-mobileCheckInPublisher .event-publisher-dummy .dummy-publisher-input{line-height:50px;margin-left:10px;color:gray}.profile-mobileActivity .avatar .avatar-image,.profile-mobileViewEvent .avatar .avatar-image,.profile-mobilePublisher .avatar .avatar-image,.profile-mobileCheckInPublisher .avatar .avatar-image{border:1px solid #e4e4e4;border-radius:50%;width:45px;height:45px;line-height:45px;text-align:center;overflow:hidden}.profile-mobileActivity .avatar .avatar-image.default-avatar,.profile-mobileViewEvent .avatar .avatar-image.default-avatar,.profile-mobilePublisher .avatar .avatar-image.default-avatar,.profile-mobileCheckInPublisher .avatar .avatar-image.default-avatar{background:#E9E9E9;color:#bebebe}.profile-mobileActivity .event-view a,.profile-mobileActivity .activity-feed a,.profile-mobileViewEvent .event-view a,.profile-mobileViewEvent .activity-feed a,.profile-mobilePublisher .event-view a,.profile-mobilePublisher .activity-feed a,.profile-mobileCheckInPublisher .event-view a,.profile-mobileCheckInPublisher .activity-feed a{text-decoration:none}.profile-mobileActivity .event-view .record-list-item .event-author,.profile-mobileActivity .activity-feed .record-list-item .event-author,.profile-mobileViewEvent .event-view .record-list-item .event-author,.profile-mobileViewEvent .activity-feed .record-list-item .event-author,.profile-mobilePublisher .event-view .record-list-item .event-author,.profile-mobilePublisher .activity-feed .record-list-item .event-author,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author{margin-bottom:8px}.profile-mobileActivity .event-view .record-list-item .event-author>*,.profile-mobileActivity .activity-feed .record-list-item .event-author>*,.profile-mobileViewEvent .event-view .record-list-item .event-author>*,.profile-mobileViewEvent .activity-feed .record-list-item .event-author>*,.profile-mobilePublisher .event-view .record-list-item .event-author>*,.profile-mobilePublisher .activity-feed .record-list-item .event-author>*,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author>*,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author>*{display:inline-block;vertical-align:top}.profile-mobileActivity .event-view .record-list-item .event-author .author-name,.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name,.profile-mobileActivity .activity-feed .record-list-item .event-author .author-name,.profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name,.profile-mobileViewEvent .event-view .record-list-item .event-author .author-name,.profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .author-name,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name,.profile-mobilePublisher .event-view .record-list-item .event-author .author-name,.profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name,.profile-mobilePublisher .activity-feed .record-list-item .event-author .author-name,.profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .author-name,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .author-name,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name{line-height:45px;margin-left:10px}.profile-mobileActivity .event-view .record-list-item .event-author .author-name a,.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name a,.profile-mobileActivity .activity-feed .record-list-item .event-author .author-name a,.profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobileViewEvent .event-view .record-list-item .event-author .author-name a,.profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name a,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .author-name a,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobilePublisher .event-view .record-list-item .event-author .author-name a,.profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name a,.profile-mobilePublisher .activity-feed .record-list-item .event-author .author-name a,.profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .author-name a,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name a,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .author-name a,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name a{text-decoration:none;color:#0d0d0d}.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name a,.profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name a,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name a,.profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name a,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name a,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name a{color:gray}.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name::before,.profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name::before,.profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name::before,.profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name::before,.profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name::before,.profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name::before,.profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name::before,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name::before{content:'\0025B6';font-size:13px;color:#acacac;position:relative;top:-3px;margin-right:5px}.profile-mobileActivity .event-view .record-list-item .event-text,.profile-mobileActivity .activity-feed .record-list-item .event-text,.profile-mobileViewEvent .event-view .record-list-item .event-text,.profile-mobileViewEvent .activity-feed .record-list-item .event-text,.profile-mobilePublisher .event-view .record-list-item .event-text,.profile-mobilePublisher .activity-feed .record-list-item .event-text,.profile-mobileCheckInPublisher .event-view .record-list-item .event-text,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-text{margin-bottom:8px}.profile-mobileActivity .event-view .record-list-item .event-time,.profile-mobileActivity .activity-feed .record-list-item .event-time,.profile-mobileViewEvent .event-view .record-list-item .event-time,.profile-mobileViewEvent .activity-feed .record-list-item .event-time,.profile-mobilePublisher .event-view .record-list-item .event-time,.profile-mobilePublisher .activity-feed .record-list-item .event-time,.profile-mobileCheckInPublisher .event-view .record-list-item .event-time,.profile-mobileCheckInPublisher .activity-feed .record-list-item .event-time{color:gray}.profile-mobileActivity .event-view .record-list-item .bottom-bar>*,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar>*,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar>*,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar>*,.profile-mobilePublisher .event-view .record-list-item .bottom-bar>*,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar>*,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar>*,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar>*{display:inline-block}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls{float:right}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls>*,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls>*,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls>*,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls>*,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls>*,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls>*,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls>*,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls>*{display:inline-block;vertical-align:middle}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments{color:gray}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments>div,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments>div,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments>div,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments>div,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments>div,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments>div,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments>div,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments>div{vertical-align:middle;display:inline-block;width:25px;height:25px;line-height:25px;border:1px solid #e4e4e4;border-radius:50%;text-align:center;overflow:hidden;background:#E9E9E9;color:#bebebe}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments>div i,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments>div i,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments>div i,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments>div i,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments>div i,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments>div i,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments>div i,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments>div i{position:relative;top:-2px;left:1px}.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count,.profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comment-count,.profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count{margin-left:3px;font-size:14px;width:20px}.profile-mobileActivity .event-view .more-button,.profile-mobileActivity .activity-feed .more-button,.profile-mobileViewEvent .event-view .more-button,.profile-mobileViewEvent .activity-feed .more-button,.profile-mobilePublisher .event-view .more-button,.profile-mobilePublisher .activity-feed .more-button,.profile-mobileCheckInPublisher .event-view .more-button,.profile-mobileCheckInPublisher .activity-feed .more-button{margin-bottom:0px;border-bottom:none}.profile-mobileActivity .event-view .record-list-item,.profile-mobileViewEvent .event-view .record-list-item,.profile-mobilePublisher .event-view .record-list-item,.profile-mobileCheckInPublisher .event-view .record-list-item{-webkit-box-shadow:none;-moz-box-shadow:none;-ms-box-shadow:none;-o-box-shadow:none;box-shadow:none;border-bottom:1px solid #E9E9E9;border-top:none;margin-bottom:0}.profile-mobileActivity .event-view .comment-list-view .items .empty,.profile-mobileViewEvent .event-view .comment-list-view .items .empty,.profile-mobilePublisher .event-view .comment-list-view .items .empty,.profile-mobileCheckInPublisher .event-view .comment-list-view .items .empty{display:none}.profile-mobileActivity .event-view .comment-publisher form,.profile-mobileViewEvent .event-view .comment-publisher form,.profile-mobilePublisher .event-view .comment-publisher form,.profile-mobileCheckInPublisher .event-view .comment-publisher form{position:relative}.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button,.profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button,.profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button,.profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button{display:none !important;cursor:pointer;vertical-align:middle;float:left;position:relative;top:-4px;font-size:23px;margin-right:10px}.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button+.ui-input-text,.profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button+.ui-input-text,.profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text,.profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text{width:auto;overflow:hidden;margin-right:60px;border:none;line-height:normal}.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text input::-webkit-input-placeholder{font-size:16px}.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button+.ui-input-text input,.profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button+.ui-input-text input,.profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text input,.profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button+.ui-input-text input{padding-left:0;padding-right:0}.profile-mobileActivity .event-view .comment-publisher form .location-attach-button,.profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button,.profile-mobilePublisher .event-view .comment-publisher form .location-attach-button,.profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button{display:none !important;cursor:pointer;vertical-align:middle;float:left;position:relative;top:-4px;font-size:23px;margin-right:10px}.profile-mobileActivity .event-view .comment-publisher form .location-attach-button+.ui-input-text,.profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button+.ui-input-text,.profile-mobilePublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text,.profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text{width:auto;overflow:hidden;margin-right:60px;border:none;line-height:normal}.profile-mobileActivity .event-view .comment-publisher form .location-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobilePublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text input::-webkit-input-placeholder,.profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text input::-webkit-input-placeholder{font-size:16px}.profile-mobileActivity .event-view .comment-publisher form .location-attach-button+.ui-input-text input,.profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button+.ui-input-text input,.profile-mobilePublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text input,.profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button+.ui-input-text input{padding-left:0;padding-right:0}.profile-mobileActivity .event-view .comment-publisher form .submit-button,.profile-mobileViewEvent .event-view .comment-publisher form .submit-button,.profile-mobilePublisher .event-view .comment-publisher form .submit-button,.profile-mobileCheckInPublisher .event-view .comment-publisher form .submit-button{position:absolute;top:-4px;right:0;cursor:pointer;float:right;color:blue;padding:0 10px}
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***********************************************************************
+* animations 
+***********************************************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 175, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 180, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover {
+  color: #006cfc;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become transparent on mouseover
+***************************************/
+/* line 198, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 193, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***********************************************************************
+* animations 
+***********************************************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 175, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 180, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover {
+  color: #006cfc;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become transparent on mouseover
+***************************************/
+/* line 198, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 193, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***********************************************************************
+* animations 
+***********************************************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 175, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 180, ../../../../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover {
+  color: #006cfc;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become transparent on mouseover
+***************************************/
+/* line 198, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover {
+  opacity: 0.3;
+}
+/* line 193, ../../../../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover {
+  opacity: 1;
+}
+
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/*
+header
+*/
+/*
+list view
+*/
+/*
+@mixin photo-attachment {
+    .photo-attachment-container {
+        img {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
+@mixin audio-attachment {
+    .audio-attachment-container {
+        audio {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+
+@mixin video-attachment {
+    .video-attachment-container {
+        video {
+            max-width: 100%;
+            @media (min-width: 500px) {
+                max-width: 500px;
+            }
+        }
+    }
+}
+*/
+/*
+panel
+*/
+/*
+login
+*/
+/*
+forms
+*/
+/*
+users
+*/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/*!*********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/* line 54, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobilePublisher, .profile-mobileCheckInPublisher {
+  background: white;
+  /*.photo-attachments-container {
+      display: inline-block;
+      position: relative;
+      .photo-attachment {
+          max-width: 100%;
+          @media (min-width: 500px) {
+              max-width: 500px;
+          }
+          //max-height: 400px;
+          img {
+          }
+      }
+      .remove-attachment-button {
+          cursor: pointer;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          color: lighten(black,20%);
+          //border: 2px solid black;
+          text-align: center;
+          //border-radius: 50%;
+          //width: 20px;
+          //height: 20px;
+          line-height: 20px;
+      }
+  }
+  .audio-attachments-container {
+      display: inline-block;
+      position: relative;
+      .audio-attachment {
+          max-width: 100%;
+          @media (min-width: 500px) {
+              max-width: 500px;
+          }
+          //max-height: 400px;
+          img {
+          }
+      }
+      .remove-attachment-button {
+          cursor: pointer;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          color: lighten(black,20%);
+          //border: 2px solid black;
+          text-align: center;
+          //border-radius: 50%;
+          //width: 20px;
+          //height: 20px;
+          line-height: 20px;
+      }
+  }
+  .video-attachments-container {
+      display: inline-block;
+      position: relative;
+      .video-attachment {
+          max-width: 100%;
+          @media (min-width: 500px) {
+              max-width: 500px;
+          }
+          //max-height: 400px;
+          img {
+          }
+      }
+      .remove-attachment-button {
+          cursor: pointer;
+          position: absolute;
+          right: 10px;
+          top: 10px;
+          color: lighten(black,20%);
+          //border: 2px solid black;
+          text-align: center;
+          //border-radius: 50%;
+          //width: 20px;
+          //height: 20px;
+          line-height: 20px;
+      }
+  }*/
+}
+
+/* line 137, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity, .profile-mobileViewEvent, .profile-mobilePublisher, .profile-mobileCheckInPublisher {
+  background: white;
+}
+/* line 140, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity #header .post-event-button, .profile-mobileViewEvent #header .post-event-button, .profile-mobilePublisher #header .post-event-button, .profile-mobileCheckInPublisher #header .post-event-button {
+  color: white;
+  font-size: 19px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+/* line 94, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_baseStandards.scss */
+.profile-mobileActivity #header .post-event-button.disabled, .profile-mobileViewEvent #header .post-event-button.disabled, .profile-mobilePublisher #header .post-event-button.disabled, .profile-mobileCheckInPublisher #header .post-event-button.disabled {
+  color: white;
+}
+/* line 147, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .record-list-item, .profile-mobileViewEvent .record-list-item, .profile-mobilePublisher .record-list-item, .profile-mobileCheckInPublisher .record-list-item {
+  background: white;
+  padding: 15px 0;
+  cursor: default;
+  overflow-y: hidden;
+  height: auto;
+  margin-bottom: 10px;
+  border-top: 1px solid #E9E9E9;
+  -webkit-box-shadow: 0px 1px 2px #ececec;
+  -moz-box-shadow: 0px 1px 2px #ececec;
+  -ms-box-shadow: 0px 1px 2px #ececec;
+  -o-box-shadow: 0px 1px 2px #ececec;
+  box-shadow: 0px 1px 2px #ececec;
+}
+/* line 150, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .record-list-item > *:not(.event-attachments), .profile-mobileViewEvent .record-list-item > *:not(.event-attachments), .profile-mobilePublisher .record-list-item > *:not(.event-attachments), .profile-mobileCheckInPublisher .record-list-item > *:not(.event-attachments) {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+/* line 155, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .record-list-item.more-button, .profile-mobileViewEvent .record-list-item.more-button, .profile-mobilePublisher .record-list-item.more-button, .profile-mobileCheckInPublisher .record-list-item.more-button {
+  cursor: pointer;
+}
+/* line 165, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher, .profile-mobileViewEvent .event-publisher, .profile-mobilePublisher .event-publisher, .profile-mobileCheckInPublisher .event-publisher {
+  background: white;
+  padding: 15px 10px;
+  height: 100%;
+  position: relative;
+}
+/* line 170, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher .avatar, .profile-mobileViewEvent .event-publisher .avatar, .profile-mobilePublisher .event-publisher .avatar, .profile-mobileCheckInPublisher .event-publisher .avatar {
+  top: 15px;
+  left: 10px;
+  display: block;
+  float: left;
+  position: absolute;
+}
+/* line 177, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher textarea.event-text-box, .profile-mobileViewEvent .event-publisher textarea.event-text-box, .profile-mobilePublisher .event-publisher textarea.event-text-box, .profile-mobileCheckInPublisher .event-publisher textarea.event-text-box {
+  width: 100%;
+  margin-left: 55px;
+  margin-top: 12px;
+  padding: 0;
+  padding-right: 65px;
+  border: none;
+}
+/* line 185, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher textarea.event-text-box-location, .profile-mobileViewEvent .event-publisher textarea.event-text-box-location, .profile-mobilePublisher .event-publisher textarea.event-text-box-location, .profile-mobileCheckInPublisher .event-publisher textarea.event-text-box-location {
+  width: 100%;
+  margin-left: 55px;
+  margin-top: 12px;
+  padding: 0;
+  padding-right: 65px;
+  border: none;
+}
+/* line 195, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher-dummy, .profile-mobileViewEvent .event-publisher-dummy, .profile-mobilePublisher .event-publisher-dummy, .profile-mobileCheckInPublisher .event-publisher-dummy {
+  cursor: pointer;
+}
+/* line 197, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher-dummy > *, .profile-mobileViewEvent .event-publisher-dummy > *, .profile-mobilePublisher .event-publisher-dummy > *, .profile-mobileCheckInPublisher .event-publisher-dummy > * {
+  display: inline-block;
+  vertical-align: top;
+}
+/* line 201, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-publisher-dummy .dummy-publisher-input, .profile-mobileViewEvent .event-publisher-dummy .dummy-publisher-input, .profile-mobilePublisher .event-publisher-dummy .dummy-publisher-input, .profile-mobileCheckInPublisher .event-publisher-dummy .dummy-publisher-input {
+  line-height: 50px;
+  margin-left: 10px;
+  color: gray;
+}
+/* line 228, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_baseStandards.scss */
+.profile-mobileActivity .avatar .avatar-image, .profile-mobileViewEvent .avatar .avatar-image, .profile-mobilePublisher .avatar .avatar-image, .profile-mobileCheckInPublisher .avatar .avatar-image {
+  border: 1px solid #e4e4e4;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  line-height: 45px;
+  text-align: center;
+  overflow: hidden;
+}
+/* line 236, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_baseStandards.scss */
+.profile-mobileActivity .avatar .avatar-image.default-avatar, .profile-mobileViewEvent .avatar .avatar-image.default-avatar, .profile-mobilePublisher .avatar .avatar-image.default-avatar, .profile-mobileCheckInPublisher .avatar .avatar-image.default-avatar {
+  background: #E9E9E9;
+  color: #bebebe;
+}
+/* line 214, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view a, .profile-mobileActivity .activity-feed a, .profile-mobileViewEvent .event-view a, .profile-mobileViewEvent .activity-feed a, .profile-mobilePublisher .event-view a, .profile-mobilePublisher .activity-feed a, .profile-mobileCheckInPublisher .event-view a, .profile-mobileCheckInPublisher .activity-feed a {
+  text-decoration: none;
+}
+/* line 218, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author, .profile-mobileActivity .activity-feed .record-list-item .event-author, .profile-mobileViewEvent .event-view .record-list-item .event-author, .profile-mobileViewEvent .activity-feed .record-list-item .event-author, .profile-mobilePublisher .event-view .record-list-item .event-author, .profile-mobilePublisher .activity-feed .record-list-item .event-author, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author {
+  margin-bottom: 8px;
+}
+/* line 220, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author > *, .profile-mobileActivity .activity-feed .record-list-item .event-author > *, .profile-mobileViewEvent .event-view .record-list-item .event-author > *, .profile-mobileViewEvent .activity-feed .record-list-item .event-author > *, .profile-mobilePublisher .event-view .record-list-item .event-author > *, .profile-mobilePublisher .activity-feed .record-list-item .event-author > *, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author > *, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author > * {
+  display: inline-block;
+  vertical-align: top;
+}
+/* line 224, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author .author-name, .profile-mobileActivity .event-view .record-list-item .event-author .recipient-name, .profile-mobileActivity .activity-feed .record-list-item .event-author .author-name, .profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name, .profile-mobileViewEvent .event-view .record-list-item .event-author .author-name, .profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .author-name, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name, .profile-mobilePublisher .event-view .record-list-item .event-author .author-name, .profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name, .profile-mobilePublisher .activity-feed .record-list-item .event-author .author-name, .profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .author-name, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .author-name, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name {
+  line-height: 45px;
+  margin-left: 10px;
+}
+/* line 227, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author .author-name a, .profile-mobileActivity .event-view .record-list-item .event-author .recipient-name a, .profile-mobileActivity .activity-feed .record-list-item .event-author .author-name a, .profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobileViewEvent .event-view .record-list-item .event-author .author-name a, .profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name a, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .author-name a, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobilePublisher .event-view .record-list-item .event-author .author-name a, .profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name a, .profile-mobilePublisher .activity-feed .record-list-item .event-author .author-name a, .profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .author-name a, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name a, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .author-name a, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name a {
+  text-decoration: none;
+  color: #0d0d0d;
+}
+/* line 233, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name a, .profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name a, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name a, .profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name a, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name a, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name a {
+  color: gray;
+}
+/* line 236, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-author .recipient-name::before, .profile-mobileActivity .activity-feed .record-list-item .event-author .recipient-name::before, .profile-mobileViewEvent .event-view .record-list-item .event-author .recipient-name::before, .profile-mobileViewEvent .activity-feed .record-list-item .event-author .recipient-name::before, .profile-mobilePublisher .event-view .record-list-item .event-author .recipient-name::before, .profile-mobilePublisher .activity-feed .record-list-item .event-author .recipient-name::before, .profile-mobileCheckInPublisher .event-view .record-list-item .event-author .recipient-name::before, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-author .recipient-name::before {
+  content: '\0025B6';
+  font-size: 13px;
+  color: #acacac;
+  position: relative;
+  top: -3px;
+  margin-right: 5px;
+}
+/* line 246, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-text, .profile-mobileActivity .activity-feed .record-list-item .event-text, .profile-mobileViewEvent .event-view .record-list-item .event-text, .profile-mobileViewEvent .activity-feed .record-list-item .event-text, .profile-mobilePublisher .event-view .record-list-item .event-text, .profile-mobilePublisher .activity-feed .record-list-item .event-text, .profile-mobileCheckInPublisher .event-view .record-list-item .event-text, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-text {
+  margin-bottom: 8px;
+}
+/* line 249, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-time, .profile-mobileActivity .activity-feed .record-list-item .event-time, .profile-mobileViewEvent .event-view .record-list-item .event-time, .profile-mobileViewEvent .activity-feed .record-list-item .event-time, .profile-mobilePublisher .event-view .record-list-item .event-time, .profile-mobilePublisher .activity-feed .record-list-item .event-time, .profile-mobileCheckInPublisher .event-view .record-list-item .event-time, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-time {
+  color: gray;
+}
+/* line 252, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .event-attachments, .profile-mobileActivity .activity-feed .record-list-item .event-attachments, .profile-mobileViewEvent .event-view .record-list-item .event-attachments, .profile-mobileViewEvent .activity-feed .record-list-item .event-attachments, .profile-mobilePublisher .event-view .record-list-item .event-attachments, .profile-mobilePublisher .activity-feed .record-list-item .event-attachments, .profile-mobileCheckInPublisher .event-view .record-list-item .event-attachments, .profile-mobileCheckInPublisher .activity-feed .record-list-item .event-attachments {
+  /*@include photo-attachment;
+  @include audio-attachment;
+  @include video-attachment;*/
+}
+/* line 258, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar > *, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar > *, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar > *, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar > *, .profile-mobilePublisher .event-view .record-list-item .bottom-bar > *, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar > *, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar > *, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar > * {
+  display: inline-block;
+}
+/* line 261, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls {
+  float: right;
+}
+/* line 263, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls > *, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls > *, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls > *, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls > *, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls > *, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls > *, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls > *, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls > * {
+  display: inline-block;
+  vertical-align: middle;
+}
+/* line 267, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments {
+  color: gray;
+}
+/* line 271, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments > div, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments > div, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments > div, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments > div, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments > div, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments > div, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments > div, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments > div {
+  vertical-align: middle;
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
+  border: 1px solid #e4e4e4;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+  background: #E9E9E9;
+  color: #bebebe;
+}
+/* line 275, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comments > div i, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comments > div i, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comments > div i, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comments > div i, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comments > div i, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comments > div i, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comments > div i, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comments > div i {
+  position: relative;
+  top: -2px;
+  left: 1px;
+}
+/* line 282, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileActivity .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobileViewEvent .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileViewEvent .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobilePublisher .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobilePublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count, .profile-mobileCheckInPublisher .event-view .record-list-item .bottom-bar .controls .comment-count, .profile-mobileCheckInPublisher .activity-feed .record-list-item .bottom-bar .controls .comment-count {
+  margin-left: 3px;
+  font-size: 14px;
+  width: 20px;
+}
+/* line 290, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .more-button, .profile-mobileActivity .activity-feed .more-button, .profile-mobileViewEvent .event-view .more-button, .profile-mobileViewEvent .activity-feed .more-button, .profile-mobilePublisher .event-view .more-button, .profile-mobilePublisher .activity-feed .more-button, .profile-mobileCheckInPublisher .event-view .more-button, .profile-mobileCheckInPublisher .activity-feed .more-button {
+  margin-bottom: 0px;
+  border-bottom: none;
+}
+/* line 297, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .record-list-item, .profile-mobileViewEvent .event-view .record-list-item, .profile-mobilePublisher .event-view .record-list-item, .profile-mobileCheckInPublisher .event-view .record-list-item {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  -ms-box-shadow: none;
+  -o-box-shadow: none;
+  box-shadow: none;
+  border-bottom: 1px solid #E9E9E9;
+  border-top: none;
+  margin-bottom: 0;
+}
+/* line 305, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-list-view .items .empty, .profile-mobileViewEvent .event-view .comment-list-view .items .empty, .profile-mobilePublisher .event-view .comment-list-view .items .empty, .profile-mobileCheckInPublisher .event-view .comment-list-view .items .empty {
+  display: none;
+}
+/* line 311, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form, .profile-mobileViewEvent .event-view .comment-publisher form, .profile-mobilePublisher .event-view .comment-publisher form, .profile-mobileCheckInPublisher .event-view .comment-publisher form {
+  position: relative;
+  /*.photo-attachments-container {
+      .photo-attachment {
+      }
+  }
+  .audio-attachments-container {
+      .audio-attachment {
+      }
+  }
+  .video-attachments-container {
+      .video-attachment {
+      }
+  }*/
+}
+/* line 325, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button, .profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button, .profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button, .profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button {
+  display: none !important;
+  cursor: pointer;
+  vertical-align: middle;
+  float: left;
+  position: relative;
+  top: -4px;
+  font-size: 23px;
+  margin-right: 10px;
+}
+/* line 336, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button + .ui-input-text, .profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button + .ui-input-text, .profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text, .profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text {
+  width: auto;
+  overflow: hidden;
+  margin-right: 60px;
+  border: none;
+  line-height: normal;
+}
+/* line 340, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text input::-webkit-input-placeholder {
+  font-size: 16px;
+}
+/* line 345, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .photo-attach-button + .ui-input-text input, .profile-mobileViewEvent .event-view .comment-publisher form .photo-attach-button + .ui-input-text input, .profile-mobilePublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text input, .profile-mobileCheckInPublisher .event-view .comment-publisher form .photo-attach-button + .ui-input-text input {
+  padding-left: 0;
+  padding-right: 0;
+}
+/* line 351, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .location-attach-button, .profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button, .profile-mobilePublisher .event-view .comment-publisher form .location-attach-button, .profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button {
+  display: none !important;
+  cursor: pointer;
+  vertical-align: middle;
+  float: left;
+  position: relative;
+  top: -4px;
+  font-size: 23px;
+  margin-right: 10px;
+}
+/* line 362, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .location-attach-button + .ui-input-text, .profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button + .ui-input-text, .profile-mobilePublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text, .profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text {
+  width: auto;
+  overflow: hidden;
+  margin-right: 60px;
+  border: none;
+  line-height: normal;
+}
+/* line 366, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .location-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobilePublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text input::-webkit-input-placeholder, .profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text input::-webkit-input-placeholder {
+  font-size: 16px;
+}
+/* line 371, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .location-attach-button + .ui-input-text input, .profile-mobileViewEvent .event-view .comment-publisher form .location-attach-button + .ui-input-text input, .profile-mobilePublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text input, .profile-mobileCheckInPublisher .event-view .comment-publisher form .location-attach-button + .ui-input-text input {
+  padding-left: 0;
+  padding-right: 0;
+}
+/* line 377, ../../../../../../compass/protected/modules/mobile/assets/css/partials/_activityFeed.scss */
+.profile-mobileActivity .event-view .comment-publisher form .submit-button, .profile-mobileViewEvent .event-view .comment-publisher form .submit-button, .profile-mobilePublisher .event-view .comment-publisher form .submit-button, .profile-mobileCheckInPublisher .event-view .comment-publisher form .submit-button {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  cursor: pointer;
+  float: right;
+  color: blue;
+  padding: 0 10px;
+}

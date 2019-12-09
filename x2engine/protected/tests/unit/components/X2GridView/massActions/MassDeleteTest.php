@@ -127,6 +127,7 @@ class MassDeleteTest extends X2DbTestCase {
 
     /**
      * Attempt to super mass delete range of records in fixture file
+     * @runInSeparateProcess
      */
     public function testSuperExecute () {
         $_SESSION = array ();
@@ -190,6 +191,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteWithFiltersAndSortOrder () {
         $_SESSION = array ();
@@ -259,6 +261,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteBatchSize () {
         Yii::app()->settings->massActionsBatchSize = 100;
@@ -338,6 +341,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteSmallBatchSize () {
         $batchSize = 7;

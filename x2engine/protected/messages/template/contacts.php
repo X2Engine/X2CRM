@@ -82,4 +82,7 @@
   'Hide Directions' => '',
   'Clear Route' => '',
   'View Contact Map' => '',
+  'Platform' => '',
+  'Browser' => '',
+  'Browser Version' => '',
 );

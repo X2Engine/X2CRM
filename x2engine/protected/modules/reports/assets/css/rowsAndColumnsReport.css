@@ -31,4 +31,134 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#content{border:none !important;padding-bottom:none !important}#content-container-inner{border:none !important}#report-container{margin-top:5px}#report-settings>.x2-pill-box>.x2-pill.sort-by-pill>select{margin:0;font-size:10px;margin-left:6px}#order-by-pill-box{min-height:32px}#aggregates-pill-box{min-height:32px}#aggregates-pill-box .aggregate-fn-checkboxes-container{margin-left:5px;display:inline-block}#aggregates-pill-box .aggregate-fn-checkboxes-container>input{position:relative;top:3px;margin-left:2px;margin-right:3px;margin-top:0;margin-bottom:0}#aggregates-pill-box span.aggregate-fn-checkboxes-container>label{display:inline-block;position:relative;top:-1px}ul.column-selector>li.column-options-group-header{background:#e2e2e2;margin-top:5px;margin-bottom:3px;border-bottom:1px solid #d8d8d8}ul.column-selector>li.column-options-group-header:hover{background:#e2e2e2;margin-top:5px;margin-bottom:3px;border-bottom:1px solid #d8d8d8}ul.column-selector>li.associated-attr-option>input{margin-left:14px}#report-container .sort-link{display:inline-block}#report-container .header-options-dropdown-button{visibility:hidden;margin-right:0;height:14px;width:16px;padding:0;display:inline-block}#report-container th:hover>.header-options-dropdown-button{visibility:visible}#report-container ul.header-options-dropdown{display:none;overflow-y:hidden}#report-container .group-header{background:#f4f4f4;padding:3px 5px 4px 5px;border-bottom:1px solid #cfcfcf}#report-container .group-header .attributes-row{margin-bottom:2px}#report-container .grid-report-items tr:last-child>.group-header{border-bottom:none}
+ **********************************************************************************/
+/* line 24, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 41, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#content {
+  border: none !important;
+  padding-bottom: none !important;
+}
+
+/* line 47, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#content-container-inner {
+  border: none !important;
+}
+
+/* line 29, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 53, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container {
+  margin-top: 5px;
+}
+
+/* line 33, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 59, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-settings > .x2-pill-box > .x2-pill.sort-by-pill > select {
+  margin: 0;
+  font-size: 10px;
+  margin-left: 6px;
+}
+
+/* line 39, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 67, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#order-by-pill-box {
+  min-height: 32px;
+}
+
+/* line 43, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 73, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#aggregates-pill-box {
+  min-height: 32px;
+}
+/* line 75, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#aggregates-pill-box .aggregate-fn-checkboxes-container {
+  margin-left: 5px;
+  display: inline-block;
+}
+/* line 78, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#aggregates-pill-box .aggregate-fn-checkboxes-container > input {
+  position: relative;
+  top: 3px;
+  margin-left: 2px;
+  margin-right: 3px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/* line 87, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#aggregates-pill-box span.aggregate-fn-checkboxes-container > label {
+  display: inline-block;
+  position: relative;
+  top: -1px;
+}
+
+/* line 45, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 48, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 57, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/***********************************************************************
+* Grid View
+***********************************************************************/
+/* line 69, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 106, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+ul.column-selector > li.column-options-group-header {
+  background: #e2e2e2;
+  margin-top: 5px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #d8d8d8;
+}
+/* line 111, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+ul.column-selector > li.column-options-group-header:hover {
+  background: #e2e2e2;
+  margin-top: 5px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #d8d8d8;
+}
+/* line 118, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+ul.column-selector > li.associated-attr-option > input {
+  margin-left: 14px;
+}
+
+/* line 74, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 81, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 87, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 130, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container .sort-link {
+  display: inline-block;
+}
+/* line 133, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container .header-options-dropdown-button {
+  visibility: hidden;
+  margin-right: 0;
+  height: 14px;
+  width: 16px;
+  padding: 0;
+  display: inline-block;
+}
+/* line 141, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container th:hover > .header-options-dropdown-button {
+  visibility: visible;
+}
+/* line 144, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container ul.header-options-dropdown {
+  display: none;
+  overflow-y: hidden;
+}
+/* line 148, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container .group-header {
+  background: #f4f4f4;
+  padding: 3px 5px 4px 5px;
+  border-bottom: 1px solid #cfcfcf;
+}
+/* line 152, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container .group-header .attributes-row {
+  margin-bottom: 2px;
+}
+/* line 156, ../../../../../compass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+#report-container .grid-report-items tr:last-child > .group-header {
+  border-bottom: none;
+}
+
+/* line 90, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 98, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 101, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 105, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 109, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */
+/* line 113, ../../../../../compass/sass/protected/modules/reports/assets/css/rowsAndColumnsReport.scss */

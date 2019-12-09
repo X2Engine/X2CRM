@@ -19,7 +19,7 @@ CKEDITOR.editorConfig = function(config)
 	config.resize_enabled = true;
 	config.removePlugins = 'autogrow,showblocks,elementspath,liststyle,tabletools,contextmenu';
 	
-	config.extraPlugins = 'insertattributes,confighelper,mediaSelector';
+	config.extraPlugins = 'insertattributes,confighelper,mediaSelector,sharedspace';
      
     
     config.disableNativeSpellChecker = false; // allow use of browser's native spellchecker
@@ -68,6 +68,17 @@ CKEDITOR.editorConfig = function(config)
 	];
 
     
-    
-	
+
+    config.toolbar_MyGrapesToolbar = [
+        {name: 'insertAttributes',items:['Attribute']},
+        {name: 'clipboard',items: ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo']},
+        {name: 'links',items: ['Link','Unlink','Anchor']},
+        {name: 'insert',items: ['Table','HorizontalRule','SpecialChar']},
+        {name: 'colors',items: ['TextColor','BGColor']},
+        '/',
+        {name: 'basicstyles',items: ['Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat']},
+        {name: 'styles',items: ['Font','FontSize']},
+        {name: 'paragraph',items: ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock']}
+    ];	
+
 };

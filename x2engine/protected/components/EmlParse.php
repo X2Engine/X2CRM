@@ -254,7 +254,7 @@ class EmlParse extends PlancakeEmailParser {
      * @throws Exception 
      */
     public function getFrom(){
-        if((!isset($this->rawFields['from'])) || (!count($this->rawFields['from'])))
+        if((!isset($this->rawFields['from'])) || (!isset($this->rawFields['from'])))
             throw new Exception("Couldn't find the sender of the email");
         else{
             $from = explode('<', $this->rawFields['from']);

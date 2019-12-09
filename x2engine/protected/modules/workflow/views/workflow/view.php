@@ -299,7 +299,7 @@ $this->setPageTitle(Yii::t('workflow', 'View {process}', array(
 )));
 
 $menuOptions = array(
-    'index', 'create', 'edit', 'funnel', 'pipeline', 'delete',
+    'index', 'create', 'edit', 'funnel', 'pipeline', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model);
 
