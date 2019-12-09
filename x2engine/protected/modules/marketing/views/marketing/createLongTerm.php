@@ -42,7 +42,6 @@ Tours::loadTips('marketing.create');
 $this->pageTitle = Yii::t('marketing','Long Term Campaign');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead', 'webtracker', 'x2flow',
-    /* x2entstart */ 'A/B-Campaigns', 'Long-Term-Campaigns', /*x2entend */
 );
 
 $plaOptions = array(

@@ -76,14 +76,15 @@ $errorLightRed: rgb(255, 238, 238);
 * Greens 
 ***********************************************************************/
 $highlightGreen: #01b701;
-$selectionGreen: mix(white, $highlightGreen, 52%); 
+$selectionGreen: mix(white, $highlightGreen, 52%);
+$lightPastelGreen: #e7fbdd;
 
 
 /***********************************************************************
 * This section is made to correspond with the theme keys in ThemeGenerator
 ***********************************************************************/
 
-$background: white;
+$background: #EFF3F5;
 $content: white;
 $text: $nearBlack;
 $link: $darkBlue;

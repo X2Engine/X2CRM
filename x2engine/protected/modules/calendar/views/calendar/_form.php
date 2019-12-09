@@ -101,28 +101,22 @@ $users = array_map (array('CHtml', 'encode'), $users);
     </div>
     <?php
     //dropdown to pick either google or Outlook. Can't do both.
-    if( $googleIntegration && $outlookIntegration ){
-        if($client->getAccessToken() && $clientOutlook->getAccessToken()){
+    if(($googleIntegration && $outlookIntegration) && ($client->getAccessToken() && $clientOutlook->getAccessToken())){
             echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('google' => 'Google Calendar', 'outlook' => 'Outlook Calendar');
             echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        }
-    }elseif($googleIntegration){
-        if($client->getAccessToken()){
+    }elseif($googleIntegration && $client->getAccessToken()){
         echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('google' => 'Google Calendar');
-            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration'))); 
-        }    
-    }elseif($outlookIntegration){
-        if($clientOutlook->getAccessToken()){
+            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
+    }elseif($outlookIntegration && $clientOutlook->getAccessToken()){
             echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('outlook' => 'Outlook Calendar');
             echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        } 
-    }     
+    }
     ?>
     <?php
     //google Version

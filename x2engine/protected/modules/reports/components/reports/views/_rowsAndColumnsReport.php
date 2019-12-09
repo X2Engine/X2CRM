@@ -37,8 +37,6 @@
 
 
 
-
-
 $this->widget('RowsAndColumnsReportGridView', array_merge (
     $gridViewParams, 
     array(

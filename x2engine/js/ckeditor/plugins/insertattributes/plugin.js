@@ -39,8 +39,7 @@
 CKEDITOR.plugins.add('insertattributes',{
 	requires:['richcombo'],
 	init:function(editor) {
-
-		if(editor.config.insertableAttributes.length < 1)
+		if(editor.config.insertableAttributes && editor.config.insertableAttributes.length < 1)
 			return;
 
 		editor.addCommand('insertAttribute',{

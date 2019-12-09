@@ -216,7 +216,7 @@ class MobileController extends X2Controller {
      */
     public function actionIndex() {
         $user = Yii::app()->user;
-        if ($user == null || $user->isGuest)
+        if ($user == null || $user->isLoggedOut)
             $this->redirect($this->createAbsoluteUrl('login'));
         else
             $this->redirect($this->createAbsoluteUrl('/profile/mobileActivity'));
@@ -275,7 +275,7 @@ class MobileController extends X2Controller {
      * Displays the login page
      */
     public function actionLogin() {
-        if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isInitialized && !Yii::app()->user->isLoggedOut) {
             $this->redirect($this->createAbsoluteUrl('home'));
             return;
         }

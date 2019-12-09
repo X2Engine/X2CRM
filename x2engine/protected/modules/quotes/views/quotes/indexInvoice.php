@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'invoices', 'create',
+    'index', 'invoices', 'create','helpGuide',
 );
 $this->insertMenu($menuOptions);
 

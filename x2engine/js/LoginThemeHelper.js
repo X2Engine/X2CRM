@@ -207,6 +207,11 @@ x2.LoginThemeHelper = (function(){
 	LoginThemeHelper.prototype.setUpClickBehavior = function(){
 		var that = this;
 
+		$('#signin-button').click( function() {
+                        this.disabled = true;
+                        this.form.submit();
+                });
+
 		$('#dark-theme-button').click( function(e) {
 			e.preventDefault();
 			that.element$.slideToggle('fast');

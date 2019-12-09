@@ -60,6 +60,7 @@ function RelationshipsGraph (argsDict) {
     this._svg = null;
     this._forceLayout = null;
     this._zoom = null;
+    this._scale = null;
     this._toolbar$ = $('#relationships-graph-toolbar');
     this._graphContainer$ = $('#relationships-graph-container');
     this._addNodeBox$ = this._toolbar$.find ('.add-node-box');
@@ -125,9 +126,16 @@ RelationshipsGraph.prototype._getRecordData = function (type, id, callback, erro
  */
 RelationshipsGraph.prototype._positionLabel = function (node) {
     node = d3.select (node);
-    var translationVec = this._zoom.translate ();
-    var nodeX = translationVec[0] + node.attr ('cx') * this._zoom.scale ();
-    var nodeY = translationVec[1] + node.attr ('cy') * this._zoom.scale ();
+    var scale = 1;
+    var translationVec = (d3.select(".g-graph-container").attr("transform"));
+    if(!translationVec)
+       translationVec = [0,0];  
+    else{
+        scale = translationVec.substring(translationVec.indexOf("scale(")+6, translationVec.indexOf(")", translationVec.split(")", 2).join(")").length));
+        translationVec = translationVec.substring(translationVec.indexOf("(")+1, translationVec.indexOf(")")).split(",");
+    }
+    var nodeX = Number(translationVec[0]) + node.attr ('cx') * scale ;
+    var nodeY = Number(translationVec[1]) + node.attr ('cy') * scale ;
     return 'translate(' + Math.floor (nodeX) + ',' + Math.floor (nodeY) + ')';
 
 };
@@ -164,14 +172,14 @@ RelationshipsGraph.prototype._addNodeLabel = function (node, me, force) {
         .on ('click', function () {
              var key = d3.select (this).attr ('id');
              var nodeIndex = that.nodeUidToIndex[key];
-             d3.select (d3.selectAll ('.node')[0][nodeIndex])
+             d3.select (d3.selectAll ('.node')['_groups'][0][nodeIndex])
                 .each (function () {
                     that._clickNode (that.nodes[nodeIndex], this);
                 })
                 ;
         })
         .attr ('transform', function () {
-            return that._positionLabel (d3.selectAll ('.node')[0][nodeIndex]);
+            return that._positionLabel (d3.selectAll ('.node')['_groups'][0][nodeIndex]);
         })
         ;
     if (me) {
@@ -234,17 +242,14 @@ RelationshipsGraph.prototype._addNodeLabels = function (me, neighbors, clickShif
  * Add a class to the specified svg element 
  */
 RelationshipsGraph.prototype._addClass = function (elem, classToAdd) {
-    d3.select (elem).attr ('class', d3.select (elem).attr ('class') + ' ' + classToAdd);
+    d3.select (elem).classed (classToAdd,true);
 };
 
 /**
  * Remove class from all elements corresponding to d3 selector 
  */
 RelationshipsGraph.prototype._removeClass = function (selector, classToRemove) {
-    selector.attr ('class', function () {
-        var regex = new RegExp (classToRemove);
-        return d3.select (this).attr ('class').replace (regex, '');
-    });
+    selector.classed (classToRemove, false);
 };
 
 /**
@@ -270,7 +275,7 @@ RelationshipsGraph.prototype._clearActive = function (clearPrimary) {
  */
 RelationshipsGraph.prototype._getSvgNode = function (uid) {
     var nodeIndex = this.nodeUidToIndex[uid];
-    return d3.selectAll ('.node')[0][nodeIndex];
+    return d3.selectAll ('.node')['_groups'][0][nodeIndex];
 };
 
 /**
@@ -278,7 +283,7 @@ RelationshipsGraph.prototype._getSvgNode = function (uid) {
  */
 RelationshipsGraph.prototype._getSvgEdge = function (uidA, uidB) {
     var edgeIndex = this.nodeUidsToEdgeIndex[uidA + uidB];
-    return d3.selectAll ('.edge')[0][edgeIndex];
+    return d3.selectAll ('.edge')['_groups'][0][edgeIndex];
 };
 
 /**
@@ -287,7 +292,7 @@ RelationshipsGraph.prototype._getSvgEdge = function (uidA, uidB) {
 RelationshipsGraph.prototype._clickEdge = function (data, elem) {
     var that = this;
     // if shift isn't pressed or previous selection wasn't an edge
-    if (this._svg.selectAll ('.active-primary')[0].length || !this._shiftPressed) {
+    if (this._svg.selectAll ('.active-primary')['_groups'][0].length || !this._shiftPressed) {
         this._clearActive ();
         this._removeAllLabels ();
     }
@@ -334,8 +339,8 @@ RelationshipsGraph.prototype._clickNode = function (data, elem) {
         }
     }
 
-    if (this._svg.selectAll ('circle.active-primary')[0].length > 1 &&
-        this._svg.selectAll ('circle.active-primary')[0].length < 5) {
+    if (this._svg.selectAll ('circle.active-primary')['_groups'][0].length > 1 &&
+        this._svg.selectAll ('circle.active-primary')['_groups'][0].length < 5) {
 
         this._toolbar$.find ('.connect-nodes-button').removeClass ('disabled');
     } else {
@@ -493,37 +498,42 @@ RelationshipsGraph.prototype._initDataPositions = function () {
  */
 RelationshipsGraph.prototype._buildGraph = function () {
     var that = this;
-    this._svg = d3.select ('#content .relationships-graph');
+    this._svg = d3.select ('#content .relationships-graph')
+            .attr('width', this._graphContainer$.width ())
+            .attr('height', this._graphContainer$.height ());
 
+    //set scale 
+    this._scale = 1;
     // append inner container used for panning and zooming
-    this._gGraphContainer = this._svg.append ('g').attr ('class', 'g-graph-container');
+    this._gGraphContainer = this._svg.append ('g').attr ("class", "g-graph-container");
     this._edgeContainer = this._gGraphContainer.append ('g');
     this._nodeContainer = this._gGraphContainer.append ('g');
 
     // set up initial layout parameters
-    this._forceLayout = d3.layout.force ()
-        .nodes (this.nodes)
-        .links (this.edges)
-        .linkStrength (function (link) {
-            //if (link.target.type === '__label') return 1;
+    this._forceLayout = d3.forceSimulation (this.nodes)
+        .force('collision', d3.forceCollide().radius(function(d) {
+            return d.radius * 2;
+    }));
+    this._forceLayout.force("link", d3.forceLink().links(this.edges));
+    this._forceLayout.force('center', d3.forceCenter(this._graphContainer$.width () / 2, this._graphContainer$.height () / 2));
+    this._forceLayout.force("link").strength(function (link) {
+            if (link.target.type === '__label') return 1;
             return 0.7;
-        })
-        //.friction(0.9)
-        .distance (function (link) {
+         });
+    //this._forceLayout.velocityDecay(0.9);
+    console.log(this.nodes);
+    console.log(this.edges);
+    this._forceLayout.force("link").distance (function (link) {
             // link distance relative to average degree of nodes
             return 60 + 220 * (
                 ((that._degrees[link.source.type + link.source.id] +
                   that._degrees[link.target.type + link.target.id]) / 2) / that._maxDegree);
-        })
-        .charge (function (d) {
+        });
+    this._forceLayout.force("charge", function (d) {
             // charge relative to node degree
-            return -330 - 590 * (that._degrees[d.type + d.id] / that._maxDegree); 
-        })
-//        .gravity(0.1)
-        //.theta(0.1)
-        //.alpha(0.1)
-        .size ([this._graphContainer$.width (), this._graphContainer$.height ()])
-        .start ();
+            return -330 - 590 * (that._degrees[d.type + d.id] / that._maxDegree);
+        });
+
 
     //this._initDataPositions ();
     that._refreshGraphEntities ();
@@ -540,34 +550,19 @@ RelationshipsGraph.prototype._buildGraph = function () {
         that._forceLayout.tick (); 
     }
     that._refreshGraphEntityPositions ();
-    that._forceLayout.stop ();
-
+    
     // set up force layout animation
     this._forceLayout.on ('tick', function () {
         that._refreshGraphEntityPositions ();
     });
-
+    
+    
+    
+    
+    that._forceLayout.stop ();
     // set up zooming and panning
     var ignoreClick = false; // used to prevent panning from triggering a click event
     this._prevZoomTranslate = null;
-    this._zoom = d3.behavior.zoom ()
-        .on ('zoomstart', function () {
-             //console.log ('zoomstart');
-        })
-        .on ('zoomend', function () {
-             //console.log ('zoomend');
-        })
-        .on ('zoom', function () {
-            ignoreClick = true;
-            if (!that._draggingNode) {
-                that._positionGraphContainer ();
-            } else if (that._prevZoomTranslate) { // cancel zoom, restore previous transform
-                that._zoom.translate (that._prevZoomTranslate);
-            }
-            that._prevZoomTranslate = that._zoom.translate ();
-        })
-        ;
-    this._zoom (that._svg);
 
     // deselect nodes when negative space is clicked
     this._svg.on ('click', function () {
@@ -578,10 +573,61 @@ RelationshipsGraph.prototype._buildGraph = function () {
         that._clearActive ();
         that._removeAllLabels ();
     });
+    
 
+    
+    //add zoom capabilities 
+    var zoom_handler = d3.zoom()
+        .on("zoom", zoom_actions);
+
+    zoom_handler(this._svg);
+    
+    //Zoom functions 
+    function zoom_actions(){
+        d3.select(".g-graph-container").attr("transform", d3.event.transform);
+        that._refreshLabelsPositions ();
+    }
     // center graph container on node given initial focus
-    this._centerNode (this.initialFocus[0] + this.initialFocus[1]);
+    //this._centerNode (this.initialFocus[0] + this.initialFocus[1]);
+    var dragDrop = d3.drag()
+  .on('start', node => {
+    node.fx = node.x
+    node.fy = node.y
+  })
+  .on('drag', node => {
+    //this._forceLayout.alphaTarget(0.7).restart()
+    node.fx = d3.event.x
+    node.fy = d3.event.y
+  })
+  .on('end', node => {
+    //if (!d3.event.active) {
+    //  this._forceLayout.alphaTarget(0)
+    //}
+    node.fx = null
+    node.fy = null
+  });
+  d3.selectAll("circle").call(dragDrop);
+
+    
 };
+
+RelationshipsGraph.prototype._refreshLabelsPositions = function () {
+    var that = this;
+    that.svgNodes
+        .each (function (d) {
+            // reposition label
+            d3.select ('#' + d.type + d.id)
+                .attr ('transform', (function (node) {
+                    return function () {
+                        return that._positionLabel (node);
+                    };
+                }) (this))
+            ;
+        });
+    ;
+}
+
+
 
 /**
  * Update position of svg objects using positions of d3 node and edge data
@@ -636,7 +682,7 @@ RelationshipsGraph.prototype._positionGraphContainer = function () {
         .attr (
             'transform', 
             'translate(' + that._zoom.translate () + ') ' +
-            'scale(' + that._zoom.scale () + ')'
+            'scale(' + that._scale () + ')'
         )
         ;
     // reposition labels
@@ -644,7 +690,7 @@ RelationshipsGraph.prototype._positionGraphContainer = function () {
         .attr ('transform', function () {
             var key = d3.select (this).attr ('id');
             var nodeIndex = that.nodeUidToIndex[key];
-            var node = d3.selectAll ('.node')[0][nodeIndex];
+            var node = d3.selectAll ('.node')['_groups'][0][nodeIndex];
             return that._positionLabel (node);
         })
         ;
@@ -656,11 +702,11 @@ RelationshipsGraph.prototype._positionGraphContainer = function () {
 RelationshipsGraph.prototype._centerNode = function (uid) {
     var node = d3.select (this._getSvgNode (uid));
     if (node.empty ()) return;
-    this._zoom.scale (this.inline ? 1 : 1.5);
+    this._zoom.scaleExtent (this.inline ? 1 : 1.5);
     this._zoom.translate ([
-        -(this._zoom.scale () * parseFloat (node.attr ('cx'))) + 
+        -(this._scale  * parseFloat (node.attr ('cx'))) + 
         this._graphContainer$.width () / 2, 
-        -(this._zoom.scale () * parseFloat (node.attr ('cy'))) + 
+        -(this._scale  * parseFloat (node.attr ('cy'))) + 
             this._graphContainer$.height () / 2
     ]);
     this._positionGraphContainer ();
@@ -820,17 +866,17 @@ RelationshipsGraph.prototype._toggleSimulationStartStopButton = function (showSt
 
 RelationshipsGraph.prototype._start = function () {
     var that = this;
-    that._forceLayout.start ();
-    that._svg.selectAll ('.node')
-        .call (that._forceLayout.drag)
-        ;
+    that._forceLayout.alpha(1).restart();
+    //that._svg.selectAll ('.node')
+    //    .call (that._forceLayout.drag)
+    //    ;
     that._toggleSimulationStartStopButton (false);
 };
 
 RelationshipsGraph.prototype._clickNodeWithUid = function (uid) {
     var that = this;
     var nodeIndex = that.nodeUidToIndex[uid];
-    d3.select (d3.selectAll ('.node')[0][nodeIndex]).each (function (d) {
+    d3.select (d3.selectAll ('.node')['_groups'][0][nodeIndex]).each (function (d) {
         that._clickNode (d, this);
     });
 };
@@ -897,11 +943,11 @@ RelationshipsGraph.prototype._setUpToolbar = function () {
     this._toolbar$.find ('.stop-animation-button').click (function () {
         that._forceLayout.stop ();
         // remove dragging event listeners
-        that._svg.selectAll ('.node')
-            .call (function () {
-                this.on ('mousedown.drag', null).on ('touchstart.drag', null) 
-            })
-            ;
+        //that._svg.selectAll ('.node')
+        //    .call (function () {
+        //        this.on ('mousedown.drag', null).on ('touchstart.drag', null) 
+        //    })
+        //    ;
         that._toggleSimulationStartStopButton (true);
     });
 
@@ -930,7 +976,7 @@ RelationshipsGraph.prototype._setUpToolbar = function () {
         $(this).next ().show ();
     });
     this._toolbar$.find ('.hide-labels-button').click (function () {
-        that._addClass (that._svg[0][0], 'hide-labels');
+        that._addClass (".relationships-graph", 'hide-labels');
         $(this).hide ();
         $(this).prev ().show ();
     });
@@ -994,11 +1040,12 @@ RelationshipsGraph.prototype._setUpToolbar = function () {
 
 RelationshipsGraph.prototype._adjustZoom = function (x, y, scale) {
     var that = this;
-    var translate = that._zoom.translate ();
-    translate[0] += x;
-    translate[1] += y;
-    that._zoom.scale (that._zoom.scale () + scale);
-    that._zoom.translate (translate);
+    //var translate = that._zoom.translate ();
+    d3.select(that).attr("cx", d3.zoomIdentity.x = d3.zoomIdentity.x + x).attr("cy", d3.zoomIdentity.y = d3.zoomIdentity.y + y);
+    //translate[0] += x;
+    //translate[1] += y;
+    that._scale (that._scale + scale);
+    //that._zoom.translate (translate);
     that._positionGraphContainer ();
 };
 
@@ -1047,7 +1094,7 @@ RelationshipsGraph.prototype._provideInitialFocus = function () {
     // look up node index by uid, locate the node, and then trigger the click handler
     var nodeUid = this.initialFocus[0] + this.initialFocus[1];
     var nodeIndex = this.nodeUidToIndex[nodeUid];
-    d3.select (d3.selectAll ('.node')[0][nodeIndex]).each (function (d) {
+    d3.select (d3.selectAll ('.node')['_groups'][0][nodeIndex]).each (function (d) {
         that._clickNode (d, this);
     });
 };

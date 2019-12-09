@@ -41,7 +41,7 @@ $this->pageTitle = Yii::t('marketing','Campaigns');
 $menuOptions = array(
     'all', 'create', 'lists', 'import', 'export', 'newsletters', 'weblead', 'lists',
     
-    'webtracker', 'x2flow', 
+    'webtracker', 'x2flow', 'helpGuide',
 );
 
 $plaOptions = array(

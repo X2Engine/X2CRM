@@ -50,7 +50,8 @@ class ScatterPlotWidget extends DataWidget {
         self::$_JSONPropertiesStructure = array_merge (
             parent::getJSONPropertiesStructure (),
             array (
-                'grid' => true
+                'grid' => true,
+                'displayType' => 'scatter'
             )
         );
         return self::$_JSONPropertiesStructure;
@@ -191,8 +192,30 @@ class ScatterPlotWidget extends DataWidget {
                     'class' => 'fa fa-arrows',
                     'title' => Yii::t('charts', 'Toggle Grid')
                 )
-            )
+            ),
+            array(
+                array(
+                   'class' => 'spacer',
+                )
+            ),
+            self::displayTypeItems()
         );
+    }
+
+    /**
+     * Menu options for the chart parameter displayType
+     */
+    private static function displayTypeItems(){
+        return array( 
+            array( 
+                'id' => 'scatter',
+                'class' => 'display-type fa fa-dot-circle-o',
+                'title' => Yii::t('charts', 'Scatter Plot') ),
+            array( 
+                'id' => 'bubble',
+                'class' => 'display-type fa fa-circle-o',
+                'title' => Yii::t('charts', 'Bubble Chart') ),
+            );
     }
 
 }

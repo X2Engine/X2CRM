@@ -48,7 +48,7 @@ $authParams['assignedTo'] = $model->assignedTo;
 
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'delete', 'attach', 'quotes',
-    'convertToContact', 'convert', 'print', 'editLayout',
+    'convertToContact', 'convert', 'print', 'editLayout','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
@@ -113,6 +113,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
     $this->widget('InlineEmailForm', array(
         'attributes' => array(
+            'to' => '"' . $model->name . '" <' . $model->email . '>',
             'modelName' => 'X2Leads',
             'modelId' => $model->id,
             'targetModel' => $model,

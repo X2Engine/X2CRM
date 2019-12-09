@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS CKEditor</title>
+    <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script src="node_modules/ckeditor/ckeditor.js"></script>
+    <script src="dist/grapesjs-plugin-ckeditor.min.js"></script>
+    <style>
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+      }
+      .cke_chrome {
+        border: none !important;
+      }
+      .cke_toolgroup {
+        border: none !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="gjs" style="height:0px; overflow:hidden">
+      <div class="cont">
+        <div class="card">
+          <h1 class="card-title">Title Heading</h1>
+          <p class="card-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+            sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <div class="card">
+          <h1 class="card-title">Title Heading 2</h1>
+          <p class="card-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+            sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+        <div class="card">
+          <h1 class="card-title">Title Heading 3</h1>
+          <p class="card-content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+            sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+      </div>
+      <style>
+        .cont {
+            background-color: #f5f8fa;
+            padding: 100px 10px;
+        }
+        .card {
+          font-family: Helvetica, serif;
+          color: #555;
+          margin: 0 auto 50px;
+          padding: 10px 20px 30px;
+          box-shadow: 0 1px 3px rgba(0,0,0,.3);
+          border-radius: 2px;
+          background-color: #fff;
+          width: 90%;
+          max-width: 700px;
+        }
+        .card-title {
+          color: #333;
+          font-size: 50px;
+          font-weight: 100;
+        }
+        .card-content {
+          font-weight: 100;
+          line-height: 30px;
+        }
+      </style>
+    </div>
+
+
+    <script>
+      var editor = grapesjs.init({
+        height: '100%',
+        noticeOnUnload: 0,
+        storageManager: { autoload: 0 },
+        container: '#gjs',
+        fromElement: true,
+
+        plugins: ['gjs-plugin-ckeditor'],
+        pluginsOpts: {
+          'gjs-plugin-ckeditor': {
+            position: 'center',
+            options: {
+              language: 'en',
+              //skin: 'moono-dark',
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

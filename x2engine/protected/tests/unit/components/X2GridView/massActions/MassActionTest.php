@@ -159,7 +159,8 @@ class MassActionTest extends X2DbTestCase {
     }
 
     /**
-     * Super mass update records using tag and rating filters
+     * Super mass update records using tag and rating filter
+     * @runInSeparateProcess
      */
     public function testSuperExecuteFilters () {
         $_SESSION = array ();

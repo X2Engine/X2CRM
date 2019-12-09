@@ -752,6 +752,7 @@ class X2ClientScript extends NLSClientScript {
             '../../../js/checklistDropdown/jquery.multiselect.css',
             'rating/jquery.rating.css',
             'fontAwesome/css/font-awesome.css',
+            'fontAwesome/css/fontawesome.css',
             'bootstrap/bootstrap.css',
             'css-loaders/load8.css',
         );
@@ -1193,6 +1194,8 @@ class X2ClientScript extends NLSClientScript {
             $this->registerScriptFile($baseUrl.'/js/jstorage.min.js')
                ->registerScriptFile(
                 $baseUrl.'/js/notifications.js', CClientScript::POS_BEGIN);
+
+            
         }
 
         if(!$isGuest && ($profile->language == 'he' || $profile->language == 'fa'))

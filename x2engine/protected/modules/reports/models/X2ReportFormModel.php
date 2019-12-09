@@ -41,6 +41,7 @@ abstract class X2ReportFormModel extends CFormModel {
     public $primaryModelType = 'Contacts';
     public $allFilters = array ();
     public $anyFilters = array ();
+    public $relativeFilters = array ();
     public $refreshForm = false;
     public $export = false;
     public $print = false;
@@ -78,7 +79,7 @@ abstract class X2ReportFormModel extends CFormModel {
                 'includeActions' => true,
             ),
             array (
-                'allFilters,anyFilters',
+                'allFilters,anyFilters,relativeFilters',
                 'application.components.validators.ArrayValidator',
                 'throwExceptions' => true,
                 'allowEmpty' => true,
@@ -145,6 +146,7 @@ abstract class X2ReportFormModel extends CFormModel {
             'primaryModelType' => Yii::t('reports', 'Primary Record Type'),
             'allFilters' => Yii::t('reports', 'Records must pass all of these conditions:'), 
             'anyFilters' => Yii::t('reports', 'Records must pass any of these conditions:'), 
+            'relativeFilters' => Yii::t('reports', 'Relative time:'), 
             'includeTotalsRow' => Yii::t('reports', 'Include totals row?'), 
         );
     }
@@ -195,6 +197,37 @@ abstract class X2ReportFormModel extends CFormModel {
         if (!is_array ($value)) return true;
         return $this->_validateAttrs ($value, $attribute, isset ($params['unique']) ? 
             $params['unique'] : false);
+    }
+
+    /**
+     * Validates attributes and subtotal
+     * 1. if subtotal is chosen, it should exists in the columns as well
+     * 2. multiple same subtotal should not be chosen
+     */
+    public function validateSubTotal ($attribute, $params=array ()) {
+	/**
+	* validateSubTotal
+        * attribute: "subTotals" <-- $attribute
+        * value: [{"name":"assignedTo","operator":"=","value":"Anyone"}] <-- $this->$attribute
+	* columns: ["assignedTo","city","dealvalue"] <-- $this->columns
+        * params: {"unique":true} <-- $params
+	*/
+	
+	$value = $this->$attribute;
+	$unique = array();
+	$columns = $this->columns;
+	if(isset($value) && (count($value) > 0)){
+	    foreach($value as $attr){
+		 if((count($unique) > 0) && in_array($attr['name'], $unique)){
+		     $this->addError ($attr['name'], Yii::t('reports', 'Must have only one {attribute} in Subtotal By', 
+		     array ('{attribute}' => ucfirst ($this->getAttributeLabel ($attr['name'])),)));
+		 }elseif((count($columns) == 0) || (!in_array($attr['name'], $columns))){
+		     $this->addError ($attr['name'], Yii::t('reports', 'Must have {attribute} in columns as well',
+                     array ('{attribute}' => ucfirst ($this->getAttributeLabel ($attr['name'])),)));
+		 }
+		 $unique[] = $attr['name'];
+	    }	
+	}		
     }
 
     /**
@@ -265,7 +298,7 @@ abstract class X2ReportFormModel extends CFormModel {
                 $linkFieldName = $pieces[0];
                 if ($primaryModelType === 'Actions' &&
                     (in_array ($linkFieldName, array_keys (X2Model::getModelNames ())) ||
-                     $linkFieldName === 'ActionText')) {
+                    ($linkFieldName === 'ActionText' || $linkFieldName === 'ActionMetaData'))) {
 
                     // actions link fields can also be of the form 
                     // <model class A>.<attribute of model class A>
@@ -283,7 +316,15 @@ abstract class X2ReportFormModel extends CFormModel {
                         $valid = false;
                         break;
                     }
-                } else {
+                }
+
+	        if ($primaryModelType === 'Actions' && $linkFieldName === 'ActionMetaData') {
+                    if ($relatedField !== 'eventSubtype') {
+                        $valid = false;
+                        break;
+                    }
+                } 
+		else {
                     $field = $linkFieldType::model ()->getField ($relatedField);
                     if (!$field) {
                         $valid = false;

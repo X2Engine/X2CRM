@@ -83,6 +83,7 @@ class MassTagRemoveTest extends TagActionTestBase {
 
     /**
      * Attempt to super mass remove tags from range of records in fixture file
+     * @runInSeparateProcess
      */
     public function testSuperExecute () {
         Yii::app()->settings->massActionsBatchSize = 5;

@@ -70,7 +70,8 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         'contact' => 'Contacts',
         'actions' => 'Actions',
         'actionText' => 'ActionText',
-        'events' => 'Events'
+        'events' => 'Events',
+        'profile' => 'Profile',
     );
 
     /**

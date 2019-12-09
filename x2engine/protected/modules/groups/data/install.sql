@@ -6,6 +6,7 @@ CREATE TABLE x2_groups (
     id     INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `name` VARCHAR(250),
     nameId VARCHAR(250) DEFAULT NULL,
+    layout TEXT DEFAULT NULL,
     UNIQUE(nameId)
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/

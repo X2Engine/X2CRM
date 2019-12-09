@@ -39,6 +39,8 @@
 
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 
+
+
 Yii::app()->clientScript->registerCss('recordViewCss', "
 
 #content {
@@ -58,7 +60,7 @@ Yii::app()->clientScript->registerCss('servicesView', "
 $authParams['X2Model'] = $model;
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'delete', 'email', 'attach', 'quotes',
-    'createWebForm', 'print', 'editLayout',
+    'createWebForm', 'print', 'editLayout', 'publicKB', 'portal',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 $themeUrl = Yii::app()->theme->getBaseUrl();
@@ -90,6 +92,7 @@ $(function() {
             <?php
             echo X2Html::emailFormButton();
             ?>
+            <?php  ?>
         </div>
     </div>
 </div>

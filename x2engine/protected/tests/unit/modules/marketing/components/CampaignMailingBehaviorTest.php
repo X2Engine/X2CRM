@@ -93,7 +93,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
     private static function restoreIniSettings () {
         foreach (self::$_savedIniSettings as $setting => $val) { 
             if ($val !== null) { 
-                assert (ini_set ($setting, $val) !== false);
+                ini_set ($setting, $val);
             }
         }
     }
@@ -162,7 +162,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
-            'email' => $contact->email
+	    'email' => $contact->email,
         ));
         $unsubLinkText = Yii::app()->settings->getDoNotEmailLinkText ();
         $expectedLink = 
@@ -176,14 +176,14 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
      * Cause preg_replace_callback to fail and ensure that exception is thrown
      */
     public function testRedirectLinkGenerationException () {
-        $this->setExpectedException (
+        $this->expectException (
             'StringUtilException', '',
             StringUtilException::PREG_REPLACE_CALLBACK_ERROR);
         TestingAuxLib::loadControllerMock ('localhost', '/index-test.php');
 
         // set this high enough to cause a redirect link replacement error, but not a CUrlRule error
-        ini_set('pcre.backtrack_limit', '10');
-        ini_set('pcre.recursion_limit', '10');
+        ini_set('pcre.backtrack_limit', '3');
+        ini_set('pcre.recursion_limit', '3');
         
         $cmb = $this->instantiate();
         $contact = $this->contacts('testUser_unsent');
@@ -234,7 +234,7 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
-            'email' => $recipientAddress
+            'email' => $recipientAddress,
         ));
         $this->assertRegExp(
             '/'.preg_quote(
@@ -272,16 +272,19 @@ class CampaignMailingBehaviorTest extends X2DbTestCase {
                 'id' => '252',
                 'sent' => '0',
                 'uniqueId' => NULL,
+                'suppressed' => '0',
             ),
             array(
                 'id' => '253',
                 'sent' => '0',
                 'uniqueId' => NULL,
+                'suppressed' => '0',
             ),
             array(
                 'id' => '254',
                 'sent' => '0',
                 'uniqueId' => NULL,
+                'suppressed' => '0',
             ),
                 ), $listItems
         );

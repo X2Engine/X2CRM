@@ -50,6 +50,7 @@ function InlineFunnel (argsDict) {
 
     var defaultArgs = {
         completeButtonUrl: null,
+        terminateButtonUrl: null,
         revertButtonUrl: null,
         stageNames: null, // array containing names of each stage
         /* array of bools, 1 for each stage, true if current user has permission to complete the
@@ -138,6 +139,20 @@ InlineFunnel.prototype._addInteractionButtons = function () {
 
             revertButton.bind (
                 'click', wrapWorkflowMethod (i + 1, x2.workflowManager.revertWorkflowStage));
+        
+        
+            var terminateButtonImage = auxlib.fa('fa-ban fa-lg', {
+                title: this.translations['Terminate Stage']
+            });
+            var terminateButton = $('<a>', {href: '#'});
+            
+            terminateButton.bind(
+                'click', wrapWorkflowMethod (i + 1, x2.workflowManager.terminateWorkflowStage));
+        
+            if (!(this.workflowStatus['stages'][i+1]['terminate'])) { // not terminated
+                    terminateButton.append (terminateButtonImage);
+                    statusContainer.append (terminateButton);
+            } 
 
             if (this.workflowStatus['stages'][i+1]['complete']) { // completed
                 if (editPermission && this.uncompletionPermissions[i]) {
@@ -150,7 +165,7 @@ InlineFunnel.prototype._addInteractionButtons = function () {
                     title: this.translations['Complete Stage']
                 });
 
-                if (previousCheck && editPermission) { // can complete
+                if (previousCheck && editPermission && !(this.workflowStatus['stages'][i+1]['terminate'])) { // can complete
                     var completeButton = $('<a>', { href: '#' });
                     if (parseInt (this.stagesWhichRequireComments[i], 10)) {
                         completeButton.click ( 
@@ -305,6 +320,20 @@ InlineFunnel.prototype._addStatusStrings = function () {
                             'yy-mm-dd',
                             new Date (
                                 this.workflowStatus['stages'][i+1]['completeDate'] * 1000)),
+                    css: {
+                        position: 'absolute',
+                        left: (this._funnelW1) + 15,
+                        top: this._stageCentroids[i].y - 10,
+                    }
+                });
+            } else if (this.workflowStatus['stages'][i+1]['terminate']) { // terminated
+                var dateContainer = $('<span>', {
+                    'class': 'workflow-status-string',
+                    text: this.translations['Terminated'] + ' ' +
+                        $.datepicker.formatDate (
+                            'yy-mm-dd',
+                            new Date (
+                                this.workflowStatus['stages'][i+1]['terminateDate'] * 1000)),
                     css: {
                         position: 'absolute',
                         left: (this._funnelW1) + 15,

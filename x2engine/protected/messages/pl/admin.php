@@ -190,7 +190,7 @@
   'Global account' => 'Globalne konto',
   'Bulk Email Settings' => 'Duże Ustawienia e-mail',
   'Service Case Email Settings' => 'Obsługa e-mail w sprawie Settings',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Możesz użyć następujących zmiennych w szablonie: {first} , {last} , {phone} , {email} , {description} i {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Możesz użyć następujących zmiennych w szablonie: {first} , {last} , {phone} , {email} , {description} , {case} i {link} .',
   'Introduction' => 'Wprowadzenie',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'Ta funkcja umożliwia X2Engine odbierać i nagrywać wiadomości na specjalny adres.',
   'Filesystem ownership and permissions' => 'Uprawnienia systemu plików i własności',

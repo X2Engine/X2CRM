@@ -143,7 +143,7 @@ class OutlookAuthenticator {
         $client_secret = $auth_credential->outlookSecret;
         
         //every input needs to exist
-    if($client_id == null || $client_secret == null || $refresh == null){
+    	if($client_id == null || $client_secret == null || $refresh == null){
             return false;
         }
         
@@ -166,7 +166,10 @@ class OutlookAuthenticator {
         curl_close ($ch);
         
         $result = CJSON::decode($server_output);
-        $access_token = $result['access_token'];
+        if(isset($result['error'])){
+            return false;
+        }
+	$access_token = $result['access_token'];
         
         return $access_token;
     }

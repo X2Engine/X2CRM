@@ -41,7 +41,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportuni
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'createList',
+    'all', 'lists', 'create', 'createList','helpGuide',
 );
 if ($opportunityModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';

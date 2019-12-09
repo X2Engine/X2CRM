@@ -91,7 +91,8 @@ class MassUpdateFieldsTest extends X2DbTestCase {
     }
 
     /**
-     * Super mass update firstName and lastName for fixture records 
+     * Super mass update firstName and lastName for fixture records
+     * @runInSeparateProcess 
      */
     public function testSuperExecute () {
         $_SESSION = array ();

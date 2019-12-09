@@ -65,7 +65,7 @@ $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 $authParams['X2Model']=$model;
 $menuOptions = array(
     'all', 'create', 'view', 'edit', 'share',
-    'delete', 'email', 'attach', 'quotes', 'print', 'editLayout',
+    'delete', 'email', 'attach', 'quotes', 'print', 'editLayout','helpGuide',
 );
 if ($opportunityModule->visible && $contactModule->visible)
     $menuOptions[] = 'quick';

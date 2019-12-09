@@ -44,10 +44,12 @@ class CalendarEventFormModel extends EventFormModel {
     public $reminder;
     public $notificationUsers = 'assigned';
     public $notificationTime = 15;
+    public $verifyCode; //CAPTCHA for guests using the publisher
     
     public function attributeLabels(){
         return array_merge(parent::attributeLabels(), array(
             'allDay' => Yii::t('actions', 'All Day'),
+            'scheduled' => Yii::t('actions', 'Scheduled'),
             'eventSubtype' => Yii::t('actions', 'Event Subtype'),
             'eventStatus' => Yii::t('actions', 'Event Status'),
             'associationType' => Yii::t('actions', 'Association Type'),

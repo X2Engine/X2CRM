@@ -86,3 +86,18 @@ echo $this->model->getHiddenProfileWidgetMenu ();
     
     ?>
 </div>
+
+<div id='save-profile-layout-dialog' class='form' style='display: none;'>
+    <label for='' class='left-label'><?php echo Yii::t('app', 'Group: '); ?></label>
+    <?php
+    $groups = Groups::model()->findAll();
+    foreach ($groups as $group) {
+        $options[$group->id] = $group->name;
+    }
+    if (isset($options)) {
+        echo CHtml::dropDownList ('groupSelect', '', $options);
+    } else {
+        echo 'No groups!';
+    }
+    ?>
+</div>

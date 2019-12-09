@@ -97,7 +97,7 @@ class Media extends X2Model {
     }
 
     public static function createMediaFromFormData() {
-        if (Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isLoggedOut) {
             throw new Exception('You are not logged in.');
         }
 

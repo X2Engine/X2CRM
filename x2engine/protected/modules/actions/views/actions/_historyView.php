@@ -215,6 +215,8 @@ if($type == 'attachment' && $data->completedBy != 'Email') {
 } else if($type == 'workflow'){
     if($data->complete == 'Yes'){
         echo ' <b>'.Yii::t('workflow', 'Completed').'</b> '.Formatter::formatLongDateTime($data->completeDate);
+    } else if ($data->terminate == 'Yes') {
+        echo ' <b>'.Yii::t('workflow', 'Terminated').'</b> '.Formatter::formatLongDateTime($data->terminateDate);
     } else {
         echo ' <b>'.Yii::t('workflow', 'Started').'</b> '.Formatter::formatLongDateTime($data->createDate);
     }

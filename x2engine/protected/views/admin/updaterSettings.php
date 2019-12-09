@@ -125,7 +125,7 @@
                 <ul>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Update Package for Version {version}',array('{version}'=>Yii::app()->params->version)),$this->updateServer.'/'.$this->getUpdateDataRoute()); ?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest Updater Utility Patch'),$edition=='opensource' ? "https://x2planet.com/installs/updater.zip" : "https://x2planet.com/installs/{$uniqueId}/updater-{$edition}.zip");?></li>
-                    <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource' ? "https://x2planet.com/installs/refresh.zip" : "https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
+                    <li><?php echo CHtml::link(Yii::t('admin','File Set Refresh Package'),$edition=='opensource'?"https://x2planet.com/installs/refresh.zip":"https://x2planet.com/installs/{$uniqueId}/refresh-{$edition}.zip");?></li>
                     <li><?php echo CHtml::link(Yii::t('admin','Latest updater utility version number'),$this->updateServer.'/installs/updates/updateCheck'); ?></li>
                 </ul>
         <hr />

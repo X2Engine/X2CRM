@@ -27,6 +27,18 @@ CREATE TABLE `x2_services` (
     INDEX(parentCase)
 ) COLLATE = utf8_general_ci AUTO_INCREMENT = 1000;
 /*&*/
+DROP TABLE IF EXISTS `x2_services_replies`;
+/*&*/
+CREATE TABLE `x2_service_replies` (
+    id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    serviceId   INT NOT NULL,
+    text        TEXT NOT NULL,
+    assignedTo  VARCHAR(250),
+    createDate  BIGINT,
+    lastUpdated BIGINT,
+    updatedBy   VARCHAR(250)
+) Engine = InnoDB COLLATE = utf8_general_ci;
+/*&*/
 INSERT INTO `x2_modules`
 (`name`, title, visible, menuPosition, searchable, editable, adminOnly, custom, toggleable)
 VALUES

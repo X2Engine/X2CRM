@@ -82,4 +82,7 @@
   'Hide Directions' => '隐藏地图',
   'Clear Route' => '清除路线',
   'View Contact Map' => '查看联系地图',
+  'Platform' => '操作系统',
+  'Browser' => '浏览器',
+  'Browser Version' => '浏览器版本',
 );

@@ -188,7 +188,7 @@ class X2GridView extends X2ActiveGridView {
             $newColumn['headerHtmlOptions'] = array('style'=>'width:'.$width.'px;');
             $newColumn['value'] = 'Tags::getTagLinks("'.$this->modelName.'",$data->id)';
             $newColumn['type'] = 'raw';
-            $newColumn['filter'] = $this->filter->renderTagInput ();
+            $newColumn['filter'] = !empty($this->filter) && isset($this->filter) ? $this->filter->renderTagInput () : null;
         } 
         return $newColumn;
     }

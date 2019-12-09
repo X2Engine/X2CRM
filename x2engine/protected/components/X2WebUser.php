@@ -85,4 +85,49 @@ class X2WebUser extends CWebUser {
         return $this->_roles;
     }
 
+
+    /**********************
+     * The introduction of portal users has led to necessary changes in how
+     * the app deals with guest users. According to the framework definition,
+     * a "guest" is simply a user who is not currently logged in. However,
+     * assumptions have been (and may continue to be) made that non-guest users are
+     * authenticated users. While this dichotomy was always true in the past,
+     * it is now no longer always the case. At worst, this assumption could grant
+     * portal users functionality intended for authenticated users. In an effort to
+     * minimize the effort and number of changes needed to account for portal users,
+     * I have decided to include portal users under the general blanket of "guests".
+     * This way, developers can continue to use isGuest safely, even if the
+     * function name is now slightly less accurate.
+     * 
+     * From now on, developers should use isLoggedOut rather than isGuest in order to
+     * check whether users have been logged out.
+     * 
+     * - Justin Law
+     **********************/
+
+    /**
+     * Returns a value indicating whether the user is logged out.
+     * Takes functionality of CWebUser's getIsGuest(), which checks
+     * if the current user id is null.
+     */
+    public function getIsLoggedOut() {
+        return parent::getIsGuest();
+    }
+
+    /**
+     * Returns a value indicating whether the user is a "guest" user.
+     * Portal users will be treated as guests.
+     */
+    public function getIsGuest() {
+        return $this->getIsPortal() || parent::getIsGuest();
+    }
+
+    /**
+     * Returns a value indicating whether the user is a portal user.
+     */
+    public function getIsPortal() {
+        if (Yii::app()->edition=='opensource') return false;
+        return User::model()->findByPk($this->getId(), 'portal=1') ? true : false;
+    }
+
 }

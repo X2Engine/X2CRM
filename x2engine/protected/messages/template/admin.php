@@ -433,7 +433,7 @@
   'Configure how notification emails are sent.' => '',
   'Service Case Email Settings' => '',
   'Configure how X2Engine sends email when responding to new service case requests.' => '',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => '',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => '',
   'Web Lead Response Email Settings' => '',
   'Configure how X2Engine sends email when responding to new web leads.' => '',
   'X2Flow Email Settings' => '',

@@ -268,7 +268,7 @@ class Admin extends X2ActiveRecord {
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
-            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
+            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri,kbHomeUrl,kbForumsUrl,kbContactUrl', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('massActionsBatchSize', 'numerical', 'integerOnly' => true, 'min' => 5, 'max' => 100,),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
@@ -348,6 +348,7 @@ class Admin extends X2ActiveRecord {
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
+            
             'outlookIntegration' => Yii::t('admin', 'Activate Outlook Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
             'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),

@@ -113,6 +113,52 @@
     		),
     	),
     ));
+    
+    echo "<br> <br>";
+    
+    $actionModel = X2Model::model('Actions');
+    $this->widget('zii.widgets.grid.GroupGridView', array(
+        'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+        'template'=> '{items}{pager}',
+        'id' => 'Stage-Complete-Widget',
+        'dataProvider'=> $actionModel->searchComplete($dateRange, $modelType, $model->id),
+        'filter'=> $actionModel,
+        'mergeColumns' => array('uid', 'name'),
+        'columns'=>array(
+                array(
+                        'name' => 'uid',
+                        'header' => 'Record Assigned To',
+                        'value'=>'Workflow::userCheck($data)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:20%;'),
+                ),
+                array(
+                        'name'=>'name',
+                        'header' => 'Record Name',
+                        'value' => 'Workflow::nameCheck($data)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'header' => 'Start Date',
+                        'value' => 'Formatter::formatDate($data->createDate)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'header' => 'Days it took to Complete',
+                        'value'=>'Workflow::getCompleteTime($data)',
+                        'type' => 'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'name'=>'stageNumber',
+                        'header'=>'Stage Name',
+                        'value' => 'WorkflowStage::model()->findByAttributes(array("id" => $data->stageNumber, "workflowId" => $data->workflowId))->name',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+        ),
+    ));
     }
     ?>
 </div>

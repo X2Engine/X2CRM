@@ -83,6 +83,17 @@ $(function() {
         echo $form->filterConditionList($formModel, 'anyFilters');
         ?>
         <br/>
+	<?php
+        echo $form->label($formModel, 'subTotals');
+        echo $form->subTotalList($formModel, 'subTotals');
+        ?>
+        <br/>
+        <div id="quick-create-list-form" style="display:none"></div>
+        <?php
+        echo $form->label($formModel, 'relativeFilters');
+        echo $form->filterConditionTimeList($formModel, 'relativeFilters');
+        ?>
+        <br/>
         <?php
         echo $form->label($formModel, 'columns');
         echo $form->attributePillBox($formModel, 'columns', $attributeOptions);

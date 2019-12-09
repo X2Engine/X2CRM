@@ -40,7 +40,7 @@
 
 $authParams = array('X2Model' => $model);
 $menuOptions = array(
-    'index', 'create', 'createEmail', 'createQuote',
+    'index', 'create', 'createEmail', 'createQuote','helpGuide',
 );
 $action = $this->action->id;
 if (!$model->isNewRecord) {

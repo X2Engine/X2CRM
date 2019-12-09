@@ -42,7 +42,7 @@
 
 $modTitle = Modules::displayName();
 $menuOptions = array(
-    'index', 'create', 'update', 'delete'
+    'index', 'create', 'update', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model);
 ?>

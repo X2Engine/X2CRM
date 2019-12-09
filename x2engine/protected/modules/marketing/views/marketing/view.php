@@ -66,7 +66,7 @@ $authParams['X2Model'] = $model;
 
 $menuOptions = array(
     'all', 'create', 'view', 'edit', 'delete', 'lists', 'newsletters',
-    'weblead', 'x2flow', /* x2entend */ 'A/B-Campaigns', 'Long-Term-Campaigns', /* x2entend */
+    'weblead', 'x2flow', /* x2entend */ 'A/B-Campaigns', 'Long-Term-Campaigns', /* x2entend */'helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 

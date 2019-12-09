@@ -352,6 +352,15 @@ class GroupsController extends x2base {
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>Yii::t('app','Are you sure you want to delete this item?'))
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('groups', 'Groups Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-groups',
+                'linkOptions' => array(
+                    'id' => 'group-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);

@@ -48,7 +48,7 @@ $form = $this->beginWidget ('ActionActiveForm', array (
 ));
     echo $form->label ($model,'Subject'); 
     echo $form->textArea ($model, 'subject');
-    echo $form->label ($model,'Action Description'); 
+    echo $form->label ($model,'Description'); 
     echo $form->textArea ($model, 'actionDescription');
 
 ?>
@@ -128,4 +128,9 @@ $form = $this->beginWidget ('ActionActiveForm', array (
 
 $this->endWidget ();
 
+Yii::app()->clientScript->registerCss('actionFormCSS',"
+    #ActionFormModel_actionDescription {
+        resize:vertical;
+    }
+");
 ?>

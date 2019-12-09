@@ -65,10 +65,12 @@ x2.inlineFunnel = new x2.InlineFunnel ({
     workflowStatus: ".CJSON::encode ($workflowStatus).",
     translations: ".CJSON::encode (array (
         'Completed' => Yii::t('workflow', 'Completed'),
+        'Terminated' => Yii::t('workflow', 'Terminated'),
         'Started' => Yii::t('workflow', 'Started'),
         'Details' => Yii::t('workflow', 'Details'),
         'Revert Stage' => Yii::t('workflow', 'Revert Stage'),
         'Complete Stage' => Yii::t('workflow', 'Complete Stage'),
+        'Terminate Stage' => Yii::t('workflow', 'Termiante Stage'),
         'Start' => Yii::t('workflow', 'Start'),
         'noRevertPermissions' => 
             Yii::t('workflow', 'You do not have permission to revert this stage.'),
@@ -82,6 +84,7 @@ x2.inlineFunnel = new x2.InlineFunnel ({
     colors: ".CJSON::encode ($colors).",
     revertButtonUrl: '".Yii::app()->theme->getBaseUrl ()."/images/icons/Uncomplete.png',
     completeButtonUrl: '".Yii::app()->theme->getBaseUrl ()."/images/icons/Complete.png',
+    terminateButtonUrl: '".Yii::app()->theme->getBaseUrl ()."/images/icon/Terminate.png',
     stageNames: ".CJSON::encode (Workflow::getStageNames ($workflowStatus)).",
     stagePermissions: ".CJSON::encode (Workflow::getStagePermissions ($workflowStatus)).",
     uncompletionPermissions: ".

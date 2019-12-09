@@ -44,7 +44,7 @@ $this->pageTitle = Yii::t('marketing','Newsletters');
 $menuOptions = array(
     'all', 'create', 'lists', 'newsletters', 'weblead',
     
-     'webtracker',
+     'webtracker','helpGuide',
 );
 
 $plaOptions = array(

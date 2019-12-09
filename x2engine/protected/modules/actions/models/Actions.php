@@ -65,6 +65,9 @@ class Actions extends X2Model {
 
     public $supportsWorkflow = false;
 
+    //Send to outlook for 1 or 0 for none
+    public $sendOutlook = 1;
+
     /**
      * Types of actions that should be treated as emails
      * @var type
@@ -193,7 +196,7 @@ class Actions extends X2Model {
         return array_merge (
             $this->getBehaviorRules (),
             array(
-                array('allDay', 'boolean'),
+                array('allDay,scheduled', 'boolean'),
                 array('associationId,associationType','requiredAssoc'),
                 array('createDate, completeDate, lastUpdated, calendarId', 'numerical', 'integerOnly' => true),
                 array(
@@ -378,7 +381,7 @@ class Actions extends X2Model {
         } else if ($attribute === 'actionDescription') {
             $label = Yii::t('actions', 'Action Description');
         } else if ($attribute === 'eventSubtype') {
-            $label = Yii::t('actions', 'Type');
+            $label = Yii::t('actions', 'Subtype');
         } else if ($attribute === 'eventStatus') {
             $label = Yii::t('actions', 'Status');
         } else {
@@ -564,8 +567,13 @@ class Actions extends X2Model {
             // on beginning and end times.
             $this->timeSpent = $timeSpent;
         }
-        
-        if(empty($timeSpent) && !empty($this->completeDate) && !empty($this->dueDate) && $timed) {
+
+	/**
+	 * if statement contained (empty($timeSpent))
+	 * This will only check on first creation and fail on update.
+	 * Justin Toyomitsu (October 7th)
+         */
+        if(!empty($this->completeDate) && !empty($this->dueDate) && $timed) {
             $this->timeSpent = $this->completeDate - $this->dueDate;
         }
 
@@ -686,18 +694,31 @@ class Actions extends X2Model {
         $this->saveActionLineItems ();
         // Create a new action timer for this action with start/end time, if it
         // is necessary, and one doesn't already exist:
-        $timers = $this->getRelated('timers');
-        if($this->isTimedType && $this->timeSpent > 0 && empty($timers) && 
-            !$this->skipActionTimers) {
 
-            $timer = new ActionTimer;
-            $timer->userId = Yii::app()->getSuID ();
-            $timer->actionId = $this->id;
-            $timer->associationType = X2Model::getModelName($this->associationType);
-            $timer->associationId = $this->associationId;
-            $timer->timestamp = $this->dueDate;
-            $timer->endtime = $this->completeDate;
-            $timer->save();
+	/**
+	 * This should be updating each time someone edits through the publisher.
+	 * currently does not.
+	 * Assumption (1): 1 to 1 relation between x2_actions and x2_actions_timers
+	 * Assumption (2): timeSpent will be saved in beforeSave()
+	 * Justin Toyomitsu (Oct 7th, 2019)
+	 */
+        $timers = $this->getRelated('timers');
+        if($this->isTimedType && $this->timeSpent > 0 && !$this->skipActionTimers) {
+	    if(empty($timers)){ 
+                $timer = new ActionTimer;
+                $timer->userId = Yii::app()->getSuID ();
+                $timer->actionId = $this->id;
+                $timer->associationType = X2Model::getModelName($this->associationType);
+                $timer->associationId = $this->associationId;
+                $timer->timestamp = $this->dueDate;
+                $timer->endtime = $this->completeDate;
+                $timer->save();
+	    }else{
+		$timers[0]->timestamp = $this->dueDate;
+		$timers[0]->endtime = $this->completeDate;
+		$timers[0]->userId = Yii::app()->getSuID ();
+		$timers[0]->save();
+	    }
         }
         
 
@@ -820,7 +841,8 @@ class Actions extends X2Model {
             $this->createCalendarFeedEvent ();
         if(($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && empty($this->remoteCalendarUrl)){
             $calendar = X2Calendar::model()->findByPk($this->calendarId);
-            if($calendar && $calendar->asa('syncBehavior')){
+            //will not send back to Outlook if it was the initial pull
+            if($calendar && $calendar->asa('syncBehavior') && $this->sendOutlook == 1){
                 $calendar->syncActionToCalendar($this);
             }
         }
@@ -875,7 +897,8 @@ class Actions extends X2Model {
     public function afterUpdate() {
         if (($this->type === 'event' || empty($this->type)) && !empty($this->calendarId) && !empty($this->remoteCalendarUrl)) {
             $calendar = X2Calendar::model()->findByPk($this->calendarId);
-            if ($calendar && $calendar->asa('syncBehavior')) {
+            //will not send back to Outlook if it was the initial pull
+            if ($calendar && $calendar->asa('syncBehavior') && $this->sendOutlook == 1) {
                 $calendar->syncActionToCalendar($this);
             }
         }
@@ -1354,6 +1377,75 @@ class Actions extends X2Model {
 
         return $this->searchBase($criteria, $pageSize);
     }
+    
+     public function searchComplete($dateRange, $modelType, $id){
+
+        $fieldOrder = 'FIELD(t.stageNumber ';
+
+        $stageN = WorkflowStage::model()->findAllByAttributes(array("workflowId"=>$id), array("order"=>"stageNumber ASC"));
+        $n = 1;
+        foreach( $stageN as $stage ){
+        $fieldOrder .= ', ' . $stage->id;
+        $n++;
+        }
+        $fieldOrder .= ')';
+
+        $modelClass = X2Model::model($modelType)->tableName();
+
+        $criteria = new CDbCriteria;
+        $criteria ->join = ' JOIN ' . $modelClass . ' as a ON t.associationId = a.id';
+        if(isset($_GET['Actions'])) {
+                if(isset($_GET['Actions']['name']) && $_GET['Actions']['name'] != ''){
+                        $criteria->addCondition('a.name LIKE ' . "'" . $_GET['Actions']['name'] . "%'");
+                }
+                if(isset($_GET['Actions']['stageNumber']) && $_GET['Actions']['stageNumber'] != ''){
+                        $stageName = ucfirst($_GET['Actions']['stageNumber']);
+                        $stageNumber = WorkflowStage::model()->findByAttributes(array( "name" => $stageName, "workflowId" => $id ));
+                        if(isset($stageNumber)){
+                                $criteria->addCondition('t.stageNumber = ' . $stageNumber->id);
+                        }
+                }
+                if(isset($_GET['Actions']['uid']) && $_GET['Actions']['uid'] != ''){
+                        $lastName = '';
+                        $firstName = '';
+                        $assignedToCriteria = '';
+                        $nameCriteria = new CDbCriteria;
+                        $fullName = explode(" ", $_GET['Actions']['uid']);
+                        $firstName = $fullName[0];
+                        if(count($fullName) > 1){
+                                $lastName = $fullName[1];
+                                $nameCriteria->addCondition('lastName LIKE ' . "'" . $lastName . "%'" );
+                        }
+                        $nameCriteria->addCondition( 'firstName LIKE ' . "'"  . $firstName . "%'" );
+                        $individual = User::model()->findAll($nameCriteria);
+                        if(isset($individual)){
+                                foreach($individual as $ind){
+                                        $assignedToCriteria .= '(a.assignedTo = ' . json_encode($ind->username) . ') OR ';
+                                }
+                                $criteria->addCondition($assignedToCriteria . '(FALSE)');
+                        }
+                }
+        }
+        $criteria->select = 't.*, a.name, a.nameId';
+        $criteria->addCondition('a.name IS NOT NULL');
+        $criteria->addCondition('t.workflowId = ' . $id);
+        $criteria->addCondition('t.associationId IS NOT NULL');
+        $criteria->addCondition('t.associationType ='. json_encode($modelType));
+        $criteria->addCondition("t.createDate BETWEEN " . $dateRange['start'] . " AND " . $dateRange['end']);
+        $criteria->addCondition("(t.completeDate BETWEEN " . $dateRange['start'] . " AND " . $dateRange['end'] .") OR t.completeDate IS NULL");
+        $criteria->addCondition("NOT (t.visibility=0 AND t.assignedTo='Anyone')");
+
+        $dataProvider = new CActiveDataProvider('Actions', array(
+                'sort' => array(
+                    'defaultOrder' => 'a.assignedTo ASC, associationId DESC, ' . $fieldOrder,
+                ),
+                'pagination' => array(
+                    'pageSize' => 25
+                ),
+                'criteria' => $criteria
+            ));
+        return $dataProvider;
+   }
 
     /**
      * Today's Actions 
@@ -1853,7 +1945,7 @@ class Actions extends X2Model {
         if (!isset ($this->_notificationTime)) {
             $reminders = $this->getReminders ();
             if(count($reminders) > 0){
-                $notifTime = (strtotime($this->dueDate) - $reminders[0]->createDate) / 60;
+                $notifTime = ($this->dueDate - $reminders[0]->createDate) / 60;
             }else{
                 $notifTime = 15;
             }

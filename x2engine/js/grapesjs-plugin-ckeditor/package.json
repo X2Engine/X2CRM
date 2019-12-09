@@ -1,0 +1,46 @@
+{
+  "name": "grapesjs-plugin-ckeditor",
+  "version": "0.0.9",
+  "description": "Replace the built-in RTE with CKEditor",
+  "main": "dist/grapesjs-plugin-ckeditor.min.js",
+  "scripts": {
+    "lint": "eslint src",
+    "v:patch": "npm version --no-git-tag-version patch",
+    "build": "npm run v:patch && webpack --env.production",
+    "start": "webpack-dev-server --open --progress --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artf/grapesjs-plugin-ckeditor.git"
+  },
+  "keywords": [
+    "grapesjs",
+    "plugin",
+    "ckeditor",
+    "wysiwyg"
+  ],
+  "author": "Artur Arseniev",
+  "license": "BSD-3-Clause",
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
+  "peerDependencies": {
+    "grapesjs": "0.x",
+    "ckeditor": "4.x"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "html-webpack-plugin": "^2.30.1",
+    "eslint": "^4.1.1",
+    "webpack": "^3.8.1",
+    "webpack-dev-server": "^2.9.4"
+  }
+}

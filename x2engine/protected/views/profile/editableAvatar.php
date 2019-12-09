@@ -52,9 +52,6 @@ Yii::app()->clientScript->registerCss("AvatarCss", "
 }
 
 
-#avatar-image {
-    display:block;
-}
 
 #photo-upload-overlay {
     text-align: center;

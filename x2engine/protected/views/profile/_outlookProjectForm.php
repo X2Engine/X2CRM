@@ -52,7 +52,6 @@ echo '<br>';
 <?php
 echo Yii::t('app', 'Activating Outlook Integration enables the following features:');
 echo X2Html::unorderedList (array (
-    CHtml::encode (Yii::t('app', 'Microsoft sign in')),
     CHtml::encode (Yii::t('app', 'Outlook Calendar sync'))
 ));
 
@@ -60,60 +59,58 @@ echo X2Html::unorderedList (array (
 </div>
 <?php
 
-echo CHtml::tag ('h3', array (), Yii::t('app', 'Configuring Outlook Integration'));
+echo CHtml::tag ('h3', array (), Yii::t('app', 'SETUP Outlook Integration'));
 ?>
 <hr>
 <?php
 echo X2Html::orderedList (array (
-    Yii::t('app', 'Visit {link} and create or select a Outlook project.', array (
-        '{link}' => 
-            '<a href="https://apps.dev.microsoft.com">'.
-                'the Developer Microsoft Link</a>'
+    Yii::t('app', 'Visit {here} and sign in.', array (
+        '{here}' =>
+            '<a href="https://portal.azure.com">portal.azure.com</a>'
     )),
-    CHtml::encode (
-        Yii::t('app', 'To configure Outlook integration for Calendar sync, Microsoft login')).
+    Yii::t('app', 'Under Azure services, click on <b>"App Registration"</b>'),
+    Yii::t('app', 'Create a <b>new registration</b>, or select an <b>existing one</b>.').
+        X2Html::orderedList(array (
+            Yii::t('app', '<b><font color="red">If new registration</font></b>, enter a name and leave the other choices default for now.')
+        )),
+        Yii::t('app', 'On the <b>left panel</b>, navigate to <b>"Authentication"</b>.').
         X2Html::orderedList (array (
             CHtml::encode (
-                Yii::t('app', '"App an App" after logging into your Microsoft Account.')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'Copy the "Application ID" and input the ID in the "OutlookID" field')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'Under the "Application Secret" Generate "New Password"')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'Save the New Generated Password and input in the field "Outlook Secret"')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'Create an OAuth 2.0 client ID.')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'When asked for "Authorized Redirect URIs," input the following '.
-                    'urls:')).
+                Yii::t('app', 'Set Redirect URL to the url:')).
                 CHtml::tag (
                     'textarea', array ('readonly' => 'readonly', 'style' => 'display: block', 'class'=>'authorized-js-origins'),
-                    (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . 
-                        Yii::app()->controller->createUrl('/admin/outlooksync')."\n"
+                    (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] .
+                        Yii::app()->controller->createUrl('/calendar/outlooksync')."\n"
                 ),
             CHtml::encode (
-                Yii::t('app', 'When asked for "Logout URL," input the '.
-                    'following urls:')).
+                Yii::t('app', 'Set Logout URL to the url:')).
                 CHtml::tag (
                     'textarea', array ('readonly' => 'readonly', 'style' => 'display: block'),
                     (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST']
                 ),
         ), array ('style' => 'list-style-type: lower-latin;')),
-    CHtml::encode (
-        Yii::t('app', 'Select Correct Microsoft Graph Permissions.')).
-            X2Html::orderedList (array (
-            CHtml::encode (
-                Yii::t('app', 'Delegated Permissions => (1. Calendars.ReadWrite) and (2. User.ReadWrite).')
-            ),
-            CHtml::encode (
-                Yii::t('app', 'Application Permissions => (1. Calendars.ReadWrite(AdminOnly)) and (2. Mail.ReadWrite(AdminOnly)) and (3. Mail.Send(AdminnOnly)).')
-            ),
+        Yii::t('app', 'On the <b>left panel</b> nagivate to <b>"API permissions"</b>.').
+        X2Html::orderedList (array (
+                Yii::t('app', 'Delegated Permissions: <font color="blue">Calendars.ReadWrite</font>, <font color="blue">User.ReadWrite</font>.'),
+                Yii::t('app', 'Application Permissions: <font color="blue">Calendars.ReadWrite</font>, <font color="blue">Mail.ReadWrite</font>, <font color="blue">Mail.Send</font>.'),
         ), array ('style' => 'list-style-type: lower-latin;')),
+), array ('class' => 'config-instructions'));
+echo '<hr>';
+
+/**
+ * Link to X2CRM page.
+ */
+echo CHtml::tag ('h3', array (), Yii::t('app', 'Link to X2CRM'));
+echo '<hr>';
+echo X2Html::orderedList (array (
+    Yii::t('app', 'Navigate to the <b>overview</b>.').
+    X2Html::orderedList(array (
+        Yii::t('app', 'Save the <b><font color="red">Application ID</font></b> in the <b><font color="red">Outlook ID</font></b> field below.')
+    ), array ('style' => 'list-style-type: lower-latin;')),
+    Yii::t('app', 'On the <b>left panel</b>, nagivate to <b>"Certificates and secrets"</b>.').
+    X2Html::orderedList(array (
+        Yii::t('app', 'Generate a new client secret and save it in the <b><font color="red">Outlook Secret</font></b> field below.')
+    ), array ('style' => 'list-style-type: lower-latin;')),
 ), array ('class' => 'config-instructions'));
 
 echo X2Html::fragmentTarget ('oauth-2.0');

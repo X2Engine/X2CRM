@@ -72,6 +72,7 @@ class MassTagTest extends TagActionTestBase {
 
     /**
      * Attempt to super mass tag range of records in fixture file
+     * @runInSeparateProcess
      */
     public function testSuperExecute () {
         $_SESSION = array ();
@@ -103,7 +104,9 @@ class MassTagTest extends TagActionTestBase {
             $this->obStart ();
             $massTag->superExecute ($uid, 24, $idChecksum);
             $retVal = CJSON::decode (ob_get_contents ()); $this->obEndClean ();
-            $uid = $retVal['uid'];
+	    if(isset($retVal['uid'])){
+                $uid = $retVal['uid'];
+	    }
             $this->assertTrue (!isset ($retVal['errorCode']));
             X2_TEST_DEBUG_LEVEL > 1 && print_r ($retVal);
             $remainingIds = Yii::app ()->db->createCommand ("

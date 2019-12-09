@@ -36,8 +36,8 @@
 
 
 
-
-$jsVars = "modelId = '$model->id'; modelName = '$model->name'; modelEmail = '$model->email'";
+$nameEncode = addslashes($model->name);
+$jsVars = "modelId = '$model->id'; modelName = '$nameEncode'; modelEmail = '$model->email'";
 Yii::app()->clientScript->registerScript('jsVars', $jsVars);
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl() . '/js/Relationships.js');
@@ -88,7 +88,8 @@ $serviceModule = Modules::model()->findByAttributes(array('name' => 'services'))
 
 $menuOptions = array(
     'all', 'lists', 'create', 'view', 'edit', 'share', 'delete',
-    'email', 'attach', 'quotes', 'print', 'viewOnMap', 'editLayout', 'addRecordAlias', 'convertToLead', 'convertToAccount'
+    'email', 'attach', 'quotes', 'print', 'viewOnMap', 'editLayout', 
+    'addRecordAlias', 'convertToLead', 'convertToAccount', 'helpGuide',
 );
 $menuOptions[] = ($subscribed ? 'unsubscribe' : 'subscribe');
 if ($opportunityModule->visible && $accountModule->visible) {
@@ -200,7 +201,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
     <?php
     $this->widget('InlineEmailForm', array(
         'attributes' => array(
-            'to' => '"' . $model->name . '" <' . $model->email . '>, ',
+            'to' => '"' . $model->name . '" <' . $model->email . '>',
             'modelName' => 'Contacts',
             'modelId' => $model->id,
             'targetModel' => $model,

@@ -65,7 +65,7 @@ class NotificationsController extends CController {
      */
     public function actionGet() {
 
-        if(Yii::app()->user->isGuest) {
+        if(Yii::app()->user->isLoggedOut) {
             header('Content-type: application/json');
             echo CJSON::encode(array(
                 'sessionError'=>Yii::t('app','Your X2Engine session has expired. You may select "cancel" to ignore this message and recover unsaved data from the current page. Otherwise, you will be redirected to the login page.')

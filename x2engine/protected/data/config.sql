@@ -101,7 +101,7 @@ INSERT INTO x2_admin (timeout,webLeadEmail,emailFromAddr,currency,installDate,up
 	'{adminEmail}',
 	'Tech Support',
 	'Tech Support',
-	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.',
+	'Hello {first} {last},\n\nJust wanted to check in with you about the support case you created. It is number {case}. We will get back to you as soon as possible.\n\nClick here to stay updated on the support case: {link}',
         0,
         '["record_create","record_deleted","action_reminder","action_complete","calendar_event","case_escalated","email_opened","email_sent","notif","weblead_create","web_activity","workflow_complete","workflow_revert","workflow_start"]',
         '{app}',
@@ -137,3 +137,5 @@ INSERT INTO `x2_mobile_layouts`
 (`id`,`modelName`, `layout`, `defaultForm`, `defaultView`, `version`)
 VALUES
 (-1, 'Profile', '["tagLine","username","officePhone","cellPhone","emailAddress","googleId"]',0,1,'5.4');
+/*&*/
+

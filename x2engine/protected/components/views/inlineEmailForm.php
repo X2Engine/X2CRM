@@ -73,7 +73,7 @@ Yii::app()->clientScript->registerCss('inlineEmailFormCss',"
 
 #email-mini-module .email-input-row {
     border-top: 1px solid #d3d3d3;
-    height: 28px;
+    overflow: visible;
 }
 
 #cke_email-message {    

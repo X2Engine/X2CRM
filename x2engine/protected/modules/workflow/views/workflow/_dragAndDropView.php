@@ -79,6 +79,8 @@ x2.dragAndDropViewManager = new x2.DragAndDropViewManager ({
         )->createUrl('/workflow/workflow/completeStage')."',
     revertStageUrl: '".Yii::app(
         )->createUrl('/workflow/workflow/revertStage')."',
+    terminateStageUrl: '".Yii::app(
+        )->createUrl('/workflow/workflow/terminateProcess')."',
     startStageUrl: '".Yii::app(
         )->createUrl('/workflow/workflow/ajaxAddADeal')."',
     ajaxGetModelAutocompleteUrl: '".

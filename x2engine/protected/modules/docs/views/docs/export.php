@@ -39,7 +39,7 @@
 
 $action = $this->action->id;
 $menuOptions = array(
-    'index', 'create', 'createEmail', 'createQuote', 'view', 'exportToHtml', 'permissions',
+    'index', 'create', 'createEmail', 'createQuote', 'view', 'exportToHtml', 'permissions','helpGuide',
 );
 if ($action !== 'update' && $this->checkPermissions($model,'edit'))
     $menuOptions[] = 'edit';

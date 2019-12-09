@@ -321,13 +321,14 @@ class FieldFormatter extends FieldFormatterBase {
 
 
     protected function renderCurrency ($field, $makeLinks, $textOnly, $encode) {
-        $fieldName = $field->fieldName;
-        if ($this->owner instanceof Product) { // products have their own currency
+	$fieldName = $field->fieldName;
+	$fieldValue = $this->owner->$fieldName;
+	if ($this->owner instanceof Product) { // products have their own currency
             $currency = Yii::app()->locale->numberFormatter->formatCurrency(
-                $this->owner->$fieldName, $this->owner->currency);
-        } else {
+                    $fieldValue ? $fieldValue : 0, $this->owner->currency);
+	} else {
             $currency = Yii::app()->locale->numberFormatter->formatCurrency(
-                    $this->owner->$fieldName, Yii::app()->params['currency']);
+                    $fieldValue ? $fieldValue : 0, Yii::app()->params['currency']);
         }
         if ($encode)
             return CHtml::encode($currency);

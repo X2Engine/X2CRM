@@ -57,7 +57,7 @@ else
 
 
 $menuOptions = array(
-    'todays', 'my', 'everyones', 'create', 'import', 'export',
+    'todays', 'my', 'everyones', 'create', 'import', 'export','helpGuide',
 );
 if($this->route === 'actions/actions/index') {
 	$heading = Yii::t('actions','Today\'s {module}', array('{module}'=>Modules::displayName()));

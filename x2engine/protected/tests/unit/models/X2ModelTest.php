@@ -132,7 +132,7 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertInstanceOf('Opportunity', X2Model::model('opportunities'));
         $this->assertInstanceOf('Opportunity', X2Model::model('Opportunity'));
         
-        $this->setExpectedException('CHttpException');
+        $this->expectException('CHttpException');
         X2Model::model('obviously bad model name');
     }
     

@@ -44,7 +44,7 @@ class X2ModelConversionAction extends CAction {
      * If errors occur, return to original record view page.
      */
     public function run ($id, $targetClass, $force=false) {
-        if (Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isLoggedOut) {
             Yii::app()->controller->redirect(Yii::app()->controller->createUrl('/site/login'));
         }
 

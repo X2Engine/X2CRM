@@ -190,7 +190,7 @@
   'Global account' => 'Cuenta Global',
   'Bulk Email Settings' => 'Configuración del correo electrónico a granel',
   'Service Case Email Settings' => 'Servicio de caso virtual Configuración',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Puede usar las siguientes variables en esta plantilla: {first}, {last}, {phone}, {email}, {description} y {case}.',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Puede usar las siguientes variables en esta plantilla: {first}, {last}, {phone}, {email}, {description}, {case} y {link}.',
   'Introduction' => 'Introducción',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'Esta característica permite X2Engine para recibir y registrar mensajes de correo electrónico a una dirección especial.',
   'Filesystem ownership and permissions' => 'La propiedad del sistema de archivos y permisos',

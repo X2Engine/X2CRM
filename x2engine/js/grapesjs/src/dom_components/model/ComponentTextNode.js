@@ -1,0 +1,28 @@
+import Component from './Component';
+
+export default Component.extend(
+  {
+    defaults: {
+      ...Component.prototype.defaults,
+      droppable: false,
+      layerable: false,
+      editable: true
+    },
+
+    toHTML() {
+      return this.get('content');
+    }
+  },
+  {
+    isComponent(el) {
+      var result = '';
+      if (el.nodeType === 3) {
+        result = {
+          type: 'textnode',
+          content: el.textContent
+        };
+      }
+      return result;
+    }
+  }
+);

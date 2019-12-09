@@ -60,7 +60,7 @@ class CalendarController extends x2base {
         return array(
             array(
                 'allow',
-                'actions' => array('getItems'),
+                'actions' => array('getItems', 'appointment', 'jsonFeedGuest', 'editActionGuest'),
                 'users' => array('*'),
             ),
             array(
@@ -86,6 +86,7 @@ class CalendarController extends x2base {
                     'saveCheckedCalendar',
                     'toggleUserCalendarsVisible',
                     'togglePortletVisible',
+                    'outlooksync',
                     //'uploadToGoogle'
                 ),
                 'users' => array('@'),
@@ -134,8 +135,19 @@ class CalendarController extends x2base {
             parent::view($model, 'calendar');
         }
     }
-
     
+
+
+    public function actionAppointment($user, $id){
+        if($user == null || $id == null){
+            $this->redirectToLogin();
+        }else{
+            $calendar = X2Model::model('Calendar')->findByPk($id);
+            if(isset($calendar)){
+                $this->render('appointment', array('id' => $id, 'the_user' => $user, 'calendar' => $calendar));
+            }
+        }
+    }
 
     /**
      * Formats calendars in iCal format, for third-party calendar software.
@@ -174,6 +186,60 @@ class CalendarController extends x2base {
     // overridden to disable parent method
     public function actionQuickView ($id) {
         echo Yii::t('app', 'Quick view not supported');
+    }
+    
+    /**
+     * Get and Sync outlook calender with x2calender
+     */
+    public function actionOutlookSync () {
+    //get the ticket code and use the tocken url to get the access token
+    $params1 = $_GET['code'];
+        if(isset($params1)){
+            $code = $params1;
+        }
+    $ch = curl_init();
+    
+    $admin = Admin::model()->findByPk (1);
+    $id = $admin->outlookCredentialsId;
+    $credential = Credentials::model()->findByAttributes(array('id'=>$id));
+    $auth_credential = $credential->auth;
+    $client_id = $auth_credential->outlookId;
+    $client_secret = $auth_credential->outlookSecret;
+
+    //create header and body for the POST request
+    curl_setopt($ch, CURLOPT_URL,"https://login.microsoftonline.com/common/oauth2/v2.0/token");
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type' => 'application/x-www-form-urlencoded'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS,
+        http_build_query(array('code' => $code, 
+                               'grant_type' => 'authorization_code',
+                               'client_id' => $client_id,
+                               'client_secret' => $client_secret
+        )));
+    
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+    //execute url
+    $server_output = curl_exec($ch);
+    curl_close ($ch);
+    
+        //check to see if something was returned
+        if (isset($server_output)) { 
+        $result = CJSON::decode($server_output);
+        $refresh_token = $result['refresh_token'];
+        
+        $currentuser = Yii::app()->user->getName();
+        $profile = Profile::model()->findByAttributes(array('username'=>$currentuser));
+        $profile->outlookRefreshToken = $refresh_token;
+        $profile->save();
+               
+        //redirect them to the calender create page
+        $url = Yii::app()->createUrl('/calendar/create');
+        $this->redirect($url);
+        
+        }else{
+        $this->redirect('index');    
+        }
     }
 
     /**
@@ -361,6 +427,51 @@ class CalendarController extends x2base {
     public function actionJsonFeed($calendarId, $start, $end){
         echo CJSON::encode($this->getFeed($calendarId, $start, $end));
     }
+    
+    /**
+     * @param string $calendarId username to fetch events for
+     * @param int    $start unix time to for start of window
+     * @param int    $end unix ending time
+     */
+    public function actionJsonFeedGuest($calendarId, $start, $end){
+        $calendar = X2Calendar::model()->findByPk($calendarId);
+        if($calendar && $calendar->asa('syncBehavior')){
+            $calendar->sync();
+        }
+        
+        $staticAction = Actions::model();
+        // View permissions for the viewing user
+        $criteria = new CDBCriteria; //$staticAction->getAccessCriteria();
+        // Assignment condition: all events for the user whose calendar is being viewed:
+        $criteria->addCondition('`calendarId` = :calendarId');
+        $criteria->addCondition("`type` IS NULL OR `type`='' OR `type`='event'");
+        $criteria->addCondition('(`dueDate` >= :start1 AND `dueDate` <= :end1) '
+                .'OR (`completeDate` >= :start2 AND `completeDate` <= :end2)');
+        $criteria->params = array_merge($criteria->params, array(
+            ':start1' => $start,
+            ':start2' => $start,
+            ':end1' => $end,
+            ':end2' => $end,
+            ':calendarId' => $calendarId
+        ));
+        $actions = Actions::model()->findAllWithoutActionText($criteria);
+
+        $events = array();
+        foreach($actions as $action){
+            $event = $this->formatActionToEvent($action, $calendarId);
+            if($event)
+                //2 colors: (Pink -> occupied, Green -> open)
+                if($event['scheduled'] == 1){
+                   $event['color'] = '#ff9aa2'; //Pink
+                   $event['editable'] = false; // can not edit scheduled appointment
+                }else{
+                   $event['color'] = '#91E1B3'; //Green
+                   $event['editable'] = true;
+                }
+                $events[] = $event;
+        }
+        echo CJSON::encode($events);
+    }
 
     public function formatActionToEvent($action, $id){
         if( !($action->visibility >= 1 || // don't show private actions,
@@ -406,7 +517,11 @@ class CalendarController extends x2base {
             'complete' => $action->complete,
             'calendarAssignment' => $id,
             'allDay' => false,
+            'scheduled' => false,
         );
+
+        if($action->scheduled)
+            $event['scheduled'] = $action->scheduled;
 
         if($action->allDay)
             $event['allDay'] = $action->allDay;
@@ -463,7 +578,11 @@ class CalendarController extends x2base {
     public function getFeed($calendarId, $start, $end){
         $calendar = X2Calendar::model()->findByPk($calendarId);
         if($calendar && $calendar->asa('syncBehavior')){
-            $calendar->sync();
+            if($calendar->syncType == 'outlook'){
+               $calendar->sync($start, $end);
+            }else{
+               $calendar->sync();
+            }
         }
         $actions = $this->calendarActions($calendarId,$start,$end);
 
@@ -471,8 +590,22 @@ class CalendarController extends x2base {
         foreach($actions as $action){
             $event = $this->formatActionToEvent($action, $calendarId);
 
-            if($event)
+            if($event){
+
+                /**
+                 * With New Appointments. Calendar chosen as appointment has 
+                 * hard coded colors. (Colors must not be saved).
+                 * Justin Toyomitsu (November 8th 2019).
+                 */
+                if(Yii::app()->params->profile->appointmentCalendar == $calendarId){
+                    $event['color'] = '#91E1B3'; //Green
+                    if($event['scheduled'] == 1){
+                        $event['color'] = '#ff9aa2'; //Pink
+                    }
+                }                
+
                 $events[] = $event;
+            }
         }
 
         return $events;
@@ -492,6 +625,25 @@ class CalendarController extends x2base {
             Yii::app()->clientScript->scriptMap['*.css'] = false;
             $this->renderPartial('editAction', array('model' => $model, 'isEvent' => $isEvent), false, true);
         }
+    }
+
+    /**
+     *    Ajax requests call this function. which returns a form filled with the event data.
+     *  (Check) This is for Guests, hiding important information to only show neccssary data.
+     *  1. Guest
+     *  2. Calendar Events
+     *  Justin Toyomitsu ( November 4th, 2019)
+     */
+    public function actionEditActionGuest(){
+        if(isset($_POST['ActionId'])){ // ensure we are getting sane post data
+            $id = $_POST['ActionId'];
+            $model = Actions::model()->with('invites')->findByPk($id);
+            $isEvent = json_decode($_POST['IsEvent']);
+
+            Yii::app()->clientScript->scriptMap['*.js'] = false;
+            Yii::app()->clientScript->scriptMap['*.css'] = false;
+            $this->renderPartial('editActionGuest', array('model' => $model, 'isEvent' => $isEvent), false);
+        } 
     }
 
     /**
@@ -774,6 +926,15 @@ class CalendarController extends x2base {
                 'linkOptions'=>array(
                     'submit'=>array('delete','id'=>$modelId),
                     'confirm'=>'Are you sure you want to delete this item?'
+                )
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('calendar', 'Calendar Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-calendar',
+                'linkOptions' => array(
+                    'id' => 'calendar-help-guide-action-menu-link',
+                    'target' => '_blank',
                 )
             ),
         );
