@@ -46,6 +46,7 @@ $form = $this->beginWidget('CalendarEventActiveForm', array(
     'htmlOptions' => $htmlOptions,
     'namespace' => $namespace,
         ));
+echo $form->label ($model,'Description');
 echo $form->textArea($model, 'actionDescription');
 ?>
 <div class="row">
@@ -164,5 +165,11 @@ Yii::app()->clientScript->registerScript('email-invites',"
             $('.reminder-config').slideUp();
         }
     });
+");
+
+Yii::app()->clientScript->registerCss('calendarEventFormCSS',"
+    #CalendarEventFormModel_actionDescription {
+        resize:vertical;
+    }
 ");
 ?>

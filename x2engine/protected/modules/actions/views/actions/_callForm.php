@@ -59,4 +59,9 @@ $form = $this->beginWidget ('CallActiveForm', array (
 
 $this->endWidget ();
 
+Yii::app()->clientScript->registerCss('callFormCSS',"
+    #CallFormModel_actionDescription {
+        resize:vertical;
+    }
+");
 ?>

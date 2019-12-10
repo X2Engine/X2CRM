@@ -47,7 +47,8 @@ function WorkflowManagerBase (argsDict) {
         getStageDetailsUrl: '',
         startStageUrl: '',
         completeStageUrl: '',
-        revertStageUrl: ''
+        revertStageUrl: '',
+        terminateStageUrl: '',
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
 

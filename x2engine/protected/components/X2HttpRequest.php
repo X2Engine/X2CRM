@@ -44,6 +44,7 @@ class X2HttpRequest extends CHttpRequest {
         '/^api2?\//', // allow all api requests
         '/^contacts\/weblead$/', // allow web form requests
         '/^services\/webForm$/', // allow web form requests
+        
     );
 
     /**

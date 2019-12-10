@@ -165,7 +165,7 @@ class Campaign extends X2Model {
         $list = new X2List;
         $criteria = $list->getAccessCriteria();
         $criteria->addCondition("type!='campaign' and type!='UnSubscribe'");
-    	$lists = X2Model::model('ContactList')->findAllByAttributes (array(), 
+    	$lists = X2Model::model('X2List')->findAllByAttributes (array(), 
             $criteria
     	);
     	return $lists;

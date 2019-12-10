@@ -39,6 +39,13 @@
 $this->setPageTitle(CHtml::encode($model->name));
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
+Yii::app()->clientscript->registerScript('getRespCss', "
+    $('iframe').load( function() {
+    $('iframe').contents().find('head')
+          .append($('<style type=\"text/css\">" . $model->gjsCss . "</style>'));
+    });
+");
+
 /**
  * JavaScript
  */

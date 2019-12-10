@@ -862,6 +862,15 @@ class OpportunitiesController extends x2base {
                         ))."');"
                 )
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Opportunities Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2opportunities',
+                'linkOptions' => array(
+                    'id' => 'opportunitie-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 
@@ -870,14 +879,14 @@ class OpportunitiesController extends x2base {
     }
     
         // Lists all contacts assigned to this user
-    public function actionMyOpportunity() {
+    public function actionMyOpportunities() {
         $model = new Opportunity('search');
         Yii::app()->user->setState('vcr-list', 'myContacts');
         $this->render('index', array('model' => $model));
     }
 
     // Lists all contacts assigned to this user
-    public function actionNewOpportunity() {
+    public function actionNewOpportunities() {
         $model = new Opportunity('search');
         Yii::app()->user->setState('vcr-list', 'newContacts');
         $this->render('index', array('model' => $model));

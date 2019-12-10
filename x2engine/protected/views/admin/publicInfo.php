@@ -67,6 +67,8 @@ Yii::app()->clientScript->registerCss('publicInfoCss',"
             ));
     ?>
     <div class="form">
+        <?php     ?>
+        
         <?php echo $form->labelEx($model, 'externalBaseUrl'); ?><br />
         <p><?php 
         echo Yii::t('admin', 'This will be the web root URL to use for generating URLs to '.

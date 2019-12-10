@@ -56,7 +56,7 @@ class MassAddToList extends MassAction {
      * @param string $gridId id of grid view
      */
     public function renderDialog ($gridId, $modelName) {
-        $listNames = X2List::getAllStaticListNames (Yii::app()->controller);
+        $listNames = X2List::getAllStaticListNames (Yii::app()->controller, $modelName);
         echo "
             <div class='mass-action-dialog' id='".$this->getDialogId ($gridId)."' 
              style='display: none;'>

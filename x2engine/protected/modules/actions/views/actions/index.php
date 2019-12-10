@@ -60,7 +60,7 @@ Yii::app()->clientScript->registerResponsiveCss('responsiveActionsCss',"
 ");
 
 $menuOptions = array(
-    'list', 'create', 'import', 'export',
+    'list', 'create', 'import', 'export','helpGuide',
 );
 $this->insertMenu($menuOptions, $model);
 

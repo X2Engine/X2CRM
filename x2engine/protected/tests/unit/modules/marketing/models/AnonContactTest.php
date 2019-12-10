@@ -54,7 +54,7 @@ class AnonContactTest extends X2DbTestCase {
         $lastModifiedId = Yii::app()->db->createCommand()
             ->select('id')
             ->from('x2_anon_contact')
-            ->order('lastUpdated ASC')
+            ->order('(lastUpdated) ASC')
             ->queryScalar();
 
         $anonContact = X2Model::model('AnonContact')->findByPk($lastModifiedId);

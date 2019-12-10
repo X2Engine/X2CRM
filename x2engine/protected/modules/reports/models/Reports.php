@@ -131,7 +131,7 @@ class Reports extends X2Model {
         $formModelName = array_pop ($keys);
         if (!in_array ($formModelName, 
             array ('SummationReportFormModel', 'RowsAndColumnsReportFormModel', 
-                'GridReportFormModel', 'ExternalReportFormModel'))) {
+            'GridReportFormModel', 'ExternalReportFormModel'))) {
 
             return false;
         }
@@ -223,7 +223,7 @@ class Reports extends X2Model {
             return 'X2SummationReport';
         } else if ($this->type == 'rowsAndColumns') {
             return 'X2RowsAndColumnsReport';
-        } 
+        }
 
     }
 
@@ -257,6 +257,37 @@ class Reports extends X2Model {
         }
 
         return $report;
+    }
+    
+    /*
+     *Function gets and returns the list of reports for a dropdown
+     * @returns list of reports that exists
+     */
+    public static function getReportList(){
+        $reportList = array();
+        
+        $tableName = Reports::model()->tableName();
+        
+        $reportIDs = Yii::app()->db->createCommand()
+                    ->select('id, type, name')
+                    ->from($tableName)
+                    ->queryAll();
+        
+        if ( !empty($reportIDs) ){
+            foreach ( $reportIDs as $value ){
+                $type = "";
+                if ( $value['type'] == "summation" ){
+                    $type = "(SUM)";
+                }elseif( $value['type'] == "rowsAndColumns" ){
+                    $type = "(RC)";
+                }elseif( $value ['type'] == "forecast" ){
+                    $type = "(FOR)";
+                }
+                $reportList[$value['id']] = $type . $value['name'];
+            }
+        }
+        
+        return $reportList;
     }
 
     public function afterDelete () {

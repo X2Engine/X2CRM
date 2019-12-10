@@ -44,7 +44,7 @@ $this->pageTitle = $model->name;
 $authParams['X2Model'] = $model;
 
 $menuOptions = array(
-    'all', 'create', 'lists', 'newsletters', 'view', 'edit', 'delete', 'weblead', 'webtracker',
+    'all', 'create', 'lists', 'newsletters', 'view', 'edit', 'delete', 'weblead', 'webtracker','helpGuide',
 );
 
 $plaOptions = array(

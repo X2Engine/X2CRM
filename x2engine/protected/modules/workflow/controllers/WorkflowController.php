@@ -54,7 +54,7 @@ class WorkflowController extends x2base {
                 'actions'=>array(
                     'index','view','getWorkflow','getStageDetails','updateStageDetails',
                     'startStage','completeStage','revertStage','getStageMembers','getStages',
-                    'changeUi', 'addADeal', 'getStageNameItems', 'getStageNames'),
+                    'changeUi', 'addADeal', 'getStageNameItems', 'getStageNames' ,'getLists'),
                 'users'=>array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -124,6 +124,30 @@ class WorkflowController extends x2base {
                 )
             )
         );
+    }
+    
+    
+    /**
+     * Return a JSON encoded list of any model lists
+     */
+    public function actionGetLists() {
+
+
+        // Optional search parameter for autocomplete
+        $qterm = isset($_GET['term']) ? $_GET['term'] . '%' : '';
+        $static = isset($_GET['static']) && $_GET['static'];
+        $weblist = isset($_GET['weblist']) && $_GET['weblist'];
+        $result = Yii::app()->db->createCommand()
+                ->select('id,name as value')
+                ->from('x2_lists')
+                ->where(
+                        ($static ? 'type="static" AND ' : '') .
+                        ($weblist ? 'type="weblist" AND ' : '') .
+                        'type!="campaign" 
+                    AND name LIKE :qterm', array(':qterm' => $qterm))
+                ->order('name ASC')
+                ->queryAll();
+        echo CJSON::encode($result);
     }
     
     // Creates a new Workflow model
@@ -575,7 +599,6 @@ class WorkflowController extends x2base {
         $message = '';
         if (Workflow::validateAction (
             'revert', $workflowStatus, $stageNumber, '', $message)) {
-
             list ($completed, $workflowStatus) = Workflow::revertStage (
                 $workflowId, $stageNumber, $model);
         }
@@ -586,6 +609,29 @@ class WorkflowController extends x2base {
                 'error' => !empty ($message) ? array ($message) : array (),
                 'success' => empty ($message) ? 
                     array (Yii::t('workflow', 'Stage reverted')) : array (),
+            )
+        ));
+    }
+    
+    public function actionTerminateProcess($workflowId,$stageNumber,$modelId,$type) {
+        $model = $this->validateParams ($workflowId, $stageNumber, $modelId, $type);
+
+        if ($model === null) throw new CHttpException (400, 'Bad Request');
+        $workflowStatus = Workflow::getWorkflowStatus($workflowId,$modelId,$type);
+        $message = '';
+        if (Workflow::validateAction (
+            'terminate', $workflowStatus, $stageNumber, '', $message)) {
+
+            list ($completed, $workflowStatus) = Workflow::terminateProcess (
+                $workflowId, $stageNumber, $model, null, $workflowStatus);
+        }
+
+        echo CJSON::encode (array (
+            'workflowStatus' => $workflowStatus,
+            'flashes' => array (
+                'error' => !empty ($message) ? array ($message) : array (),
+                'success' => empty ($message) ? 
+                    array (Yii::t('workflow', 'Process terminated')) : array (),
             )
         ));
     }
@@ -628,11 +674,11 @@ class WorkflowController extends x2base {
             $modelName::model ()->getAccessSQLCondition ($tableName);
         $params = array_merge ($params, $accessConditionParams);
         $stageMemberSql = Yii::app()->db->createCommand()
-            ->select("$tableName.*, x2_actions.lastUpdated as actionLastUpdated")
+            ->select("$tableName.*, (x2_actions.lastUpdated) as actionLastUpdated")
             ->from($tableName)
             ->join('x2_actions',"$tableName.id = x2_actions.associationId")
             ->where("x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
-                x2_actions.associationType=:type AND complete!='Yes' AND 
+                x2_actions.associationType=:type AND complete!='Yes' AND terminate!='Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
                 x2_actions.createDate BETWEEN :start AND :end ".$userString." AND ".$accessCondition
                 )
@@ -643,7 +689,7 @@ class WorkflowController extends x2base {
             ->from($tableName)
             ->join('x2_actions',"$tableName.id = x2_actions.associationId")
             ->where("x2_actions.workflowId=:workflowId AND x2_actions.stageNumber=:stage AND
-                x2_actions.associationType=:type AND complete!='Yes' AND 
+                x2_actions.associationType=:type AND complete!='Yes' AND terminate!= 'Yes' AND 
                 (completeDate IS NULL OR completeDate=0) AND 
                 x2_actions.createDate BETWEEN :start AND :end ".$userString.' AND '.$accessCondition,
                 $params
@@ -976,6 +1022,15 @@ class WorkflowController extends x2base {
                 'url'=>'#', 
                 'linkOptions'=>array('submit'=>array('delete','id'=>$modelId),
                 'confirm'=>Yii::t('app','Are you sure you want to delete this item?')), 
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('workflow', 'Processes Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2process',
+                'linkOptions' => array(
+                    'id' => 'processe-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
         );
 

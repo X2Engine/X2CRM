@@ -60,6 +60,7 @@ class X2AssetManager extends CAssetManager {
         'layout.css',
         'publisher.css',
         'fontAwesome/css/font-awesome.css',
+        'fontAwesome/css/fontawesome.css',
     );
 
     /**

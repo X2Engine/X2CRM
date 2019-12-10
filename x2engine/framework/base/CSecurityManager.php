@@ -638,6 +638,7 @@ class CSecurityManager extends CApplicationComponent
 	 */
 	public function unmaskToken($maskedToken)
 	{
+		/*x2modstart*/ $maskedToken = urldecode ($maskedToken); /*x2modend*/
 		$decoded=base64_decode(strtr($maskedToken,'-_','+/'));
 		$length=$this->strlen($decoded)/2;
 		// Check if the masked token has an even length.

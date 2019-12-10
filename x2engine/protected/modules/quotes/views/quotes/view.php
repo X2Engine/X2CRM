@@ -108,7 +108,7 @@ $strict = Yii::app()->settings->quoteStrictLock;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuOptions = array(
-    'index', 'invoices', 'create', 'view', 'email', 'delete', 'attach', 'print', 'convert', 
+    'index', 'invoices', 'create', 'view', 'email', 'delete', 'attach', 'print', 'convert', 'helpGuide',
     'duplicate', 'editLayout',
 );
 if ($contact)
@@ -166,7 +166,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'id' => 'quotes-form',
     'enableAjaxValidation' => false,
     'action' => array('saveChanges', 'id' => $model->id)
-        ));
+));
 $this->widget ('DetailView', array(
     'model' => $model
 ));
@@ -228,9 +228,9 @@ $productField = Fields::model()->findByAttributes(array('modelName' => 'Quote', 
             </div>
             <div class="tableWrapper">
 <?php
-$this->renderPartial('_lineItems', array(
-    'model' => $model, 'readOnly' => true, 'namespacePrefix' => 'quotesView'
-));
+    $this->renderPartial('_lineItems', array(
+        'model' => $model, 'readOnly' => true, 'namespacePrefix' => 'quotesView'
+    ));
 ?>
             </div>
 

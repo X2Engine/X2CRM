@@ -357,13 +357,13 @@ class DataWidget extends SortableWidget {
                             'js/d3/d3.js',
                         ),
                     ),
-                    'c3' => array(
+                    'bb' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
-                            'js/c3/c3.min.js',
+                            'js/bb/billboard.min.js',
                         ),
                         'css' => array(
-                            'js/c3/c3.css'
+                            'js/bb/billboard.min.css'
                         ),
                         'depends' => array('d3')
                     ),
@@ -372,7 +372,7 @@ class DataWidget extends SortableWidget {
                         'js' => array(
                             'js/DataWidget/DataWidget.js',
                         ),
-                        'depends' => array ('SortableWidgetJS', 'c3')
+                        'depends' => array ('SortableWidgetJS', 'bb')
                     ),
                     'DataWidgetCSS' => array(
                         'baseUrl' => Yii::app()->theme->baseUrl,
@@ -385,7 +385,7 @@ class DataWidget extends SortableWidget {
                         'js' => array(
                             'js/DataWidget/'.$widgetClass.'.js',
                         ),
-                        'depends' => array ('DataWidgetJS', 'c3')
+                        'depends' => array ('DataWidgetJS', 'bb')
                     ),
 
                 ),

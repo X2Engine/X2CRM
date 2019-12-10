@@ -64,7 +64,7 @@ $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'quotes', 'import', 'export',
+    'index', 'create', 'view', 'edit', 'share', 'delete', 'attach', 'quotes', 'import', 'export','helpGuide',
     'editLayout', 'print'
 );
 if ($contactModule->visible && $accountModule->visible)
@@ -108,6 +108,8 @@ $inlineEmailTo = '';
 if((bool) $model->contactName){
     if ($contact = $model->getLinkedModel('contactName'))
         $inlineEmailTo = '"'.$contact->name.'" <'.$contact->email.'>, ';
+} else {
+     $inlineEmailTo = '"' . $model->name . '" <' . $model->email . '>';
 }
 $this->widget('InlineEmailForm', array(
     'attributes' => array(

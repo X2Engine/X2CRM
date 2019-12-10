@@ -279,6 +279,11 @@ class Notification extends CActiveRecord {
 					'{user}'=>User::getUserLinks($this->createdBy),
 					'{record}'=>$record->createLink(),
 				));
+			case 'caseReply':
+				return Yii::t('app', '{user} responded to your Service Case: {record}', array(
+					'{user}'=>User::getUserLinks($this->createdBy),
+					'{record}'=>$record->getLink(),
+				));
 			case 'custom':
 				return $this->text;
 			default:

@@ -875,7 +875,7 @@ if (!$complete || $silent) {
         foreach ($sendArgs as $urlKey) {
             $stats[$urlKey] = $config[$urlKey];
         }
-        $ch = curl_init('http://52.33.121.218/x2planet.com/installs/registry/activity?' . http_build_query($stats));
+        $ch = curl_init('http://x2planet.com/installs/registry/activity?' . http_build_query($stats));
         curl_setopt($ch, CURLOPT_POST, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         $gif = curl_exec($ch);
@@ -927,7 +927,7 @@ if (!$silent && $complete):
                     Copyright &copy; <?php echo date('Y'); ?><a href="http://www.x2crm.com">X2Engine Inc.</a><br />
                     <?php echo installer_t('All Rights Reserved.'); ?>
                         <?php if (!$config['test_db']): ?>
-                        <img style="height:0;width:0" src="http://52.33.121.218/x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
+                        <img style="height:0;width:0" src="http://x2planet.com/installs/registry/activity?<?php echo http_build_query($stats); ?>">
     <?php endif; ?>
                 </div>
             </div>

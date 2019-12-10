@@ -39,7 +39,7 @@
 $authParams['X2Model'] = $model;
 
 $menuOptions = array(
-    'index', 'invoices', 'create', 'view', 'edit', 'delete',
+    'index', 'invoices', 'create', 'view', 'edit', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
@@ -133,7 +133,6 @@ if($model->type == 'invoice') { ?>
     </div>
     <br />
 <?php }
-
 echo $this->renderPartial('_lineItems',
     array(
         'model'=>$model,

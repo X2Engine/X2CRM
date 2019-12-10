@@ -82,4 +82,7 @@
   'Hide Directions' => 'Скрыть маршруты',
   'Clear Route' => 'Очистить маршрут',
   'View Contact Map' => 'Посмотреть карту',
+  'Platform' => 'операционная система',
+  'Browser' => 'браузер',
+  'Browser Version' => 'версия браузера',
 );

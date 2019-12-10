@@ -46,6 +46,7 @@ $form = $this->beginWidget ('NoteActiveForm', array (
     'htmlOptions' => $htmlOptions,
     'namespace' => $namespace,
 ));
+    echo $form->label ($model,'Description');
     echo $form->textArea ($model, 'actionDescription');
     echo $form->hiddenField($model, 'associationType'); 
     echo $form->hiddenField($model, 'associationId'); 
@@ -56,4 +57,9 @@ $form = $this->beginWidget ('NoteActiveForm', array (
 
 $this->endWidget ();
 
+Yii::app()->clientScript->registerCss('noteFormCSS',"
+    #NoteFormModel_actionDescription {
+        resize:vertical;
+    }
+");
 ?>

@@ -1,5 +1,34 @@
-NOTE: IF YOU ARE UPDATING FROM <7.0 YOU WILL NEED TO RE-ENTER YOUR THIRD-PARTY APP CREDENTIALS! 
-THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT customersupport@x2engine.com
+# 8.0 #
+
+12/6/2019
+* New Enterprise Features:
+  * Portal Product:
+    * Customer login and messaging for support cases
+    * Invite users to the portal through service case webform
+  * Related Case Solutions: Match service cases by issue for relevant resolutions
+  * Knowledge Base: Create documents that can be searched by keyword or phrase
+  * WYSIWYG Editor for Email Templates: New responsive editor for email templates
+  * Nexmo Call Pop-up: Links to contact with matching number if one exists
+  
+* New Open Source Features:
+  * Sales Quotations Improvements:
+    * Comments are their own line item
+    * Adjustments are also their own line item, and percentage adjustments are based off the most previous line item
+    * Added tax modifier on the subtotal
+    * Added quote template insertable attribute "Packing Slip" that inserts quote item table without prices
+  * Group Profiles: Admins can set default homepage layouts.
+  * Data Visualizations
+    * Day/hour heat map for campaigns that shows number and time of open/click/sent events 
+    * Added bubble, spline, and area spline charts to reports
+  * Appointment Calendar:
+    * Users profile setting for dedicated appointment calendar
+    * Guests can reserve appointments through invitation link
+  * UI Update:
+    * Publisher widget history items scrollable when too long
+    * General styling changes
+  * Listability Improvements: Account, lead, and opportunity lists are campaignable
+
+* Miscellaneous bug fixes (see Changelog)
 
 # 7.1 #
 
@@ -16,17 +45,6 @@ THIS IS DUE TO THE REMOVAL OF MCRYPT IN PHP 7.2. FOR MORE INFO, PLEASE CONTACT c
   * Fixed issue where X2Flow would incorrectly reference a workflow ID
   * Fixed issue where logging time on a record would incorrectly calculate time spent
   * Fixed front-end with the complete stage action in X2Workflow where the note textarea was covering the stage selection dropdown
-
-# 7.0 #
-10/19/2018
-
-* General Changelog / Developer Notes
-  * Accounts, Leads and Opportunities are now listable
-  * Contacts can now be converted to leads
-  * Campaigns
-    * A/B testing for campaigns added
-    * Account, Lead and Opportunity lists can now all be used in campaigns
-  * Miscellaneous bug fixes
 
 # Introduction #
 Welcome to X2CRM!
@@ -53,10 +71,10 @@ value to their customer interactions resulting in higher close rates.
 
 # System Requirements #
 * A web server that can execute PHP
-* A password-protected MySQL database server connection, and a database on 
-  which the user of the connection has full permissions rights (i.e. SELECT, 
-  DROP, CREATE and UPDATE)
-* PHP 5.3 or later
+* A password-protected MySQL (5.7 recommended) database server connection, and a
+  database on which the user of the connection has full permissions rights
+  (i.e. SELECT, DROP, CREATE and UPDATE)
+* PHP 7.0 or later (5.6 mostly works, but is no longer supported)
 * PHP must be run as the same system user that owns the directory where X2CRM 
   will be installed
 * The server must have internet access for automatic updates

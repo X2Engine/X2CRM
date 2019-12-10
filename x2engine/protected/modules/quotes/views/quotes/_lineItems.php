@@ -92,14 +92,21 @@ if (!$readOnly) {
         ), false);
 }
 
-if ($mini) {
-    Yii::app()->clientScript->registerCssFile(
-        $module->assetsUrl.'/css/lineItemsMini.css');
-
-}
-
 Yii::app()->clientScript->registerScriptFile (  
     $module->assetsUrl.'/js/LineItems.js', CClientScript::POS_HEAD);
+
+Yii::app()->clientScript->registerScript ('ignoreEnterKey', '
+    // Disable the enter key for comment text areas to not
+    // confuse users.
+
+    $(".add-comment-button, .add-adjustment-button").on("click", function() {
+        $("textarea.description").keypress(function(event) {
+            if(event.which == 13) {
+                event.preventDefault();
+            }
+        });
+    });
+', CClientScript::POS_READY);
 
 $lineItemsVarInsertionScript = '';
 
@@ -112,8 +119,8 @@ if (!$readOnly) {
         $lineItemsVarInsertionScript .= "productNames.push (" . CJSON::encode($prod->name) . ");\n";
         $lineItemsVarInsertionScript .= "productPrices[" . CJSON::encode($prod->name) . "] = '".
             $prod->price . "';\n";
-        $lineItemsVarInsertionScript .= "productDescriptions[" . CJSON::encode($prod->name) . "] = ".
-            CJSON::encode($prod->description).";\n";
+        // $lineItemsVarInsertionScript .= "productDescriptions[" . CJSON::encode($prod->name) . "] = ".
+        //     CJSON::encode($prod->description).";\n";
     }
 }
 
@@ -156,7 +163,7 @@ var productNames = [];
 var productLines = [];
 var adjustmentLines = [];
 var productPrices = {};
-var productDescriptions = {};
+// var productDescriptions = {};
 
 <?php echo $lineItemsVarInsertionScript; ?>
 
@@ -172,10 +179,11 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
     titleTranslations: <?php echo CJSON::encode ($titleTranslations); ?>,
     productNames: productNames,
     productPrices: productPrices,
-    productDescriptions: productDescriptions,
+    // productDescriptions: productDescriptions,
     view: 'default',
     productLines: productLines,
-    adjustmentLines: adjustmentLines,
+    quoteTax: '<?php echo $model->tax; ?>',
+    //adjustmentLines: adjustmentLines,
     namespacePrefix: '<?php echo $namespacePrefix; ?>',
     getItemsUrl: '<?php echo Yii::app()->createUrl ('/products/products/getItems2'); ?>',
     modelName: '<?php echo isset ($modelName) ? $modelName : ''; ?>'
@@ -192,7 +200,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
 //}
 ?>
 
-<div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $mini ? ' line-items-mini' : ''; echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
+<div id="<?php echo $namespacePrefix ?>-line-items-table" class='line-items-table<?php echo $readOnly ? ' line-items-read' : ' line-items-write'; ?>'>
 
 <?php
 //if (YII_DEBUG && YII_UNIT_TESTING) {
@@ -219,32 +227,38 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
             <th class="lineitem-name"><?php echo Yii::t('products', 'Line Item'); ?></th>
             <th class="lineitem-price"><?php echo Yii::t('products', 'Unit Price'); ?></th>
             <th class="lineitem-quantity"><?php echo Yii::t('products', 'Quantity'); ?></th>
-            <th class="lineitem-adjustments"><?php echo Yii::t('products', 'Adjustments'); ?></th>
-            <th class="lineitem-description"><?php echo Yii::t('products', 'Comments'); ?></th>
+            <th></th>
+            <th></th>
             <th class="lineitem-total"><?php echo Yii::t('products', 'Price'); ?></th>
         </tr>
     </thead>
     <tbody class='line-items<?php if (!$readOnly) echo ' sortable' ?>'>
-     <!-- line items will be placed here by addLineItem() in javascript -->
-    </tbody>
-    <tr class='subtotal-row'>
-        <td class='first-cell'> </td>
-        <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
-        <td class="text-field"><span style="font-weight:bold">  <?php echo Yii::t('quotes','Subtotal:');?> </span></td>
-        <td class="subtotal-container input-cell">
-            <input type="text" readonly='readonly' onfocus='this.blur();'
-             style="font-weight:bold" id="<?php echo $namespacePrefix ?>-subtotal"  
-             class='subtotal' name="Quote[subtotal]">
-            </input>
-        </td>
-    </tr>
-    <tbody class='adjustments<?php if (!$readOnly) echo ' sortable' ?>'>
-     <!-- adjustments will be placed here by addAdjustment() in javascript -->
+
     </tbody>
     <tbody id='quote-total-section'>
     <tr>
         <td class='first-cell'> </td>
-        <td colspan='<?php echo $mini ? 2 : 4; ?>'> </td>
+        <td colspan='<?php echo 4; ?>'> </td>
+        <td class='text-field'><span style="font-weight:bold"> <?php echo Yii::t('quotes','Subtotal:');?> </span></td>
+        <td class="subtotal-container input-cell">
+            <input type="text" onfocus='this.blur();' style="font-weight:bold" 
+             id="<?php echo $namespacePrefix; ?>-subtotal" class='subtotal' name="Quote[subtotal]">
+            </input>
+        </td>
+    </tr>
+    <tr>
+        <td class='first-cell'> </td>
+        <td colspan='<?php echo 4; ?>'> </td>
+        <td class='text-field'><span style="font-weight:bold"> <?php echo Yii::t('quotes','Tax:');?> </span></td>
+        <td class="tax-container input-cell">
+            <input type="text" id="<?php echo $namespacePrefix; ?>-tax" class='tax' name="Quote[tax]">
+            <?php if(!$readOnly) echo "%"; ?>
+            </input>
+        </td>
+    </tr>
+    <tr>
+        <td class='first-cell'> </td>
+        <td colspan='<?php echo 4; ?>'> </td>
         <td class='text-field'><span style="font-weight:bold"> <?php echo Yii::t('quotes','Total:');?> </span></td>
         <td class="total-container input-cell">
             <input type="text" readonly='readonly' onfocus='this.blur();' style="font-weight:bold" 
@@ -257,6 +271,7 @@ x2.<?php echo $namespacePrefix; ?>lineItems = new x2.LineItems ({
 <?php if(!$readOnly): ?>
 <button type='button' class='x2-button add-line-item-button'>+&nbsp;<?php echo Yii::t('quotes', 'Add Line Item'); ?></button>
 <button type='button' class='x2-button add-adjustment-button'>+&nbsp;<?php echo Yii::t('quotes', 'Add Adjustment'); ?></button>
+<button type='button' class='x2-button add-comment-button'>+&nbsp;<?php echo Yii::t('quotes', 'Add Comment'); ?></button>
 <?php endif; ?>
 
 

@@ -82,4 +82,7 @@
   'Hide Directions' => '方向を隠す',
   'Clear Route' => 'クリアルート',
   'View Contact Map' => 'お問い合わせマップを表示',
+  'Platform' => 'オーエス',
+  'Browser' => 'ブラウザ',
+  'Browser Version' => 'ブラウザのバージョン',
 );

@@ -82,4 +82,7 @@
   'Hide Directions' => 'Nascondi direzioni',
   'Clear Route' => 'Cancellare l&#39;itinerario',
   'View Contact Map' => 'Visualizza mappa contatti',
+  'Platform' => 'Sistema operativo',
+  'Browser' => 'browser Internet',
+  'Browser Version' => 'versione del browser internet',
 );

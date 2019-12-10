@@ -51,7 +51,7 @@ foreach($ConFields as $field){
 }
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList',
+    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList','helpGuide',
 );
 if ($opportunityModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';

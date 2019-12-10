@@ -80,6 +80,7 @@ Yii::app()->clientScript
         ->registerCss('applyTheme2', $theme2Css, 'screen', CClientScript::POS_HEAD)
         ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/login.css')
         ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/fontAwesome/css/font-awesome.css')
+        ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/fontAwesome/css/fontawesome.css')
         ->registerScriptFile(Yii::app()->getBaseUrl() . '/js/auxlib.js')
         ->registerScriptFile(Yii::app()->getBaseUrl() . '/js/X2Forms.js');
 ?><!DOCTYPE html>

@@ -39,7 +39,7 @@
 
 $authParams['X2Model'] = $model;
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'share', 'delete', 'quick',
+    'index', 'create', 'view', 'edit', 'share', 'delete', 'quick','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 

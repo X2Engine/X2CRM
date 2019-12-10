@@ -2737,7 +2737,7 @@ return array(
   'name' => 'guest',
   'type' => '2',
   'description' => 'Guest user',
-  'bizrule' => 'return Yii::app()->user->isGuest;',
+  'bizrule' => 'return Yii::app()->user->isLoggedOut;',
   'data' => 'N;',
 ),
 '386' => array (

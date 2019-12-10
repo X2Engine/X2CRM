@@ -99,7 +99,7 @@ class AnonContact extends X2Model {
             $lastModifiedId = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from('x2_anon_contact')
-                    ->order('lastUpdated ASC')
+                    ->order('(lastUpdated) ASC')
                     ->queryScalar();
             $actions = X2Model::model('Actions')->deleteAllByAttributes(array(
                 'associationType' => 'anoncontact',

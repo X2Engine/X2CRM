@@ -103,7 +103,7 @@ if (!is_null($replyId)) {
 $authParams['X2Model'] = $model;
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'delete',
+    'index', 'create', 'view', 'edit', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 echo "<div id='topic-container'>";

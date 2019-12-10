@@ -104,6 +104,11 @@ class InlineEmail extends CFormModel {
      * @var string BCC email address(es), if applicable
      */
     public $bcc;
+    
+    /**
+     * @var string BCC email address(es), if applicable
+     */
+    public $report;
 
     /**
      * @var string Email subject

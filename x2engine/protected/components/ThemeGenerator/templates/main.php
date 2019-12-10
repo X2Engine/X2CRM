@@ -28,7 +28,7 @@ div.page-title {
 
 body {
     background: $colors[background] 
-    background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] ) !important;
+    //background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] ) !important;
 }
 
 a {

@@ -82,4 +82,7 @@
   'Hide Directions' => '길 찾기 숨기기',
   'Clear Route' => '명확한 경로',
   'View Contact Map' => '연락처지도보기',
+  'Platform' => '운영 체제',
+  'Browser' => '브라우저',
+  'Browser Version' => '브라우저 버전',
 );

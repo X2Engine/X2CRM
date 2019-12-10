@@ -92,6 +92,8 @@ $form = $this->beginWidget('CActiveForm', array(
             if (isset($model->list)) {
                 $model->listId = $model->list->id;
             }
+
+            asort($contactLists);
             echo X2Html::activeDropDownList ($model, 'listId', $contactLists, array(
                 'prompt' => Yii::t('marketing','Select a Contact List'),
             ))?>

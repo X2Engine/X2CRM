@@ -168,12 +168,21 @@ class X2SummationReport extends X2Report {
         $primaryModel = $this->getPrimaryModel ();
         $primaryTableName = $primaryModel->tableName ();
         $joinClause = $this->getJoinClauses ($qpg);
+        
+        $relArray = $this->relativeFilters;
+        if(!isset($relArray)){
+            $relArray = array();
+        }
+        
         $whereClause = 'WHERE '.$this->buildSQLConditions (array (
             array (
                 $this->getFilterConditions ('any', $this->anyFilters, $qpg), 'AND',
             ),
             array (
                 $this->getFilterConditions ('all', $this->allFilters, $qpg), 'AND',
+            ),
+            array (
+               $this->getRelativeFilterConditions ('any', $relArray, $qpg), 'AND',
             ),
             array (
                 $this->getDrillDownCondition ($qpg), 'AND',
@@ -220,12 +229,19 @@ class X2SummationReport extends X2Report {
         $primaryTableName = $primaryModel->tableName ();
         // relevant related models must be added to JOIN clause
         $joinClause = $this->getJoinClauses ($qpg);
+        $relArray = $this->relativeFilters;
+        if(!isset($relArray)){
+            $relArray = array();
+        }
         $whereClause = 'WHERE '.$this->buildSQLConditions (array (
             array (
                 $this->getFilterConditions ('any', $this->anyFilters, $qpg), 'AND',
             ),
             array (
                 $this->getFilterConditions ('all', $this->allFilters, $qpg), 'AND',
+            ),
+            array (
+               $this->getRelativeFilterConditions ('any', $relArray, $qpg), 'AND',
             ),
             array (
                 $this->getPermissionsCondition ($qpg), 'AND',
@@ -237,7 +253,7 @@ class X2SummationReport extends X2Report {
             ),
             array (
                 $this->getFilterConditions ('all', $this->groupsAllFilters, $qpg), 'AND',
-            ),
+            )
         ));
         // query with groups for section headers, ungrouped query will be used for drill down
         $groupByClause = $this->getGroupByClause ();
@@ -276,6 +292,7 @@ class X2SummationReport extends X2Report {
             if ($this->includeTotalsRow) {
                 $totalsRow = $this->formatData (array ($totalsRow));
                 $totalsRow = array_pop ($totalsRow);
+                if(isset($totalsRow[0]))unset($totalsRow[0]);
             }
             if ($this->print || $this->email) {
                 $this->printReport (
@@ -291,9 +308,16 @@ class X2SummationReport extends X2Report {
             $gridViewParams = $this->getSummationReportGridViewParams ($groupHeaders);
             // a separate grid view is used just for the summation row. Allows summation row to be
             // visible on every page of sibling grid view.
-            if ($this->includeTotalsRow)
+            if ($this->includeTotalsRow){
                 $totalsRowGridViewParams = $this->getSummationReportGridViewParams (
                     array ($totalsRow), 'summation-grid');
+                    //unset the area where the plus goes, not needed for the total row
+                    if(isset($totalsRowGridViewParams['columns'][0])){
+                        $totalsRowGridViewParams['columns'][0]['name'] = "TotalFillColumn";
+                        $totalsRowGridViewParams['columns'][0]['value'] = "";
+                    }
+            }
+
             Yii::app()->controller->renderPartial (
                 'application.modules.reports.components.reports.views._summationReport',
                 array (
@@ -302,6 +326,66 @@ class X2SummationReport extends X2Report {
                         $totalsRowGridViewParams : null,
                 ), false, true);
         }
+    }
+    
+    public function generatePeriodic(){
+        $groupHeaders = $this->generate();
+        list ($drillDownRecords, $drillDownFormattedHeaders) = $this->getAllDrillDownRecords();
+        $drillDownRecords = $this->formatData ($drillDownRecords);
+        $this->clearCache ();
+        $records = $this->insertGroupHeaders (
+            $drillDownRecords, $groupHeaders, 
+            $drillDownFormattedHeaders, $this->formatData ($groupHeaders), !$this->export);
+        
+        //Format records' dates from numbers to month names
+        $records = $this->recordsDateFormatter($records);
+        $records = $this->formatCurrency($records);
+        
+        if ($this->includeTotalsRow) {
+            $totalsRow = $this->getTotalsRow ($groupHeaders,  $this->getGridColumnAttrs ());
+            $totalsRow = $this->formatData (array ($totalsRow));
+            $totalsRow = array_pop ($totalsRow);
+        }
+        $result = array_merge ($records, $this->includeTotalsRow ? 
+                array ($totalsRow) : array ());
+        
+        $formattedColumnHeaders = $this->getFormattedColumnHeaders ();
+        $columns = array ();
+        $gridColumnAttrs = array_reverse ($this->getGridColumnAttrs ());
+        foreach ($formattedColumnHeaders as $header) {
+            $columns[] = array (
+                'name' => array_pop ($gridColumnAttrs),
+                'header' => $header,
+                'type' => 'raw',
+            );
+        }
+        
+        $htmlBody = "";
+        
+        if( count($result) ){
+            $htmlBody .= '<table style = "border-collapse: collapse; width: 100%;"> <tr>';
+            foreach ($columns as $header){
+                $htmlBody .= '<th style="border: 1px solid black; background-color: rgb(126, 173, 255);">'.
+                        $header['header'].'</th>';
+            }
+            $htmlBody .= '</tr>';
+            foreach ($result as $row){
+                $subHeader = false;
+                $htmlBody .= '<tr>';
+                foreach ($row as $key => $value){
+                    if($key == '0' || $subHeader == true ){
+                        $subHeader = true;
+                        $htmlBody .= '<th style="border: 1px solid black; background-color: rgb(238, 238, 238);">'. $value .'</th>';
+                    }else{
+                        $htmlBody .= '<td style="border: 1px solid black;">'. $value .'</td>';
+                    }
+                }
+                $htmlBody .= '</tr>';
+            }
+            $htmlBody .= '</table>';
+        }
+        
+        return $htmlBody;
     }
     
     /**
@@ -331,7 +415,7 @@ class X2SummationReport extends X2Report {
                     // If our time format is of Month Day, Year then
                     // need to format it from epoch to said format
                     foreach($queryDateTypes as $q){
-                        if(strpos($key, strval($q['fieldName'])) !== false){
+                        if(strpos($key, strval($q['fieldName'])) !== false && is_numeric($value) ){
                             $dateTime = date('M d, Y', $value);
                             $records[$i][$key] = $dateTime;
                             continue;
@@ -506,7 +590,7 @@ class X2SummationReport extends X2Report {
                         $colModel = $colModelAndAttr[0];
                         $colAttr = $colModelAndAttr[1];
                         $colModel->$colAttr = $val;
-                        $val = $colModel->renderAttribute ($colAttr, false, true, false);
+                        //$val = $colModel->renderAttribute ($colAttr, false, true, false);
                     }
                     $j++;
                 }
@@ -525,14 +609,14 @@ class X2SummationReport extends X2Report {
                         $this->getColumns (), $this->getAnyFilterAttrs (),
                         $this->getAllFilterAttrs (), $this->getOrderByAttributes (),
                         $this->getGroupAttrs (), $this->getGroupsAnyFilterAttrs (),
-                        $this->getGroupsAllFilterAttrs ()
+                        $this->getGroupsAllFilterAttrs (), $this->getRelativeFilterAttrs()
                     ));
             } else {
                 $this->_relatedModelsByLinkField = $this->_getRelatedModelsByLinkField (
                     array_merge (
                         $this->getColumns (), $this->getAnyFilterAttrs (),
                         $this->getAllFilterAttrs (), $this->getGroupsOrderByAttributes (),
-                        $this->getGroupsAnyFilterAttrs ()
+                        $this->getGroupsAnyFilterAttrs (), $this->getRelativeFilterAttrs()
                     ));
             }
         }
@@ -583,6 +667,11 @@ class X2SummationReport extends X2Report {
         if ($groupCount) {
             if (count ($this->drillDownColumns)) {
                 $groupAttrs = $this->getGroupAttrs ();
+                foreach($groupAttrs as $attrs){
+                    if(array_key_exists($attrs, $drillDownFormattedHeaders)){
+                        unset($drillDownFormattedHeaders[$attrs]);
+                    }
+                }
                 // insert group headers into report records.
                 // O(r * g + h) where r = |records|, g = |group attributes|, h = |headers|
                 $newReportRecords = array ();
@@ -755,12 +844,20 @@ class X2SummationReport extends X2Report {
         $primaryModel = $this->getPrimaryModel ();
         $primaryTableName = $primaryModel->tableName ();
         $joinClause = $this->getJoinClauses ($qpg);
+        $relArray = $this->relativeFilters;
+        if(!isset($relArray)){
+            $relArray = array();
+        }
+        
         $whereClause = 'WHERE '.$this->buildSQLConditions (array (
             array (
                 $this->getFilterConditions ('any', $this->anyFilters, $qpg), 'AND',
             ),
             array (
                 $this->getFilterConditions ('all', $this->allFilters, $qpg), 'AND',
+            ),
+            array (
+               $this->getRelativeFilterConditions ('any', $relArray, $qpg), 'AND',
             ),
             array (
                 $this->getPermissionsCondition ($qpg), 'AND',

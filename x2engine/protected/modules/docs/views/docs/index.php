@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'create', 'createEmail', 'createQuote', 'import', 'export',
+    'index', 'create', 'createEmail', 'createQuote', 'import', 'export', 'helpGuide',
 );
 $this->insertMenu($menuOptions);
 

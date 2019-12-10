@@ -51,15 +51,40 @@ $insertableAttributes[Yii::t('profile','Signature')] = '{signature}';
 $contacts = Yii::t('contacts','{module} Attributes', array (
     '{module}' => Modules::displayName (false, "Contacts"))
 );
-
 $JSParams = CJSON::encode (array(
     'insertableAttributes' => array(
-        $contacts => $insertableAttributes
+       $contacts => $insertableAttributes
 )));
 
 Yii::app()->clientScript->registerScriptFile ($this->module->assetsUrl.'/js/CampaignForm.js');
 Yii::app()->clientScript->registerScript('editorSetup',"
     x2.CampaignForm ($JSParams);
+", CClientScript::POS_READY);
+
+Yii::app()->clientScript->registerScript('getListModel',"
+    // reinitialize ckeditor instance with new set of insertable attributes whenever the record type
+    // selector is changed
+    $('#Campaign_listId').change (function () {
+        getValue = $(this).val();
+        $.ajax({
+            url: 'marketing/getListModelAttr',
+            method: 'GET',
+            data: {listId: getValue},
+            success: function (data){
+                var insertableAttributes = JSON.parse(data);
+                if(window.emailEditor) {
+                    window.emailEditor.updateElement ();
+                    window.emailEditor.destroy(true);
+                }
+                
+                window.emailEditor = createCKEditor('Campaign_content',{
+                    tabIndex:5,
+                    insertableAttributes: insertableAttributes,
+                    fullPage: false
+                });
+            }
+        });
+    });
 ", CClientScript::POS_READY);
 
 $contactLists = CHtml::listData (Campaign::getValidContactLists(), 'id', 'name');
@@ -89,40 +114,47 @@ $form = $this->beginWidget('CActiveForm', array(
         <div class='row'>
             <label><?php echo Yii::t('marketing', 'List:')?></label>
             <?php 
-            if (isset($model->list)) {
-                $model->listId = $model->list->id;
-            }
-            echo X2Html::activeDropDownList ($model, 'listId', $contactLists, array(
-                'prompt' => Yii::t('marketing','Select a Contact List'),
-            ))?>
-            <?php echo X2Html::hint (Yii::t('marketing', 'Choose a contact list to send the campaign out to, or create one here.'));?>
+                if (isset($model->list)) {
+                    $model->listId = $model->list->id;
+                }
+                
+                asort($contactLists);
+                echo X2Html::activeDropDownList ($model, 'listId', $contactLists, 
+                    array(
+                        'prompt' => Yii::t('marketing', 'Select a Mailing List'),
+                    )
+                );
+            ?>
+            <?php echo X2Html::hint (Yii::t('marketing', 'Choose a mailing list to send the campaign out to, or create one here.'));?>
             <span id='quick-create-list'>
                 <?php echo X2Html::fa ('plus')?>
             </span>
         </div>
         <div class ='row' id='supButton'>
             <label><?php echo Yii::t('marketing', 'Suppression List(s):')?></label>
-            <?php    echo CHtml::button(
-                Yii::t('app', 'Add Suppression List(s)'), 
-                array(
-                    
-                ));
+            <?php    
+                echo CHtml::button(
+                    Yii::t('app', 'Add Suppression List(s)'), 
+                    array(
+                    )
+                );
             ?>
-            </div>
+        </div>
         <div id= 'supRow' class='row' style = 'display:none;'>
             <label><?php echo Yii::t('marketing', 'Suppression List(s):')?></label>
             <?php
-            if (isset($model->suppressionList)) {
-                $model->suppressionListId = $model->suppressionList->id;
-            }
-            echo X2Html::activeDropDownList ($model, 'suppressionListId', $contactLists, array(
-        
-                'multiple' => "multiple",
-                'class' => 'multiselect',
-                'size' => 8,
-                'style'=> "height:100px;",
-                
-            ))?>
+                if (isset($model->suppressionList)) {
+                    $model->suppressionListId = $model->suppressionList->id;
+                }
+
+                echo X2Html::activeDropDownList ($model, 'suppressionListId', $contactLists, array(
+                    'multiple' => "multiple",
+                    'class' => 'multiselect',
+                    'size' => 8,
+                    'style'=> "height:100px;",
+                    
+                ));
+            ?>
             <?php echo X2Html::hint (Yii::t('marketing', 'Choose a Suppression list to avoid sending the campaign email, or create one here. Do not'
                     . ' mix types of list as this can cuase unpredictable error. Controls CTRL + CLICK to pick multiple list or unselect a list.'));?>
             <span id='quick-create-suppression-list'>
@@ -149,6 +181,10 @@ $suppressFields = array ('listId', 'suppressionListId');
 if (!Yii::app()->params->isAdmin) {
     $suppressFields = array_merge($suppressFields, array('bouncedAccount', 'enableBounceHandling'));
 }
+echo Yii::t('marketing', '&nbsp; <b>Note:</b> You can use dynamic variables such as {firstName}, {lastName}
+ or {phone} in your template. When you email a record of the &nbsp; specified type, these will be replaced 
+ by the appropriate value.');
+
 $this->widget('FormView', array(
     'model'=>$model,
     'form'=>$form,

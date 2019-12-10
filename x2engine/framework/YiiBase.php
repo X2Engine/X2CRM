@@ -463,7 +463,7 @@ class YiiBase
 					}
 				}
 				else
-					include($className.'.php');
+					strcmp("PHPUnit_Runner_Version", $className) ? 'empty' : include($className.'.php');
 			}
 			else  // class name with namespace in PHP 5.3
 			{

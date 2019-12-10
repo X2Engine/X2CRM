@@ -115,6 +115,41 @@ class X2ReportForm extends X2ActiveForm {
             'id' => $this->_primaryModelTypeDropdownId
         ));
     }
+    
+    
+    /**
+     * @param CModel $formModel
+     * @param string $name name of input
+     * @param X2Model $model used to populate subTotal by attribute options
+     */
+    public function subTotalList (
+        CModel $formModel, $name, array $htmlOptions = array (), $attributes=null) {
+        CHtml::resolveNameID ($formModel, $name, $htmlOptions);
+
+        $primaryModelType = $formModel->primaryModelType;
+        $primaryModel = $primaryModelType::model ();
+        $value = $formModel->$name;
+        foreach ($value as &$val) {
+            list ($model, $attr, $fns, $linkField) = $formModel->getModelAndAttr ($val['name']);
+            $field = $model->getField ($val['name']);
+            if ($field) {
+                if ($field->type === 'date') {
+                    $val['value'] = Formatter::formatDate ($val['value'], 'medium');
+                } elseif ($field->type === 'dateTime') {
+                    $val['value'] = Formatter::formatDateTime  ($val['value']);
+                }
+            }
+        }
+
+        return $this->widget ('X2SubTotalList', array (
+            'id' => $htmlOptions['id'],
+            'name' => $htmlOptions['name'],
+            'value' => $value,
+            'model' => X2Model::model ($formModel->primaryModelType),
+            'useLinkedModels' => true,
+            'attributes' => $attributes,
+        ), true);
+    }
 
     /**
      * @param CModel $formModel
@@ -141,6 +176,39 @@ class X2ReportForm extends X2ActiveForm {
         }
 
         return $this->widget ('X2ConditionList', array (
+            'id' => $htmlOptions['id'],
+            'name' => $htmlOptions['name'],
+            'value' => $value,
+            'model' => X2Model::model ($formModel->primaryModelType),
+            'useLinkedModels' => true,
+            'attributes' => $attributes,
+        ), true);
+    }
+
+    /**
+     * this function will be for just geting all the time base attributes 
+     * @param CModel $formModel
+     * @param string $name name of input
+     * @param X2Model $model used to populate condition list attribute options
+     */
+    public function filterConditionTimeList (
+        CModel $formModel, $name, array $htmlOptions = array (), $attributes=null) {
+        CHtml::resolveNameID ($formModel, $name, $htmlOptions);
+
+        $primaryModelType = $formModel->primaryModelType;
+        $primaryModel = $primaryModelType::model ();
+        $value = $formModel->$name;
+        foreach ($value as &$val) {
+            list ($model, $attr, $fns, $linkField) = $formModel->getModelAndAttr ($val['name']);
+            $field = $model->getField ($val['name']);
+
+                    $val['value'] = $val['value'];
+                
+            }
+        
+        
+        
+        return $this->widget ('X2RelativeConditionList', array (
             'id' => $htmlOptions['id'],
             'name' => $htmlOptions['name'],
             'value' => $value,

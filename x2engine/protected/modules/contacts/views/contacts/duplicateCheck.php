@@ -41,7 +41,7 @@ $this->pageTitle = $newRecord->renderAttribute('name');
 $authParams['X2Model'] = $newRecord;
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'view',
+    'all', 'lists', 'create', 'view', 'helpGuide',
 );
 $this->insertMenu($menuOptions, null, $authParams);
 

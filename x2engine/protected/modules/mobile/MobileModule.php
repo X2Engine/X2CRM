@@ -230,12 +230,13 @@ class MobileModule extends X2WebModule {
                 'css' => array_merge (
                     array (
                         'themes/x2engine/css/fontAwesome/css/font-awesome.css',
+                        'themes/x2engine/css/fontAwesome/css/fontawesome.css',
                         'themes/x2engine/css/css-loaders/load8.css',
                         //'themes/x2engine/css/x2IconsStandalone.css',
                         'themes/x2engine/css/x2touchIcons.css',
                          
                         'themes/x2engine/css/components/DataWidget/DataWidget.css',
-                        'js/c3/c3.css'
+                        'js/bb/billboard.min.css'
                          
                     ), 
                     YII_DEBUG && !self::$useMergedCss ? array(

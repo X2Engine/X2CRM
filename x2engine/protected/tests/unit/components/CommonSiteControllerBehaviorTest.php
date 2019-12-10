@@ -112,7 +112,7 @@ class CommonSiteControllerBehaviorTest extends X2TestCase {
         Yii::app()->settings->ipBlacklist = $testIps;
         $behaviorClass = new CommonSiteControllerBehavior;
 
-        $this->setExpectedException ('CHttpException');
+        $this->expectException ('CHttpException');
         $behaviorClass->verifyIpAccess ('10.0.1.20');
     }
 

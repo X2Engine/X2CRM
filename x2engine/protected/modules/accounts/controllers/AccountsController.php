@@ -641,8 +641,8 @@ class AccountsController extends x2base {
                 }
             }
         } else { //static or campaign lists
-            if (isset($_POST['Accounts'])) {
-                $list->attributes = $_POST['Accounts'];
+            if (isset($_POST['X2List'])) {
+                $list->attributes = $_POST['X2List'];
                 $list->modelName = 'Accounts';
                 $list->lastUpdated = time();
                 $list->save();
@@ -651,7 +651,7 @@ class AccountsController extends x2base {
         }
 
         if (empty($criteriaModels)) {
-            $default = new AccountsCriterion;
+            $default = new X2ListCriterion;
             $default->value = '';
             $default->attribute = '';
             $default->comparison = 'contains';
@@ -927,6 +927,15 @@ class AccountsController extends x2base {
 			        ))."');"
                 ),
 	        ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Accounts Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-accounts',
+                'linkOptions' => array(
+                    'id' => 'account-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 

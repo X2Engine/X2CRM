@@ -654,6 +654,15 @@ class ProductsController extends x2base {
                 )),
                  'url'=>array('admin/exportModels', 'model'=>'Product'),
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('workflow', 'Products Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2products',
+                'linkOptions' => array(
+                    'id' => 'product-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 

@@ -82,4 +82,7 @@
   'Hide Directions' => 'مخفی کردن دستورالعمل',
   'Clear Route' => 'پاک کردن مسیر',
   'View Contact Map' => 'نمایش نقشه تماس',
+  'Platform' => 'سیستم عامل',
+  'Browser' => 'مرورگر اینترنت',
+  'Browser Version' => 'نسخه مرورگر وب',
 );

@@ -36,7 +36,7 @@
 
 
 
-
+Yii::import('application.models.X2List');
 Yii::import('application.models.X2Model');
 
 /**

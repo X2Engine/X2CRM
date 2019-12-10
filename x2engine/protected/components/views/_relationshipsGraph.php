@@ -168,24 +168,7 @@ if (!$this->inline) {
         ?>
         </ul>
     </div>
-    <div id='graph-nav-controls' class='no-selection'>
-        <div class='panning-buttons-container'>
-            <span class='pan-up-button fa fa-lg fa-chevron-up icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Pan up')); ?>'></span>
-            <span class='pan-right-button fa fa-lg fa-chevron-right icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Pan right')); ?>'></span>
-            <span class='pan-down-button fa fa-lg fa-chevron-down icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Pan down')); ?>'></span>
-            <span class='pan-left-button fa fa-lg fa-chevron-left icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Pan left')); ?>'></span>
-        </div>
-        <div class='zoom-buttons-container'>
-            <span class='zoom-in-button fa fa-lg fa-search-plus icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Zoom in')); ?>'></span>
-            <span class='zoom-out-button fa fa-lg fa-search-minus icon-button'
-             title='<?php echo CHtml::encode (Yii::t('app', 'Zoom out')); ?>'></span>
-        </div>
-    </div>
+
 </div>
 <?php
 }

@@ -191,7 +191,7 @@
   'Global account' => 'Παγκόσμια λογαριασμό',
   'Bulk Email Settings' => 'Μαζική Ρυθμίσεις Email',
   'Service Case Email Settings' => 'Ρυθμίσεις Email Service υπόθεση',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Μπορείτε να χρησιμοποιήσετε τις παρακάτω μεταβλητές σε αυτό το πρότυπο: {first} , {last} , {phone} , {email} , {description} και {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Μπορείτε να χρησιμοποιήσετε τις παρακάτω μεταβλητές σε αυτό το πρότυπο: {first} , {last} , {phone} , {email} , {description} , {case} και {link} .',
   'Introduction' => 'Εισαγωγή',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'Αυτό το χαρακτηριστικό επιτρέπει X2Engine να λαμβάνει και να καταγράφει μηνύματα ηλεκτρονικού ταχυδρομείου σε μια ειδική διεύθυνση.',
   'Filesystem ownership and permissions' => 'Κυριότητα Filesystem και τα δικαιώματα',

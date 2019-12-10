@@ -241,7 +241,7 @@
         padding: 12px;
         overflow: auto;
         &.important-action {
-            background: $lightBabyBlue;
+            background: $lightPastelGreen;
         }
     }
 
@@ -487,6 +487,10 @@
         &.email_sent, &.email_sent_quote, &.email_sent_invoice {
             background-image: url(../images/eventIcons/email_sent.png);
         }
+        /**
+         * Icon is now switched to font awesome user-circle.
+         * https://fontawesome.com/icons/user-circle?style=solid
+         */
         &.feed {
             background-image: url(../images/eventIcons/default.png);
         }

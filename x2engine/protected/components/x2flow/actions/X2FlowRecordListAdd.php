@@ -68,7 +68,7 @@ class X2FlowRecordListAdd extends X2FlowAction {
                     'type' => 'link',
                     'linkType' => 'X2List',
                     'linkSource' => Yii::app()->controller->createUrl(
-                            CActiveRecord::model('X2List')->autoCompleteSource, array(
+                            '/workflow/workflow/getLists', array(
                         'static' => 1
                             )
                     )

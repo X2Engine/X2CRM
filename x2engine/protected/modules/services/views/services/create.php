@@ -38,7 +38,7 @@
 
 
 $menuOptions = array(
-    'index', 'create', 'createWebForm',
+    'index', 'create', 'createWebForm', 'publicKB', 'portal',
 );
 $this->insertMenu($menuOptions);
 

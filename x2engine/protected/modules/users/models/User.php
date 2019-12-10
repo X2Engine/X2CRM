@@ -38,7 +38,8 @@
 
 
 
-Yii::import('application.models.X2Model');
+Yii::import('application.models.X2ActiveRecord');
+Yii::import('application.components.behaviors.LinkableBehavior');
 
 /**
  * This is the model class for table "x2_users".

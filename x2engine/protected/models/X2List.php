@@ -60,9 +60,9 @@ class X2List extends X2Model {
 
     private $_itemAttributeLabels = array();
     
-    private $modelName = "contacts";
     
-    private $tableName = "x2_contacts";
+    
+    private $modelTableName = null;
 
     public static function model($className = __CLASS__){
         return parent::model($className);
@@ -141,6 +141,7 @@ class X2List extends X2Model {
      * @return array
      */
     public static function getComparisonList(){
+        
         return array(
             '=' => Yii::t('contacts', 'equals'),
             '>' => Yii::t('contacts', 'greater than'),
@@ -164,6 +165,16 @@ class X2List extends X2Model {
             (int) $plural,
             '{contact}' => Modules::displayName(false, 'Contacts'),
         ));
+    }
+    
+
+    
+    public function getModelTableName() {
+        if(empty($this->modelTableName)){
+            if(!isset($this->modelTableName) && class_exists($this->modelName))
+                $this->modelTableName =  X2Model::model($this->modelName)->tableName();
+        }
+        return $this->modelTableName;
     }
 
     public function createLink(){
@@ -245,7 +256,8 @@ class X2List extends X2Model {
 
     public function calculateCount () {
         $criteria = $this->queryCriteria ();
-        return Contacts::model ()->count ($criteria);
+        $name = $this->modelName;
+        return $name::model ()->count ($criteria);
     }
 
 
@@ -384,7 +396,8 @@ class X2List extends X2Model {
         }
 
         if($useAccessRules){
-            $accessCriteria = X2Model::model('Contacts')->getAccessCriteria(); // record-level access control for Contacts
+            
+            $accessCriteria = X2Model::model($this->modelName)->getAccessCriteria(); // record-level access control for Contacts
             $accessCriteria->mergeWith($search, 'AND');
             return $accessCriteria;
         }else{
@@ -763,7 +776,7 @@ class X2List extends X2Model {
                 // Populate email so it appears in newsletter list view
                 $email = Yii::app()->db->createCommand()
                     ->select('email')
-                    ->from($this->tableName)
+                    ->from('x2_contacts')
                     ->where('id = :id', array(':id' => $id))
                     ->queryScalar();
                 if ($email)
@@ -790,8 +803,9 @@ class X2List extends X2Model {
             // temporary variables with their names pluralized
             ${"{$property}s"} = $this->criteriaInput[$property];
         }
+        $name = $this->modelName;
         $comparisonList = self::getComparisonList();
-        $contactModel = Contacts::model();
+        $contactModel = $name::model();
         $fields = $contactModel->getFields(true);
 
         for($i = 0; $i < count($attributes); $i++){ // create new criteria
@@ -865,22 +879,36 @@ class X2List extends X2Model {
         return $model->exists($listCriteria);        // see if this record is on the list
     }
 
-    public static function getRoute($id){
+    //$modelType since list can be about any model, need to ensure routing 
+    public static function getRoute($id, $modelType = null){
+        //check if we can get the modelType from the list
+        //only do this check if $modelType is null
+        if(!isset($modelType) && isset($id) && !empty($id) && is_numeric($id)){
+            $list = X2List::model()->findByPK($id);
+            if(isset($list)){
+                $modelType = strtolower($list->modelName);
+            }
+        }
+        //if $modelType still not set assume contacts
+        if(!isset($modelType)) $modelType = "contacts";
         if($id == 'all')
-            return array('/'.$model->name.'/'.$this->modelName.'/index');
+            return array('/'.$modelType.'/'.$modelType.'/index');
         else if($id == 'new')
-            return array('/'.$model->name.'/'.$model->name.'/newContacts');
+            return array('/'.$modelType.'/'.$modelType.'/new' . $modelType);
         else if(empty($id) || $id == 'my')
-            return array('/'.$model->name.'/'.$model->name.'/myContacts');
+            return array('/'.$modelType.'/'.$modelType.'/my' . $modelType);
         else
-            return array('/'.$model->name.'/'.$model->name.'/list', 'id' => $id);
+            return array('/'.$modelType.'/'.$modelType.'/list', 'id' => $id);
     }
 
-    public static function getAllStaticListNames($controller){
+    public static function getAllStaticListNames($controller ,$modelType = null){
         $listNames = array();
-
+        
+        //check for model type
+        if(!isset($modelType) && isset($controller->modelClass)) $modelType = $controller->modelClass;
+        if(!isset($modelType) || empty($modelType)) $modelType = "contacts";
         // get all static lists
-        foreach(X2List::model()->findAllByAttributes(array('type' => 'static')) as $list){
+        foreach(X2List::model()->findAllByAttributes(array('type' => 'static', 'modelName' =>  $modelType)) as $list){
             if($controller->checkPermissions($list, 'edit')) // check permissions
                 $listNames[$list->id] = $list->name;
         }

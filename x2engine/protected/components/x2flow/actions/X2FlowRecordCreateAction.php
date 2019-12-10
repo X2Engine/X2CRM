@@ -57,15 +57,63 @@ class X2FlowRecordCreateAction extends X2FlowAction {
      * @return array
      */
     public function paramRules() {
+        $visOptions = array(
+            1 => Yii::t('actions', 'Public'),
+            0 => Yii::t('actions', 'Private'),
+        );
+        $priorityOptions = array(
+            '1' => Yii::t('actions', 'Low'),
+            '2' => Yii::t('actions', 'Medium'),
+            '3' => Yii::t('actions', 'High')
+        );
+        $assignmentOptions = array('{assignedTo}' => '{' . Yii::t('studio', 'Owner of Record') . '}') + X2Model::getAssignmentOptions(false, true); // '{assignedTo}', groups, no 'anyone'
+        $colorOptions = Dropdowns::getItems(Actions::COLORS_DROPDOWN_ID);
         return array_merge(parent::paramRules(), array(
             'title' => Yii::t('studio', $this->title),
             'info' => Yii::t('studio', $this->info),
-            'modelRequired' => 1,
+
             'options' => array(
-                // array('name'=>'attributes'),
-                array('name' => 'subject', 'label' => Yii::t('actions', 'Subject'), 'optional' => 1),
-                array('name' => 'description', 'label' => Yii::t('actions', 'Description'), 'type' => 'text')
+                 array(
+                    'name' => 'dueDate',
+                    'label' => Yii::t('actions', 'Due Date'),
+                    'type' => 'dateTime', 'optional' => 1
+                ),
+                array(
+                    'name' => 'subject',
+                    'label' => Yii::t('actions', 'Subject'),
+                    'optional' => 1
+                ),
+                array(
+                    'name' => 'description',
+                    'label' => Yii::t('actions', 'Description'),
+                    'type' => 'text'
+                ),
+                array(
+                    'name' => 'assignedTo',
+                    'label' => Yii::t('actions', 'Assigned To'),
+                    'type' => 'dropdown',
+                    'options' => $assignmentOptions
+                ),
+                array(
+                    'name' => 'priority',
+                    'label' => Yii::t('actions', 'Priority'),
+                    'type' => 'dropdown',
+                    'options' => $priorityOptions
+                ),
+                array(
+                    'name' => 'visibility',
+                    'label' => Yii::t('actions', 'Visibility'),
+                    'type' => 'dropdown',
+                    'options' => $visOptions
+                ),
+                array(
+                    'name' => 'color',
+                    'label' => Yii::t('actions', 'Calendar Color'),
+                    'type' => 'dropdown',
+                    'options' => $colorOptions
+                ),
         )));
+
     }
 
     /**
@@ -79,6 +127,9 @@ class X2FlowRecordCreateAction extends X2FlowAction {
         $action->associationType = X2Model::getAssociationType(get_class($params['model']));
         $action->associationId = $params['model']->id;
         $action->subject = $this->parseOption('subject', $params);
+        $action->dueDate = $this->parseOption('dueDate', $params);
+        $action->color = $this->parseOption('color', $params);
+
         $action->actionDescription = $this->parseOption('description', $params);
         if ($params['model']->hasAttribute('assignedTo')) {
             $action->assignedTo = $params['model']->assignedTo;

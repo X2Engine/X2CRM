@@ -50,9 +50,12 @@
     }
   }
   tr.line-item {
-    .x2-5th-child, .x2-6th-child {
+    .x2-5th-child {
       display: none;
     }
+  }
+  .add-comment-button{
+    display: none !important;
   }
   .add-adjustment-button {
     display: none !important;

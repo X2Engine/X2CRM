@@ -54,7 +54,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportu
 $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps',
+    'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps', 'helpGuide',
 );
 $enableSelectAllOnAllPages = false;
 if ($this->route == 'contacts/contacts/index') {
@@ -64,11 +64,11 @@ if ($this->route == 'contacts/contacts/index') {
     $enableSelectAllOnAllPages = true;
     //unset($menuItems[0]['url']);
     //unset($menuItems[4]); // View List
-} elseif ($this->route == 'contacts/contacts/myContacts') {
+} elseif ($this->route == 'contacts/contacts/mycontacts') {
     $heading = Yii::t('contacts', 'My {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchMyContacts();
     $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
-} elseif ($this->route == 'contacts/contacts/newContacts') {
+} elseif ($this->route == 'contacts/contacts/newcontacts') {
     $heading = Yii::t('contacts', 'Today\'s {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchNewContacts();
     $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));

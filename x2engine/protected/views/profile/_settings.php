@@ -290,6 +290,13 @@ $form = $this->beginWidget('X2ActiveForm', array(
                 $model, 'defaultCalendar', X2CalendarPermissions::getEditableUserCalendarNames());
             ?>
         </div>
+        <div class="cell">
+            <?php echo $form->labelEx($model, 'appointmentCalendar'); ?>
+            <?php
+            echo $form->dropDownList(
+                $model, 'appointmentCalendar', X2CalendarPermissions::getEditableUserCalendarNames());
+            ?>
+        </div>
     </div>
     <div class="row">
         <div class="cell" style="margin: 8px 0px">

@@ -190,7 +190,7 @@
   'Global account' => 'حساب جهانی',
   'Bulk Email Settings' => 'تنظیمات ایمیل انبوه',
   'Service Case Email Settings' => 'خدمات مورد تنظیمات ایمیل',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'شما می توانید از متغیر های زیر را در این قالب استفاده کنید: {first} ، {last} ، {phone} ، {email} ، {description} ، و {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'شما می توانید از متغیر های زیر را در این قالب استفاده کنید: {first} ، {last} ، {phone} ، {email} ، {description} ، {case} ، و {link} .',
   'Introduction' => 'معرفی',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'این قابلیت اجازه می دهد تا X2Engine برای دریافت و ثبت ایمیل در یک آدرس خاص است.',
   'Filesystem ownership and permissions' => 'مالکیت فایل سیستم ها و مجوز ها',

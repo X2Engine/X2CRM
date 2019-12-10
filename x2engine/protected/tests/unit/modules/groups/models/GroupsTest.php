@@ -102,13 +102,12 @@ class GroupTest extends X2DbTestCase {
         
         // assert that group to user records exist for this group
         $this->assertTrue (
-            sizeof (GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) > 0);
+            sizeof ((array)GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) > 0);
         $group->delete ();
 
         // assert that group to user records were deleted
         $this->assertTrue (
-            sizeof (
-                GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) === 0);
+            sizeof ((array)GroupToUser::model ()->findByAttributes (array ('groupId' => $group->id))) === 0);
 
     }
 

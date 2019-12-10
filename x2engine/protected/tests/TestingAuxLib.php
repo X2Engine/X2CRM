@@ -256,7 +256,7 @@ class TestingAuxLib  {
         Yii::app()->setComponent ('authManager', array ( 
             'class' => 'X2AuthManagerMock',
             'connectionID' => 'db',
-            'defaultRoles' => array('guest', 'authenticated', 'admin'),
+            'defaultRoles' => array('guest', 'portal', 'authenticated', 'admin'),
             'itemTable' => 'x2_auth_item',
             'itemChildTable' => 'x2_auth_item_child',
             'assignmentTable' => 'x2_auth_assignment',

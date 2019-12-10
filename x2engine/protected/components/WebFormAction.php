@@ -418,12 +418,14 @@ class WebFormAction extends CAction {
                 $model->contactId = "Unregistered";
             }
 
+            $authorField = empty($model->subject) ? 'subject' : 'description';
+            if ($authorField == 'description' && !empty($model->description)) $model->description .= "\n\n";
             if (isset($fullName) || isset($email)) {
-                $model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
+                $model->{$authorField} .= Yii::t('services', 'Web Form Case entered by {name}', array(
                             '{name}' => isset($fullName) ? $fullName : $email,
                 ));
             } else {
-                $model->subject = Yii::t('services', 'Web Form Case');
+                $model->{$authorField} .= Yii::t('services', 'Web Form Case');
             }
 
             $model->origin = 'Web';

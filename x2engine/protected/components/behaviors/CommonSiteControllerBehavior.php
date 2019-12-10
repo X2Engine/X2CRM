@@ -238,6 +238,18 @@ class CommonSiteControllerBehavior extends CBehavior {
 
             LoginThemeHelper::login();
             
+            $cookieName = 'portal_user';
+            if(Yii::app()->user->isPortal) {
+                //remember if user is portal user for next login
+                $cookie = new CHttpCookie($cookieName, 1);
+                $cookie->expire = time()+60*60*24*365; // ~year expiration
+                Yii::app()->request->cookies[$cookieName] = $cookie;
+
+                $this->owner->redirect(array('/services/portal'));
+            } else {
+                unset(Yii::app()->request->cookies[$cookieName]);
+            }
+
             if ($isMobile) {
                 $this->owner->redirect($this->owner->createUrl('/mobile/home'));
             } else {

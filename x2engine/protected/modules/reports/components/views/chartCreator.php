@@ -57,14 +57,10 @@ $imgUrl = $this->controller->module->assetsUrl.'/images/';
 // ", CClientScript::POS_END);
 ?>
 
-<!-- <div class='charts-page-title page-title'>
-    <h2>New Chart</h2>
-</div>
- -->
 <div id='chart-creator' class='chart-form' style='display: none'>
     <div class='form-header'>
     <?php
-    CHtml::encode (Yii::t('reports', 'Select a Chart Type'))   
+    CHtml::encode (Yii::t('reports', 'Select a Chart Type'))
     ?>
     </div>
     <div class='chart-selector'>

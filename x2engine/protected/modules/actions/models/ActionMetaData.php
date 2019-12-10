@@ -56,5 +56,38 @@ class ActionMetaData extends CActiveRecord
 	public function tableName() {
 		return 'x2_action_meta_data';
 	}
+ 
+       /**
+        * @return action model when trying to get field "eventSubtype"
+        * on reports.
+        */
+        public function getField ($attr) {
+            if ($attr === 'eventSubtype') {
+                $action = Actions::model ();
+                $action->eventSubtype = $this->$attr;
+                return $action->getField ('eventSubtype');
+            }
+        }
+
+ 
+       /**
+        * reunder Attribute for these attributes
+        */
+        public function renderAttribute ($attr, $makeLinks=true, $textOnly=true, $encode=false) {
+            if ($attr === 'eventSubtype') {
+                $action = Actions::model ();
+                $action->eventSubtype = $this->$attr;
+                return $action->renderAttribute ('eventSubtype', $makeLinks, $textOnly, false);
+            }
+        }
+
+	/**
+         * @return array customized attribute labels (name=>label)
+         */
+        public function attributeLabels() {
+                return array(
+                        'eventSubtype' => Yii::t('actions','Event Subtype'),
+                );
+        }
 
 }

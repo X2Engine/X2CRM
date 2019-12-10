@@ -63,7 +63,7 @@ class Charts extends X2Model {
     public static $chartTypes = array(
         'Bar',
         'TimeSeries',
-        'ScatterPlot'
+        'ScatterPlot',
     );    
 
     /**

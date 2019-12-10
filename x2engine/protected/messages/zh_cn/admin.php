@@ -190,7 +190,7 @@
   'Global account' => '全球帐户',
   'Bulk Email Settings' => '群发电子邮件的设置',
   'Service Case Email Settings' => '服务案例电邮设置',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => '您可以使用这个模板中的以下变量： {first} ， {last} ， {phone} ， {email} ， {description} ， {case}',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => '您可以使用这个模板中的以下变量： {first} ， {last} ， {phone} ， {email} ， {description} ， {case} ， {link}',
   'Introduction' => '介绍',
   'This feature allows X2Engine to receive and record emails at a special address.' => '此功能允许X2Engine的接收并记录在一个特殊的地址的电子邮件。',
   'Filesystem ownership and permissions' => '文件系统的所有权和权限',

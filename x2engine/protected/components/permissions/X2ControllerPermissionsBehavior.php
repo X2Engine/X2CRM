@@ -109,7 +109,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             Yii::app()->user->checkAccess($actionAccess, $params)) {
 
             return true;
-        } elseif (Yii::app()->user->isGuest) {
+        } elseif (Yii::app()->user->isLoggedOut) {
             Yii::app()->user->returnUrl = Yii::app()->request->url;
             if (Yii::app()->isMobileApp ()) {
                 $this->owner->redirect($this->owner->createAbsoluteUrl('/mobile/login'));

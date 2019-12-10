@@ -46,7 +46,7 @@ $this->pageTitle = CHtml::encode (
 $authParams['assignedTo'] = $model->assignedTo;
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'delete',
+    'index', 'create', 'view', 'edit', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 

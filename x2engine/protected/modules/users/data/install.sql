@@ -28,6 +28,7 @@ CREATE TABLE x2_users (
     inviteKey              VARCHAR(16),
     userKey                VARCHAR(64),
     calendarKey            VARCHAR(64),
+    
     UNIQUE(username, emailAddress),
     INDEX (username)
 ) COLLATE = utf8_general_ci;

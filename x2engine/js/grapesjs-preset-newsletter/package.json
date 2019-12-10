@@ -1,0 +1,42 @@
+{
+  "name": "grapesjs-preset-newsletter",
+  "version": "0.2.20",
+  "description": "GrapesJS preset configuration for the newsletter editor",
+  "main": "dist/grapesjs-preset-newsletter.min.js",
+  "scripts": {
+    "lint": "eslint src",
+    "build": "cross-env WEBPACK_ENV=prod && npm run v:patch && webpack && npm run build:css",
+    "build:css": "node-sass src/style/main.scss dist/grapesjs-preset-newsletter.css",
+    "v:patch": "npm version --no-git-tag-version patch",
+    "start": "cross-env WEBPACK_ENV=dev ./node_modules/.bin/webpack-dev-server --progress --colors & npm run build:css -- -w",
+    "test": "jest"
+  },
+  "keywords": [
+    "grapesjs",
+    "plugin",
+    "newsletter",
+    "preset"
+  ],
+  "author": "Artur Arseniev",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "juice": "^4.1.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
+    "cross-env": "^5.0.5",
+    "eslint": "^4.1.1",
+    "jest": "^23.1.0",
+    "node-sass": "^4.5.3",
+    "webpack": "^3.5.5",
+    "webpack-dev-server": "^2.7.1"
+  },
+  "jest": {
+    "modulePaths": [
+      "./src"
+    ]
+  }
+}

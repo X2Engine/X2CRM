@@ -221,7 +221,7 @@ abstract class X2FlowTrigger extends X2FlowItem {
                     'type' => 'link',
                     'linkType' => 'X2List',
                     'linkSource' => Yii::app()->controller->createUrl(
-                            CActiveRecord::model('X2List')->autoCompleteSource)
+                            '/workflow/workflow/getLists')
                 );
             case 'has_tags':
                 return array(

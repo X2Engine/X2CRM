@@ -891,6 +891,7 @@ abstract class X2Model extends X2ActiveRecord {
      * http://www.yiiframework.com/license/
      */
     public function save($runValidation = true, $attributes = null) {
+        //printR($this->attributes, $die = TRUE);
         if (!$runValidation || $this->validate($attributes)) {
             /* x2modstart */
             if ($this->asa('FlowTriggerBehavior') &&
@@ -956,6 +957,12 @@ abstract class X2Model extends X2ActiveRecord {
                 $num->modelType = $className;
                 $num->fieldName = $field;
                 $num->save();
+            } else {
+                PhoneNumber::model()->deleteAllByAttributes(array(
+                    'modelId' => $this->id,
+                    'modelType' => $className,
+                    'fieldName' => $field,
+                ));
             }
         }
 
@@ -1259,7 +1266,7 @@ abstract class X2Model extends X2ActiveRecord {
                 ->selectDistinct('modelName')
                 ->from('x2_fields')
                 ->where('modelName!="Calendar"')
-                ->order('modelName ASC')
+                ->order('(modelName) ASC')
                 ->queryColumn();
         if ($filter) {
             $modelTypes = array_filter($modelTypes, $filter);
@@ -1480,6 +1487,9 @@ abstract class X2Model extends X2ActiveRecord {
         }
         return $this->getAttributes($visibleAttributeNames);
     }
+    
+    
+
 
     /**
      * @param bool $assoc If true, fields in returned array will be indexed by field name
@@ -1500,6 +1510,7 @@ abstract class X2Model extends X2ActiveRecord {
                     $fields[$field->fieldName] = $field;
                 }
             }
+            
             return $fields;
         } else {
             if ($filterFn !== null) {
@@ -1577,6 +1588,40 @@ abstract class X2Model extends X2ActiveRecord {
             return $fieldsForDropdown;
         } else {
             return $this->_getFieldsForDropdown(null, $condList, true, $filterFn, $separator);
+        }
+    }
+    
+    
+    
+        /**
+     * @param bool $includeFieldsOfLinkedRecords if true, add field options for related models
+     * @param bool $condList 
+     * @param function|null $filterFn if set, will be used to filter results
+     * @param string $separator used to separate parent attribute from field name 
+     * @return array  
+     */
+    public function getFieldsForRelativeDropdown(
+    $includeFieldsOfLinkedRecords = false, $condList = true, $filterFn = null, $separator = '.') {
+
+        if ($includeFieldsOfLinkedRecords) {
+            $linkedModels = $this->getStaticLinkedModels();
+            $fieldsForDropdown = array();
+            $fieldsForDropdown[''] = $this->_getFieldsForRelativeDropdown(
+                    null, $condList, true, $filterFn, $separator);
+            foreach ($linkedModels as $fieldName => $linkedModel) {
+                if ($this->getField($fieldName)) {
+                    $optGroupHeader = $this->getAttributeLabel($fieldName);
+                } else if (self::isModuleModelName($fieldName)) {
+                    $optGroupHeader = self::getModelTitle($fieldName);
+                } else {
+                    throw new CException('invalid field name');
+                }
+                $fieldsForDropdown[$optGroupHeader] = $linkedModel->_getFieldsForRelativeDropdown(
+                        $fieldName, $condList, true, $filterFn, $separator);
+            }
+            return $fieldsForDropdown;
+        } else {
+            return $this->_getFieldsForRelativeDropdown(null, $condList, true, $filterFn, $separator);
         }
     }
 
@@ -3053,6 +3098,9 @@ abstract class X2Model extends X2ActiveRecord {
             if ($this instanceof Actions && $fieldName === 'actionDescription') {
                 $fieldName = 'ActionText.text';
             }
+	    if ($this instanceof Actions && $fieldName === 'eventSubtype') {
+                $fieldName = 'ActionMetaData.eventSubtype';
+            }
             $attributes = $field->getAttributes();
             if ($parentAttribute !== null) {
                 $fieldName = $parentAttribute . $separator . $fieldName;
@@ -3093,6 +3141,56 @@ abstract class X2Model extends X2ActiveRecord {
         }
         return $fields;
     }
+    
+    
+    /**
+     * Helper method for {@link getFieldsForDropdown}
+     * @param string|null $parentAttribute Can be used to prefix names of attributes
+     * @param bool $condList If true, returned array's values will include, in addition to the
+     *  field label, field data required by the X2ConditionList widget.
+     * @param bool $sorted if true, results will be sorted by field name 
+     * @param function|null $filterFn if set, will be used to filter results
+     * @param string $separator used to separate parent attribute from field name 
+     * @return array 
+     */
+    private function _getFieldsForRelativeDropdown(
+    $parentAttribute = null, $condList = false, $sorted = true, $filterFn, $separator = '.') {
+
+        $fieldModels = $this->getFields(false, $filterFn, Fields::READ_PERMISSION);
+        $permissions = $this->getFieldPermissions();
+        $fields = array();
+
+        foreach ($fieldModels as &$field) {
+            if ($field->isVirtual)
+                continue;
+
+            $fieldName = $field->fieldName;
+            if ($this instanceof Actions && $fieldName === 'actionDescription') {
+                $fieldName = 'ActionText.text';
+            }
+            $attributes = $field->getAttributes();
+            if ($parentAttribute !== null) {
+                $fieldName = $parentAttribute . $separator . $fieldName;
+            }
+
+            if ($condList) {
+                $fields[] = X2ConditionList::listOption($attributes, $fieldName);
+            } else {
+                $fields[$fieldName] = $this->getAttributeLabel($fieldName);
+            }
+        }
+        if ($sorted) {
+            if ($condList) {
+                usort($fields, function ($a, $b) {
+                    return strcasecmp($a['label'], $b['label']);
+                });
+            } else {
+                $fields = ArrayUtil::asorti($fields);
+            }
+        }
+        return $fields;
+    }
+    
 
     public function getSummaryFields() {
         $summaryFields = array();

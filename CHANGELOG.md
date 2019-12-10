@@ -1,8 +1,42 @@
-# 7.1 #
+# 8.0 #
+12/6/2019
 
-1/3/2019
-* General Changelog / Developer Notes
-  * X2CRM is now compatible with PHP 7.1+
+* New Features
+  * Portal Product
+  * Related Case Solutions
+  * Knowledge Base
+  * WYSIWYG Editor for Email Templates
+  * Nexmo Call Pop-up
+  * Sales Quotations Improvements
+  * Group Profiles
+  * Data Visualizations
+  * Appointment Calendar
+  * UI Update
+  * Listability Improvements
+
+* Extensions
+  * Billboard.js (replaced C3)
+  * D3.js v5 (from v3)
+  * Grapes.js (new)
+  * Font Awesome v5 (from v4)
+
+* Minimum Requirements
+  * PHP 7.0 (from 5.3)
+    * PHP 5.* no longer supported by maintainers
+  * MySQL 5.7 (from 5.6)
+    * InnoDB Full Text Index Support
+
+* Miscellaneous bug fixes
+  * PHP 7.2 compatability fixes
+  * Login CSRF and duplicate primary key fix
+  * Fix for phone numbers not deleting from phone number table when deleted from record
+  * Fixed bug with accounts report failing if the grid view for accounts has the tag column but accounts don't have any tags
+  * Fixed issue with not being able to edit account lists if the criterion model is empty
+  * Total rows error on summation report fix
+  * Boolean fields and action eventSubType reportability fix
+
+# 7.1 #
+11/7/2018
 
 * Miscellaneous bug fixes
   * Fixed issue with emailing where mail servers which are not configured to use VERP can still send email
@@ -12,7 +46,6 @@
   * Fixed issue where a 500 error would occur if the 'maxFileSize' attribute was not created correctly
   * Fixed issue where X2Flow would incorrectly reference a workflow ID
   * Fixed issue where logging time on a record would incorrectly calculate time spent
-  * Fixed front-end with the complete stage action in X2Workflow where the note textarea was covering the stage selection dropdown
 
 # 7.0 #
 10/19/2018
@@ -21,17 +54,16 @@
   * Accounts, Leads and Opportunities are now listable
   * Contacts can now be converted to leads
   * Campaigns
+    * Long-Term campaigns added
     * A/B testing for campaigns added
     * Account, Lead and Opportunity lists can now all be used in campaigns
+    * Campaign link clicks can now be easily and automatically tracked
+    * Suppression lists can now be used in campaigns
+    * Bounce hadling for campaigns added
+  * Workflows
+    * Frequency count of how many times a workflow is executed is now recorded and displayed to the user
+  * Integration with Outlook calendars
   * Miscellaneous bug fixes
-
-# 6.9.3 #
-1/3/2018
-* Fixed unrecognized field lastModifies bug
-
-# 6.9.2 #
-12/29/2017
-* Fixed email bug
 
 # 6.9.1 #
 11/20/2017

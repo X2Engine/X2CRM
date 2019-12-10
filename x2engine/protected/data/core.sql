@@ -86,6 +86,7 @@ CREATE TABLE x2_admin(
         locationTrackingSwitch          TINYINT,
         checkinByDefault                TINYINT DEFAULT 1,
 	googleIntegration		TINYINT,
+        
 	outlookIntegration              TINYINT,
         inviteKey				VARCHAR(255),
 	workflowBackdateWindow			INT			NOT NULL DEFAULT -1,
@@ -137,11 +138,15 @@ CREATE TABLE x2_admin(
     dropboxRateLimits           TEXT DEFAULT NULL,
     triggerLogMax               INT UNSIGNED DEFAULT 1000000,
     googleCredentialsId         INT UNSIGNED,
+    
     jasperCredentialsId         INT UNSIGNED,
     hubCredentialsId            INT UNSIGNED,
     twoFactorCredentialsId      INT UNSIGNED,
     disableAnonContactNotifs    TINYINT DEFAULT 0,
-    outlookCredentialsId        INT UNSIGNED
+    outlookCredentialsId        INT UNSIGNED,
+    kbHomeUrl          TEXT,
+    kbForumsUrl          TEXT,
+    kbContactUrl          TEXT
 ) ENGINE=InnoDB, COLLATE = utf8_general_ci;
 /*&*/
 DROP TABLE IF EXISTS x2_api_hooks;
@@ -309,6 +314,7 @@ CREATE TABLE x2_modules (
     linkHref                VARCHAR(250),
     linkOpenInNewTab        TINYINT         DEFAULT 0,
     linkOpenInFrame         TINYINT         DEFAULT 0,
+    listable                TINYINT         DEFAULT 0,
     moduleType              ENUM('module', 'link', 'recordLink', 'pseudoModule') DEFAULT 'module'
 ) ENGINE InnoDB COLLATE = utf8_general_ci;
 /*&*/
@@ -438,11 +444,15 @@ CREATE TABLE x2_profile(
     mediaWidgetDrive        TINYINT         DEFAULT 0,
     historyShowAll          TINYINT         DEFAULT 0,
     historyShowRels         TINYINT         DEFAULT 0,
+    currentLayout	    VARCHAR(255),
+    personalLayout	    TEXT,
     googleRefreshToken      VARCHAR(255),
+    
     outlookRefreshToken     VARCHAR(1000),
 	leadRoutingAvailability	TINYINT			DEFAULT 1,
 	showTours 				TINYINT			DEFAULT 1,
         defaultCalendar     INT,
+        appointmentCalendar INT,
     enableTwoFactor         TINYINT DEFAULT 0,
 	UNIQUE(username, emailAddress),
 	INDEX (username)
@@ -664,6 +674,7 @@ CREATE TABLE `x2_like_to_post` (
   INDEX (postId)
 ) COLLATE = utf8_general_ci;
 /*&*/
+
 DROP TABLE IF EXISTS x2_view_log;
 /*&*/
 CREATE TABLE `x2_view_log` (

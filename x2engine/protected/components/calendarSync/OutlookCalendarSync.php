@@ -76,11 +76,11 @@ class OutlookCalendarSync extends CalDavSync {
      * sync token has been provided, it will use that instead of attempting a
      * full sync.
      */
-    public function sync() {
+    public function sync($start = 0, $end = 0) {
             if (isset($this->owner->syncToken)) {
                 $this->syncWithToken();
             } else {
-                $this->syncWithoutToken();
+                $this->syncWithoutToken($start, $end);
             }
             $this->owner->save();
     }
@@ -90,8 +90,27 @@ class OutlookCalendarSync extends CalDavSync {
      * calculate a diff from. This function is called after outboundSync to ensure
      * no Actions which were already in X2 are deleted
      */
-    protected function syncWithoutToken() {
-        $calendarEvents = $this->client->getOutlook($this->owner->remoteCalendarUrl, "");
+    protected function syncWithoutToken($start = 0, $end = 0) {
+        if($start == 0 && $end == 0){
+            return;
+        }else{
+            //get start date of the month
+            $dt_start = new DateTime("@$start");
+            $startDate =  $dt_start->format('Y-m-d@H:i:s');
+            $start_result = str_replace('@', 'T', $startDate); 
+            //get end date of the month
+            $dt_end = new DateTime("@$end");
+            $endDate =  $dt_end->format('Y-m-d@H:i:s');
+            $end_result = str_replace('@', 'T', $endDate); 
+        }
+        $temp_url = $this->owner->remoteCalendarUrl;
+        $temp_url = str_replace('events', 'calendarView', $temp_url);
+        $temp_url = $temp_url ."?startDateTime=".$start_result."&endDateTime=".$end_result."&top=1000";
+        
+        $calendarEvents = $this->client->getOutlook($temp_url, "");
+        
+        //outlook get request previously.
+        //$calendarEvents = $this->client->getOutlook($this->owner->remoteCalendarUrl, "");
         
         $paths = $this->createUpdateActions($calendarEvents, true);
         $pathList = AuxLib::bindArray($paths);
@@ -113,7 +132,7 @@ class OutlookCalendarSync extends CalDavSync {
             $reminderIds = Yii::app()->db->createCommand()
                     ->select('id')
                     ->from('x2_events')
-                    ->where('associationType = "Actions" AND associationId IN '. AuxLib::arrToStrList($actionIdParams). ' AND type = "action_reminder"')
+                    ->where('associationType = "Actions" AND associationId IN '. AuxLib::arrToStrList($actionIdParams). ' AND type = "calendar_event"')
                     ->queryColumn();
             X2Model::model('Events')->deleteByPk($reminderIds);
             X2Model::model('Actions')->deleteByPk($deletedActions);
@@ -143,6 +162,7 @@ class OutlookCalendarSync extends CalDavSync {
             }
             if (isset($actionMetaData)) {
                 $action = X2Model::model('Actions')->findByPk($actionMetaData->actionId);
+                    $action->sendOutlook = 0;
                     $this->updateAction($action, $eventVObj, array(
                         'etag' => $eventEtag,
                     ));
@@ -150,7 +170,7 @@ class OutlookCalendarSync extends CalDavSync {
                 $this->createAction($eventVObj, array(
                     'etag' => $eventEtag,
                     'remoteCalendarUrl' => $event['id'],
-                ));
+                ), 0);
             }
         }
         if ($return) {
@@ -158,11 +178,25 @@ class OutlookCalendarSync extends CalDavSync {
         }
     }
     
-        /**
+    /**
      * Updates an Action from a SabreDav VEvent
      */
     protected function updateAction($action, $calObject, $params = array()) {
         $action->etag = $params['etag'];
+        $this->setActionAttributes($action, $calObject);
+        $action->save();
+    }
+    
+    /**
+     * Creates an Action from a SabreDav VEvent
+     */
+    protected function createAction($calObject, $params = array(), $send = 1) {
+        $action = new Actions();
+        if($send == 0){
+            $action->sendOutlook = 0;
+        }
+        $action->etag = $params['etag'];
+        $action->remoteCalendarUrl = $params['remoteCalendarUrl'];
         $this->setActionAttributes($action, $calObject);
         $action->save();
     }
@@ -189,21 +223,18 @@ class OutlookCalendarSync extends CalDavSync {
         $action->associationName = 'Calendar';
         $action->type = 'event';
         $action->remoteSource = 1;
-        if ($calObject['isAllDay'] == true) { // All day event
-            $action->dueDate = strtotime($calObject['start']['dateTime']);
-            // Subtract 1 second to fix all day display issue in Calendar
-            $action->completeDate = strtotime($calObject['end']['dateTime']) - 1;
-            $action->allDay = 1;
+	//DATE SET
+        $tz = date_default_timezone_get();
+        date_default_timezone_set('UTC');
+        $action->dueDate = strtotime($calObject['start']['dateTime']);
+        if(is_null($calObject['end']['dateTime'])){
+                $action->completeDate = $action->dueDate;
         } else {
-            $timezone = new \DateTimeZone('UTC');
-            $startTime = new \DateTime($calObject['start']['dateTime'], $timezone);
-            if(is_null($calObject['end']['dateTime'])){
-                $endTime = $startTime;
-            } else {
-                $endTime = new \DateTime($calObject['end']['dateTime'], $timezone);
-            }
-            $action->dueDate = $startTime->getTimestamp();
-            $action->completeDate = $endTime->getTimestamp();
+                $action->completeDate = strtotime($calObject['end']['dateTime']);
+        }
+        date_default_timezone_set($tz);
+        if ($calObject['isAllDay'] == true) { // All day event
+            $action->allDay = 1;
         }
     }
     
