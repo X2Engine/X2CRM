@@ -1,8 +1,9 @@
 <?php return array (
-  'Create {group}' => '作成{group}',
+  'Create {group}' => '{group}の作成',
   '{group}:' => '{group}',
   '{users}:' => '{users}',
   '{group} List' => '{group}一覧',
-  'Edit {group}' => '編集{group}',
-  'Delete {group}' => '削除{group}',
+  'Edit {group}' => '{group}の編集',
+  'Delete {group}' => '{group}の削除',
+  'Create Group' => 'グループの作成',
 );
