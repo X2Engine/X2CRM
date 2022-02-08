@@ -15,7 +15,7 @@ class NewContactTest extends X2WebTestCase {
 		'actions' => 'Actions'
 	);
 
-    public function setUp () {
+    public function setUp() : void {
         $this->markTestIncomplete ();
     }
 	

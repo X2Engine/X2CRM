@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -641,8 +642,8 @@ class AccountsController extends x2base {
                 }
             }
         } else { //static or campaign lists
-            if (isset($_POST['Accounts'])) {
-                $list->attributes = $_POST['Accounts'];
+            if (isset($_POST['X2List'])) {
+                $list->attributes = $_POST['X2List'];
                 $list->modelName = 'Accounts';
                 $list->lastUpdated = time();
                 $list->save();
@@ -651,7 +652,7 @@ class AccountsController extends x2base {
         }
 
         if (empty($criteriaModels)) {
-            $default = new AccountsCriterion;
+            $default = new X2ListCriterion;
             $default->value = '';
             $default->attribute = '';
             $default->comparison = 'contains';
@@ -927,6 +928,15 @@ class AccountsController extends x2base {
 			        ))."');"
                 ),
 	        ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Accounts Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-accounts',
+                'linkOptions' => array(
+                    'id' => 'account-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );
 

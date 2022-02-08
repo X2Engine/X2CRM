@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -337,7 +338,7 @@ class TimeSeriesWidget extends DataWidget {
     }
 
     /**
-     * Menu options for the chart parameter timeBucket
+     * Menu options for the chart parameter displayType
      */
     private static function displayTypeItems(){
         return array( 
@@ -346,13 +347,21 @@ class TimeSeriesWidget extends DataWidget {
                 'class' => 'display-type fa fa-line-chart',
                 'title' => Yii::t('charts', 'Line Chart') ),
             array( 
+                'id' => 'spline',
+                'class' => 'display-type fas fa-bacon',
+                'title' => Yii::t('charts', 'Spline Chart') ),
+            array( 
+                'id' => 'area-spline',
+                'class' => 'display-type fas fa-chart-area',
+                'title' => Yii::t('charts', 'Spline Area Chart') ),
+            array( 
                 'id' => 'area',
                 'class' => 'display-type fa fa-area-chart',
-                'title' => Yii::t('charts', 'Line Chart') ),
+                'title' => Yii::t('charts', 'Area Chart') ),
             array( 
                 'id' => 'bar',
                 'class' => 'display-type fa fa-bar-chart',
-                'title' => Yii::t('charts', 'Line Chart') ),
+                'title' => Yii::t('charts', 'Bar Chart') ),
             array( 
                 'id' => 'pie',
                 'class' => 'display-type fa fa-pie-chart',

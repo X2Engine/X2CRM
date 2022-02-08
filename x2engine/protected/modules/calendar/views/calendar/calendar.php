@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -98,7 +99,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl ().'/js/X2Di
 //Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/protected/extensions/CJuiDateTimePicker/assets/jquery-ui-timepicker-addon.js');
 
 $menuOptions = array(
-    'index', 'create'
+    'index', 'create','helpGuide',
 );
 $this->insertMenu($menuOptions);
 
@@ -116,17 +117,19 @@ if(!isset($showCalendars['groupCalendars'])){
     $user->save();
 }
 
-$userCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
-//$userCalendars = $showCalendars['userCalendars'];
+$showCalendars['userCalendars'] = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : 1;
+$userCalendars = $showCalendars['userCalendars'];
 
 $checkedUserCalendars = '';
-foreach($userCalendars as $user){
-    if(isset($this->calendarUsers[$user])){
-        $userCalendarFeed = $this->createUrl('jsonFeed', array('calendarId' => $user));
-        $checkedUserCalendars .= '
-        $("#calendar").fullCalendar("addEventSource",{
-            url: "'.$userCalendarFeed.'"
-        });';
+if(is_array($userCalendars)){
+    foreach($userCalendars as $user){
+        if(isset($this->calendarUsers[$user])){
+            $userCalendarFeed = $this->createUrl('jsonFeed', array('calendarId' => $user));
+            $checkedUserCalendars .= '
+            $("#calendar").fullCalendar("addEventSource",{
+               url: "'.$userCalendarFeed.'"
+            });';
+        }
     }
 }
 ?>

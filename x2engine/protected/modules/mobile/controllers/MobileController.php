@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -216,7 +217,7 @@ class MobileController extends X2Controller {
      */
     public function actionIndex() {
         $user = Yii::app()->user;
-        if ($user == null || $user->isGuest)
+        if ($user == null || $user->isLoggedOut)
             $this->redirect($this->createAbsoluteUrl('login'));
         else
             $this->redirect($this->createAbsoluteUrl('/profile/mobileActivity'));
@@ -275,7 +276,7 @@ class MobileController extends X2Controller {
      * Displays the login page
      */
     public function actionLogin() {
-        if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isInitialized && !Yii::app()->user->isLoggedOut) {
             $this->redirect($this->createAbsoluteUrl('home'));
             return;
         }

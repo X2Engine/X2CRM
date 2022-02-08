@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -98,7 +99,7 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertResponseCodeIs(401,$ch);
-		$this->assertRegExp('/No user credentials provided/',$response);
+		$this->assertMatchesRegularExpression('/No user credentials provided/',$response);
 
 		// Test with invalid user:
 		$param = $this->param;
@@ -107,7 +108,7 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 		$response = curl_exec($ch);
 		file_put_contents('api_response.html',$response);
 		$this->assertResponseCodeIs(401,$ch,'Response is not what is expected for there being an invalid user');
-		$this->assertRegExp('/Invalid user credentials/',$response);
+		$this->assertMatchesRegularExpression('/Invalid user credentials/',$response);
 		
 		// Test user with empty API key
 		$user = $this->users('testUser');
@@ -119,7 +120,7 @@ class ApiControllerSecurityTest extends CURLDbTestCase {
 		$response = curl_exec($ch);
 //		file_put_contents('api_response.html',$response);
 		$this->assertResponseCodeIs(403,$ch);
-		$this->assertRegExp('/cannot use API; userKey not set/',$response);
+		$this->assertMatchesRegularExpression('/cannot use API; userKey not set/',$response);
 
 		// Test access permissions:
 		$origUrlFormat = $this->_urlFormat;

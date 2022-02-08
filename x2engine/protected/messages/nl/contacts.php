@@ -82,4 +82,7 @@
   'Hide Directions' => 'Verberg routebeschrijving',
   'Clear Route' => 'Duidelijke route',
   'View Contact Map' => 'Bekijk contactkaart',
+  'Platform' => 'besturingssysteem',
+  'Browser' => 'browser',
+  'Browser Version' => 'browserversie',
 );

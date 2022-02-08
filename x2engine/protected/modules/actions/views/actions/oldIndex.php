@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 if (isset ($showActions)) {
     $this->showActions = $showActions;
     Yii::app()->params->profile->showActions = $this->showActions;
@@ -57,7 +58,7 @@ else
 
 
 $menuOptions = array(
-    'todays', 'my', 'everyones', 'create', 'import', 'export',
+    'todays', 'my', 'everyones', 'create', 'import', 'export','helpGuide',
 );
 if($this->route === 'actions/actions/index') {
 	$heading = Yii::t('actions','Today\'s {module}', array('{module}'=>Modules::displayName()));

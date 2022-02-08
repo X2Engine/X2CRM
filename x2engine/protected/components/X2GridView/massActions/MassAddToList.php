@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 class MassAddToList extends MassAction {
 
     protected $_label;
@@ -56,7 +57,7 @@ class MassAddToList extends MassAction {
      * @param string $gridId id of grid view
      */
     public function renderDialog ($gridId, $modelName) {
-        $listNames = X2List::getAllStaticListNames (Yii::app()->controller);
+        $listNames = X2List::getAllStaticListNames (Yii::app()->controller, $modelName);
         echo "
             <div class='mass-action-dialog' id='".$this->getDialogId ($gridId)."' 
              style='display: none;'>

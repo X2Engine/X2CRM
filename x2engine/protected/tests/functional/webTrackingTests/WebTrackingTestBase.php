@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -71,7 +72,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
     /**
      * Copy over all the test pages to the web root 
      */
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         // ensure that a directory with the same name isn't already in the web root
         exec ('ls ../../', $output);
         if (TEST_BASE_URL_ALIAS_1 === '' ||
@@ -119,7 +120,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
     }
      
 
-    public function setUp () {
+    public function setUp() : void {
         $this->setBaseUrl (TEST_WEBROOT_URL_ALIAS_1);
         if (self::$skipAllTests) {
             $this->markTestSkipped ();
@@ -130,7 +131,7 @@ abstract class WebTrackingTestBase extends X2WebTestCase {
     /**
      * Remove all the test pages that were copied over 
      */
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         if (!self::$skipAllTests)
             exec ('rm -r ../../x2WebTrackingTestPages');
         parent::tearDownAfterClass ();

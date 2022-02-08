@@ -32,3 +32,1107 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+/* 
+Overrides for module-specific theming. This file doesn't get registered anywhere in the app, and 
+should therefore never contain CSS rules. The themebuild command will convert the template 
+comments into CSS template rules.
+*/
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.accounts {
+  /* @theme background-color: background_accounts_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.accounts .x2-button {
+  /* @theme background-color: background_accounts_override */
+  /* @theme color: smart_text_accounts_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.accounts > .summary > span + div {
+  /* @theme background-color: background_accounts_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.accounts > h2, div.page-title.accounts > h2 > span, div.page-title.accounts > .summary > span, div.page-title.accounts > .summary > span > *, div.page-title.accounts > .record-aliases-dropdown-container > h2, div.page-title.accounts > span.icon, div.page-title.accounts > .vcrPager > .summary {
+  /* @theme color: smart_text_accounts_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts {
+  /* @theme background-color: background_accounts_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts .x2-button, div.widget-title-bar.accounts .x2-icon-button {
+  /* @theme background-color: background_accounts_override */
+  /* @theme color: smart_text_accounts_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts > div {
+  /* @theme color: smart_text_accounts_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts + div .page-title {
+  /* @theme background-color: background_accounts_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts + div .page-title > .summary > span > div {
+  /* @theme background-color: background_accounts_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts + div .page-title > .summary > span, div.widget-title-bar.accounts + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_accounts_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts + div .page-title .x2-button {
+  /* @theme background-color: background_accounts_override */
+  /* @theme border-color: light_background_accounts_override */
+  /* @theme color: smart_text_accounts_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.accounts + div .page-title .x2-button:hover, div.widget-title-bar.accounts + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_accounts_override */
+  /* @theme border-color: lighter_background_accounts_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.actions {
+  /* @theme background-color: background_actions_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.actions .x2-button {
+  /* @theme background-color: background_actions_override */
+  /* @theme color: smart_text_actions_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.actions > .summary > span + div {
+  /* @theme background-color: background_actions_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.actions > h2, div.page-title.actions > h2 > span, div.page-title.actions > .summary > span, div.page-title.actions > .summary > span > *, div.page-title.actions > .record-aliases-dropdown-container > h2, div.page-title.actions > span.icon, div.page-title.actions > .vcrPager > .summary {
+  /* @theme color: smart_text_actions_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions {
+  /* @theme background-color: background_actions_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions .x2-button, div.widget-title-bar.actions .x2-icon-button {
+  /* @theme background-color: background_actions_override */
+  /* @theme color: smart_text_actions_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions > div {
+  /* @theme color: smart_text_actions_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions + div .page-title {
+  /* @theme background-color: background_actions_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions + div .page-title > .summary > span > div {
+  /* @theme background-color: background_actions_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions + div .page-title > .summary > span, div.widget-title-bar.actions + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_actions_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions + div .page-title .x2-button {
+  /* @theme background-color: background_actions_override */
+  /* @theme border-color: light_background_actions_override */
+  /* @theme color: smart_text_actions_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.actions + div .page-title .x2-button:hover, div.widget-title-bar.actions + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_actions_override */
+  /* @theme border-color: lighter_background_actions_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.calendar {
+  /* @theme background-color: background_calendar_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.calendar .x2-button {
+  /* @theme background-color: background_calendar_override */
+  /* @theme color: smart_text_calendar_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.calendar > .summary > span + div {
+  /* @theme background-color: background_calendar_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.calendar > h2, div.page-title.calendar > h2 > span, div.page-title.calendar > .summary > span, div.page-title.calendar > .summary > span > *, div.page-title.calendar > .record-aliases-dropdown-container > h2, div.page-title.calendar > span.icon, div.page-title.calendar > .vcrPager > .summary {
+  /* @theme color: smart_text_calendar_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar {
+  /* @theme background-color: background_calendar_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar .x2-button, div.widget-title-bar.calendar .x2-icon-button {
+  /* @theme background-color: background_calendar_override */
+  /* @theme color: smart_text_calendar_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar > div {
+  /* @theme color: smart_text_calendar_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar + div .page-title {
+  /* @theme background-color: background_calendar_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar + div .page-title > .summary > span > div {
+  /* @theme background-color: background_calendar_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar + div .page-title > .summary > span, div.widget-title-bar.calendar + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_calendar_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar + div .page-title .x2-button {
+  /* @theme background-color: background_calendar_override */
+  /* @theme border-color: light_background_calendar_override */
+  /* @theme color: smart_text_calendar_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.calendar + div .page-title .x2-button:hover, div.widget-title-bar.calendar + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_calendar_override */
+  /* @theme border-color: lighter_background_calendar_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.contacts {
+  /* @theme background-color: background_contacts_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.contacts .x2-button {
+  /* @theme background-color: background_contacts_override */
+  /* @theme color: smart_text_contacts_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.contacts > .summary > span + div {
+  /* @theme background-color: background_contacts_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.contacts > h2, div.page-title.contacts > h2 > span, div.page-title.contacts > .summary > span, div.page-title.contacts > .summary > span > *, div.page-title.contacts > .record-aliases-dropdown-container > h2, div.page-title.contacts > span.icon, div.page-title.contacts > .vcrPager > .summary {
+  /* @theme color: smart_text_contacts_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts {
+  /* @theme background-color: background_contacts_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts .x2-button, div.widget-title-bar.contacts .x2-icon-button {
+  /* @theme background-color: background_contacts_override */
+  /* @theme color: smart_text_contacts_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts > div {
+  /* @theme color: smart_text_contacts_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts + div .page-title {
+  /* @theme background-color: background_contacts_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts + div .page-title > .summary > span > div {
+  /* @theme background-color: background_contacts_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts + div .page-title > .summary > span, div.widget-title-bar.contacts + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_contacts_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts + div .page-title .x2-button {
+  /* @theme background-color: background_contacts_override */
+  /* @theme border-color: light_background_contacts_override */
+  /* @theme color: smart_text_contacts_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.contacts + div .page-title .x2-button:hover, div.widget-title-bar.contacts + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_contacts_override */
+  /* @theme border-color: lighter_background_contacts_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.users {
+  /* @theme background-color: background_users_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.users .x2-button {
+  /* @theme background-color: background_users_override */
+  /* @theme color: smart_text_users_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.users > .summary > span + div {
+  /* @theme background-color: background_users_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.users > h2, div.page-title.users > h2 > span, div.page-title.users > .summary > span, div.page-title.users > .summary > span > *, div.page-title.users > .record-aliases-dropdown-container > h2, div.page-title.users > span.icon, div.page-title.users > .vcrPager > .summary {
+  /* @theme color: smart_text_users_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users {
+  /* @theme background-color: background_users_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users .x2-button, div.widget-title-bar.users .x2-icon-button {
+  /* @theme background-color: background_users_override */
+  /* @theme color: smart_text_users_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users > div {
+  /* @theme color: smart_text_users_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users + div .page-title {
+  /* @theme background-color: background_users_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users + div .page-title > .summary > span > div {
+  /* @theme background-color: background_users_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users + div .page-title > .summary > span, div.widget-title-bar.users + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_users_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users + div .page-title .x2-button {
+  /* @theme background-color: background_users_override */
+  /* @theme border-color: light_background_users_override */
+  /* @theme color: smart_text_users_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.users + div .page-title .x2-button:hover, div.widget-title-bar.users + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_users_override */
+  /* @theme border-color: lighter_background_users_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.docs {
+  /* @theme background-color: background_docs_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.docs .x2-button {
+  /* @theme background-color: background_docs_override */
+  /* @theme color: smart_text_docs_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.docs > .summary > span + div {
+  /* @theme background-color: background_docs_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.docs > h2, div.page-title.docs > h2 > span, div.page-title.docs > .summary > span, div.page-title.docs > .summary > span > *, div.page-title.docs > .record-aliases-dropdown-container > h2, div.page-title.docs > span.icon, div.page-title.docs > .vcrPager > .summary {
+  /* @theme color: smart_text_docs_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs {
+  /* @theme background-color: background_docs_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs .x2-button, div.widget-title-bar.docs .x2-icon-button {
+  /* @theme background-color: background_docs_override */
+  /* @theme color: smart_text_docs_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs > div {
+  /* @theme color: smart_text_docs_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs + div .page-title {
+  /* @theme background-color: background_docs_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs + div .page-title > .summary > span > div {
+  /* @theme background-color: background_docs_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs + div .page-title > .summary > span, div.widget-title-bar.docs + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_docs_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs + div .page-title .x2-button {
+  /* @theme background-color: background_docs_override */
+  /* @theme border-color: light_background_docs_override */
+  /* @theme color: smart_text_docs_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.docs + div .page-title .x2-button:hover, div.widget-title-bar.docs + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_docs_override */
+  /* @theme border-color: lighter_background_docs_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.groups {
+  /* @theme background-color: background_groups_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.groups .x2-button {
+  /* @theme background-color: background_groups_override */
+  /* @theme color: smart_text_groups_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.groups > .summary > span + div {
+  /* @theme background-color: background_groups_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.groups > h2, div.page-title.groups > h2 > span, div.page-title.groups > .summary > span, div.page-title.groups > .summary > span > *, div.page-title.groups > .record-aliases-dropdown-container > h2, div.page-title.groups > span.icon, div.page-title.groups > .vcrPager > .summary {
+  /* @theme color: smart_text_groups_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups {
+  /* @theme background-color: background_groups_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups .x2-button, div.widget-title-bar.groups .x2-icon-button {
+  /* @theme background-color: background_groups_override */
+  /* @theme color: smart_text_groups_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups > div {
+  /* @theme color: smart_text_groups_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups + div .page-title {
+  /* @theme background-color: background_groups_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups + div .page-title > .summary > span > div {
+  /* @theme background-color: background_groups_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups + div .page-title > .summary > span, div.widget-title-bar.groups + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_groups_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups + div .page-title .x2-button {
+  /* @theme background-color: background_groups_override */
+  /* @theme border-color: light_background_groups_override */
+  /* @theme color: smart_text_groups_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.groups + div .page-title .x2-button:hover, div.widget-title-bar.groups + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_groups_override */
+  /* @theme border-color: lighter_background_groups_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Leads {
+  /* @theme background-color: background_x2Leads_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Leads .x2-button {
+  /* @theme background-color: background_x2Leads_override */
+  /* @theme color: smart_text_x2Leads_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Leads > .summary > span + div {
+  /* @theme background-color: background_x2Leads_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Leads > h2, div.page-title.x2Leads > h2 > span, div.page-title.x2Leads > .summary > span, div.page-title.x2Leads > .summary > span > *, div.page-title.x2Leads > .record-aliases-dropdown-container > h2, div.page-title.x2Leads > span.icon, div.page-title.x2Leads > .vcrPager > .summary {
+  /* @theme color: smart_text_x2Leads_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads {
+  /* @theme background-color: background_x2Leads_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads .x2-button, div.widget-title-bar.x2Leads .x2-icon-button {
+  /* @theme background-color: background_x2Leads_override */
+  /* @theme color: smart_text_x2Leads_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads > div {
+  /* @theme color: smart_text_x2Leads_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads + div .page-title {
+  /* @theme background-color: background_x2Leads_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads + div .page-title > .summary > span > div {
+  /* @theme background-color: background_x2Leads_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads + div .page-title > .summary > span, div.widget-title-bar.x2Leads + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_x2Leads_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads + div .page-title .x2-button {
+  /* @theme background-color: background_x2Leads_override */
+  /* @theme border-color: light_background_x2Leads_override */
+  /* @theme color: smart_text_x2Leads_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Leads + div .page-title .x2-button:hover, div.widget-title-bar.x2Leads + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_x2Leads_override */
+  /* @theme border-color: lighter_background_x2Leads_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.marketing {
+  /* @theme background-color: background_marketing_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.marketing .x2-button {
+  /* @theme background-color: background_marketing_override */
+  /* @theme color: smart_text_marketing_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.marketing > .summary > span + div {
+  /* @theme background-color: background_marketing_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.marketing > h2, div.page-title.marketing > h2 > span, div.page-title.marketing > .summary > span, div.page-title.marketing > .summary > span > *, div.page-title.marketing > .record-aliases-dropdown-container > h2, div.page-title.marketing > span.icon, div.page-title.marketing > .vcrPager > .summary {
+  /* @theme color: smart_text_marketing_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing {
+  /* @theme background-color: background_marketing_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing .x2-button, div.widget-title-bar.marketing .x2-icon-button {
+  /* @theme background-color: background_marketing_override */
+  /* @theme color: smart_text_marketing_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing > div {
+  /* @theme color: smart_text_marketing_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing + div .page-title {
+  /* @theme background-color: background_marketing_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing + div .page-title > .summary > span > div {
+  /* @theme background-color: background_marketing_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing + div .page-title > .summary > span, div.widget-title-bar.marketing + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_marketing_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing + div .page-title .x2-button {
+  /* @theme background-color: background_marketing_override */
+  /* @theme border-color: light_background_marketing_override */
+  /* @theme color: smart_text_marketing_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.marketing + div .page-title .x2-button:hover, div.widget-title-bar.marketing + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_marketing_override */
+  /* @theme border-color: lighter_background_marketing_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.media {
+  /* @theme background-color: background_media_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.media .x2-button {
+  /* @theme background-color: background_media_override */
+  /* @theme color: smart_text_media_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.media > .summary > span + div {
+  /* @theme background-color: background_media_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.media > h2, div.page-title.media > h2 > span, div.page-title.media > .summary > span, div.page-title.media > .summary > span > *, div.page-title.media > .record-aliases-dropdown-container > h2, div.page-title.media > span.icon, div.page-title.media > .vcrPager > .summary {
+  /* @theme color: smart_text_media_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media {
+  /* @theme background-color: background_media_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media .x2-button, div.widget-title-bar.media .x2-icon-button {
+  /* @theme background-color: background_media_override */
+  /* @theme color: smart_text_media_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media > div {
+  /* @theme color: smart_text_media_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media + div .page-title {
+  /* @theme background-color: background_media_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media + div .page-title > .summary > span > div {
+  /* @theme background-color: background_media_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media + div .page-title > .summary > span, div.widget-title-bar.media + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_media_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media + div .page-title .x2-button {
+  /* @theme background-color: background_media_override */
+  /* @theme border-color: light_background_media_override */
+  /* @theme color: smart_text_media_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.media + div .page-title .x2-button:hover, div.widget-title-bar.media + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_media_override */
+  /* @theme border-color: lighter_background_media_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.opportunities {
+  /* @theme background-color: background_opportunities_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.opportunities .x2-button {
+  /* @theme background-color: background_opportunities_override */
+  /* @theme color: smart_text_opportunities_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.opportunities > .summary > span + div {
+  /* @theme background-color: background_opportunities_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.opportunities > h2, div.page-title.opportunities > h2 > span, div.page-title.opportunities > .summary > span, div.page-title.opportunities > .summary > span > *, div.page-title.opportunities > .record-aliases-dropdown-container > h2, div.page-title.opportunities > span.icon, div.page-title.opportunities > .vcrPager > .summary {
+  /* @theme color: smart_text_opportunities_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities {
+  /* @theme background-color: background_opportunities_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities .x2-button, div.widget-title-bar.opportunities .x2-icon-button {
+  /* @theme background-color: background_opportunities_override */
+  /* @theme color: smart_text_opportunities_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities > div {
+  /* @theme color: smart_text_opportunities_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities + div .page-title {
+  /* @theme background-color: background_opportunities_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities + div .page-title > .summary > span > div {
+  /* @theme background-color: background_opportunities_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities + div .page-title > .summary > span, div.widget-title-bar.opportunities + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_opportunities_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities + div .page-title .x2-button {
+  /* @theme background-color: background_opportunities_override */
+  /* @theme border-color: light_background_opportunities_override */
+  /* @theme color: smart_text_opportunities_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.opportunities + div .page-title .x2-button:hover, div.widget-title-bar.opportunities + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_opportunities_override */
+  /* @theme border-color: lighter_background_opportunities_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.products {
+  /* @theme background-color: background_products_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.products .x2-button {
+  /* @theme background-color: background_products_override */
+  /* @theme color: smart_text_products_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.products > .summary > span + div {
+  /* @theme background-color: background_products_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.products > h2, div.page-title.products > h2 > span, div.page-title.products > .summary > span, div.page-title.products > .summary > span > *, div.page-title.products > .record-aliases-dropdown-container > h2, div.page-title.products > span.icon, div.page-title.products > .vcrPager > .summary {
+  /* @theme color: smart_text_products_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products {
+  /* @theme background-color: background_products_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products .x2-button, div.widget-title-bar.products .x2-icon-button {
+  /* @theme background-color: background_products_override */
+  /* @theme color: smart_text_products_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products > div {
+  /* @theme color: smart_text_products_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products + div .page-title {
+  /* @theme background-color: background_products_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products + div .page-title > .summary > span > div {
+  /* @theme background-color: background_products_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products + div .page-title > .summary > span, div.widget-title-bar.products + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_products_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products + div .page-title .x2-button {
+  /* @theme background-color: background_products_override */
+  /* @theme border-color: light_background_products_override */
+  /* @theme color: smart_text_products_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.products + div .page-title .x2-button:hover, div.widget-title-bar.products + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_products_override */
+  /* @theme border-color: lighter_background_products_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.quotes {
+  /* @theme background-color: background_quotes_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.quotes .x2-button {
+  /* @theme background-color: background_quotes_override */
+  /* @theme color: smart_text_quotes_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.quotes > .summary > span + div {
+  /* @theme background-color: background_quotes_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.quotes > h2, div.page-title.quotes > h2 > span, div.page-title.quotes > .summary > span, div.page-title.quotes > .summary > span > *, div.page-title.quotes > .record-aliases-dropdown-container > h2, div.page-title.quotes > span.icon, div.page-title.quotes > .vcrPager > .summary {
+  /* @theme color: smart_text_quotes_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes {
+  /* @theme background-color: background_quotes_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes .x2-button, div.widget-title-bar.quotes .x2-icon-button {
+  /* @theme background-color: background_quotes_override */
+  /* @theme color: smart_text_quotes_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes > div {
+  /* @theme color: smart_text_quotes_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes + div .page-title {
+  /* @theme background-color: background_quotes_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes + div .page-title > .summary > span > div {
+  /* @theme background-color: background_quotes_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes + div .page-title > .summary > span, div.widget-title-bar.quotes + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_quotes_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes + div .page-title .x2-button {
+  /* @theme background-color: background_quotes_override */
+  /* @theme border-color: light_background_quotes_override */
+  /* @theme color: smart_text_quotes_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.quotes + div .page-title .x2-button:hover, div.widget-title-bar.quotes + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_quotes_override */
+  /* @theme border-color: lighter_background_quotes_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.reports {
+  /* @theme background-color: background_reports_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.reports .x2-button {
+  /* @theme background-color: background_reports_override */
+  /* @theme color: smart_text_reports_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.reports > .summary > span + div {
+  /* @theme background-color: background_reports_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.reports > h2, div.page-title.reports > h2 > span, div.page-title.reports > .summary > span, div.page-title.reports > .summary > span > *, div.page-title.reports > .record-aliases-dropdown-container > h2, div.page-title.reports > span.icon, div.page-title.reports > .vcrPager > .summary {
+  /* @theme color: smart_text_reports_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports {
+  /* @theme background-color: background_reports_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports .x2-button, div.widget-title-bar.reports .x2-icon-button {
+  /* @theme background-color: background_reports_override */
+  /* @theme color: smart_text_reports_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports > div {
+  /* @theme color: smart_text_reports_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports + div .page-title {
+  /* @theme background-color: background_reports_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports + div .page-title > .summary > span > div {
+  /* @theme background-color: background_reports_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports + div .page-title > .summary > span, div.widget-title-bar.reports + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_reports_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports + div .page-title .x2-button {
+  /* @theme background-color: background_reports_override */
+  /* @theme border-color: light_background_reports_override */
+  /* @theme color: smart_text_reports_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.reports + div .page-title .x2-button:hover, div.widget-title-bar.reports + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_reports_override */
+  /* @theme border-color: lighter_background_reports_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.charts {
+  /* @theme background-color: background_charts_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.charts .x2-button {
+  /* @theme background-color: background_charts_override */
+  /* @theme color: smart_text_charts_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.charts > .summary > span + div {
+  /* @theme background-color: background_charts_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.charts > h2, div.page-title.charts > h2 > span, div.page-title.charts > .summary > span, div.page-title.charts > .summary > span > *, div.page-title.charts > .record-aliases-dropdown-container > h2, div.page-title.charts > span.icon, div.page-title.charts > .vcrPager > .summary {
+  /* @theme color: smart_text_charts_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts {
+  /* @theme background-color: background_charts_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts .x2-button, div.widget-title-bar.charts .x2-icon-button {
+  /* @theme background-color: background_charts_override */
+  /* @theme color: smart_text_charts_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts > div {
+  /* @theme color: smart_text_charts_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts + div .page-title {
+  /* @theme background-color: background_charts_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts + div .page-title > .summary > span > div {
+  /* @theme background-color: background_charts_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts + div .page-title > .summary > span, div.widget-title-bar.charts + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_charts_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts + div .page-title .x2-button {
+  /* @theme background-color: background_charts_override */
+  /* @theme border-color: light_background_charts_override */
+  /* @theme color: smart_text_charts_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.charts + div .page-title .x2-button:hover, div.widget-title-bar.charts + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_charts_override */
+  /* @theme border-color: lighter_background_charts_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.workflow {
+  /* @theme background-color: background_workflow_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.workflow .x2-button {
+  /* @theme background-color: background_workflow_override */
+  /* @theme color: smart_text_workflow_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.workflow > .summary > span + div {
+  /* @theme background-color: background_workflow_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.workflow > h2, div.page-title.workflow > h2 > span, div.page-title.workflow > .summary > span, div.page-title.workflow > .summary > span > *, div.page-title.workflow > .record-aliases-dropdown-container > h2, div.page-title.workflow > span.icon, div.page-title.workflow > .vcrPager > .summary {
+  /* @theme color: smart_text_workflow_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow {
+  /* @theme background-color: background_workflow_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow .x2-button, div.widget-title-bar.workflow .x2-icon-button {
+  /* @theme background-color: background_workflow_override */
+  /* @theme color: smart_text_workflow_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow > div {
+  /* @theme color: smart_text_workflow_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow + div .page-title {
+  /* @theme background-color: background_workflow_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow + div .page-title > .summary > span > div {
+  /* @theme background-color: background_workflow_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow + div .page-title > .summary > span, div.widget-title-bar.workflow + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_workflow_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow + div .page-title .x2-button {
+  /* @theme background-color: background_workflow_override */
+  /* @theme border-color: light_background_workflow_override */
+  /* @theme color: smart_text_workflow_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.workflow + div .page-title .x2-button:hover, div.widget-title-bar.workflow + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_workflow_override */
+  /* @theme border-color: lighter_background_workflow_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.services {
+  /* @theme background-color: background_services_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.services .x2-button {
+  /* @theme background-color: background_services_override */
+  /* @theme color: smart_text_services_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.services > .summary > span + div {
+  /* @theme background-color: background_services_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.services > h2, div.page-title.services > h2 > span, div.page-title.services > .summary > span, div.page-title.services > .summary > span > *, div.page-title.services > .record-aliases-dropdown-container > h2, div.page-title.services > span.icon, div.page-title.services > .vcrPager > .summary {
+  /* @theme color: smart_text_services_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services {
+  /* @theme background-color: background_services_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services .x2-button, div.widget-title-bar.services .x2-icon-button {
+  /* @theme background-color: background_services_override */
+  /* @theme color: smart_text_services_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services > div {
+  /* @theme color: smart_text_services_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services + div .page-title {
+  /* @theme background-color: background_services_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services + div .page-title > .summary > span > div {
+  /* @theme background-color: background_services_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services + div .page-title > .summary > span, div.widget-title-bar.services + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_services_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services + div .page-title .x2-button {
+  /* @theme background-color: background_services_override */
+  /* @theme border-color: light_background_services_override */
+  /* @theme color: smart_text_services_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.services + div .page-title .x2-button:hover, div.widget-title-bar.services + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_services_override */
+  /* @theme border-color: lighter_background_services_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.bugReports {
+  /* @theme background-color: background_bugReports_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.bugReports .x2-button {
+  /* @theme background-color: background_bugReports_override */
+  /* @theme color: smart_text_bugReports_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.bugReports > .summary > span + div {
+  /* @theme background-color: background_bugReports_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.bugReports > h2, div.page-title.bugReports > h2 > span, div.page-title.bugReports > .summary > span, div.page-title.bugReports > .summary > span > *, div.page-title.bugReports > .record-aliases-dropdown-container > h2, div.page-title.bugReports > span.icon, div.page-title.bugReports > .vcrPager > .summary {
+  /* @theme color: smart_text_bugReports_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports {
+  /* @theme background-color: background_bugReports_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports .x2-button, div.widget-title-bar.bugReports .x2-icon-button {
+  /* @theme background-color: background_bugReports_override */
+  /* @theme color: smart_text_bugReports_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports > div {
+  /* @theme color: smart_text_bugReports_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports + div .page-title {
+  /* @theme background-color: background_bugReports_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports + div .page-title > .summary > span > div {
+  /* @theme background-color: background_bugReports_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports + div .page-title > .summary > span, div.widget-title-bar.bugReports + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_bugReports_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports + div .page-title .x2-button {
+  /* @theme background-color: background_bugReports_override */
+  /* @theme border-color: light_background_bugReports_override */
+  /* @theme color: smart_text_bugReports_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.bugReports + div .page-title .x2-button:hover, div.widget-title-bar.bugReports + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_bugReports_override */
+  /* @theme border-color: lighter_background_bugReports_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.emailInboxes {
+  /* @theme background-color: background_emailInboxes_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.emailInboxes .x2-button {
+  /* @theme background-color: background_emailInboxes_override */
+  /* @theme color: smart_text_emailInboxes_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.emailInboxes > .summary > span + div {
+  /* @theme background-color: background_emailInboxes_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.emailInboxes > h2, div.page-title.emailInboxes > h2 > span, div.page-title.emailInboxes > .summary > span, div.page-title.emailInboxes > .summary > span > *, div.page-title.emailInboxes > .record-aliases-dropdown-container > h2, div.page-title.emailInboxes > span.icon, div.page-title.emailInboxes > .vcrPager > .summary {
+  /* @theme color: smart_text_emailInboxes_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes {
+  /* @theme background-color: background_emailInboxes_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes .x2-button, div.widget-title-bar.emailInboxes .x2-icon-button {
+  /* @theme background-color: background_emailInboxes_override */
+  /* @theme color: smart_text_emailInboxes_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes > div {
+  /* @theme color: smart_text_emailInboxes_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes + div .page-title {
+  /* @theme background-color: background_emailInboxes_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes + div .page-title > .summary > span > div {
+  /* @theme background-color: background_emailInboxes_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes + div .page-title > .summary > span, div.widget-title-bar.emailInboxes + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_emailInboxes_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes + div .page-title .x2-button {
+  /* @theme background-color: background_emailInboxes_override */
+  /* @theme border-color: light_background_emailInboxes_override */
+  /* @theme color: smart_text_emailInboxes_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.emailInboxes + div .page-title .x2-button:hover, div.widget-title-bar.emailInboxes + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_emailInboxes_override */
+  /* @theme border-color: lighter_background_emailInboxes_override */
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Activity {
+  /* @theme background-color: background_x2Activity_override */
+}
+/* line 49, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Activity .x2-button {
+  /* @theme background-color: background_x2Activity_override */
+  /* @theme color: smart_text_x2Activity_override */
+}
+/* line 53, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Activity > .summary > span + div {
+  /* @theme background-color: background_x2Activity_override */
+}
+/* line 56, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.page-title.x2Activity > h2, div.page-title.x2Activity > h2 > span, div.page-title.x2Activity > .summary > span, div.page-title.x2Activity > .summary > span > *, div.page-title.x2Activity > .record-aliases-dropdown-container > h2, div.page-title.x2Activity > span.icon, div.page-title.x2Activity > .vcrPager > .summary {
+  /* @theme color: smart_text_x2Activity_override */
+}
+
+/* line 67, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity {
+  /* @theme background-color: background_x2Activity_override */
+}
+/* line 69, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity .x2-button, div.widget-title-bar.x2Activity .x2-icon-button {
+  /* @theme background-color: background_x2Activity_override */
+  /* @theme color: smart_text_x2Activity_override */
+}
+/* line 73, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity > div {
+  /* @theme color: smart_text_x2Activity_override */
+}
+/* line 76, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity + div .page-title {
+  /* @theme background-color: background_x2Activity_override */
+}
+/* line 78, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity + div .page-title > .summary > span > div {
+  /* @theme background-color: background_x2Activity_override */
+}
+/* line 81, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity + div .page-title > .summary > span, div.widget-title-bar.x2Activity + div .page-title > .summary > span > * {
+  /* @theme color: smart_text_x2Activity_override */
+}
+/* line 86, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity + div .page-title .x2-button {
+  /* @theme background-color: background_x2Activity_override */
+  /* @theme border-color: light_background_x2Activity_override */
+  /* @theme color: smart_text_x2Activity_override */
+}
+/* line 91, ../../../compass/themes/x2engine/css/moduleOverrides.scss */
+div.widget-title-bar.x2Activity + div .page-title .x2-button:hover, div.widget-title-bar.x2Activity + div .page-title .x2-button:active {
+  /* @theme background-color: light_background_x2Activity_override */
+  /* @theme border-color: lighter_background_x2Activity_override */
+}

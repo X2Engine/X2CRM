@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -112,6 +113,52 @@
     			'headerHtmlOptions'=>array('style'=>'width:15%;'),
     		),
     	),
+    ));
+    
+    echo "<br> <br>";
+    
+    $actionModel = X2Model::model('Actions');
+    $this->widget('zii.widgets.grid.GroupGridView', array(
+        'baseScriptUrl'=>Yii::app()->request->baseUrl.'/themes/'.Yii::app()->theme->name.'/css/gridview',
+        'template'=> '{items}{pager}',
+        'id' => 'Stage-Complete-Widget',
+        'dataProvider'=> $actionModel->searchComplete($dateRange, $modelType, $model->id),
+        'filter'=> $actionModel,
+        'mergeColumns' => array('uid', 'name'),
+        'columns'=>array(
+                array(
+                        'name' => 'uid',
+                        'header' => 'Record Assigned To',
+                        'value'=>'Workflow::userCheck($data)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:20%;'),
+                ),
+                array(
+                        'name'=>'name',
+                        'header' => 'Record Name',
+                        'value' => 'Workflow::nameCheck($data)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'header' => 'Start Date',
+                        'value' => 'Formatter::formatDate($data->createDate)',
+                        'type'=>'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'header' => 'Days it took to Complete',
+                        'value'=>'Workflow::getCompleteTime($data)',
+                        'type' => 'raw',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+                array(
+                        'name'=>'stageNumber',
+                        'header'=>'Stage Name',
+                        'value' => 'WorkflowStage::model()->findByAttributes(array("id" => $data->stageNumber, "workflowId" => $data->workflowId))->name',
+                        'headerHtmlOptions'=>array('style'=>'width:15%;'),
+                ),
+        ),
     ));
     }
     ?>

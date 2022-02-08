@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -545,7 +546,7 @@ class AdminController extends X2Controller {
         } 
         if ($imAdmin) {
             return true;
-        } elseif (Yii::app()->user->isGuest) {
+        } elseif (Yii::app()->user->isLoggedOut) {
             Yii::app()->user->returnUrl = Yii::app()->request->requestUri;
             $this->redirect($this->createUrl('/site/login'));
         } else {
@@ -700,7 +701,9 @@ class AdminController extends X2Controller {
           'actions' => array(
           'index', 'howTo', 'searchContact', 'search', 'toggleAccounts',
           'export', 'import', 'uploadLogo', 'toggleDefaultLogo', 'createModule', 'deleteModule', 'exportModule',
-          'importModule', 'toggleSales', 'setTimeout', 'emailSetup', 'googleIntegration', 'setChatPoll',
+          'importModule', 'toggleSales', 'setTimeout', 'emailSetup', 
+          'nexmoIntegration', 
+	  'googleIntegration', 'setChatPoll',
           'renameModules', 'manageModules', 'createPage', 'contactUs', 'viewChangelog', 'toggleUpdater',
           'translationManager', 'addCriteria', 'deleteCriteria', 'setLeadRouting', 'roundRobinRules',
           'deleteRouting', 'addField', 'removeField', 'customizeFields', 'manageFields', 'editor',
@@ -2798,6 +2801,8 @@ class AdminController extends X2Controller {
             'admin' => $admin,
         ));
     }
+    
+    
 
     /**
      * Configure google integration.
@@ -2856,60 +2861,8 @@ class AdminController extends X2Controller {
         $url = Yii::app()->createUrl('/profile/createUpdateCredentials', $params);
         $this->redirect($url);
     }
-    
-    /**
-     * Get and Sync outlook calender with x2calender
-     */
-    public function actionOutlookSync () {
-    //get the ticket code and use the tocken url to get the access token
-    $params1 = $_GET['code'];
-        if(isset($params1)){
-            $code = $params1;
-        }
-    $ch = curl_init();
-    
-    $admin = Admin::model()->findByPk (1);
-    $id = $admin->outlookCredentialsId;
-    $credential = Credentials::model()->findByAttributes(array('id'=>$id));
-    $auth_credential = $credential->auth;
-    $client_id = $auth_credential->outlookId;
-    $client_secret = $auth_credential->outlookSecret;
 
-    //create header and body for the POST request
-    curl_setopt($ch, CURLOPT_URL,"https://login.microsoftonline.com/common/oauth2/v2.0/token");
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type' => 'application/x-www-form-urlencoded'));
-    curl_setopt($ch, CURLOPT_POSTFIELDS,
-        http_build_query(array('code' => $code, 
-                               'grant_type' => 'authorization_code',
-                               'client_id' => $client_id,
-                               'client_secret' => $client_secret
-        )));
-    
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    
-    //execute url
-    $server_output = curl_exec($ch);
-    curl_close ($ch);
-    
-        //check to see if something was returned
-        if (isset($server_output)) { 
-        $result = CJSON::decode($server_output);
-        $refresh_token = $result['refresh_token'];
-        
-        $currentuser = Yii::app()->user->getName();
-        $profile = Profile::model()->findByAttributes(array('username'=>$currentuser));
-        $profile->outlookRefreshToken = $refresh_token;
-        $profile->save();
-               
-        //redirect them to the calender create page
-        $url = Yii::app()->createUrl('/calendar/create');
-        $this->redirect($url);
-        
-        }else{
-        $this->redirect('index');    
-        }
-    }
+     
     
     public function actionX2HubIntegration() {
         $credId = Yii::app()->settings->hubCredentialsId;
@@ -3886,10 +3839,11 @@ class AdminController extends X2Controller {
 
         if (isset($_POST['moduleName'])) {
 
-            $title = trim($_POST['title']);
-            $recordName = trim($_POST['recordName']);
+            $purifier = new CHtmlPurifier ();
+            $title = trim($purifier->purify($_POST['title']));
+            $recordName = trim($purifier->purify($_POST['recordName']));
 
-            $moduleName = trim($_POST['moduleName']);
+            $moduleName = trim($purifier->purify($_POST['moduleName']));
 
             // are there any non-alphanumeric or _ chars? or non-alpha characters at the beginning?
             if (preg_match('/\W/', $moduleName) || preg_match('/^[^a-zA-Z]+/', $moduleName)) {
@@ -4203,7 +4157,7 @@ class AdminController extends X2Controller {
      * @param string $moduleName The name of the module being created
      * @param string $moduleTitle The title of the module being created
      */
-    private function createSkeletonDirectories($moduleName, $moduleTitle) {
+    private function createSkeletonDirectories($moduleName, $moduleTitle, $listable = false) {
 
         $errors = array();
 
@@ -5151,7 +5105,9 @@ class AdminController extends X2Controller {
             $modelName = $layoutModel->model;
 
             if (isset($_POST['layout'])) {
-                $layoutModel->layout = urldecode($_POST['layout']);
+                // remove any <script> tags
+                $sanitizedLayout = preg_replace('#<script(.*?)>(.*?)</script>#is', '', urldecode($_POST['layout']));
+                $layoutModel->layout = $sanitizedLayout;
                 $layoutModel->defaultView = isset($_POST['defaultView']) && $_POST['defaultView'] == 1;
                 $layoutModel->defaultForm = isset($_POST['defaultForm']) && $_POST['defaultForm'] == 1;
                 $layoutModel->scenario = isset($_POST['scenario']) ? $_POST['scenario'] : 'Default';
@@ -5213,6 +5169,8 @@ class AdminController extends X2Controller {
             'defaultForm' => isset($layoutModel->defaultForm) ? $layoutModel->defaultForm : false,
         ));
     }
+
+    
 
     /**
      * Create form Layout

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import('application.components.sortableWidget.*');
 Yii::import('application.components.X2Settings.*');
 Yii::import('application.components.behaviors.*');
@@ -52,7 +53,7 @@ class X2TestCase extends CTestCase {
     
     private $_oldSession;
     
-    public function setUp() {
+    public function setUp() : void {
         if(X2_TEST_DEBUG_LEVEL > 0){
             $timer = TestingAuxLib::getCaseTimer ();
             $timer->start ();
@@ -64,7 +65,7 @@ class X2TestCase extends CTestCase {
         parent::setUp();
     }
     
-    public function tearDown() {
+    public function tearDown() : void {
         if(isset($this->_oldSession)){
             $_SESSION = $this->_oldSession;
         }
@@ -82,7 +83,7 @@ class X2TestCase extends CTestCase {
             preg_replace ('/^'.preg_quote (__DIR__, '/').'/', '', $reflect->getFileName ()), '/');
     }
     
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void {
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
@@ -98,7 +99,7 @@ class X2TestCase extends CTestCase {
         parent::setUpBeforeClass();
     }
     
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void {
         if(X2_TEST_DEBUG_LEVEL > 0){
             $timer = TestingAuxLib::getClassTimer ();
             TestingAuxLib::log ("time elapsed for test class: {$timer->stop ()->getTime ()}");

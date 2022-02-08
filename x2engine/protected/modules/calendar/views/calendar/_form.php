@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -101,28 +102,22 @@ $users = array_map (array('CHtml', 'encode'), $users);
     </div>
     <?php
     //dropdown to pick either google or Outlook. Can't do both.
-    if( $googleIntegration && $outlookIntegration ){
-        if($client->getAccessToken() && $clientOutlook->getAccessToken()){
+    if(($googleIntegration && $outlookIntegration) && ($client->getAccessToken() && $clientOutlook->getAccessToken())){
             echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('google' => 'Google Calendar', 'outlook' => 'Outlook Calendar');
             echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        }
-    }elseif($googleIntegration){
-        if($client->getAccessToken()){
+    }elseif($googleIntegration && $client->getAccessToken()){
         echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('google' => 'Google Calendar');
-            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration'))); 
-        }    
-    }elseif($outlookIntegration){
-        if($clientOutlook->getAccessToken()){
+            echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
+    }elseif($outlookIntegration && $clientOutlook->getAccessToken()){
             echo "<br>";
             echo $form->labelEx($model, 'syncType');
             $syncTypes = array('outlook' => 'Outlook Calendar');
             echo $form->dropDownList($model, 'syncType', $syncTypes, array('empty'=>Yii::t('calendar','Select an integration')));
-        } 
-    }     
+    }
     ?>
     <?php
     //google Version

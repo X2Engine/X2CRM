@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -124,10 +125,10 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
     private $_listItem;
 
     /**
-     * Contact record corresponding to the recipient of the current mail being
+     * X2Model record corresponding to the recipient of the current mail being
      * delivered.
      * 
-     * @var Contacts
+     * @var Contacts|Accounts|X2Leads|Opportunity
      */
     private $_recipient;
 
@@ -191,7 +192,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * Third element: unique ID assigned to the current email
      *
      * @param Campaign $campaign Campaign of the current email being sent
-     * @param Contacts $contact Contact to whom the email is being sent
+     * @param X2Model $recipient Recipient to whom the email is being sent
      * @param type $email
      * @param bool $replaceBreaks used for unit testing
      * @param bool $replaceUnsubToken used for unit testing
@@ -199,9 +200,9 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @throws Exception
      */
     public static function prepareEmail (
-        Campaign $campaign, Contacts $contact, $replaceBreaks=true, $replaceUnsubToken=true) {
+        Campaign $campaign, X2Model $recipient, $replaceBreaks=true, $replaceUnsubToken=true) {
 
-        $email = $contact->email;
+        $email = $recipient->email;
         $now = time();
         $uniqueId = md5 (uniqid (mt_rand (), true));
 
@@ -238,8 +239,8 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         }
 
         // Replacement in body
-        $emailBody = Docs::replaceVariables($emailBody, $contact, array (
-            '{trackingKey}' => $uniqueId, // Use the campaign key, not the general contact key
+        $emailBody = Docs::replaceVariables($emailBody, $recipient, array (
+            '{trackingKey}' => $uniqueId, // Use the campaign key, not the general "contact" key
         ));
 
         // transform links after attribute replacement but before signature and unsubscribe link 
@@ -271,20 +272,25 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         }
 
         // Insert unsubscribe link(s):
+        $optInUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
+            'uid' => $uniqueId,
+            'type' => 'opt-in',
+            'email' => $email,
+        ));
         $unsubUrl = Yii::app()->createExternalUrl('/marketing/marketing/click', array(
             'uid' => $uniqueId,
             'type' => 'unsub',
             'email' => $email,
-            'listModel' => 'Contacts',
-            'contactId' => $contact->id,
-            'campaignId' => $campaign->id,
-
         ));
         $unsubLinkText = Yii::app()->settings->getDoNotEmailLinkText();
         if ($replaceUnsubToken) {
             $emailBody = StringUtil::pregReplace (
                 '/\{_unsub\}/', 
-                '<a href="'.$unsubUrl.'">'.Yii::t('marketing', $unsubLinkText).'</a>',
+                '<a href="'.$unsubUrl.'">'.Yii::t('marketing', $unsubLinkText).'</a><br>' 
+                    //code to support opt in, will be expanded on in future update
+                //'To keep receiving these messages, click here: ' .
+                //'<a href="'.$optInUrl.'">'. 'I wish to keep receiving emails'
+                    , //translate later
                 $emailBody);
         }
 
@@ -292,11 +298,11 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $user = User::model()->findByAttributes(array('username' => $campaign->assignedTo));
         $emailBody = Docs::replaceVariables($emailBody, null, array (
             '{signature}' => ($user instanceof User) ? 
-                Docs::replaceVariables ($user->profile->signature, $contact) : '',
+                Docs::replaceVariables ($user->profile->signature, $recipient) : '',
         ));
 
         // Replacement in subject
-        $subject = Docs::replaceVariables($campaign->subject, $contact);
+        $subject = Docs::replaceVariables($campaign->subject, $recipient);
 
         // Add the transparent tracking image:
         $trackingImage = '<img src="'.Yii::app()->createExternalUrl(
@@ -365,7 +371,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $where = ' WHERE 
             i.listId=:listId
             AND i.unsubscribed=0
-            AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
+            AND (c.doNotEmail != 1 OR c.doNotEmail IS NULL) 
             AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
         if($unsent) {
             $where .= ' AND i.sent=0 AND i.suppressed=0';
@@ -381,7 +387,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * Similar to deliverableItems but only retrieves count
      */
     public static function deliverableItemsCount($listId,$unsent = false) {
-                //this first bit is to get the type of stuff the list is made of IE(contacts, leads, ...)
+        //this first bit is to get the type of stuff the list is made of IE(contacts, leads, ...)
        $MyType = X2List::model()->findByPk($listId)->modelName;
        $list = X2List::model()->findByPk($listId);
         if($MyType == 'Contacts'){$tableName= 'x2_contacts'; $model = new Contacts('search');}
@@ -394,7 +400,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         $where = ' WHERE 
             i.listId=:listId
             AND i.unsubscribed=0
-            AND (c.doNotEmail!=1 OR c.doNotEmail IS NULL)
+            AND (c.doNotEmail != 1 OR c.doNotEmail IS NULL)
             AND NOT ((c.email IS NULL OR c.email="") AND (i.emailAddress IS NULL OR i.emailAddress=""))';
         if($unsent) {
             $where .= ' AND i.sent=0 AND i.suppressed=0';
@@ -405,7 +411,7 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
                 ->queryScalar(array(':listId'=>$listId));
     }
 
-    public static function recordEmailSent(Campaign $campaign, Contacts $contact){
+    public static function recordEmailSent(Campaign $campaign, X2Model $recipient){
         $action = new Actions;
         // Disable the unsightly notifications for loads of emails:
         $action->scenario = 'noNotif';
@@ -422,16 +428,16 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         if($campaign->list->modelName == "X2Leads"){
             $action->associationType = 'x2Leads';
         }
-        $action->associationId = $contact->id;
-        $action->associationName = $contact->firstName.' '.$contact->lastName;
-        $action->visibility = $contact->visibility;
+        $action->associationId = $recipient->id;
+        $action->associationName = $recipient->name;
+        $action->visibility = $recipient->visibility;
         $action->type = 'email';
-        $action->assignedTo = $contact->assignedTo;
+        $action->assignedTo = $recipient->assignedTo;
         $action->createDate = $now;
         $action->completeDate = $now;
         $action->complete = 'Yes';
-        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"."<br><br>".Yii::t('marketing', 'Email'). ': '.$contact->email."<br><br>\n\n"
-                .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $contact)."<br><br>\n\n".Docs::replaceVariables($campaign->content, $contact);
+        $actionDescription = '<b>'.Yii::t('marketing', 'Campaign').': '.$campaign->name."</b>\n\n"."<br><br>".Yii::t('marketing', 'Email'). ': '.$recipient->email."<br><br>\n\n"
+                .Yii::t('marketing', 'Subject').": ".Docs::replaceVariables($campaign->subject, $recipient)."<br><br>\n\n".Docs::replaceVariables($campaign->content, $recipient);
 
         // Prepare action attributes for direct insertion to skip ActiveRecord overhead
         $attr = $action->attributes;
@@ -451,40 +457,11 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         }
         
         // Manually trigger since hooks won't be called
-        $contact->lastActivity = time();
+        $recipient->lastActivity = time();
         //have to update each type 
-        if($campaign->list->modelName == "Contacts"){
-            $contact->update(array('lastActivity'));
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => $contact,
-        ));
-        }
-        if($campaign->list->modelName == "Opportunity"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_opportunities SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => Opportunity::model()->findByPk($contact->id),
-        ));
-        }
-        if($campaign->list->modelName == "Accounts"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_accounts SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => Accounts::model()->findByPk($contact->id),
-        ));
-        }
-        if($campaign->list->modelName == "X2Leads"){
-            Yii::app()->db
-            ->createCommand("UPDATE x2_x2leads SET lastActivity = :TIME WHERE  id=:RListID")
-            ->bindValues(array(':TIME' => time(), ':RListID' => $contact->id))
-            ->execute();
-        X2Flow::trigger('RecordUpdateTrigger', array(
-            'model' => X2Leads::model()->findByPk($contact->id),
-        ));
+        if(in_array($campaign->list->modelName, ["Contacts", "Opportunity", "Accounts", "X2Leads"])){
+            $recipient->update(['lastActivity']);
+            X2Flow::trigger('RecordUpdateTrigger', ['model' => $recipient]);
         }
         
 
@@ -547,83 +524,18 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
      * @return type
      */
     public function getRecipient() {
- 
         if(!isset($this->_recipient)) {
- 
-           
-                 if($this->campaign->list->modelName == "Contacts"){
-                $this->_recipient = $this->listItem->contact;
-                 }
-                           //this code is to ensure I can work with accounts
-                    if($this->campaign->list->modelName == "Accounts"){
-
-                        $Acc = Accounts::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->company =  $Acc->company;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-                    if($this->campaign->list->modelName == "X2Leads"){
-
-                        $Acc = X2Leads::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-                    if($this->campaign->list->modelName == "Opportunity"){
-
-                        $Acc = Opportunity::model()->findByPk($this->listItem->contactId);
-                        $ContHold = new Contacts;
-                        $ContHold->id =  $Acc->id;
-                        $ContHold->name =  $Acc->name;
-                        $ContHold->nameId =  $Acc->nameId;
-                        $ContHold->firstName =  $Acc->firstName;
-                        $ContHold->lastName =  $Acc->lastName;
-                        $ContHold->visibility = $Acc->visibility;
-                        $ContHold->email =  $Acc->email;
-                        $ContHold->phone =  $Acc->phone;
-                        $ContHold->doNotEmail =  $Acc->doNotEmail;
-                        $ContHold->doNotCall =  $Acc->doNotCall;
-                        $ContHold->preferredEmail = $Acc->preferredEmail;
-                        $ContHold->businessEmail = $Acc->businessEmail;
-                        $ContHold->personalEmail = $Acc->personalEmail;
-                        $ContHold->alternativeEmail = $Acc->alternativeEmail;
-                        $this->_recipient = $ContHold;
-                    }
-
-            if (!isset($this->_recipient)) {
+            $modelName = $this->campaign->list->modelName;
+            if(in_array($modelName, ["Contacts", "Opportunity", "Accounts", "X2Leads"])){
+                $model = $modelName::model()->findByPk($this->listItem->contactId);
+                $this->_recipient = $model;
+            } else {
                 // Newsletter
                 $this->_recipient = new Contacts;
                 $this->_recipient->email = $this->listItem->emailAddress;
             }
         }
-        //this code is to change the email 
+        //this code is to change the email (only works on contacts)
         if(!empty($this->_recipient->preferredEmail) && $this->_recipient->preferredEmail !== "Default" && $this->_recipient->preferredEmail !== "email"){
             $emailType = $this->_recipient->preferredEmail;
             $this->_recipient->email = $this->_recipient->$emailType;
@@ -770,7 +682,13 @@ class CampaignMailingBehavior extends EmailDeliveryBehavior {
         );
         $condition = 'i.id=:id OR (i.listId=:listId AND (i.emailAddress=:emailAddress OR c.email=:email))';
         $columns = 'i.sent=:sent,i.uniqueId=:uniqueId,i.unsubscribed=:unsubscribed,i.suppressed=:suppressed,sending=0,emailAddress=:setEmail';
-        Yii::app()->db->createCommand('UPDATE x2_list_items AS i LEFT JOIN x2_contacts AS c ON c.id=i.contactId SET '.$columns.' WHERE '.$condition)->execute($params);
+        $tableName = (new $this->campaign->list->modelName)->tableName();
+        Yii::app()->db->createCommand("UPDATE x2_list_items AS i LEFT JOIN {$tableName} AS c ON c.id=i.contactId SET {$columns} WHERE {$condition}")->execute($params);
+
+        if ($this->recipient->optIn === null) {
+            $this->recipient->optIn = false;
+            $this->recipient->save();
+        }
     }
 
     /**

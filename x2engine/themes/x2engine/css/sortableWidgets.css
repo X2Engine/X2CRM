@@ -31,4 +31,176 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#feed-widget-gear-menu .sp-replacer{padding:0px !important}#feed-widget-gear-menu .sp-dd{height:13px !important}#feed-widget-gear-menu .sp-preview{width:20px !important;height:17px !important;margin-right:5px !important}#sidebar-right .selected{color:white;background:black}#sidebar-right .hover{background:grey}#sidebar-right hr{margin:0px;padding:0}#sidebar-right colorPicker>span{padding:0px 0px 0px 0px !important}#widget_ChatBox input{padding:1px 1px 1px 1px !important;float:none;border:1px solid #aaa;-moz-border-radius:3px;-o-border-radius:3px;-webkit-border-radius:3px;border-radius:3px}.dark_background:link,.dark_background:active{color:#fff000 !important}.dark_background:hover{color:#F0E030 !important}.dark_background:visited{color:#ede100 !important}.light_background:link,.light_background:active{color:#0645AD !important}.light_background:hover{color:#3366BB !important}.light_background:visited{color:#0B0080 !important}#main-column{float:left !important}#RecordViewWidgetManagerwidgets-container{float:right}#RecordViewWidgetManagerwidgets-container-2{float:left;clear:left;box-sizing:border-box}.connected-sortable-widget-container>.sortable-widget-container .widget-title-bar .create-button{margin-left:65px;margin-bottom:0;margin-top:0;box-sizing:border-box;margin:0 !important;height:20px;float:left;line-height:19px !important;margin-left:9px !important;margin-top:1px !important}.connected-sortable-widget-container>.sortable-widget-container .widget-title-bar .create-button span{color:#01b701}.connected-sortable-widget-container>.sortable-widget-container .widget-title-bar .widget-label-icon{float:left;position:relative;top:3px;margin-right:7px}.connected-sortable-widget-container>.sortable-widget-container .widget-title-bar .quote-icon{position:relative;top:-6px;height:19px;width:20px;left:-6px}
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/* 
+override spectrum color picker css 
+*/
+/* line 52, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#feed-widget-gear-menu .sp-replacer {
+  padding: 0px !important;
+}
+/* line 55, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#feed-widget-gear-menu .sp-dd {
+  height: 13px !important;
+}
+/* line 58, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#feed-widget-gear-menu .sp-preview {
+  width: 20px !important;
+  height: 17px !important;
+  margin-right: 5px !important;
+}
+
+/* line 66, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#sidebar-right .selected {
+  color: white;
+  background: black;
+}
+/* line 70, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#sidebar-right .hover {
+  background: grey;
+}
+/* line 73, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#sidebar-right hr {
+  margin: 0px;
+  padding: 0;
+}
+/* line 77, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#sidebar-right colorPicker > span {
+  padding: 0px 0px 0px 0px !important;
+}
+
+/* line 82, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#widget_ChatBox input {
+  padding: 1px 1px 1px 1px !important;
+  float: none;
+  border: 1px solid #aaa;
+  -moz-border-radius: 3px;
+  -o-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+/* line 93, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.dark_background:link, .dark_background:active {
+  color: #fff000 !important;
+}
+/* line 96, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.dark_background:hover {
+  color: #F0E030 !important;
+}
+/* line 99, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.dark_background:visited {
+  color: #ede100 !important;
+}
+
+/* line 105, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.light_background:link, .light_background:active {
+  color: #0645AD !important;
+}
+/* line 108, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.light_background:hover {
+  color: #3366BB !important;
+}
+/* line 111, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.light_background:visited {
+  color: #0B0080 !important;
+}
+
+/* line 116, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#main-column {
+  float: left !important;
+}
+
+/* line 120, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#RecordViewWidgetManagerwidgets-container {
+  float: right;
+}
+
+/* line 124, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+#RecordViewWidgetManagerwidgets-container-2 {
+  float: left;
+  clear: left;
+  box-sizing: border-box;
+}
+
+/* line 132, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .create-button {
+  margin-left: 65px;
+  margin-bottom: 0;
+  margin-top: 0;
+  box-sizing: border-box;
+  margin: 0 !important;
+  height: 20px;
+  float: left;
+  line-height: 19px !important;
+  margin-left: 9px !important;
+  margin-top: 1px !important;
+}
+/* line 143, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .create-button span {
+  color: #01b701;
+}
+/* line 147, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .widget-label-icon {
+  float: left;
+  position: relative;
+  top: 3px;
+  margin-right: 7px;
+}
+/* line 153, ../../../compass/themes/x2engine/css/sortableWidgets.scss */
+.connected-sortable-widget-container > .sortable-widget-container .widget-title-bar .quote-icon {
+  position: relative;
+  top: -6px;
+  height: 19px;
+  width: 20px;
+  left: -6px;
+}

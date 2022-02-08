@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/auxlib.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/TagContainer.js');
 Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tags/TagCreationContainer.js');
@@ -44,7 +45,7 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().'/js/X2Tag
 
 $authParams['X2Model'] = $model;
 $menuOptions = array(
-    'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share', 'delete',
+    'todays', 'my', 'everyones', 'create', 'view', 'edit', 'share', 'delete','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 

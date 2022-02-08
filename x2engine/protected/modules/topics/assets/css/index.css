@@ -31,4 +31,99 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#content>.form{padding:0}#topics-sort-buttons a.disabled{pointer-events:none}.list-view .default-avatar{line-height:0}.list-view .topic-attributes{float:right;width:30%;min-width:270px;text-align:center;padding-right:10px}.list-view .avatar-container{display:inline-block;width:50px}.list-view .topic-last-updated-text{display:inline-block;line-height:normal;margin-top:8px}.list-view .items{border:none !important}.list-view .pager{border:none !important}.list-view .page-title{line-height:26px;min-height:35px;height:auto}.list-view .page-title>h2,.list-view .page-title .summary{position:relative;top:4px}.list-view .page-title #topics-sort-buttons{padding:5px}.list-view .topic-entry{padding:10px;border-bottom:1px solid #F5F5F5;vertical-align:middle;line-height:45px}.list-view .topics-header{padding:5px 0 5px 0;font-weight:bold}.clear-fix:after{content:' ';display:block;height:0;clear:both}.topic-sticky{float:left;width:5%;text-align:center}.topic-title{float:left;max-width:65%}.topic-reply-count{float:left;width:30%}
+ **********************************************************************************/
+/* line 40, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+#content > .form {
+  padding: 0;
+}
+
+/* line 45, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+#topics-sort-buttons a.disabled {
+  pointer-events: none;
+}
+
+/* line 54, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .default-avatar {
+  line-height: 0;
+}
+/* line 59, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .topic-attributes {
+  float: right;
+  width: 30%;
+  min-width: 270px;
+  text-align: center;
+  padding-right: 10px;
+}
+/* line 66, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .avatar-container {
+  display: inline-block;
+  width: 50px;
+}
+/* line 70, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .topic-last-updated-text {
+  display: inline-block;
+  line-height: normal;
+  margin-top: 8px;
+}
+/* line 75, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .items {
+  border: none !important;
+}
+/* line 78, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .pager {
+  border: none !important;
+}
+/* line 81, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .page-title {
+  line-height: 26px;
+  min-height: 35px;
+  height: auto;
+}
+/* line 85, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .page-title > h2, .list-view .page-title .summary {
+  position: relative;
+  top: 4px;
+}
+/* line 89, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .page-title #topics-sort-buttons {
+  padding: 5px;
+}
+/* line 93, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .topic-entry {
+  padding: 10px;
+  border-bottom: 1px solid #F5F5F5;
+  vertical-align: middle;
+  line-height: 45px;
+}
+/* line 99, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.list-view .topics-header {
+  padding: 5px 0 5px 0;
+  font-weight: bold;
+}
+
+/* line 104, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.clear-fix:after {
+  content: ' ';
+  display: block;
+  height: 0;
+  clear: both;
+}
+
+/* line 110, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.topic-sticky {
+  float: left;
+  width: 5%;
+  text-align: center;
+}
+
+/* line 115, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.topic-title {
+  float: left;
+  max-width: 65%;
+}
+
+/* line 119, ../../../../../compass/protected/modules/topics/assets/css/index.scss */
+.topic-reply-count {
+  float: left;
+  width: 30%;
+}

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -116,6 +117,28 @@ class X2Calendar extends CActiveRecord
 		
 		return $names;
 	}
+
+       public static function getAppointmentSideBar($calendar, $appointment){
+ 
+           $view =  '<div style="height:40px; padding: 0px 0px 15px 0px;">
+                         <div style="font-size: 11px;">
+                             <center> <b>Opens</b> are: <font color="##91E1B3"><b>Green</b></font>. </center>
+                             <center> <b>Scheduled</b> are: <font color="#ff9aa2"><b>Red</b></font>. </center>
+                             <center><font color="red"><b>*</b></font>' . $calendar->name . '</center>
+                         </div>
+                     </div>';
+
+           $view .=  '<input type="text" class="x2-textfield" name="ical-schedule-url-field"
+                     id="ical-schedule-url-field" style="width:50%;display:inline-block;"
+                     value="'. $appointment .'"></input>&nbsp;
+                     <a id="ical-schedule-url-link" href="'.$appointment.'">['.Yii::t('calendar','link').']</a>&nbsp;';
+
+           $view .= X2Html::hint(Yii::t('admin',"This link is to share non-users open times (traditional 9am - 5pm)."
+                 ),false,null,true); // text, superscript, id,brackets, encode
+
+           return $view;
+
+       }
      
         /*
         * Get All the Calenders from the user

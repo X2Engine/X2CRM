@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -268,7 +269,7 @@ class Admin extends X2ActiveRecord {
             array('currency', 'length', 'max' => 3),
             array('emailUseAuth, emailUseSignature', 'length', 'max' => 10),
             array('emailType, emailSecurity,gaTracking_internal,gaTracking_public', 'length', 'max' => 20),
-            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri', 'length', 'max' => 255),
+            array('webLeadEmail, leadDistribution, emailFromName, emailFromAddr, emailHost, emailUser, emailPass,externalBaseUrl,externalBaseUri,kbHomeUrl,kbForumsUrl,kbContactUrl', 'length', 'max' => 255),
             // array('emailSignature', 'length', 'max'=>512),
             array('massActionsBatchSize', 'numerical', 'integerOnly' => true, 'min' => 5, 'max' => 100,),
             array('emailBulkAccount,serviceCaseEmailAccount', 'safe'),
@@ -348,6 +349,7 @@ class Admin extends X2ActiveRecord {
             'updateDate' => Yii::t('admin', 'Last Update'),
             'updateInterval' => Yii::t('admin', 'Version Check Interval'),
             'googleIntegration' => Yii::t('admin', 'Activate Google Integration'),
+            
             'outlookIntegration' => Yii::t('admin', 'Activate Outlook Integration'),
             'inviteKey' => Yii::t('admin', 'Invite Key'),
             'workflowBackdateWindow' => Yii::t('admin', 'Process Backdate Window'),

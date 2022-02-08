@@ -31,4 +31,73 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/table.action-timers-form thead th{padding-bottom:5px}table.action-timers-form tfoot td{border-top:1px solid #AAAAAA;padding-top:5px}table.action-timers-form .timer-total-column{width:75px;overflow:hidden}table.action-timers-form input.time-input{max-width:200px}table.action-timers-form th{border-bottom:1px solid #AAAAAA;font-weight:bold}a.delete-timer{text-decoration:none;color:transparent;width:16px;display:inline-block}a.delete-timer img{width:0}table.action-timers-form tbody tr:hover{background-color:#F5F4DE}table.action-timers-form tbody tr:hover a.delete-timer img{width:16px}span.timer-total.negative{color:red}
+ **********************************************************************************/
+/* line 25, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 25, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 43, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form thead th {
+  padding-bottom: 5px;
+}
+/* line 46, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form tfoot td {
+  border-top: 1px solid #AAAAAA;
+  padding-top: 5px;
+}
+/* line 50, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form .timer-total-column {
+  width: 75px;
+  overflow: hidden;
+}
+/* line 54, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form input.time-input {
+  max-width: 200px;
+}
+/* line 57, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form th {
+  border-bottom: 1px solid #AAAAAA;
+  font-weight: bold;
+}
+
+/* line 28, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 32, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 36, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 39, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 28, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 32, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 36, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 39, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 45, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 55, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 78, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+a.delete-timer {
+  text-decoration: none;
+  color: transparent;
+  width: 16px;
+  display: inline-block;
+}
+/* line 83, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+a.delete-timer img {
+  width: 0;
+}
+
+/* line 60, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 50, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 55, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 69, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 94, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form tbody tr:hover {
+  background-color: #F5F4DE;
+}
+/* line 96, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+table.action-timers-form tbody tr:hover a.delete-timer img {
+  width: 16px;
+}
+
+/* line 71, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 57, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 62, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 80, ../../../../../compass/sass/protected/modules/actions/assets/css/actionTimersForm.scss */
+/* line 107, ../../../../../compass/protected/modules/actions/assets/css/actionTimersForm.scss */
+span.timer-total.negative {
+  color: red;
+}

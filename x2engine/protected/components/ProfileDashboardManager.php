@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -120,7 +121,14 @@ class ProfileDashboardManager extends CWidget {
                     'LayoutEditor.js',
                     'ProfileLayoutEditor.js',
                 )
-	        )
+			),
+			'layoutSaverJS' => array(
+				'baseUrl' => $baseUrl.'/js/',
+				'js' => array(
+					'ProfileLayoutSaver.js',
+				)
+			),
+
 		);
 
 		return $packages;
@@ -170,11 +178,16 @@ class ProfileDashboardManager extends CWidget {
             'createChartingWidgetUrl' => 
                 Yii::app()->controller->createUrl ('/reports/addToDashboard'),
             
-        ));
+		));
+		
+		$layoutSaverParams = CJSON::encode (array(
+			'saveProfileLayoutUrl' => Yii::app()->controller->createUrl ('/profile/saveGroupLayout'),
+		));
 
         $script = "
         	x2.profileWidgetManager = new ProfileWidgetManager ($widgetManagerParams);
-        	x2.profileLayoutManager = new x2.ProfileLayoutEditor ($layoutEditorParams);
+			x2.profileLayoutManager = new x2.ProfileLayoutEditor ($layoutEditorParams);
+			x2.profileLayoutSaver = new ProfileLayoutSaver ($layoutSaverParams);
 
         	new PopupDropdownMenu ({
         	    containerElemSelector: '#x2-hidden-profile-widgets-menu-container',

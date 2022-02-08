@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -226,7 +227,7 @@ class Profile extends X2ActiveRecord {
                     $rand = chr(rand(65, 90));
                     $salt = $time . $rand;
                     $name = md5($salt . md5($salt) . $salt);
-                    return 'uploads/protected/'.$name.'.'.$file->getExtensionName ();
+                    return 'uploads/protected/'.$name.'.'.CFileHelper::getExtensionByMimeType($file->tempName);
                 }
             ),
             'LinkableBehavior' => array(
@@ -330,7 +331,7 @@ class Profile extends X2ActiveRecord {
         // will receive user inputs.
         return array(
             array('fullName, username, status', 'required'),
-            array('status, lastUpdated, disableNotifPopup, allowPost, defaultCalendar', 'numerical', 'integerOnly' => true),
+            array('status, lastUpdated, disableNotifPopup, allowPost, appointmentCalendar, defaultCalendar', 'numerical', 'integerOnly' => true),
             array('enableFullWidth,showSocialMedia,showDetailView,disablePhoneLinks,disableTimeInTitle,showTours', 'boolean'), //,showWorkflow
             array('emailUseSignature', 'length', 'max' => 10),
             array('startPage', 'length', 'max' => 30),
@@ -340,7 +341,7 @@ class Profile extends X2ActiveRecord {
             array('username, updatedBy', 'length', 'max' => 20),
             array('officePhone, extension, cellPhone, language', 'length', 'max' => 40),
             array('timeZone', 'length', 'max' => 100),
-            array('widgets, tagLine, emailAddress', 'length', 'max' => 255),
+            array('widgets, tagLine, emailAddress, currentLayout', 'length', 'max' => 255),
             array('widgetOrder', 'length', 'max' => 512),
             array('emailSignature', 'safe'),
             array('notes, avatar, gridviewSettings, formSettings, widgetSettings', 'safe'),
@@ -445,6 +446,9 @@ class Profile extends X2ActiveRecord {
         );
         return $attributes;
     }
+    
+    
+
 
     /**
      * Retrieves a list of models based on the current search/filter conditions.
@@ -1254,6 +1258,7 @@ class Profile extends X2ActiveRecord {
                     'style' => "font-size: ${dimensionLimit}px",
                 ));
             } else {
+                //https://commons.wikimedia.org/wiki/File:Portrait_Placeholder.png
                 return '<img id="avatar-image" width="'
                 . $dimensionLimit . '" height="'.$dimensionLimit
                 . '" src='.Yii::app()->request->baseUrl
@@ -1291,7 +1296,7 @@ class Profile extends X2ActiveRecord {
     }
 
     public function getLastLogin () {
-        return $this->user['lastLogin'];
+        return isset($this->user['lastLogin']) ? $this->user['lastLogin'] : NULL;
     }
 
     /**

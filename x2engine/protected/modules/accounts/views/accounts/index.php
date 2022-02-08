@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,11 +37,12 @@
 
 
 
+
 $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportunities'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
 $menuOptions = array(
-    'all', 'create', 'report', 'import', 'export', 'lists',
+    'all', 'create', 'report', 'import', 'export', 'lists', 'helpGuide',
 );
 if ($opportunityModule->visible && $contactModule->visible)
     $menuOptions[] = 'quick';
@@ -67,6 +68,7 @@ $('.search-form form').submit(function(){
 });
 ");
 $dataProvider=null;
+
 if ($this->route == 'accounts/accounts/index') {
     //$heading = Yii::t('contacts', 'All {module}', array('{module}' => $modTitles['contacts']));
     
@@ -74,11 +76,12 @@ if ($this->route == 'accounts/accounts/index') {
     //$enableSelectAllOnAllPages = true;
     //unset($menuItems[0]['url']);
     //unset($menuItems[4]); // View List
-} elseif ($this->route == 'accounts/accounts/myAccounts') {
+} elseif ($this->route == 'accounts/accounts/myaccounts') {
+    
     //$heading = Yii::t('contacts', 'My {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchMyAccounts();
     //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
-} elseif ($this->route == 'accounts/accounts/newAccounts') {
+} elseif ($this->route == 'accounts/accounts/newaccounts') {
     //$heading = Yii::t('contacts', 'Today\'s {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchNewAccounts();
     //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));

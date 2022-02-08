@@ -28,18 +28,18 @@ return array(
 		'depends'=>array('jquery'),
 	),
 	'jquery.ui'=>array(
-        /* x2modstart */ 
-		'js'=>array(YII_DEBUG ? 'jui/js/jquery-ui.js' : 'jui/js/jquery-ui.min.js'),
-		//'js'=>array('jui/js/jquery-ui.min.js'),
-        /* x2modend */ 
+		/* x2modstart */
+		'js'=>array(YII_DEBUG ? 'jui/js/jquery-ui.js' : 'jui/js/jquery-ui.min.js'),	
+		//'js'=>array('jui/js/jquery-ui.min.js'),	
+        /* x2modend */ 	
 		'depends'=>array('jquery'),
-	),
-	'jquery.migrate'=>array(
-        /* x2modstart */ 
-		'js'=>array(/*YII_DEBUG ? 'jquery-migrate.js' : */'jquery-migrate.min.js'),
-		//'js'=>array('jui/js/jquery-ui.min.js'),
-        /* x2modend */ 
-		'depends'=>array('jquery'),
+	),	
+	'jquery.migrate'=>array(	
+        /* x2modstart */ 	
+		'js'=>array(/*YII_DEBUG ? 'jquery-migrate.js' : */'jquery-migrate.min.js'),	
+		//'js'=>array('jui/js/jquery-ui.min.js'),	
+		/* x2modend */ 
+		'depends'=>array('jquery'),	
 	),
 	'bgiframe'=>array(
 		'js'=>array('jquery.bgiframe.js'),

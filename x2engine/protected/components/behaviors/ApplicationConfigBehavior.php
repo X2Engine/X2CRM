@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,10 +38,10 @@
 
 
 
+
 // Imports that are required by properties/methods of this behavior:
 Yii::import('application.models.Admin');
 Yii::import('application.models.Modules');
-Yii::import('application.components.util.EncryptUtil');
 Yii::import('application.components.util.FileUtil');
 Yii::import('application.components.util.ResponseUtil');
 Yii::import('application.modules.users.models.*');
@@ -550,9 +550,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             $iv = $this->owner->basePath.'/config/encryption.iv';
             if(extension_loaded('openssl') && file_exists($key) && file_exists($iv)){
                 EncryptedFieldsBehavior::setup($key, $iv);
-            }else if (extension_loaded('openssl') && file_exists($key) && file_exists($iv)) {
-                EncryptedFieldsBehavior::setup($key, $iv);
-            }else {
+            }else{
                 // Use unsafe method with encryption
                 EncryptedFieldsBehavior::setupUnsafe();
             }
@@ -793,6 +791,21 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
         }
     }
 
+    /**
+     * "isPortal" wrapper that can be used from CLI
+     *
+     * Used in biz rules for RBAC items in place of Yii::app()->user->isPortal for
+     * the reason that Yii::app()->user is meaningless at the command line
+     * @return type
+     */
+    public function getIsUserPortal() {
+        if(php_sapi_name() == 'cli') {
+            return false;
+        } else {
+            return $this->owner->user->isPortal;
+        }
+    }
+
 	/**
 	 * Substitute user ID magic getter.
 	 *
@@ -831,7 +844,7 @@ Yii::app()->clientScript->registerScript(sprintf('%x', crc32(Yii::app()->name)),
             }else{
                 if(!isset(Yii::app()->user) || 
                     Yii::app()->user instanceof X2NonWebUser ||
-                    Yii::app()->user->isGuest){
+                    Yii::app()->user->isLoggedOut){
 
                     $app->params->noSession = true;
                 }

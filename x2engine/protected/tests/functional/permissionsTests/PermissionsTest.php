@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import("application.components.permissions.*");
 Yii::import("application.modules.actions.models.*");
 Yii::import("application.modules.users.models.*");
@@ -63,7 +64,7 @@ class PermissionsTest extends X2WebTestCase {
     private static $authItemChildrenAdded = array ();
     private static $defaultPermissions = array ();
 
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         // remove default permissions
         self::$defaultPermissions = Yii::app()->db->createCommand ("
             select * from x2_auth_item_child where parent='DefaultRole' and child like 'Contacts%'
@@ -82,7 +83,7 @@ class PermissionsTest extends X2WebTestCase {
         parent::setUpBeforeClass ();
     }
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         // restore default permissions
         if (count (self::$defaultPermissions)) {
             Yii::app()->db->createCommand ("

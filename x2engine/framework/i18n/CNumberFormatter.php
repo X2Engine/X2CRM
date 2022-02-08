@@ -87,13 +87,12 @@ class CNumberFormatter extends CComponent
 	 * If null, no replacement will be done.
 	 * @return string the formatting result.
 	 */
-	public function format(
-        $pattern,$value,$currency=null/* x2modstart */,$negativePrefix=null/* x2modend */)
+	public function format($pattern,$value,$currency=null/* x2modstart */,$negativePrefix=null/* x2modend */)
 	{
 		$format=$this->parseFormat($pattern);
-        if ($negativePrefix !== null) {
-            $format['negativePrefix'] = $negativePrefix;
-            $format['negativeSuffix'] = '';
+		if ($negativePrefix !== null) {	
+            $format['negativePrefix'] = $negativePrefix;	
+            $format['negativeSuffix'] = '';	
         }
 		$result=$this->formatNumber($format,$value);
 		if($currency===null)
@@ -110,12 +109,9 @@ class CNumberFormatter extends CComponent
 	 * The currency placeholder in the pattern will be replaced with the currency symbol.
 	 * @return string the formatting result.
 	 */
-	public function formatCurrency(
-        $value,$currency/* x2modstart */,$negativePrefix=null/* x2modend */)
+	public function formatCurrency($value,$currency/* x2modstart */,$negativePrefix=null/* x2modend */)
 	{
-		return $this->format(
-            $this->_locale->getCurrencyFormat(),$value,
-            $currency/* x2modstart */,$negativePrefix/* x2modend */);
+		return $this->format($this->_locale->getCurrencyFormat(),$value,$currency/* x2modstart */,$negativePrefix/* x2modend */);
 	}
 
 	/**

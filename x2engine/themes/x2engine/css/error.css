@@ -31,4 +31,49 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/i.fa.fa-exclamation-triangle.fa-3x{color:red;float:left;margin-top:10px;margin-left:8px;margin-right:8px}h1#h1-error{color:#f00;float:left}div#send-error{margin-left:10px}div#send-error-button{margin-left:20px;padding-bottom:15px}div#x2-php-error{width:600px}div#error-form{width:600px}div#stack-trace{display:none}a#toggle-trace{text-decoration:none}
+ **********************************************************************************/
+/* line 39, ../../../compass/themes/x2engine/css/error.scss */
+i.fa.fa-exclamation-triangle.fa-3x {
+  color: red;
+  float: left;
+  margin-top: 10px;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+/* line 47, ../../../compass/themes/x2engine/css/error.scss */
+h1#h1-error {
+  color: #f00;
+  float: left;
+}
+
+/* line 52, ../../../compass/themes/x2engine/css/error.scss */
+div#send-error {
+  margin-left: 10px;
+}
+
+/* line 56, ../../../compass/themes/x2engine/css/error.scss */
+div#send-error-button {
+  margin-left: 20px;
+  padding-bottom: 15px;
+}
+
+/* line 61, ../../../compass/themes/x2engine/css/error.scss */
+div#x2-php-error {
+  width: 600px;
+}
+
+/* line 65, ../../../compass/themes/x2engine/css/error.scss */
+div#error-form {
+  width: 600px;
+}
+
+/* line 69, ../../../compass/themes/x2engine/css/error.scss */
+div#stack-trace {
+  display: none;
+}
+
+/* line 73, ../../../compass/themes/x2engine/css/error.scss */
+a#toggle-trace {
+  text-decoration: none;
+}

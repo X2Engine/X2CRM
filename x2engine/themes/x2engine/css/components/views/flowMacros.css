@@ -31,4 +31,17 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#flow-macros form{text-align:left}#flow-macros form input{margin-left:0;margin-right:0}#flow-macros form #flow-macros-description-box{padding:4px 0 4px 0}
+ **********************************************************************************/
+/* line 40, ../../../../../compass/themes/x2engine/css/components/views/flowMacros.scss */
+#flow-macros form {
+  text-align: left;
+}
+/* line 42, ../../../../../compass/themes/x2engine/css/components/views/flowMacros.scss */
+#flow-macros form input {
+  margin-left: 0;
+  margin-right: 0;
+}
+/* line 46, ../../../../../compass/themes/x2engine/css/components/views/flowMacros.scss */
+#flow-macros form #flow-macros-description-box {
+  padding: 4px 0 4px 0;
+}

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -84,5 +85,20 @@ echo $this->model->getHiddenProfileWidgetMenu ();
     
    	echo $this->getChartingWidgetDropdown();
     
+    ?>
+</div>
+
+<div id='save-profile-layout-dialog' class='form' style='display: none;'>
+    <label for='' class='left-label'><?php echo Yii::t('app', 'Group: '); ?></label>
+    <?php
+    $groups = Groups::model()->findAll();
+    foreach ($groups as $group) {
+        $options[$group->id] = $group->name;
+    }
+    if (isset($options)) {
+        echo CHtml::dropDownList ('groupSelect', '', $options);
+    } else {
+        echo 'No groups!';
+    }
     ?>
 </div>

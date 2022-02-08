@@ -63,14 +63,14 @@ class CJuiDatePicker extends CJuiInputWidget
 	 */
 	public $flat=false;
 
-    public function init () {
-        /* x2modstart */   
-        // mobile app has its own datepicker styling
-        if (Yii::app()->params->isMobileApp) {
-            $this->cssFile = null;
-        }
-        /* x2modend */ 
-        parent::init ();
+	public function init () {	
+        /* x2modstart */   	
+        // mobile app has its own datepicker styling	
+        if (Yii::app()->params->isMobileApp) {	
+            $this->cssFile = null;	
+        }	
+        /* x2modend */ 	
+        parent::init ();	
     }
 
 	/**

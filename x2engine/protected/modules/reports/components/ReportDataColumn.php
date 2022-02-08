@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -131,6 +132,24 @@ class ReportDataColumn extends CDataColumn {
         $value = null;
         //AuxLib::debugLogR ('rendering attr '.$this->attribute);
         //AuxLib::debugLogR ('name: '.$this->name);
+
+	//specific for RowsAndColumn Report(Subtotal row)
+	if(isset($data) && !empty($data) && !isset($data["__\$hiddenIdAlias\$__"]) && $this->name !== null){
+            //fill column for total row in reports
+            if($this->name =="TotalFillColumn"){
+                echo '';
+	        return;
+            }
+	    if($data[$this->name] == "Total"){ 
+	        echo '<div class="subTotalRow">' . $data[$this->name] . '</font>';
+	        return;
+	    }
+	    if($data[$this->name] == null){
+	        echo '';
+	        return;
+	    }
+        }
+
         if (isset ($data[$this->name]) && $data[$this->name] === X2Report::EMPTY_ALIAS) {
             echo $this->grid->nullDisplay;
             return;

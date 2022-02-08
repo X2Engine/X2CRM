@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,7 @@
 
 
 
+
 /**
  * 
  * ChartData Structure: 
@@ -62,7 +63,8 @@ var MAX_CATEGORIES = 20;
 
 function ScatterPlotWidget (argsDict) {
     var defaultArgs = {
-        grid: true
+        grid: true,
+        displayType: 'scatter'
     };
     auxlib.applyArgs (this, defaultArgs, argsDict);
     x2.DataWidget.call (this, argsDict); 
@@ -81,6 +83,21 @@ ScatterPlotWidget.prototype.setUpConfigBar = function(){
         $(this).toggleClass('active', that.grid);
         that.draw();
     });
+
+    var options = ['scatter', 'bubble'];
+
+    auxlib.map(function(d){ 
+        that.configBar.find('#'+d).click(function(e){
+            e.preventDefault();
+            $(this).siblings('.display-type').removeClass('active');
+            $(this).addClass('active');
+
+            that.setProperty('displayType', d);
+            that.displayType = d;
+
+            that.draw();
+        });
+    }, options);
 };
 
 /**
@@ -107,7 +124,10 @@ ScatterPlotWidget.prototype.draw = function() {
         data: {
             xs: this.chartData.xs,
             json: this.chartData.json,
-            type: 'scatter'
+            type: this.displayType
+        },
+        bubble: {
+            maxR: 16,
         },
         axis: {
             x: {

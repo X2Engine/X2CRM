@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,6 +40,7 @@
 
 
 
+
 Yii::import('application.components.*');
 Yii::import('application.components.util.*');
 Yii::import('application.models.*');
@@ -70,7 +71,8 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         'contact' => 'Contacts',
         'actions' => 'Actions',
         'actionText' => 'ActionText',
-        'events' => 'Events'
+        'events' => 'Events',
+        'profile' => 'Profile',
     );
 
     /**
@@ -101,7 +103,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         $event = Events::model()->findByAttributes($eventAttr);
         $this->assertInstanceOf('Events',$event,'Failed asserting that the event was created.');
         if($pattern) {
-            $this->assertRegExp($pattern, $action->actionDescription, "Failed asserting the email has the identifying pattern $pattern in it.");
+            $this->assertMatchesRegularExpression($pattern, $action->actionDescription, "Failed asserting the email has the identifying pattern $pattern in it.");
         }
     }
 
@@ -196,7 +198,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         $this->assertEquals($action->associationName, $this->contact('testAnyone')->name);
         $this->assertEquals('emailFrom', $action->type);
         $this->assertEquals($action->associationId, $this->contact('testAnyone')->id);
-        $this->assertRegExp('/%123%/m', $action->actionDescription);
+        $this->assertMatchesRegularExpression('/%123%/m', $action->actionDescription);
         $event = Events::model()->findByAttributes(array('associationId' => $action->associationId, 'associationType' => $action->associationType));
         $this->assertTrue((bool) $event, 'Failed asserting that the event was created.');
         $this->assertEquals('email_from', $event->type);
@@ -220,7 +222,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         $this->assertEquals($action->associationName, $testContact->name);
         $this->assertEquals('emailFrom', $action->type);
         $this->assertEquals($action->associationId, $testContact->id);
-        $this->assertRegExp('/%123%/m', $action->actionDescription);
+        $this->assertMatchesRegularExpression('/%123%/m', $action->actionDescription);
         $event = Events::model()->findByAttributes(array('associationId' => $action->associationId, 'associationType' => $action->associationType));
         $this->assertTrue((bool) $event,'Failed asserting that the event was created.');
         $this->assertEquals('email_from', $event->type);
@@ -241,7 +243,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         $this->assertEquals($action->associationName, $contact->name);
         $this->assertEquals('email', $action->type);
         $this->assertEquals($action->associationId, $contact->id);
-        $this->assertRegExp('/%123%/m', $action->actionDescription);
+        $this->assertMatchesRegularExpression('/%123%/m', $action->actionDescription);
         $event = Events::model()->findByAttributes(array('associationId' => $action->associationId, 'associationType' => $action->associationType, 'type' => 'email_sent'));
         $this->assertTrue((bool) $event,'Failed asserting that the event was created.');
     }
@@ -307,7 +309,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
 //		var_dump($mailer);
 
         $this->assertEquals('Unrecognized forwarded email format', $mailer->Subject);
-        $this->assertRegExp('/The email capture script was not able to recognize the format of the forwarded message/', $mailer->Body);
+        $this->assertMatchesRegularExpression('/The email capture script was not able to recognize the format of the forwarded message/', $mailer->Body);
 //		echo "\n------------------------------\n";
 //		echo $mailer->Body;
 
@@ -315,8 +317,8 @@ class EmailImportBehaviorTest extends X2DbTestCase {
 //		var_dump($mailer);
 
         $this->assertEquals('Error while attempting to import data from an email.', $mailer->Subject);
-        $this->assertRegExp('/An unexpected error occurred while attempting to import an email/', $mailer->Body);
-        $this->assertRegExp('/Cockadoodledoo/', $mailer->Body);
+        $this->assertMatchesRegularExpression('/An unexpected error occurred while attempting to import an email/', $mailer->Body);
+        $this->assertMatchesRegularExpression('/Cockadoodledoo/', $mailer->Body);
 //		echo "\n------------------------------\n";
 //		echo $mailer->Body;
 //		echo $mailer->Body."\n\n";
@@ -328,7 +330,7 @@ class EmailImportBehaviorTest extends X2DbTestCase {
         $file = $this->openEmailFile('SocialFeed_direct.eml');
         $command->eml2records($file);
         $event = Events::model()->find(array('condition' => 'user="testuser"', 'limit' => 1, 'order' => 'id DESC'));
-        $this->assertRegExp('/HELLO EVERYONE, I AM SENDING THIS MESSAGE TO THE X2Engine ACTIVITY FEED/', $event->text);
+        $this->assertMatchesRegularExpression('/HELLO EVERYONE, I AM SENDING THIS MESSAGE TO THE X2Engine ACTIVITY FEED/', $event->text);
         $this->assertEquals(1, $event->visibility);
         $this->assertEquals('feed', $event->type);
         $this->assertEquals('Social Post', $event->subtype);

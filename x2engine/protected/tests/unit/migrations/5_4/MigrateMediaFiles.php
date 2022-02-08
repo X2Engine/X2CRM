@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 class MigrateMediaFiles extends X2TestCase {
 
     protected static $skipAllTests = true;
@@ -53,7 +54,7 @@ class MigrateMediaFiles extends X2TestCase {
         '..',
     );
 
-    public function setUp() {
+    public function setUp() : void {
         $baseDir = Yii::app()->basePath;
         $src = implode(DIRECTORY_SEPARATOR,
                 array(
@@ -97,8 +98,8 @@ class MigrateMediaFiles extends X2TestCase {
         $this->assertEquals($this->testMediaCount + $this->migrationCount - 1,
                 count(array_diff(scandir($this->migrationDest), $this->exclude)));
         //Assert testing dir has been deleted
-        $this->assertFileNotExists($this->mediaDest . DIRECTORY_SEPARATOR . 'testing');
-        $this->assertFileNotExists($this->migrationDest . DIRECTORY_SEPARATOR . 'testing');
+        $this->assertFileDoesNotExist($this->mediaDest . DIRECTORY_SEPARATOR . 'testing');
+        $this->assertFileDoesNotExist($this->migrationDest . DIRECTORY_SEPARATOR . 'testing');
     }
 
     public function runMigrationScript() {
@@ -115,7 +116,7 @@ class MigrateMediaFiles extends X2TestCase {
         X2_TEST_DEBUG_LEVEL > 1 && print_r($output);
     }
 
-    public function tearDown() {
+    public function tearDown() : void {
         $files = array_diff(scandir($this->mediaSrc), $this->exclude);
         foreach ($files as $file) {
             FileUtil::rrmdir($this->migrationDest . DIRECTORY_SEPARATOR . $file);

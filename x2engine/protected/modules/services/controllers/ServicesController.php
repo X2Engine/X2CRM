@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 /**
  * Track service/support cases among contacts.
  *
@@ -59,7 +60,9 @@ class ServicesController extends x2base {
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'update', 'search', 'saveChanges', 'delete', 'inlineEmail', 'createWebForm', 'statusFilter'),
+                'actions' => array('index', 'view', 'create', 
+		
+		'update', 'search', 'saveChanges', 'delete', 'inlineEmail', 'createWebForm', 'statusFilter'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -121,6 +124,8 @@ class ServicesController extends x2base {
 
         parent::view($model, 'services');
     }
+
+    
 
     /**
      * Creates a new model.
@@ -463,6 +468,8 @@ class ServicesController extends x2base {
         echo CJSON::encode($result);
     }
 
+    
+
     // Shows contacts in the specified list
     public function actionList($id = null) {
         $list = Services::load($id);
@@ -793,6 +800,7 @@ class ServicesController extends x2base {
                 'label'=>Yii::t('services','Create Web Form'),
                 'url'=>array('createWebForm')
             ),
+            
             array(
                 'name'=>'print',
                 'label' => Yii::t('app', 'Print Record'),

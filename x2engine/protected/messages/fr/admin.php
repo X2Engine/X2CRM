@@ -190,7 +190,7 @@
   'Global account' => 'Compte global',
   'Bulk Email Settings' => 'Paramètres de messagerie en vrac',
   'Service Case Email Settings' => 'Service Case Paramètres de messagerie',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Vous pouvez utiliser les variables suivantes dans ce modèle: {first} , {last} , {phone} , {email} , {description} et {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Vous pouvez utiliser les variables suivantes dans ce modèle: {first} , {last} , {phone} , {email} , {description} , {case} et {link} .',
   'Introduction' => 'Présentation',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'Cette fonction permet X2Engine pour recevoir et enregistrer des emails à une adresse particulière.',
   'Filesystem ownership and permissions' => 'propriété du système de fichiers et les autorisations',

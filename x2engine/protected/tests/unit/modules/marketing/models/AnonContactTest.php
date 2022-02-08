@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -40,6 +40,7 @@
 
 
 
+
 Yii::import('application.modules.actions.models.*');
 
 class AnonContactTest extends X2DbTestCase {
@@ -54,7 +55,7 @@ class AnonContactTest extends X2DbTestCase {
         $lastModifiedId = Yii::app()->db->createCommand()
             ->select('id')
             ->from('x2_anon_contact')
-            ->order('lastUpdated ASC')
+            ->order('(lastUpdated) ASC')
             ->queryScalar();
 
         $anonContact = X2Model::model('AnonContact')->findByPk($lastModifiedId);

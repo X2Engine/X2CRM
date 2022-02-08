@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -122,6 +123,10 @@ abstract class x2base extends X2Controller {
     }
 
     public function denied() {
+        //portal users should not wander away from the portal page
+        if (Yii::app()->user->isPortal) {
+            $this->owner->redirect(array('/services/portal'));
+        }
         throw new CHttpException(
             403, Yii::t('app','You are not authorized to perform this action.'));
     }
@@ -729,6 +734,7 @@ abstract class x2base extends X2Controller {
         {
             
             $output=$this->renderPartial($view,$data,true);
+            //printR($output, 1);
             /* x2modstart */ 
             if(($layoutFile=$this->getLayoutFile($this->layout))!==false) {
                 $output = $this->renderLayout ($layoutFile, $output);

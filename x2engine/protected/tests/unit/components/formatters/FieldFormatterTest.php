@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import ('application.controllers.*');
 Yii::import ('application.modules.contacts.*');
 Yii::import ('application.modules.contacts.controllers.*');
@@ -64,7 +65,7 @@ class FieldFormatterTest extends X2DbTestCase {
     /**
      * Add columns for custom fields
      */
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         parent::setUpBeforeClass ();
         
         self::$_oldServer = $_SERVER;
@@ -89,12 +90,12 @@ class FieldFormatterTest extends X2DbTestCase {
         Contacts::model ()->refreshMetaData ();
     }
 
-    public function setUp () {
+    public function setUp() : void {
         TestingAuxLib::loadControllerMock ();
-        return parent::setUp ();
+        parent::setUp ();
     }
     
-    public function tearDown(){
+    public function tearDown() : void{
         TestingAuxLib::restoreController();
         parent::tearDown();
     }
@@ -136,7 +137,7 @@ class FieldFormatterTest extends X2DbTestCase {
     /**
      * Clean up custom field columns 
      */
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         $fields = Fields::model ()->findAllByAttributes (array (
             'custom' => 1,
         ));
@@ -145,7 +146,7 @@ class FieldFormatterTest extends X2DbTestCase {
         Yii::app()->cache->flush ();
         Contacts::model ()->refreshMetaData ();
         Contacts::model ()->resetFieldsPropertyCache ();
-       AuxLib::debugLogR ('Contacts::model ()->getAttributes () = ');
+        AuxLib::debugLogR ('Contacts::model ()->getAttributes () = ');
         AuxLib::debugLogR (Contacts::model ()->getAttributes ());
         
         $_SERVER = self::$_oldServer;

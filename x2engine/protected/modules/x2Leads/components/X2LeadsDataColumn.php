@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,13 +37,14 @@
 
 
 
+
 class X2LeadsDataColumn extends X2DataColumn {
 
     /**
      * Allows for default boolean filter to be set. See {@link X2Leads::search}
      */
     public function renderFilterCellContent() {
-        if ($this->fieldModel['fieldName'] == 'converted') {
+        if ($this->name == 'converted') {
             echo CHtml::activeDropdownList(
                     $this->grid->filter, $this->name,
                     array(

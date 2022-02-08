@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
 
 Yii::app()->clientScript->registerCss('recordViewCss', "
@@ -55,7 +56,7 @@ $authParams['X2Model'] = $model;
 
 
 $menuOptions = array(
-    'index', 'create', 'view', 'edit', 'delete', 'print', 'editLayout',
+    'index', 'create', 'view', 'edit', 'delete', 'print', 'editLayout','helpGuide',
 );
 $this->insertMenu($menuOptions, $model);
 

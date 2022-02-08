@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -74,7 +75,7 @@ class Api2FiltersTest extends Api2TestBase {
         Yii::app()->settings->save();
     }
 
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void {
         self::$oldSettings = Yii::app()->settings->api2->attributes;
         $defaultSettings = new Api2Settings;
         self::$defaultSettings = $defaultSettings->attributes;
@@ -82,7 +83,7 @@ class Api2FiltersTest extends Api2TestBase {
         parent::setUpBeforeClass();
     }
 
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void {
         parent::tearDownAfterClass();
         self::settings(self::$oldSettings);
     }

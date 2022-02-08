@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -35,6 +35,7 @@
 
 
 
+
 /**
  * Hides the comments and adjustments columns and removes the add global adjustments button.
  * This gets used for the products action UI in both the publisher and the inline action edit/view 
@@ -50,9 +51,12 @@
     }
   }
   tr.line-item {
-    .x2-5th-child, .x2-6th-child {
+    .x2-5th-child {
       display: none;
     }
+  }
+  .add-comment-button{
+    display: none !important;
   }
   .add-adjustment-button {
     display: none !important;

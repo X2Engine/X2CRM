@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -80,6 +81,7 @@ Yii::app()->clientScript
         ->registerCss('applyTheme2', $theme2Css, 'screen', CClientScript::POS_HEAD)
         ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/login.css')
         ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/fontAwesome/css/font-awesome.css')
+        ->registerCssFile(Yii::app()->theme->getBaseUrl() . '/css/fontAwesome/css/fontawesome.css')
         ->registerScriptFile(Yii::app()->getBaseUrl() . '/js/auxlib.js')
         ->registerScriptFile(Yii::app()->getBaseUrl() . '/js/X2Forms.js');
 ?><!DOCTYPE html>

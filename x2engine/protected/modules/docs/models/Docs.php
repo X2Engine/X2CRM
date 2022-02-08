@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -104,6 +105,13 @@ class Docs extends X2Model {
         );
     }
 
+    public function afterSave() {
+       
+        parent::afterSave();
+    }
+
+    
+
     public function menuCheck($attr,$params=array()) {
         $this->$attr;
         $this->scenario = 'menu';
@@ -157,6 +165,7 @@ class Docs extends X2Model {
                 $quoteTitle = Modules::displayName(false, "Quotes");
                 $quoteParams = array(
                     '{lineItems}' => $model->productTable(true),
+                    '{lineItemsPacking}' => $model->packingSlip(true),
                     '{dateNow}' => date("F d, Y", time()),
                     '{quoteOrInvoice}' => Yii::t('quotes',
                             $model->type == 'invoice' ? 'Invoice' : $quoteTitle),

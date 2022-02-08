@@ -45,6 +45,7 @@ CREATE TABLE x2_x2leads(
 
     doNotCall      TINYINT DEFAULT 0,
     doNotEmail     TINYINT DEFAULT 0,
+    optIn     TINYINT DEFAULT NULL,
   
 
 

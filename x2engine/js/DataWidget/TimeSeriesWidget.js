@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,7 @@
 
 
 
+
 /**
  * Welcome to the TimeSeriesWidget!
  * This widget will create a histogram from a list of time-oriented data
@@ -63,7 +64,7 @@ x2.TimeSeriesWidget = (function() {
 
 var MAX_CATEGORIES = 20;
 var MAX_TICKS = 50;
-var MAX_POINTS = 20;
+var MAX_POINTS = 40;
 
 function TimeSeriesWidget (argsDict) {
     var defaultArgs = {
@@ -123,7 +124,7 @@ TimeSeriesWidget.prototype = auxlib.create (x2.DataWidget.prototype);
  * Set up all handlers for the config bar.
  * Many aspects in this function are steamlined-
  * IDs of config bar items often correspond to keywords
- * that c3 or d3 understand, such as chart types or time buckets
+ * that bb or d3 understand, such as chart types or time buckets
  **************************************************/
 TimeSeriesWidget.prototype.setUpConfigBar = function(){
     x2.DataWidget.prototype.setUpConfigBar.call(this);
@@ -135,7 +136,7 @@ TimeSeriesWidget.prototype.setUpConfigBar = function(){
     /**********************************
      * Chart type Menu
      **********************************/
-    var options = ['line', 'pie', 'gauge', 'bar', 'area'];
+    var options = ['line', 'spline', 'area-spline', 'pie', 'gauge', 'bar', 'area'];
 
     auxlib.map(function(d){ 
         that.configBar.find('#'+d).click(function(e){
@@ -293,10 +294,12 @@ TimeSeriesWidget.prototype.xScale = function(){
 
     // Generate a d3 timescale object
     var domain = [timeFrame.start, timeFrame.end];
-    var x = d3.time.scale().domain(domain);
+    var x = d3.scaleTime().domain(domain);
 
     // d3 time object for 1 hour, 1 day, 1 month..
-    var d3time = d3.time[this.timeBucket];
+    var s = this.timeBucket;
+    var interval = 'time' + s.charAt(0).toUpperCase() + s.slice(1);
+    var d3time = d3[interval];
 
     // Generate the ticks based on the bucketing
     var ticks = x.ticks(d3time, 1);
@@ -317,7 +320,7 @@ TimeSeriesWidget.prototype.getTimeFrame = function() {
     var unixEnd = this.chartData.timeFrame.end;
 
     // Round to the neared timebuckets
-    var start = moment (unixStart * 1000).subtract(1, this.timebucket).startOf(this.timeBucket);
+    var start = moment (unixStart * 1000).subtract(1, this.timeBucket).startOf(this.timeBucket);
     var end = moment (unixEnd * 1000).add(1, this.timeBucket).startOf (this.timeBucket);
 
     return {start: start, end: end};
@@ -449,9 +452,13 @@ TimeSeriesWidget.prototype.bucketData = function(sortedData) {
  **************************************************/
 TimeSeriesWidget.prototype.formatData = function(data, ticks) {
     // This sorts the data into the buckets. Very important function!
-    var histData = d3.layout.
+    var timeFrame = this.getTimeFrame();
+
+    // Generate a d3 timescale object
+    var domain = [timeFrame.start, timeFrame.end];
+    var histData = d3.
         histogram ().
-        bins (ticks).value (function(d) {
+        thresholds (ticks).domain(domain).value (function(d) {
             return new Date(d.timestamp)
         }) (data);
 
@@ -533,12 +540,12 @@ TimeSeriesWidget.prototype.averageData = function(formattedData) {
 TimeSeriesWidget.prototype.colorScale = function() {
     var values = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
-    var colorScale = d3.scale.linear()
+    var colorScale = d3.scaleLinear()
       .domain([0,50])
       .interpolate(d3.interpolateRgb)
       .range(['#FF0000', '#F6C600']);
 
-    var colorScale2 = d3.scale.linear()
+    var colorScale2 = d3.scaleLinear()
       .domain([50,100])
       .interpolate(d3.interpolateRgb)
       .range(['#F6C600', '#60B044']);
@@ -615,17 +622,9 @@ TimeSeriesWidget.prototype.draw = function() {
     /**
      * call the special gauge render function if gauge is selected
      */
-    if( type == 'gauge') {
+    if (type == 'gauge') {
         this.drawGauge();
         return;
-    }
-
-    /**
-     * Group data if area is selected
-     */
-    var groups = [];
-    if (this.displayType == 'area') {
-        groups = [auxlib.keys(this.formattedData)];
     }
 
     /**
@@ -655,11 +654,17 @@ TimeSeriesWidget.prototype.draw = function() {
         data: {
             x: 'ticks',
             json: this.formattedData,
-            groups: groups,
             selection: {
                 enabled: true,
-                multiple: false
-            }
+                multiple: false,
+                isselectable: function(dataPoint) {
+                    if(dataPoint["value"] > 0){
+                        return true;
+                    }
+                    
+                    return false;
+                }
+            },
         },
         axis: {
             x: {

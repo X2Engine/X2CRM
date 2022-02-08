@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -88,7 +89,7 @@ class SummationReportGridView extends ReportGridView {
 
     public function registerClientScript() {
         parent::registerClientScript();
-        if($this->enableGvSettings) {
+        if($this->enableGvSettings && Yii::app()->controller->module != null ) {
             Yii::app()->clientScript->registerScriptFile(Yii::app()->getBaseUrl().
                 '/js/X2GridView/x2gridview.js', CCLientScript::POS_END);
             Yii::app()->clientScript->registerScriptFile(
@@ -104,7 +105,7 @@ class SummationReportGridView extends ReportGridView {
      * Initializes hidden columns 
      */
     public function initColumns () {
-        if (count ($this->hiddenColumns)) {
+        if (is_array($this->hiddenColumns) && count ($this->hiddenColumns)) {
             $tmp = $this->columns;
             $this->columns = $this->hiddenColumns;
             parent::initColumns ();

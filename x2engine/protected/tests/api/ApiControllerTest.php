@@ -98,14 +98,14 @@ class ApiControllerTest extends CURLDbTestCase {
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html', $cr);
 		$this->assertResponseCodeIs(400,$ch,'Failed asserting that "no primary key specified" error was triggered properly.');
-		$this->assertRegExp('/No parameters matching primary key/',$cr,'Failed asserting that "no primary key specified" error was triggered properly.');
+		$this->assertMatchesRegularExpression('/No parameters matching primary key/',$cr,'Failed asserting that "no primary key specified" error was triggered properly.');
 		// Try again with nonexistent record:
 		$urlParam['{params}'] = '/id/666';
 		$ch = $this->getCurlHandle($urlParam, $postData);
 		file_put_contents('api_response.html', $cr);
 		$cr = curl_exec($ch);
 		$this->assertResponseCodeIs(404,$ch,'Failed asserting that the error of using a nonexistent record was triggered properly.');
-		$this->assertRegExp('/No record of model/',$cr,'Failed asserting that the error of using a nonexistent record was triggered properly.');
+		$this->assertMatchesRegularExpression('/No record of model/',$cr,'Failed asserting that the error of using a nonexistent record was triggered properly.');
 	}
 
 	public function testActionRelationship() {
@@ -166,7 +166,7 @@ class ApiControllerTest extends CURLDbTestCase {
 		$cr = curl_exec($ch);
 		file_put_contents('api_response.html', $cr);
 		$this->assertResponseCodeIs(400,$ch,'Failed asserting that "no tags parameter specified" error was triggered properly.');
-		$this->assertRegExp('/Parameter .* requried/',$cr,'Failed asserting that "no tags parameter specified" error was triggered properly.');
+		$this->assertMatchesRegularExpression('/Parameter .* requried/',$cr,'Failed asserting that "no tags parameter specified" error was triggered properly.');
 		// Now test adding
 		$tags = array('#this','#that');
 		$postData['tags'] = json_encode($tags);

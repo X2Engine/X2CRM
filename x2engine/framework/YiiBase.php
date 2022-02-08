@@ -90,7 +90,7 @@ class YiiBase
 	 */
 	public static function getVersion()
 	{
-		return '1.1.20';
+		return '1.1.23';
 	}
 
 	/**
@@ -462,8 +462,8 @@ class YiiBase
 						}
 					}
 				}
-				else
-					include($className.'.php');
+				// else
+				// 	strcmp("PHPUnit_Runner_Version", $className) ? 'empty' : include($className.'.php');
 			}
 			else  // class name with namespace in PHP 5.3
 			{
@@ -910,7 +910,7 @@ class YiiBase
 		'CLinkPager' => '/web/widgets/pagers/CLinkPager.php',
 		'CListPager' => '/web/widgets/pagers/CListPager.php',
 	);
-        /* x2modend */ 
+	/* x2modend */
 }
 
 spl_autoload_register(array('YiiBase','autoload'));

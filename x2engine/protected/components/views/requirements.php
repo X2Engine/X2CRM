@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -558,7 +559,7 @@ if($tryAccess){
         if($requirements['environment']['outbound_connection'] = tryGetRemote('http://www.google.com')){
             // Can connect to Google OK. Can connect to the updates server?
             if($requirements['environment']['updates_connection'] = checkDNS('x2planet.com')){
-                if(!($requirements['environment']['updates_connection'] = tryGetRemote('http://52.33.121.218/x2planet.com/installs/registry/reqCheck'))){
+                if(!($requirements['environment']['updates_connection'] = tryGetRemote('https://x2planet.com/installs/registry/reqCheck'))){
                     // 
                     $reqMessages[2][] = installer_t('Could not reach the updates server from this web server.')
                             .' '.$firewallMsg
@@ -662,8 +663,8 @@ if(!function_exists('sys_get_temp_dir')){
 // LOW PRIORITY: MISCELLANEOUS FUNCTIONALITY REQUIREMENTS //
 ////////////////////////////////////////////////////////////
 // Check encryption methods
-if(!($requirements['extensions']['openssl']=extension_loaded('openssl') && $requirements['extensions']['mcrypt']=extension_loaded('mcrypt'))) {
-	$reqMessages[1][] = installer_t('The "openssl" and "mcrypt" libraries are not available. If any application credentials (i.e. email account passwords) are entered into X2Engine, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
+if(!($requirements['extensions']['openssl']=extension_loaded('openssl'))) {
+	$reqMessages[1][] = installer_t('The "openssl" library is not available. If any application credentials (i.e. email account passwords) are entered into X2Engine, they  will be stored in the database in plain text (without any encryption whatsoever). Thus, if the database is ever compromised, those passwords will be readable by unauthorized parties.');
 }
 
 // Check for Zip extension

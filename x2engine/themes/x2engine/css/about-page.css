@@ -31,4 +31,126 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/#about-intro{margin:10px 0;max-width:580px}#about-intro .span-5-5{width:180px;float:left;margin-right:10px}#about-intro li{font-size:12px}#about-intro ul{list-style-type:none;padding-left:0;margin:0 0 10px 10px;color:#666}#about-credits ul{list-style-type:none;padding-left:0;margin:0 0 10px 10px;color:#666}#about-intro h4,#about-credits h4{line-height:1em;margin:3px 0}#about-intro ul.inline li{display:inline}#about-intro ul.inline li:after{content:', '}#about-intro ul.inline li:last-child:after{content:''}#about-credits li{font-size:11px}#about-credits .no-underline{text-decoration:none}#about-legal{clear:both;font-size:10px;color:#666}#about-map{float:right;width:260px;margin-top:0px;font-size:11px}#about-map img{-moz-box-shadow:0 3px 10px 2px rgba(0,0,0,0.5);-webkit-box-shadow:0 3px 10px 2px rgba(0,0,0,0.5);box-shadow:0 3px 10px 2px rgba(0,0,0,0.5);border-radius:8px;-moz-border-radius:8px;-webkit-border-radius:8px;-o-border-radius:8px;margin-bottom:5px}#content{padding:15px 22px}.center-column-container{margin-bottom:10px !important;margin-left:10px !important;max-width:600px !important;clear:none !important}#icon-container{float:left;text-align:center}#icon-container img{display:block}#icon-container #x2-about-logo{font-size:100px}#icon-container #powered-by-logo{display:inline}#x2engine-sticker{width:140px;height:auto}
+ **********************************************************************************/
+/* line 39, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro {
+  margin: 10px 0;
+  max-width: 580px;
+}
+/* line 40, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro .span-5-5 {
+  width: 180px;
+  float: left;
+  margin-right: 10px;
+}
+/* line 47, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro li {
+  font-size: 12px;
+}
+/* line 50, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0 0 10px 10px;
+  color: #666;
+}
+
+/* line 58, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-credits ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0 0 10px 10px;
+  color: #666;
+}
+
+/* line 65, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro h4, #about-credits h4 {
+  line-height: 1em;
+  margin: 3px 0;
+}
+
+/* line 70, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro ul.inline li {
+  display: inline;
+}
+/* line 72, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro ul.inline li:after {
+  content: ', ';
+}
+/* line 75, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-intro ul.inline li:last-child:after {
+  content: '';
+}
+
+/* line 81, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-credits li {
+  font-size: 11px;
+}
+/* line 84, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-credits .no-underline {
+  text-decoration: none;
+}
+
+/* line 89, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-legal {
+  clear: both;
+  font-size: 10px;
+  color: #666;
+}
+
+/* line 95, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-map {
+  float: right;
+  width: 260px;
+  margin-top: 0px;
+  font-size: 11px;
+}
+/* line 96, ../../../compass/themes/x2engine/css/about-page.scss */
+#about-map img {
+  -moz-box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 3px 10px 2px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -o-border-radius: 8px;
+  margin-bottom: 5px;
+}
+
+/* line 112, ../../../compass/themes/x2engine/css/about-page.scss */
+#content {
+  padding: 15px 22px;
+}
+
+/* line 116, ../../../compass/themes/x2engine/css/about-page.scss */
+.center-column-container {
+  margin-bottom: 10px !important;
+  margin-left: 10px !important;
+  max-width: 600px !important;
+  clear: none !important;
+}
+
+/* line 123, ../../../compass/themes/x2engine/css/about-page.scss */
+#icon-container {
+  float: left;
+  text-align: center;
+}
+/* line 126, ../../../compass/themes/x2engine/css/about-page.scss */
+#icon-container img {
+  display: block;
+}
+/* line 129, ../../../compass/themes/x2engine/css/about-page.scss */
+#icon-container #x2-about-logo {
+  font-size: 100px;
+  /* @theme color text */
+}
+/* line 133, ../../../compass/themes/x2engine/css/about-page.scss */
+#icon-container #powered-by-logo {
+  display: inline;
+}
+
+/* line 139, ../../../compass/themes/x2engine/css/about-page.scss */
+#x2engine-sticker {
+  width: 140px;
+  height: auto;
+}

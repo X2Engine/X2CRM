@@ -30,7 +30,7 @@ class ApiVoipTest extends CURLDbTestCase {
 		$response = json_decode(curl_exec($ch),1);
 		$this->assertResponseCodeIs(200, $ch,'Failed asserting that server responded with 200');
 		file_put_contents('api_response.html',$response);
-		$this->assertRegExp('/Notifications created for user.*/',$response['message']);
+		$this->assertMatchesRegularExpression('/Notifications created for user.*/',$response['message']);
 	}
 }
 

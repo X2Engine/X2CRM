@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -278,6 +279,11 @@ class Notification extends CActiveRecord {
 				return Yii::t('app', '{user} escalated a Service Case to you: {record}', array(
 					'{user}'=>User::getUserLinks($this->createdBy),
 					'{record}'=>$record->createLink(),
+				));
+			case 'caseReply':
+				return Yii::t('app', '{user} responded to your Service Case: {record}', array(
+					'{user}'=>User::getUserLinks($this->createdBy),
+					'{record}'=>$record->getLink(),
 				));
 			case 'custom':
 				return $this->text;

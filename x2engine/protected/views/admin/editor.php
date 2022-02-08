@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -160,6 +161,7 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
 </div>
 <?php echo CHtml::endForm(); ?>
 <?php if(!empty($modelName)){ ?>
+  <?php  ?>
     <div id="fieldListBox">
         <div id="fieldListTitle"><?php echo Yii::t('admin', 'Field List'); ?></div>
         <div id="editorFieldList" class="formSortable">
@@ -244,6 +246,7 @@ echo CHtml::hiddenField('layout', '', array('id' => 'layoutHiddenField'));
             ?>
         </div>
     </div>
+    <?php  ?>
 <?php } ?>
 <?php if(!empty($id)){ ?>
     <div class="formContainer span-15">

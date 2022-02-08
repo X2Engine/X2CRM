@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 class GuestProfileFixTest extends X2DbTestCase {
     
     // skipped since migration script tests aren't relevant after corresponding release
@@ -52,7 +53,7 @@ class GuestProfileFixTest extends X2DbTestCase {
 //        'users' => array ('User', '.GuestProfileFixTest'), 
 //    );
 
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         // must be set to true so that the command uses the test database
         if (!YII_UNIT_TESTING || !YII_DEBUG) {
             self::$skipAllTests = true;

@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 /**
  * @package application.modules.actions.controllers
  */
@@ -68,7 +69,7 @@ class ActionsController extends x2base {
     public function accessRules(){
         return array(
             array('allow', // allow all users to perform 'index' and 'view' actions
-                'actions' => array('invalid', 'sendReminder', 'emailOpened'),
+                'actions' => array('invalid', 'sendReminder', 'emailOpened', 'quickUpdateGuest'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -289,18 +290,22 @@ class ActionsController extends x2base {
                 $model->setX2Fields ($post);
             }
             
-            if($modelType == 'TimeFormModel'){
+            if($modelType == 'TimeFormModel') {
                 $model->visibility =  $_POST['TimeFormModel']['visibility'];    
             }
-            if($modelType == 'CallFormModel'){
+            if($modelType == 'CallFormModel') {
                 $model->visibility =  $_POST['CallFormModel']['visibility'];    
             }
-            if($modelType == 'NoteFormModel'){
+            if($modelType == 'NoteFormModel') {
                 $model->visibility =  $_POST['NoteFormModel']['visibility'];    
+            }
+            if($modelType == 'ProductsFormModel') {
+                $model->actionsDummyQuote['subtotal'] = str_replace("$", "", $_POST['Quote']['subtotal']);
+                $model->actionsDummyQuote['tax'] = $_POST['Quote']['tax'];
+                $model->actionsDummyQuote['total'] = str_replace("$", "", $_POST['Quote']['total']);
             }
             
             if (!$model->hasErrors () && isset($_POST['x2ajax'])) {
-                     
                 $location = Yii::app()->params->profile->user->logLocation('activityPost', 'POST');
                 $geoCoords = isset($_POST['geoCoords']) ? CJSON::decode($_POST['geoCoords']) : null;
                 $isCheckIn = ($geoCoords && (isset($geoCoords['lat']) || isset($geoCoords['locationEnabled'])));
@@ -603,6 +608,15 @@ class ActionsController extends x2base {
                 )),
                 'url'=>array('admin/exportModels', 'model'=>'Actions'),
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('actions', 'Actions Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-actions',
+                'linkOptions' => array(
+                    'id' => 'action-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
         );
 
         $this->prepareMenu($menuItems, $selectOptions);
@@ -757,6 +771,12 @@ class ActionsController extends x2base {
     public function actionQuickUpdate($id){
         $model = $this->loadModel($id);
         if(isset($_POST['Actions'])){
+
+            if($model->calendarId == Yii::app()->params->profile->appointmentCalendar){
+                //Don't save the colors if appointment
+                unset($_POST['Actions']['color']);
+            }
+
             $model->setX2Fields($_POST['Actions']);
 
             $model->dueDate = Formatter::parseDateTime($model->dueDate);
@@ -766,7 +786,100 @@ class ActionsController extends x2base {
                 $model->completeDate = $model->dueDate;
             }
             if($model->save()){
-                
+
+
+            }
+            if (isset($_POST['isEvent']) && $_POST['isEvent']) {
+                // Update calendar event
+                $event = X2Model::model('Events')->findByAttributes(array(
+                    'associationType' => 'Actions',
+                    'associationId' => $model->id,
+                ));
+                if ($event !== null) {
+                    $event->timestamp = $model->dueDate;
+                    $event->update(array('timestamp'));
+                }
+            }
+        }
+    }
+
+    /**
+     * Creating Appointment Body
+     * This is to email clients who sign up for an appointment.
+     * @return string
+     */
+    public function createAppointmentBody($email, $fullName, $date, $userModel) {
+   
+        $body = '<center>Dear <font color="blue">' . $fullName . '</font>, <br><br>';
+        $body .= 'This is an email <font color="red">reminder/confirmation</font> of your scheduling an appointment. <br>';
+        $body .= 'The Information of your scheduled appointment is the following: <br>';
+        $body .= 'You scheduled at: <font color="blue">' . date("F j, Y, g:i a") . '</font>.<br>';
+        $body .= 'For the time: <font color="blue">' . date("F j, Y, g:i a", $date) . '</font>.<br>';
+        $body .= 'With the email: ' . $email . '.<br><br>';
+
+        $body .= 'Sincerely, <br>' . $userModel->getfullName() . '<br><br>';
+
+        $body .= '--------------------------------------------------------- <br>';
+        $body .= 'Email: ' . $userModel->emailAddress . '  |  ' . 'officePhone: ' . $userModel->officePhone . '<br>';
+        $body .= '--------------------------------------------------------- <br></center>';
+
+        return $body;
+
+    }
+
+    /**
+     * Appointment Feature Updating Actions to schedule Appointment.
+     *  Justin Toyomitsu (Nov 4th 2019)
+     * (No returns)
+     */
+    public function actionQuickUpdateGuest($id, $user){
+
+        $userModel = User::model()->findByPk($user);
+
+        $model = $this->loadModel($id);
+        if(isset($_POST['Actions'])){
+            $model->setX2Fields($_POST['Actions']);
+
+            $model->dueDate = Formatter::parseDateTime($model->dueDate);
+            if($model->completeDate){
+                $model->completeDate = Formatter::parseDateTime($model->completeDate);
+            }elseif(empty($model->completeDate)){
+                $model->completeDate = $model->dueDate;
+            }
+ 
+            $model->scheduled = 1; //scheduled
+
+            if(isset($userModel)){ //**validation of appointment**
+                $prof = Profile::model()->findByAttributes(array('username' => $userModel->username));
+                if(isset($prof) && $prof->appointmentCalendar !== $model->calendarId){
+                    return; //Do not allow event update if the appointment calendar is not correct
+                }
+            }
+
+            /**
+             * If validation pass. Send Email
+             */
+            if(isset($userModel) && isset($_POST['customer_email']) && isset($_POST['customer_fullName'])){
+                $address = array(
+                    'to' => array(array($_POST['customer_fullName'], $_POST['customer_email'])), 
+                    'cc' => array(array($userModel->getFullName(), $userModel->emailAddress))
+                );
+                $body = $this->createAppointmentBody(
+                        $_POST['customer_email'], 
+                        $_POST['customer_fullName'], 
+                        $model->dueDate, 
+                        $userModel
+                );
+
+                $name = $_POST['customer_fullName'];
+                $email = $_POST['customer_email'];
+                $textModel = ActionText::model()->findByAttributes(array('actionId'=>$id));
+                $textModel->text .= "\n\n An appointment has been made for this event:\n$name $email";
+
+                if ($model->save() && $textModel->save()) {
+                    $credential = Credentials::model()->getDefaultUserAccount($user,'email');
+                    $status = $this->sendUserEmail($address, 'subject', $body, null, $credential);
+                }
             }
             if (isset($_POST['isEvent']) && $_POST['isEvent']) {
                 // Update calendar event

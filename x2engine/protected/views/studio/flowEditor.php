@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -262,8 +263,9 @@ echo X2Html::getFlashes();
                     <?php echo $form->label($model, 'name'); ?>
                     <?php echo $form->textField($model, 'name'); ?>
                     <?php echo $form->hiddenField($model, 'flow', array('id' => 'flowDataField')); ?>
+                    <?php  ?>
             </div>
-        </div>
+            <?php  ?>
         <div class="row" style="width:100%">
             <div class="cell" style="width:99%">
                 <?php echo $form->label($model, 'description'); ?>

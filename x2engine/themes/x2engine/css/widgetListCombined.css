@@ -31,4 +31,12 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/@import url(galleryWidgetCssOverrides.css);@import url("../../../js/gallerymanager/bootstrap/css/bootstrap.css");@import url("../../../js/jqplot/jquery.jqplot.css");@import url(x2chart.css);@import url(workflowFunnel.css)
+ **********************************************************************************/
+/*
+file used to fix IE8 max 31 css file references issue
+*/
+@import url(galleryWidgetCssOverrides.css);
+@import url("../../../js/gallerymanager/bootstrap/css/bootstrap.css");
+@import url("../../../js/jqplot/jquery.jqplot.css");
+@import url(x2chart.css);
+@import url(workflowFunnel.css);

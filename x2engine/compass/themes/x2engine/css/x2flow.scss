@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -525,6 +526,8 @@ $edgeColor: #CCCCCC;
     background-image: url(../images/x2flow/X2FlowCreateReminder.png);
 }
 
+
+
 /**
  * Create Email Stage Action
  */
@@ -537,6 +540,14 @@ $edgeColor: #CCCCCC;
  */
 .X2FlowSms {
     background-image: url(../images/x2flow/X2FlowRecordComment.png);
+}
+
+/**
+ * Create Report Email Send Stage Action
+ * https://fontawesome.com/icons/paper-plane?style=solid
+ */
+.X2FlowReportEmail {
+    background-image:url(../images/x2flow/X2FlowReportEmail.png);
 }
 
 /**
@@ -670,6 +681,15 @@ $edgeColor: #CCCCCC;
  */
 .X2FlowWorkflowStart {
     background-image: url(../images/x2flow/X2FlowWorkflowStart.png);
+}
+
+/**
+ * Process Terminate Stage Action
+ * credit: https://www.needpix.com/photo/download/94408/hand-fingers-stop-halt-palm-free-vector-graphics-free-pictures-free-photos-free-images
+ * (free to use, modify, even commercially) 
+ */
+.X2FlowWorkflowTerminateProcess {
+    background-image: url(../images/x2flow/X2FlowWorkflowTerminateProcess.png);
 }
 
 /**

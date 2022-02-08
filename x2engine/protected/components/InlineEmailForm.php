@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -216,7 +217,99 @@ class InlineEmailForm extends X2Widget {
             "window.hideInlineEmail = true;\n" : 
             "window.hideInlineEmail = false;\n"
         ), CClientScript::POS_HEAD);
-
+        
+        $baseUrl = Yii::app()->getBaseUrl(true);
+        //printR($baseUrl,1);
+        Yii::app()->clientScript->registerCssFile($baseUrl.'/js/selectize/selectize.css');
+        Yii::app()->clientScript->registerScriptFile($baseUrl.'/js/selectize/selectize.js');
+        Yii::app()->clientScript->registerCss('selectizeStyling', '
+            .selectize-control {
+                padding-left: 40px;
+            }');
+        Yii::app()->clientScript->registerScript('selectizeEmailAddressees','
+            $("#email-to").selectize({
+                plugins: ["restore_on_backspace", "remove_button"],
+                delimiter: ",",
+                maxOptions: 3,
+                options:[],
+                persist: true,
+                placeholder: "' . Yii::t('app', 'Addressees') .'",
+                create: function(input) {
+                    return {
+                        value: input,
+                        text: input
+                    }
+                },
+                load: function (query, callback) {
+                    $.ajax({
+                        url: "'. $baseUrl .'/index.php/contacts/GetInlineEmailContacts/",
+                        type: "POST",
+                        dataType: "json",
+                        data: {query: query},
+                        error: function() { callback(); },
+                        success: function (res) { callback(res); }
+                    });
+                },
+                onItemAdd: function() {
+                    this.blur();
+                },
+            });
+            $("#email-cc").selectize({
+                plugins: ["restore_on_backspace", "remove_button"],
+                delimiter: ",",
+                maxOptions: 3,
+                options:[],
+                persist: true,
+                placeholder: "Cc",
+                create: function(input) {
+                    return {
+                        value: input,
+                        text: input
+                    }
+                },
+                load: function (query, callback) {
+                    $.ajax({
+                        url: "'. $baseUrl .'/index.php/contacts/GetInlineEmailContacts/",
+                        type: "POST",
+                        dataType: "json",
+                        data: {query: query},
+                        error: function() { callback(); },
+                        success: function (res) { callback(res); }
+                    });
+                },
+                onItemAdd: function() {
+                    this.blur();
+                },
+            });
+            $("#email-bcc").selectize({
+                plugins: ["restore_on_backspace", "remove_button"],
+                delimiter: ",",
+                maxOptions: 3,
+                options:[],
+                persist: true,
+                placeholder: "Bcc",
+                create: function(input) {
+                    return {
+                        value: input,
+                        text: input
+                    }
+                },
+                load: function (query, callback) {
+                    $.ajax({
+                        url: "'. $baseUrl .'/index.php/contacts/GetInlineEmailContacts/",
+                        type: "POST",
+                        dataType: "json",
+                        data: {query: query},
+                        error: function() { callback(); },
+                        success: function (res) { callback(res); }
+                    });
+                },
+                onItemAdd: function() {
+                    this.blur();
+                },
+            });
+            ',CClientScript::POS_READY);
+        
         parent::init();
     }
 

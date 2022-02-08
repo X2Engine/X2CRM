@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -627,6 +628,10 @@ class X2LeadsController extends x2base {
                     'confirm'=>'Are you sure you want to delete this item?')
             ),
             array(
+                'name' => 'email',
+                'label' => Yii::t('app', 'Send Email'), 'url' => '#',
+                'linkOptions' => array('onclick' => 'toggleEmailForm(); return false;')),
+            array(
                 'name' => 'lists',
                 'label' => Yii::t('contacts', 'Lists'),
                 'url' => array('lists')
@@ -707,6 +712,15 @@ class X2LeadsController extends x2base {
                 'linkOptions' => array(
                     'submit' => array('deleteList', 'id' => $modelId),
                     'confirm' => 'Are you sure you want to delete this item?')
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('contacts', 'Leads Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-leads',
+                'linkOptions' => array(
+                    'id' => 'x2lead-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );

@@ -137,7 +137,7 @@
   'Configure how notification emails are sent.' => 'Настройка метода уведомления письма отправляются.',
   'Service Case Email Settings' => 'Service Settings случае, если письмо',
   'Configure how X2Engine sends email when responding to new service case requests.' => 'Настройка метода X2Engine посылает письмо, когда в ответ на новые запросы случае обслуживания.',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Вы можете использовать следующие переменные в шаблоне: {first} , {last} , {phone} , {email} , {description} и {case} .',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Вы можете использовать следующие переменные в шаблоне: {first} , {last} , {phone} , {email} , {description} , {case} и {link} .',
   'Edit Role' => 'Изменить роль',
   'Add Criteria for Notifications' => 'Добавить Критерии Уведомления',
   'To add a condition which will trigger notifications, please fill out the form below.' => 'Чтобы добавить условие, которое вызовет уведомления, пожалуйста, заполните форму ниже.',

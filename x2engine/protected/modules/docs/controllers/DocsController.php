@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 /**
  * @package application.modules.docs.controllers
  */
@@ -63,10 +64,12 @@ class DocsController extends x2base {
     public function accessRules() {
         return array(
             array('allow',
+                'actions' => array('kbView, searchKb'),
                 'users' => array('*'),
             ),
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions' => array('index', 'view', 'create', 'createEmail', 'update', 'exportToHtml', 'delete', 'getItems', 'getItem'),
+                'actions' => array('index', 'view', 'create', 'createEmail', 'update', 'exportToHtml', 'delete', 'getItems', 'getItem', 'createResponsiveEmail',
+                                   'saveTemplate', 'loadTemplate'),
                 'users' => array('@'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -115,8 +118,9 @@ class DocsController extends x2base {
      */
     public function actionFullView($id, $json = 0, $replace = 0) {
         $model = $this->loadModel($id);
+        $body = empty($model->gjsHtml) ? $model->text : $model->gjsHtml;
         $response = array(
-            'body' => $model->text,
+            'body' => $body,
             'subject' => $model->subject,
             'to' => $model->emailTo
         );
@@ -129,9 +133,12 @@ class DocsController extends x2base {
             header('Content-type: application/json');
             echo json_encode($response);
         } else {
+            
             echo $response['body'];
         }
     }
+
+    
 
     /**
      * Creates a new doc.
@@ -152,6 +159,7 @@ class DocsController extends x2base {
             $model->name .= ' (' . Yii::t('docs', 'copy') . ')';
         }
 
+        
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
 
@@ -178,7 +186,7 @@ class DocsController extends x2base {
 
         // Uncomment the following line if AJAX validation is needed
         // $this->performAjaxValidation($model);
-
+        
         if (isset($_POST['Docs'])) {
             $model->setX2Fields($_POST['Docs']);
             $model->subject = Formatter::restoreInsertableAttributes($model->subject);
@@ -191,6 +199,19 @@ class DocsController extends x2base {
                 $this->redirect(array('view', 'id' => $model->id));
             }
         }
+
+        /* if (isset($_POST['Docs'])) {
+            $model->setX2Fields($_POST['Docs']);
+            $model->subject = Formatter::restoreInsertableAttributes($model->subject);
+            $model->text = Formatter::restoreInsertableAttributes($model->text);
+            if ($model->save()) {
+                if (isset($_GET['ajax']) && $_GET['ajax']) {
+                    echo CJSON::encode($model->attributes);
+                    return;
+                }
+                $this->redirect(array('view', 'id' => $model->id));
+            }
+        } */
 
         $this->render('create', array(
             'model' => $model,
@@ -206,6 +227,12 @@ class DocsController extends x2base {
             if ($model->save()) {
                 $this->redirect(array('view', 'id' => $model->id));
             }
+        }elseif(isset($_POST['gjs-html'])){
+            $model = $this->saveTemplate(null, $model);
+            $url = "https://".$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].'/index.php/docs/saveTemplate/'.$model->id;
+            echo $model->hasErrors() ? json_encode(array('success'=>'false','errors'=>$model->getErrors())) : json_encode(array('success'=>'true','id'=>$model->id, 'url'=>$url));
+            return;
+            
         }
 
         $this->render('create', array(
@@ -292,18 +319,52 @@ class DocsController extends x2base {
                 ), false, true);
     }
 
+    public function actionLoadTemplate($id) {
+        $model = $this->loadModel($id);
+        if (!is_null($model)) {
+            $template = array();
+            $template['gjs-html'] = $model->gjsHtml;
+            $template['gjs-css'] = $model->gjsCss;
+            // $template['gjs-assets'] = $model->gjsAssets;
+            $template['gjs-styles'] = $model->gjsStyles;
+            $template['gjs-components'] = $model->gjsComponents;
+            $template = json_encode($template);
+            header('Content-Type: application/json');
+            echo $template;
+        } else {
+            echo json_encode(['success' => 'false', 'errors' => 'Template could not be found.']); 
+        }
+
+        return;
+    }
+
+    
+
+    public function actionSaveTemplate($id = null) {
+            $model = $this->saveTemplate($id);
+            echo $model->hasErrors() ? json_encode(array('success'=>'false','errors'=>$model->getErrors())) : json_encode(array('success'=>'true','id'=>$model->id, 'url'=>'http://'.$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].'/index.php/docs/saveTemplate/'.$model->id));
+    }
+
     /**
      * Updates a particular model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id the ID of the model to be updated
      */
     public function actionUpdate($id) {
+
         $model = $this->loadModel($id);
         if ($model->type == null) {
             $model->scenario = 'menu';
         }
         $old_title = $model->name;
         $new_title = $old_title;
+
+        if (isset($_POST['gjs-html'])) {
+            $model = $this->saveTemplate($id);
+            $url = $_SERVER['SERVER_PROTOCOL'].$_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].'/index.php/docs/saveTemplate/'.$model->id;
+            echo $model->hasErrors() ? json_encode(array('success'=>'false','errors'=>$model->getErrors())) : json_encode(array('success'=>'true','id'=>$model->id, 'url'=>$url));
+            return;
+        }
 
         if (isset($_POST['Docs'])) {
             $new_title = $_POST['Docs']['name'];
@@ -342,7 +403,8 @@ class DocsController extends x2base {
             $model = $this->loadModel($id);
             $this->cleanUpTags($model);
             $model->delete();
-
+            //remove all info docs dealing with this doc
+            Yii::app()->db->createCommand()->delete('x2_info_docs', "docId = :docId", array(":docId" => $model->id));
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect 
             // the browser
             if (!isset($_GET['ajax'])) {
@@ -388,6 +450,8 @@ class DocsController extends x2base {
                 $folderDataProvider = DocFolders::model()->getRootFolderContents();
             } elseif ($id == -1) {
                 $folderDataProvider = DocFolders::model()->getTemplatesFolderContents();
+            } elseif ($id == -2) {
+                $folderDataProvider = DocFolders::model()->getKbFolderContents();
             } else {
                 $folder = DocFolders::model()->findByPk($id);
                 if (!$this->checkPermissions($folder, 'view')) {
@@ -507,6 +571,7 @@ class DocsController extends x2base {
         ));
     }
 
+       
     /**
      * Create a menu for docs
      * @param array Menu options to remove
@@ -545,6 +610,13 @@ class DocsController extends x2base {
                 'name' => 'createEmail',
                 'label' => Yii::t('docs', 'Create Email'),
                 'url' => array('createEmail')
+            ),
+            array(
+                'name' => 'createResponsiveEmail',
+                'label' => Yii::t('docs', 'Create Reponsive Email', array(
+                    '{module}' => $Docs,
+                )),
+                'url' => 'createResponsiveEmail',
             ),
             array(
                 'name' => 'createQuote',
@@ -596,6 +668,15 @@ class DocsController extends x2base {
                     '{module}' => $Docs,
                 )),
                 'url' => array('admin/exportModels', 'model' => 'Docs'),
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('docs', 'Docs Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2documents',
+                'linkOptions' => array(
+                    'id' => 'document-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
         );
 

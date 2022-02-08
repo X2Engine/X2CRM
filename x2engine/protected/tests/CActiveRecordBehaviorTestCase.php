@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,20 +37,21 @@
 
 
 
+
 /**
  * Class intended for auto-import of {@link CActiveMock}
  * @package application.tests
  */
 abstract class CActiveRecordBehaviorTestCase extends X2TestCase {
 
-	public static function setUpBeforeClass() {
-		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+	public static function setUpBeforeClass() : void {
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS `'.CActiveMock::MOCK_TABLE.'`')->execute();
 		Yii::app()->db->createCommand('CREATE TABLE `'.CActiveMock::MOCK_TABLE.'` (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, foo BLOB,bar TEXT, flag TINYINT NOT NULL DEFAULT 0)')->execute();
 		parent::setUpBeforeClass();
 	}
 
-	public static function tearDownAfterClass(){
-		Yii::app()->db->createCommand('DROP TABLE IF EXISTS`'.CActiveMock::MOCK_TABLE)->execute();
+	public static function tearDownAfterClass() : void {
+		Yii::app()->db->createCommand('DROP TABLE IF EXISTS `'.CActiveMock::MOCK_TABLE.'`')->execute();
 		parent::tearDownAfterClass();
 	}
 }

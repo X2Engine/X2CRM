@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,22 +37,31 @@
 
 
 
+
 /**
  * Validation for rows and columns report form 
  */
 class RowsAndColumnsReportFormModel extends X2ReportFormModel {
+    public $subTotals = array();
     public $columns = array ();
     public $orderBy = array ();
     public function rules () {
         return array_merge (
             parent::rules (),
             array (
+		array (
+                'subTotals',
+                'application.components.validators.ArrayValidator',
+                'throwExceptions' => true,
+                'allowEmpty' => true,
+                ),
                 array (
                     'columns, orderBy',
                     'application.components.validators.ArrayValidator',
                     'throwExceptions' => true,
                     'allowEmpty' => false,
                 ),
+		array('subTotals', 'validateSubTotal', 'unique' => true),
                 array ('orderBy', 'validateOrderBy', 'unique' => true),
                 array ('columns', 'validateAttrs', 'unique' => true),
             )
@@ -63,6 +72,7 @@ class RowsAndColumnsReportFormModel extends X2ReportFormModel {
         return array_merge (parent::attributeLabels (), array (
             'columns' => Yii::t('reports', 'Columns:'),
             'orderBy' => Yii::t('reports', 'Order by:'),
+	    'subTotals' => Yii::t('reports', 'Subtotal By:'),
         ));
     }
 

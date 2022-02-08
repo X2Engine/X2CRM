@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,7 @@
 
 
 
+
 /**
  * @package application.components
  */
@@ -50,7 +51,8 @@ class ScatterPlotWidget extends DataWidget {
         self::$_JSONPropertiesStructure = array_merge (
             parent::getJSONPropertiesStructure (),
             array (
-                'grid' => true
+                'grid' => true,
+                'displayType' => 'scatter'
             )
         );
         return self::$_JSONPropertiesStructure;
@@ -191,8 +193,30 @@ class ScatterPlotWidget extends DataWidget {
                     'class' => 'fa fa-arrows',
                     'title' => Yii::t('charts', 'Toggle Grid')
                 )
-            )
+            ),
+            array(
+                array(
+                   'class' => 'spacer',
+                )
+            ),
+            self::displayTypeItems()
         );
+    }
+
+    /**
+     * Menu options for the chart parameter displayType
+     */
+    private static function displayTypeItems(){
+        return array( 
+            array( 
+                'id' => 'scatter',
+                'class' => 'display-type fa fa-dot-circle-o',
+                'title' => Yii::t('charts', 'Scatter Plot') ),
+            array( 
+                'id' => 'bubble',
+                'class' => 'display-type fa fa-circle-o',
+                'title' => Yii::t('charts', 'Bubble Chart') ),
+            );
     }
 
 }

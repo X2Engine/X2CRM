@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -143,7 +144,7 @@ class OutlookAuthenticator {
         $client_secret = $auth_credential->outlookSecret;
         
         //every input needs to exist
-    if($client_id == null || $client_secret == null || $refresh == null){
+    	if($client_id == null || $client_secret == null || $refresh == null){
             return false;
         }
         
@@ -166,7 +167,10 @@ class OutlookAuthenticator {
         curl_close ($ch);
         
         $result = CJSON::decode($server_output);
-        $access_token = $result['access_token'];
+        if(isset($result['error'])){
+            return false;
+        }
+	$access_token = $result['access_token'];
         
         return $access_token;
     }

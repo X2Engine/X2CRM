@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -309,7 +310,12 @@ Yii::app()->clientScript->registerScript('toggleAuthInfo', "
             <?php echo $form->labelEx($model, 'serviceCaseEmailMessage'); ?>
             <?php echo $form->textArea($model, 'serviceCaseEmailMessage', array('class'=>'x2-xxwide-input', 'style' => 'height:80px;')); ?>
             <br>
-            <?php echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.'); ?>
+            <?php
+            echo Yii::t('admin', 'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.');
+            if (Yii::app()->edition != 'ent') {
+                echo '<br><br>', Yii::t('admin', '*The {link} placeholder is used in portal support emails, which is only available in enterprise edition.');
+            }
+            ?>
         </div>
     </div>
     <?php

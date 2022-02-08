@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<?php    
+/**
+* @edition: ent
+*/ ?>
+<html>
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   <title>Knowledge Base</title>
+</head>
+<body>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">
+        <img src="images/menu_logo.png" height="35" width="47.5" alt="">
+    </a>
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+       <span class="navbar-toggler-icon"></span>
+     </button>
+     <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+       <ul class="navbar-nav ml-auto">
+         <li class="nav-item">
+               <a class="nav-link" href="index.php/docs/kbView?id=Home">Home</a>
+         </li>
+         <li class="nav-item">
+               <a class="nav-link active" href="#">Knowledge Base</a>
+         </li>
+         <li class="nav-item">
+           <a class="nav-link" href="index.php/docs/kbView?id=Forums">Forums</a>
+         </li>
+         <li class="nav-item">
+           <a class="nav-link" href="index.php/docs/kbView?id=Contact">Contact</a>
+         </li>
+       </ul>
+     </div>
+   </nav>
+   <div class="jumbotron jumbotron-fluid">
+     <div class="container">
+       <h1 class="display-4"><center>Search</center></h1>
+       <div class="input-group mb-3">
+           <input id="input-search" type="text" class="form-control" placeholder="Search Knowledge Base" aria-label="Search Knowledge Base" aria-describedby="button-addon2">
+           <div class="input-group-append">
+               <button id="btn-search" class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+           </div>
+       </div>
+     </div>
+   </div>
+   <div id="links"></div>
+   <script type="text/javascript">
+       $('#btn-search').on('click', function() {
+           var genLink = function (link) {
+               var d = new Date(0);
+               d.setUTCSeconds(link['date']);
+               return ('<div class="card-body"  style="width:50%; margin:0 auto;  text-align: Left; border-left: 0px solid; border-right: 0px solid; border-bottom: 1px solid #007bff;"><h5 class="card-title" style="text-align: left; display:inline;"> <a href='+link['url']+' target="_blank">'+link['name']+'</a> </h5> <p class="font-weight-light" style="float: right; display:inline;">Last Updated: ' + d.getMonth() + '-' + d.getDay() + '-' + d.getFullYear() +  '</p> <br><p class="card-text">'+link['text']+'</p></div>');
+        
+           }
+           
+           $.ajax({
+               url: window.location.pathname.substr(0, window.location.pathname.lastIndexOf('/')) + "/index.php/docs/searchKb",
+               type: "POST",
+               data: {
+                   terms: $('#input-search').val()
+               },
+               success: function (data) {
+                  var links = JSON.parse(data);
+                  $('#links').empty();
+                  if (data === "[]") {
+                      $('#links').append('<h1 style="text-align: center;">No results found for: ' + $('#input-search').val()) + '</h1>';
+                      return;
+                  }
+                  var textWork = '<h1 style="text-align: center;">Search results for "' + $('#input-search').val()  + '"</h1><div class="card" style="text-align: center; border: none;">';
+                  links.forEach( function (link) {
+                      textWork = textWork.concat(genLink(link));
+                  });
+                $('#links').append(textWork + '</div>');
+               },
+
+error: function(data) {
+                   console.log(data.statusText);
+               }
+           });
+       });
+   </script>
+</body>
+</html>

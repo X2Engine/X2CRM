@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -104,6 +105,7 @@ if($model->type==='email' || $model->type ==='quote') {
 
         $Quote = Yii::t('quotes', "{quote}: ", array('{quote}' => $modTitles['quote']));
         $quoteAttributes[$Quote.Yii::t('quotes',"Item Table")] = '{lineItems}';
+        $quoteAttributes[$Quote.Yii::t('quotes',"Packing Slip")] = '{lineItemsPacking}';
         $quoteAttributes[$Quote.Yii::t('quotes',"Date printed/emailed")] = '{dateNow}';
         $quoteAttributes[$Quote.Yii::t('quotes','{quote} or Invoice', array('{quote}'=>$modTitles['quote']))] = '{quoteOrInvoice}';
         foreach(Quote::model()->getAttributeLabels() as $fieldName => $label) {
@@ -231,6 +233,7 @@ $form = $this->beginWidget('CActiveForm', array(
 			<?php echo $form->dropDownList($model,'visibility',array(1=>Yii::t('app','Public'),0=>Yii::t('app','Private'), 2=>Yii::t('app',"User's Groups"))); ?>
 			<?php echo $form->error($model,'visibility'); ?>
 		</div>
+                <?php     ?>
 		<div class="cell right" id='create-button-container'>
 			<?php echo CHtml::submitButton($model->isNewRecord ? Yii::t('app','Create') : Yii::t('app','Save'),array('class'=>'x2-button float')); ?>
 		</div>

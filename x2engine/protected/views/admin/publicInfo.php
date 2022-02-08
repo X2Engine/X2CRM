@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,7 @@
 
 
 
+
 Yii::app()->clientScript->registerCss('publicInfoCss',"
 #domain-alias-explanation {
     background-color: rgb(223, 223, 223);
@@ -67,6 +68,8 @@ Yii::app()->clientScript->registerCss('publicInfoCss',"
             ));
     ?>
     <div class="form">
+        <?php     ?>
+        
         <?php echo $form->labelEx($model, 'externalBaseUrl'); ?><br />
         <p><?php 
         echo Yii::t('admin', 'This will be the web root URL to use for generating URLs to '.

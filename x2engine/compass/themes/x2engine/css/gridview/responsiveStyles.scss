@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -72,7 +73,7 @@ $left-margin: 3px;
     .x2-gridview-fixed-top-bar-inner {
       width: 100%;
       padding-right: calc(22% + 3px);
-      padding-left: 9px;
+      padding-left: 7px;
       height: 0;
       box-sizing: border-box;
     }

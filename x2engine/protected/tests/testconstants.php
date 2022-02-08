@@ -19,12 +19,12 @@ defined('X2_FTP_FILEOPER') or define('X2_FTP_FILEOPER', false);
 defined('X2_DEBUG_EMAIL') or define('X2_DEBUG_EMAIL', true);
 defined('X2_FTP_HOST') or define('X2_FTP_HOST', 'localhost');
 defined('X2_FTP_USER') or define('X2_FTP_USER', 'root');
-defined('X2_FTP_PASS') or define('X2_FTP_PASS', '');
+defined('X2_FTP_PASS') or define('X2_FTP_PASS', NULL);
 defined('X2_FTP_CHROOT_DIR') or define('X2_FTP_CHROOT_DIR', false);
 defined('X2_SCP_FILEOPER') or define('X2_SCP_FILEOPER', false);
 defined('X2_SCP_HOST') or define('X2_SCP_HOST', 'localhost');
 defined('X2_SCP_USER') or define('X2_SCP_USER', 'root');
-defined('X2_SCP_PASS') or define('X2_SCP_PASS', '');
+defined('X2_SCP_PASS') or define('X2_SCP_PASS', NULL);
 
 //Location of testing X2Planet installation for tests which reference the licensing server
 defined('X2_TESTING_UPDATE_SERVER') or define('X2_TESTING_UPDATE_SERVER', 'https://x2planet.com');

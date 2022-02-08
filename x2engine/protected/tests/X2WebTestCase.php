@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -231,7 +232,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         return $this->getExpression ('${isChrome}') === 'true';
     }
     
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass() : void {
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         $testClass = get_called_class();
         if(X2_TEST_DEBUG_LEVEL > 0){
@@ -275,7 +276,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         parent::setUpBeforeClass();
     }
     
-    public static function tearDownAfterClass() {
+    public static function tearDownAfterClass() : void {
         if(X2_TEST_DEBUG_LEVEL > 0){
             println("");
         }
@@ -293,7 +294,7 @@ abstract class X2WebTestCase extends CWebTestCase {
      * This mainly sets the base URL for the test application, and sets the 
      * Selenese path to make it easier to locate/use Selenese HTML scripts.
      */
-    public function setUp() {
+    public function setUp() : void {
         if(X2_TEST_DEBUG_LEVEL > 1){
             /**/println("\nrunning test case: ".$this->getName ());
         }
@@ -325,7 +326,7 @@ abstract class X2WebTestCase extends CWebTestCase {
         $this->session();
     }
     
-    public function tearDown() {
+    public function tearDown() : void {
         if(isset($this->_oldSession)){
             $_SESSION = $this->_oldSession;
         }
@@ -412,7 +413,7 @@ abstract class X2WebTestCase extends CWebTestCase {
 
     public function assertHttpResponse ($expected) {
         $responseCode = $this->getHttpErrorResponse ();
-        $this->assertRegexp ('/Error \d+/', $responseCode);
+        $this->assertMatchesRegularExpression ('/Error \d+/', $responseCode);
         $this->assertEquals ($expected, preg_replace ('/Error /', '', $responseCode));
     }
 

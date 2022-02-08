@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import('application.modules.bugReports.models.*');
 
 /**
@@ -54,7 +55,7 @@ class FieldsTest extends X2TestCase {
         'contacts' => 'Contacts'
     );
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         Yii::app()->db->schema->refresh ();
         Contacts::model ()->refreshMetaData ();
         Contacts::model ()->resetFieldsPropertyCache ();
@@ -86,10 +87,10 @@ class FieldsTest extends X2TestCase {
         $this->assertEquals(22, $matches[1]);
     }
 
-    public function setup () {
+    public function setUp () : void {
         $this->_testColumnName = null;
         $this->_testTableName = null;
-        parent::setup ();
+        parent::setUp ();
     }
 
     /**

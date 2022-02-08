@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $model->renderConvertedNotice ();
 
 $layoutManager = $this->widget ('RecordViewLayoutManager', array ('staticLayout' => false));
@@ -48,7 +49,7 @@ $authParams['assignedTo'] = $model->assignedTo;
 
 $menuOptions = array(
     'index', 'create', 'view', 'edit', 'delete', 'attach', 'quotes',
-    'convertToContact', 'convert', 'print', 'editLayout',
+    'convertToContact', 'convert', 'print', 'editLayout','helpGuide',
 );
 $this->insertMenu($menuOptions, $model, $authParams);
 
@@ -113,6 +114,7 @@ $themeUrl = Yii::app()->theme->getBaseUrl();
 
     $this->widget('InlineEmailForm', array(
         'attributes' => array(
+            'to' => '"' . $model->name . '" <' . $model->email . '>',
             'modelName' => 'X2Leads',
             'modelId' => $model->id,
             'targetModel' => $model,

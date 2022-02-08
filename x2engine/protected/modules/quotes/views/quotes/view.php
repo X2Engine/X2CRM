@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -108,7 +109,7 @@ $strict = Yii::app()->settings->quoteStrictLock;
 $themeUrl = Yii::app()->theme->getBaseUrl();
 
 $menuOptions = array(
-    'index', 'invoices', 'create', 'view', 'email', 'delete', 'attach', 'print', 'convert', 
+    'index', 'invoices', 'create', 'view', 'email', 'delete', 'attach', 'print', 'convert', 'helpGuide',
     'duplicate', 'editLayout',
 );
 if ($contact)
@@ -166,7 +167,7 @@ $form = $this->beginWidget('CActiveForm', array(
     'id' => 'quotes-form',
     'enableAjaxValidation' => false,
     'action' => array('saveChanges', 'id' => $model->id)
-        ));
+));
 $this->widget ('DetailView', array(
     'model' => $model
 ));
@@ -228,9 +229,9 @@ $productField = Fields::model()->findByAttributes(array('modelName' => 'Quote', 
             </div>
             <div class="tableWrapper">
 <?php
-$this->renderPartial('_lineItems', array(
-    'model' => $model, 'readOnly' => true, 'namespacePrefix' => 'quotesView'
-));
+    $this->renderPartial('_lineItems', array(
+        'model' => $model, 'readOnly' => true, 'namespacePrefix' => 'quotesView'
+    ));
 ?>
             </div>
 

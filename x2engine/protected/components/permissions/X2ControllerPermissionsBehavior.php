@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -109,7 +110,7 @@ class X2ControllerPermissionsBehavior extends ControllerPermissionsBehavior {
             Yii::app()->user->checkAccess($actionAccess, $params)) {
 
             return true;
-        } elseif (Yii::app()->user->isGuest) {
+        } elseif (Yii::app()->user->isLoggedOut) {
             Yii::app()->user->returnUrl = Yii::app()->request->url;
             if (Yii::app()->isMobileApp ()) {
                 $this->owner->redirect($this->owner->createAbsoluteUrl('/mobile/login'));

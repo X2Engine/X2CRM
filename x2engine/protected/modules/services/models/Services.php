@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -85,9 +86,23 @@ class Services extends X2Model {
         $rules = array_merge(parent::rules (), array(
             array(
                 'verifyCode', 'captcha', 'allowEmpty' => !CCaptcha::checkRequirements(),
-                    'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha')
+                    'on' => 'webFormWithCaptcha', 'captchaAction' => 'site/webleadCaptcha'),
+	    array(
+		'resolution', 'validateResolution'
+	    )
         ));
         return $rules;
+    }
+	
+    /**
+     * resolution can not be blank when status is "closed - resolved"
+     * Returns True or False
+     */
+    public function validateResolution(){
+        if(($this->status == "Closed - Resolved") && ((is_null($this->resolution)) 
+	   || (ctype_space($this->resolution)))){
+	    $this->addError('status', Yii::t('services', 'Resolution can not be blank when status is: Closed - Resolved'));
+        }
     }
 
     public function afterFind(){
@@ -155,6 +170,23 @@ class Services extends X2Model {
 		return $this->searchBase($criteria, $pageSize);
 	}
 
+	public function getLastReply() {
+		return $lastReply = Yii::app()->db->createCommand()
+                ->select('b.*')
+                ->from('x2_services a')
+                ->join('x2_service_replies b', 'a.id = b.serviceId')
+                ->where('a.id = :id')
+                ->order('b.createDate DESC')
+				->queryRow(true,[':id'=>$this->id]);
+	}
 
+	public function getReplies() {
+		return $replies = Yii::app()->db->createCommand()
+			->select('*')
+			->from('x2_service_replies')
+			->where('serviceId = :id')
+			->order('createDate DESC')
+			->queryAll(true, [':id'=>$this->id]);
+	}
 
 }

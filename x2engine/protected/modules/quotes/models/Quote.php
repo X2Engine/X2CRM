@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -417,12 +418,6 @@ class Quote extends X2Model {
 		  ); */
 	}
 
-	/**
-	 * Generates markup for a quote line items table.
-	 *
-	 * @param type $emailTable Style hooks for emailing the quote
-	 * @return string
-	 */
 	public function productTable($emailTable = false) {
         if (!YII_UNIT_TESTING)
             Yii::app()->clientScript->registerCssFile (
@@ -436,25 +431,27 @@ class Quote extends X2Model {
 		if(!$emailTable)
 			$tableStyle .= 'display: inline;';
 		else
-			$thProductStyle .=  "width:60%;";
-		$defaultStyle =  'padding: 5px;border-spacing:0;';
-		$tdStyle = "$defaultStyle;border-left: 1px solid black; border-right: 1px solid black;";
+			$thProductStyle .= "width:60%;";
+		$defaultStyle = 'padding: 5px;border-spacing:0;padding-top:10px;font-size:10pt';
+		$tdFirst = "$defaultStyle;border-left: 1px solid black;";
+		$tdMiddle = "$defaultStyle;";
+		$tdLast = "$defaultStyle;border-right: 1px solid black;";
+		$tdStyle = "$defaultStyle;border-left: 1px solid black;border-right: 1px solid black;";
 		$tdFooterStyle = "$tdStyle;border-bottom: 1px solid black";
 		$tdBoxStyle = "$tdFooterStyle;border-top: 1px solid black";
 
 		// Declare element templates
 		$thProduct = '<th style="'.$thProductStyle.'">{c}</th>';
-		$tdDef = '<td style="'.$defaultStyle.'">{c}</td>';
-		$td = '<td style="'.$tdStyle.'">{c}</td>';
+		$tdTotal = '<td style="'.$defaultStyle.'">{c}</td>';
+		// $td = '<td style="'.$tdStyle.'">{c}</td>';
 		$tdFooter = '<td style="'.$tdFooterStyle.'">{c}</td>';
 		$tdBox = '<td style="'.$tdBoxStyle.'">{c}</td>';
 		$hr = '<hr style="width: 100%;height:2px;background:black;" />';
 		$tr = '<tr>{c}</tr>';
-		$colRange = range(2,7);
-		$span = array_combine($colRange,array_map(function($s){
+		$colRange = range(2, 7);
+		$span = array_combine($colRange, array_map(function($s){
             return "<td colspan=\"$s\"></td>";},$colRange));
 		$span[1] = '<td></td>';
-
 		$markup = array();
 
 		// Table opening and header
@@ -462,79 +459,217 @@ class Quote extends X2Model {
         $row = array ();
 		foreach(array(
             'Line Item' => '20%; min-width: 200px;',
-            'Unit Price' => '17.5%',
-            'Quantity' => '15%',
-            'Adjustment' => '15%',
-            'Comments' => '15%',
-            'Price' => '20%'
+            'Unit Price' => '1%',
+            'Quantity' => '0.5%',
+            'Price' => '0.5%'
         ) as $columnHeader => $width) {
             $row[] = 
                 '<th style="'.$thStyle."width: $width;".'">'.
-                    Yii::t('products',$columnHeader).
+                    Yii::t('products', $columnHeader).
                 '</th>';
 		}
-		$markup[] = str_replace('{c}',implode("\n",$row),$tr);
+		$markup[] = str_replace('{c}', implode("\n", $row), $tr);
 
 		// Table header ending and body
 		$markup[] = "</thead>";
 
 		// Number of non-adjustment line items:
 		$n_li = count($this->productLines);
+		$curr_li = 1;
 		$i = 1;
 
-		// Run through line items:
+		// Run through line items
 		$markup[] = '<tbody>';
-		foreach($this->productLines as $ln=>$li) {
+		foreach($this->productLines as $ln => $li) {
 			// Begin row.
 			$row = array();
-			// Add columns for this line
-			foreach(array('name','price','quantity','adjustment','description','total') as $attr) {
-				$row[] = str_replace('{c}',$li->renderAttribute($attr),($i==$n_li?$tdFooter:$td));
+			$style = "";
+
+			$headers = array('name', 'price', 'quantity', 'total');
+			if($li['name'] == 'x2comment' || $li['name'] == 'x2adjustment') {
+				foreach($headers as $header) {
+					if($header == reset($headers)) {
+						$style = $tdFirst . "padding-left: 50px;";
+					} else if($header == end($headers)) {
+						$style = $tdLast;
+					} else {
+						$style = $tdMiddle;
+					}
+					
+					// If we are on the last line, include a bottom line
+					($i != $n_li) ?: $style .= "border-bottom: 1px solid black;";
+
+					($header != 'name') ?: $style .= "padding-right: 200px;min-width:20px;max-width:30px;overflow-wrap:break-word;hyphens:auto;";
+                    ($header != 'quantity') ?: $style .= "text-align: right;";
+                    ($header != 'total') ?: $style .= "text-align: right;";
+					$td = '<td style="'.$style.'">{c}</td>';
+					if($header == 'name') {
+						$row[] = str_replace('{c}', $li->renderAttribute('description'), $td);
+					} else if($li['name'] == 'x2adjustment' && $header == 'quantity' && $li['adjustmentType'] == 'percent') {
+						$row[] = str_replace('{c}', strpos($li->renderAttribute('adjustment'), "-") !== false ? $li->renderAttribute('adjustment') : "+" . $li->renderAttribute('adjustment'), $td);
+                    } else if($li['name'] == 'x2adjustment' && $header == 'total') {
+						$row[] = str_replace('{c}', strpos($li->renderAttribute('total'), "-") !== false ? $li->renderAttribute('total') : "+" . $li->renderAttribute('total'), $td);
+                    } else {
+						$row[] = str_replace('{c}', '', $td);
+                    }
+				}
+			} else {
+				// Add columns for this line
+				foreach($headers as $header) {
+					if($header == reset($headers)) {
+						$style = $tdFirst . "padding-right: 50px;font-weight:bold;";
+					} else if($header == end($headers)) {
+						$style = $tdLast;
+					} else {
+						$style = $tdMiddle;
+					}
+
+					// If we are on the last line, include a bottom line
+					($i != $n_li) ?: $style .= "border-bottom: 1px solid black;";
+					($header == 'name') ?: $style .= "text-align:right;";
+
+					$td = '<td style="'.$style.'border-top: 1px solid black;">{c}</td>';
+					$row[] = str_replace('{c}', (($header == 'name') ? $curr_li . '. ' : '') . $li->renderAttribute($header), $td);
+				}
+				$curr_li++;
 			}
+
 			// Row done.
-			$markup[] = str_replace('{c}',implode('',$row),$tr);
+			$markup[] = str_replace('{c}', implode('', $row), $tr);
 			$i++;
 		}
 
 		$markup[] = '</tbody>';
 		$markup[] = '<tbody>';
-		// The subtotal and adjustment rows, if applicable:
-		$i = 1;
-		$n_adj = count($this->adjustmentLines);
-
-		if($n_adj) {
-			// Subtotal:
-			$row = array($span[$pad]);
-			$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Subtotal').'</strong>',$tdDef);
-			$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->subtotal,$this->currency).'</strong>',$tdDef);
-			$markup[] = str_replace('{c}',implode('',$row),$tr);
-			$markup[] = '</tbody>';
-			// Adjustments:
-			$markup[] = '<tbody>';
-			foreach($this->adjustmentLines as $ln => $li) {
-				// Begin row
-				$row = array($span[$pad]);
-				$row[] = str_replace('{c}',$li->renderAttribute('name').(!empty($li->description) ? ' ('.$li->renderAttribute('description').')':''),$tdDef);
-				$row[] = str_replace('{c}',$li->renderAttribute('adjustment'),$tdDef);
-				// Row done
-				$markup[] = str_replace('{c}',implode('',$row),$tr);
-				$i++;
-			}
-			$markup[] = '</tbody>';
-			$markup[] = '<tbody>';
-		}
-
 		// Total:
-		$row = array($span[$pad]);
-		$row[] = str_replace('{c}','<strong>'.Yii::t('quotes','Total').'</strong>',$tdDef);
-		$row[] = str_replace('{c}','<strong>'.Yii::app()->locale->numberFormatter->formatCurrency($this->total,$this->currency).'</strong>',$tdBox);
-		$markup[] = str_replace('{c}',implode('',$row),$tr);
+		foreach(array(
+			'Subtotal' => Yii::app()->locale->numberFormatter->formatCurrency($this->subtotal, $this->currency), 
+			'Tax' => $this->tax . "%", 
+			'Total' => Yii::app()->locale->numberFormatter->formatCurrency($this->total, $this->currency)) as $header => $value) {
+			$row = array($span[2]);
+			$row[] = str_replace('{c}', '<strong>'.Yii::t('quotes', ($header == 'Tax' ? $header . ': ' . $value : $header)).'</strong>', $tdTotal);
+			$row[] = str_replace('{c}', '<strong>'. 
+				($header == 'Tax' ? 
+					Yii::app()->locale->numberFormatter->formatCurrency(floor($this->subtotal * $this->tax) / 100, $this->currency)
+					: $value) .'</strong>', $tdBox);
+            $markup[] = str_replace('{c}', implode('', $row), $tr);
+        }
 		$markup[] = '</tbody>';
 
 		// Done.
 		$markup[] = '</table>';
 
-		return implode("\n",$markup);
+		return implode("\n", $markup);
+	}
+
+	public function packingSlip($emailTable = false) {
+        if (!YII_UNIT_TESTING)
+            Yii::app()->clientScript->registerCssFile (
+                Yii::app()->getModule('quotes')->assetsUrl.'/css/productTable.css'
+            );
+		$pad = 4;
+		// Declare styles
+		$tableStyle = 'border-collapse: collapse; width: 100%;';
+		$thStyle = 'padding: 5px; border: 1px solid black; background:#eee;';
+		$thProductStyle = $thStyle;
+		if(!$emailTable)
+			$tableStyle .= 'display: inline;';
+		else
+			$thProductStyle .= "width:60%;";
+		$defaultStyle = 'padding: 5px;border-spacing:0;padding-top:10px;font-size:10pt';
+		$tdFirst = "$defaultStyle;border-left: 1px solid black;";
+		$tdLast = "$defaultStyle;border-right: 1px solid black;";
+
+		// Declare element templates
+		$thProduct = '<th style="'.$thProductStyle.'">{c}</th>';
+		$hr = '<hr style="width: 100%;height:2px;background:black;" />';
+		$tr = '<tr>{c}</tr>';
+		$colRange = range(2, 7);
+		$span = array_combine($colRange, array_map(function($s){
+            return "<td colspan=\"$s\"></td>";},$colRange));
+		$span[1] = '<td></td>';
+		$markup = array();
+
+		// Table opening and header
+		$markup[] = "<table class='quotes-product-table' style=\"$tableStyle\"><thead>";
+        $row = array ();
+		foreach(array(
+            'Line Item' => '99%',
+            'Quantity' => '0.5%',
+        ) as $columnHeader => $width) {
+            $row[] = 
+                '<th style="'.$thStyle."width: $width;".'">'.
+                    Yii::t('products', $columnHeader).
+                '</th>';
+		}
+		$markup[] = str_replace('{c}', implode("\n", $row), $tr);
+
+		// Table header ending and body
+		$markup[] = "</thead>";
+
+		// Number of non-adjustment line items:
+		$n_li = count($this->productLines);
+		$curr_li = 1;
+		$i = 1;
+
+		// Run through line items
+		$markup[] = '<tbody>';
+		foreach($this->productLines as $ln => $li) {
+			// Begin row.
+			$row = array();
+			$style = "";
+
+			$headers = array('name', 'quantity');
+			if($li['name'] == 'x2comment' || $li['name'] == 'x2adjustment') {
+				foreach($headers as $header) {
+					if($header == reset($headers)) {
+						$style = $tdFirst . "padding-left: 50px;";
+					} else if($header == end($headers)) {
+						$style = $tdLast;
+					}
+					
+					// If we are on the last line, include a bottom line
+					($i != $n_li) ?: $style .= "border-bottom: 1px solid black;";
+
+					($header != 'name') ?: $style .= "padding-right: 200px;min-width:20px;max-width:30px;overflow-wrap:break-word;hyphens:auto;";
+					($header != 'total') ?: $style .= "text-align: right;";
+					$td = '<td style="'.$style.'">{c}</td>';
+					if($header == 'name') {
+						$row[] = str_replace('{c}', $li->renderAttribute('description'), $td);
+					} else {
+						$row[] = str_replace('{c}', '', $td);
+					}
+				}
+			} else {
+				// Add columns for this line
+				foreach($headers as $header) {
+					if($header == reset($headers)) {
+						$style = $tdFirst . "padding-right: 50px;font-weight:bold;";
+					} else if($header == end($headers)) {
+						$style = $tdLast;
+					}
+
+					// If we are on the last line, include a bottom line
+					($i != $n_li) ?: $style .= "border-bottom: 1px solid black;";
+					($header == 'name') ?: $style .= "text-align:right;";
+
+					$td = '<td style="'.$style.'border-top: 1px solid black;">{c}</td>';
+					$row[] = str_replace('{c}', (($header == 'name') ? $curr_li . '. ' : '') . $li->renderAttribute($header), $td);
+				}
+				$curr_li++;
+			}
+
+			// Row done.
+			$markup[] = str_replace('{c}', implode('', $row), $tr);
+			$i++;
+		}
+
+		$markup[] = '</tbody>';
+		
+		// Done.
+		$markup[] = '</table>';
+
+		return implode("\n", $markup);
 	}
 
 	public static function getNames() {

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $submitButton = isset ($submitButton) ? $submitButton : true;
 $htmlOptions = !isset ($htmlOptions) ? array () : $htmlOptions;
 $namespace = !isset ($namespace) ? null : $namespace;
@@ -48,7 +49,7 @@ $form = $this->beginWidget ('ActionActiveForm', array (
 ));
     echo $form->label ($model,'Subject'); 
     echo $form->textArea ($model, 'subject');
-    echo $form->label ($model,'Action Description'); 
+    echo $form->label ($model,'Description'); 
     echo $form->textArea ($model, 'actionDescription');
 
 ?>
@@ -128,4 +129,9 @@ $form = $this->beginWidget ('ActionActiveForm', array (
 
 $this->endWidget ();
 
+Yii::app()->clientScript->registerCss('actionFormCSS',"
+    #ActionFormModel_actionDescription {
+        resize:vertical;
+    }
+");
 ?>

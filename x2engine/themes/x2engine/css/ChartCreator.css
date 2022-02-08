@@ -31,4 +31,348 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/.pseudo-link,#chart-creator .clear-field{cursor:pointer;color:#004baf;transition:color .1s}.pseudo-link:hover,#chart-creator .clear-field:hover{color:#006cfc}.opacity-hover,#chart-creator .x2-hint{opacity:0.3}.opacity-hover:hover,#chart-creator .x2-hint:hover{opacity:1}#chart-creator{padding:10px}#chart-creator>div{margin-bottom:10px}#chart-creator .form-header{font-size:15pt}#chart-creator form{display:none;transition:all 1s linear}#chart-creator form.active{display:block}#chart-creator .chart-selector .choice{display:inline-block;height:55px;width:55px;margin-right:10px;border:1px solid #A3A3A3;border-radius:2px;background-color:white;background-repeat:no-repeat;background-size:120% auto;cursor:pointer;opacity:0.9}#chart-creator .chart-selector .choice:hover{opacity:0.8}#chart-creator .chart-selector .choice:active,#chart-creator .chart-selector .choice.active{border-color:#3F76BF;opacity:1.0}#chart-creator ::-webkit-input-placeholder{color:#144fa0}#chart-creator :-moz-placeholder{color:#144fa0}#chart-creator ::-moz-placeholder{color:#144fa0}#chart-creator :-ms-input-placeholder{color:#144fa0}#chart-creator .x2-hint{opacity:0.6;margin-top:8px;margin-left:10px;float:right}#chart-creator .axis-selector{box-sizing:border-box;padding:5px;text-align:center;background:#eaf2fc;border:1px dashed #144fa0;border-radius:3px;color:#144fa0;cursor:pointer;transition:all .3s}#chart-creator .axis-selector.in-selection,#chart-creator .axis-selector:hover{background:#fff}#chart-creator .axis-selector.in-selection{border-style:solid}#chart-creator .axis-selector.confirmed{background:#1a66cd;color:white;border-color:#144fa0}#chart-creator .axis-selector.confirmed:hover{background:#357fe5}#chart-creator .axis-selector.error{border-width:2px;border-style:solid}#chart-creator .clear-field{display:none;position:relative;top:1px;color:rgba(255,255,255,0.5);margin-left:-17px}#chart-creator .clear-field:hover{color:rgba(255,255,255,0.8)}#chart-creator .tip{display:none;opacity:0.5;vertical-align:middle;margin-left:10px;text-decoration:bold;font-size:85%}#chart-creator .error-summary-container{background:#f4b9b9;color:#454545;border-radius:3px;border-weight:1px}#chart-creator .error-summary-container ul{list-style-type:none}.hover-selection{background:#629ceb !important;cursor:pointer;color:white !important;border-color:white;text-decoration:bold;opacity:0.8}tr:nth-child(even)>.hover-selection{background:#629ceb !important}tr:nth-child(odd)>.hover-selection{background:#4b8ee8 !important}.confirmed-selection{background:green}
+ **********************************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***************************************
+* This file is responsible for mantaining
+* general purpose mixins and classes. 
+***************************************/
+/***********************************************************************************
+ * X2Engine Open Source Edition is a customer relationship management program developed by
+ * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * 
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License version 3 as published by the
+ * Free Software Foundation with the addition of the following permission added
+ * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
+ * IN WHICH THE COPYRIGHT IS OWNED BY X2ENGINE, X2ENGINE DISCLAIMS THE WARRANTY
+ * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License along with
+ * this program; if not, see http://www.gnu.org/licenses or write to the Free
+ * Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301 USA.
+ * 
+ * You can contact X2Engine, Inc. P.O. Box 610121, Redwood City,
+ * California 94061, USA. or at email address contact@x2engine.com.
+ * 
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License version 3.
+ * 
+ * In accordance with Section 7(b) of the GNU Affero General Public License version 3,
+ * these Appropriate Legal Notices must retain the display of the "Powered by
+ * X2 Engine" logo. If the display of the logo is not reasonably feasible for
+ * technical reasons, the Appropriate Legal Notices must display the words
+ * "Powered by X2 Engine".
+ **********************************************************************************/
+/***********************************************************************
+* Grays 
+***********************************************************************/
+/***********************************************************************
+* Blues
+***********************************************************************/
+/***********************************************************************
+* Reds 
+***********************************************************************/
+/***********************************************************************
+* Greens 
+***********************************************************************/
+/***********************************************************************
+* This section is made to correspond with the theme keys in ThemeGenerator
+***********************************************************************/
+/***********************************************************************
+* Responsive design
+***********************************************************************/
+/***************************************
+* Mixin for border radius 
+***************************************/
+/***********************************************************************
+* animations 
+***********************************************************************/
+/***************************************
+* Mixin for box shadow
+***************************************/
+/***************************************
+* Mixin for text field placeholder text
+***************************************/
+/***************************************
+* CSS to extend when something 
+* should look like a link
+***************************************/
+/* line 175, ../../../compass/css/lib/_standards.scss */
+.pseudo-link, #chart-creator .clear-field {
+  cursor: pointer;
+  color: #004baf;
+  transition: color .1s;
+}
+/* line 180, ../../../compass/css/lib/_standards.scss */
+.pseudo-link:hover, #chart-creator .clear-field:hover {
+  color: #006cfc;
+}
+
+/***************************************
+* CSS to extend when for elements that 
+* become transparent on mouseover
+***************************************/
+/* line 198, ../../../compass/css/lib/_standards.scss */
+.opacity-hover, #chart-creator .x2-hint {
+  opacity: 0.3;
+}
+/* line 193, ../../../compass/css/lib/_standards.scss */
+.opacity-hover:hover, #chart-creator .x2-hint:hover {
+  opacity: 1;
+}
+
+/***************************************
+* Apply the standard box shadow currently
+* used on x2-island-layout items
+***************************************/
+/*******************************************
+* Mixin for applying a fontAwesome icon
+* SEE _icons.scss FOR A BETTER IMPLEMENTATION
+******************************************/
+/* line 42, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator {
+  padding: 10px;
+}
+/* line 48, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator > div {
+  margin-bottom: 10px;
+}
+/* line 52, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .form-header {
+  font-size: 15pt;
+}
+/* line 56, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator form {
+  display: none;
+  transition: all 1s linear;
+}
+/* line 60, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator form.active {
+  display: block;
+}
+/* line 67, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .chart-selector .choice {
+  display: inline-block;
+  height: 55px;
+  width: 55px;
+  margin-right: 10px;
+  border: 1px solid #A3A3A3;
+  border-radius: 2px;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 120% auto;
+  cursor: pointer;
+  opacity: 0.9;
+}
+/* line 88, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .chart-selector .choice:hover {
+  opacity: 0.8;
+}
+/* line 92, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .chart-selector .choice:active, #chart-creator .chart-selector .choice.active {
+  border-color: #3F76BF;
+  opacity: 1.0;
+}
+/* line 165, ../../../compass/css/lib/_standards.scss */
+#chart-creator ::-webkit-input-placeholder {
+  color: #144fa0;
+}
+/* line 166, ../../../compass/css/lib/_standards.scss */
+#chart-creator :-moz-placeholder {
+  color: #144fa0;
+}
+/* line 167, ../../../compass/css/lib/_standards.scss */
+#chart-creator ::-moz-placeholder {
+  color: #144fa0;
+}
+/* line 168, ../../../compass/css/lib/_standards.scss */
+#chart-creator :-ms-input-placeholder {
+  color: #144fa0;
+}
+/* line 107, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .x2-hint {
+  opacity: 0.6;
+  margin-top: 8px;
+  margin-left: 10px;
+  float: right;
+}
+/* line 115, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector {
+  box-sizing: border-box;
+  padding: 5px;
+  text-align: center;
+  background: #eaf2fc;
+  border: 1px dashed #144fa0;
+  border-radius: 3px;
+  color: #144fa0;
+  cursor: pointer;
+  transition: all .3s;
+}
+/* line 127, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector.in-selection, #chart-creator .axis-selector:hover {
+  background: white;
+}
+/* line 132, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector.in-selection {
+  border-style: solid;
+}
+/* line 136, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector.confirmed {
+  background: #1a66cd;
+  color: white;
+  border-color: #144fa0;
+}
+/* line 141, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector.confirmed:hover {
+  background: #357fe5;
+}
+/* line 146, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .axis-selector.error {
+  border-width: 2px;
+  border-style: solid;
+}
+/* line 155, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .clear-field {
+  display: none;
+  position: relative;
+  top: 1px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: -17px;
+}
+/* line 164, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .clear-field:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+/* line 169, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .tip {
+  display: none;
+  opacity: 0.5;
+  vertical-align: middle;
+  margin-left: 10px;
+  text-decoration: bold;
+  font-size: 85%;
+}
+/* line 178, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .error-summary-container {
+  background: #f4b9b9;
+  color: #454545;
+  border-radius: 3px;
+  border-weight: 1px;
+}
+/* line 184, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+#chart-creator .error-summary-container ul {
+  list-style-type: none;
+}
+
+/* line 193, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+.hover-selection {
+  background: #629ceb !important;
+  cursor: pointer;
+  color: white !important;
+  border-color: white;
+  text-decoration: bold;
+  opacity: 0.8;
+}
+/* line 197, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+tr:nth-child(even) > .hover-selection {
+  background: #629ceb !important;
+}
+/* line 200, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+tr:nth-child(odd) > .hover-selection {
+  background: #4b8ee8 !important;
+}
+
+/* line 212, ../../../compass/themes/x2engine/css/ChartCreator.scss */
+.confirmed-selection {
+  background: green;
+}

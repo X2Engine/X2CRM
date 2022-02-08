@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -321,13 +322,14 @@ class FieldFormatter extends FieldFormatterBase {
 
 
     protected function renderCurrency ($field, $makeLinks, $textOnly, $encode) {
-        $fieldName = $field->fieldName;
-        if ($this->owner instanceof Product) { // products have their own currency
+	$fieldName = $field->fieldName;
+	$fieldValue = $this->owner->$fieldName;
+	if ($this->owner instanceof Product) { // products have their own currency
             $currency = Yii::app()->locale->numberFormatter->formatCurrency(
-                $this->owner->$fieldName, $this->owner->currency);
-        } else {
+                    $fieldValue ? $fieldValue : 0, $this->owner->currency);
+	} else {
             $currency = Yii::app()->locale->numberFormatter->formatCurrency(
-                    $this->owner->$fieldName, Yii::app()->params['currency']);
+                    $fieldValue ? $fieldValue : 0, Yii::app()->params['currency']);
         }
         if ($encode)
             return CHtml::encode($currency);

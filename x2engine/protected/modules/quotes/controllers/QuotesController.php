@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -103,7 +104,8 @@ class QuotesController extends x2base {
             $lineItems[] = $copy;
         }
         return $lineItems;
-    }
+	}
+	
 	/**
 	 * Creates a new model.
 	 *
@@ -177,6 +179,7 @@ class QuotesController extends x2base {
 			$this->renderPartial('create', $viewData,false,true);
 		}
 	}
+
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -509,9 +512,9 @@ class QuotesController extends x2base {
             ),
             array(
                 'name'=>'create',
-                'label'=>Yii::t('quotes','Create'),
+                'label'=>Yii::t('quotes','Create Quote'),
                 'url'=>array('create')
-            ),
+			),
             RecordViewLayoutManager::getViewActionMenuListItem ($modelId),
             array(
                 'name'=>'email',
@@ -584,6 +587,15 @@ class QuotesController extends x2base {
                 'name' => 'duplicate',
                 'label' => Yii::t('quotes', 'Duplicate'),
                 'url' => array ('create', 'duplicate' => $modelId),
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('workflow', 'Quotes Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2quotes',
+                'linkOptions' => array(
+                    'id' => 'quote-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem (),
         );

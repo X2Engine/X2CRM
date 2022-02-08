@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 Yii::import('application.components.util.ResponseUtil');
 
 /**
@@ -62,13 +63,13 @@ class ResponseUtilTest extends CURLTestCase {
     }
 
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass() : void {
         copy(self::webscriptsBasePath().DIRECTORY_SEPARATOR.'responseUtilTest.php',
              self::$scriptPath = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','responseUtilTest.php')));
         parent::setUpBeforeClass();
     }
     
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void{
         parent::tearDownAfterClass();
         if(file_exists(self::$scriptPath)) {
             unlink(self::$scriptPath);
@@ -166,7 +167,7 @@ class ResponseUtilTest extends CURLTestCase {
         $this->assertEquals('All clear!',$r['message'],"Non-fatal error triggered response");
         // Catch non-fatal error
         $r = $this->getResponseObject(array('{case}'=>'respondWithError.nonFatalTrue'));
-        $this->assertRegExp('/Error \['.E_USER_NOTICE.'\]: Ad\-hoc error/',$r['message'],"Non-fatal error didn't trigger resopnse");
+        $this->assertMatchesRegularExpression('/Error \['.E_USER_NOTICE.'\]: Ad\-hoc error/',$r['message'],"Non-fatal error didn't trigger resopnse");
         // Catch non-fatal error and include a long error trace
         $r = $this->getResponseObject(array('{case}'=>'respondWithError.longErrorTrace'));
         $this->assertTrue(strpos($r['message'],"Trace:\n")!==false,"Didn't respond with long trace");
@@ -174,9 +175,9 @@ class ResponseUtilTest extends CURLTestCase {
 
     public function testRespondFatalError() {
         $r = $this->getResponseObject(array('{case}'=>'respondFatalErrorMessage.parse'));
-        $this->assertRegExp('/PHP parse error \['.E_PARSE.'\]/',(string) $r['message']);
+        $this->assertMatchesRegularExpression('/PHP parse error \['.E_PARSE.'\]/',(string) $r['message']);
         $r = $this->getResponseObject(array('{case}'=>'respondFatalErrorMessage.class'));
-        $this->assertRegExp('/PHP fatal error \['.E_ERROR.'\]/',(string) $r['message']);
+        $this->assertMatchesRegularExpression('/PHP fatal error \['.E_ERROR.'\]/',(string) $r['message']);
     }
 
     public function testRespondWithException() {

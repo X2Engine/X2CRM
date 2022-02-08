@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -74,7 +75,7 @@ class SiteController extends x2base {
         if (is_int(Yii::app()->locked) &&
                 !Yii::app()->user->checkAccess('GeneralAdminSettingsTask') &&
                 !(in_array($this->action->id, array('login', 'logout')) ||
-                Yii::app()->user->isGuest)) {
+                Yii::app()->user->isLoggedOut)) {
 
             $this->appLockout();
         }
@@ -85,7 +86,7 @@ class SiteController extends x2base {
         return array(
             array('allow',
                 'actions' => array(
-                    'unsubscribe', 'login', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
+                    'unsubscribe', 'login', 'portalLogin', 'forgetMe', 'index', 'logout', 'warning', 'captcha', 'googleLogin',
                     'error', 'storeToken', 'sendErrorReport', 'resetPassword', 'anonHelp',
                     'mobileResetPassword', 'webleadCaptcha', 'needsTwoFactor', 'unsubscribe'),
                 'users' => array('*'),
@@ -1264,7 +1265,7 @@ class SiteController extends x2base {
     public function actionIndex() {
         // renders the view file 'protected/views/site/index.php'
         // using the default layout 'protected/views/layouts/main.php'
-        if (Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isLoggedOut) {
             $this->redirectToLogin();
         } else {
             $profile = Yii::app()->params->profile;
@@ -1305,7 +1306,7 @@ class SiteController extends x2base {
                         $id = $page->id;
                         $this->redirect(array('/docs/docs/view', 'id' => $id, 'static' => 'true'));
                     } else {
-                        $this->redirect(array('/site/profile'));
+                        $this->redirect(array('/profile/view', 'id' => Yii::app()->user->getId()));
                     }
                 }
             }
@@ -1591,13 +1592,17 @@ class SiteController extends x2base {
             $cookie->expire = time() - 3600; // expire cookie
             Yii::app()->request->cookies[$cookieName] = $cookie;
         }
-        $this->redirectToLogin();
+        $this->redirect(Yii::app()->request->urlReferrer);
     }
 
     /**
      * Displays the login page
      */
     public function actionLogin() {
+        // Checks if app is requested from mobile
+        if (isset($_COOKIE['portal_user'])) {
+            $this->redirect('portalLogin');
+        }
         // Checks if app is requested from mobile
         if (Yii::app()->isMobileApp()) {
             $this->redirect('/mobile/login');
@@ -1641,7 +1646,7 @@ class SiteController extends x2base {
 
         // Redirects to home dashboard
         $this->layout = '//layouts/login';
-        if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isInitialized && !Yii::app()->user->isLoggedOut) {
             $this->redirect(Yii::app()->homeUrl);
             return;
         }
@@ -1660,6 +1665,8 @@ class SiteController extends x2base {
             'profile' => $profile,
         ));
     }
+
+    
 
     /**
      * Test is a user needs two factor auth, and send a verification code if so
@@ -1690,7 +1697,7 @@ class SiteController extends x2base {
         $model->useCaptcha = false;
 
         // echo var_dump(Session::getOnlineUsers());
-        if (Yii::app()->user->isInitialized && !Yii::app()->user->isGuest) {
+        if (Yii::app()->user->isInitialized && !Yii::app()->user->isLoggedOut) {
             $this->redirect(Yii::app()->homeUrl);
             return;
         }
@@ -2128,8 +2135,10 @@ class SiteController extends x2base {
           AuxLib::clearCookie(CHtml::resolveName($login, $attr));
           } */
 
+        $portal = Yii::app()->user->isPortal;
         Yii::app()->user->logout();
 
+        if ($portal) $this->redirect($this->createUrl('portalLogin'));
         $this->redirect(Yii::app()->homeUrl);
     }
 
@@ -2388,7 +2397,7 @@ class SiteController extends x2base {
      * @param type $id ID/key of the password recovery record
      */
     public function actionResetPassword($id = null) {
-        if (!Yii::app()->user->isGuest) {
+        if (!Yii::app()->user->isLoggedOut) {
             $this->redirect(array('/profile/changePassword', 'id' => Yii::app()->user->id));
         }
         $this->layout = '//layouts/login';

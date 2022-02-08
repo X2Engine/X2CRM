@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -86,12 +87,12 @@
       display: inline-block;
     }
 
-    .add-line-item-button, .add-adjustment-button {
+    .add-line-item-button, .add-adjustment-button, .add-comment-button {
         margin: 0 1em 0 1em;
         width: 12em;
     }
     
-    .add-line-item-button.x2-button, .add-adjustment-button.x2-button {
+    .add-line-item-button.x2-button, .add-adjustment-button.x2-button, .add-comment-button.x2-button {
         width: 150px;
         display: inline-block;
         clear: none;
@@ -192,6 +193,14 @@
                 float: left;
                 font-size: 12px;
             }
+            thead > tr > th.line-item-name, tbody.line-items > tr > td.x2-2nd-child textarea {
+                margin: 0 0 0 0;
+                width: 85%;
+                height: 75px;
+                float: left;
+                font-size: 12px;
+                resize: none;
+            }
         }
         tr.line-item td.input-cell button.product-select-button {
             @include border-radius(0px 4px 4px 0px);
@@ -214,6 +223,14 @@
         }
         > tbody {
             &.line-items > tr > td {
+                &.x2-2nd-child {
+                    textarea.description {
+                        margin: 5px;
+                        width: 85%;
+                        float: right;
+                        font-size: 12px;
+                    }
+                }
                 &.x2-3rd-child {
                     text-align: left;
                     width: 16%;
@@ -268,7 +285,7 @@
                 font-size: 12px;
             }
         }
-        .subtotal-container, .total-container {
+        .subtotal-container, .total-container, .tax-container {
             width: 22%;
             text-align: left;
         }
@@ -276,6 +293,15 @@
             &.subtotal, &.total {
                 width: 100%;
                 font-size: 12px;
+            }
+            &.tax {
+                width: 32%;
+                text-align: left;
+                border: 1px solid #aaa;
+                font-size: 12px;
+                font-family: Arial, Helvetica, sans-serif;
+                box-sizing: border-box;
+                @include border-radius(3px);
             }
         }
     }

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>GrapesJS Plugin</title>
+    <link href="https://unpkg.com/grapesjs/dist/css/grapes.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/grapesjs"></script>
+    <script src="dist/grapesjs-blocks-basic.min.js"></script>
+    <style>
+      body, html{ height: 100%; margin: 0;}
+
+      .gjs-block-svg {
+          width: 61%;
+      }
+
+      .gjs-block-svg-path {
+        fill: white;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="gjs" style="height:0px; overflow:hidden">
+    </div>
+
+
+    <script type="text/javascript">
+      var editor = grapesjs.init({
+        height: '100%',
+        noticeOnUnload: 0,
+        storageManager:{autoload: 0},
+        container : '#gjs',
+        fromElement: true,
+
+        plugins: ['gjs-blocks-basic'],
+        pluginsOpts: {
+          'gjs-blocks-basic': {}
+        }
+      });
+
+      window.editor = editor;
+    </script>
+  </body>
+</html>

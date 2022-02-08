@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $heading = Yii::t('accounts','{module} Lists', array('{module}'=>Modules::displayName(false))); 
 $this->pageTitle = $heading;
 
@@ -44,7 +45,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportuni
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'createList',
+    'all', 'lists', 'create', 'createList', 'helpGuide', 
 );
 if ($opportunityModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';
@@ -110,7 +111,7 @@ $this->widget('X2GridViewGeneric', array(
 			'name'=>'name',
 			'header'=>$attributeLabels['name'],
 			'type'=>'raw',
-			'value'=>'CHtml::link($data["name"],X2List::getRoute($data["id"]))',
+			'value'=>'CHtml::link($data["name"],X2List::getRoute($data["id"], "accounts"))',
 		),
 		array(
 			'name'=>'type',
@@ -142,7 +143,7 @@ $this->widget('X2GridViewGeneric', array(
             'cssClassExpression' =>
                 "!is_numeric (\$data['id']) ? 'hide-edit-delete-buttons' : ''",
             'viewButtonUrl' => 
-                "X2List::getRoute (\$data['id'])",
+                "X2List::getRoute (\$data['id'] , 'accounts')",
             'deleteButtonUrl' => 
                 "Yii::app()->createUrl ('/accounts/deleteList', array ('id' => \$data['id']))",
         ),

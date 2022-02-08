@@ -190,7 +190,7 @@
   'Global account' => 'Global Account',
   'Bulk Email Settings' => 'Bulk Email-Einstellungen',
   'Service Case Email Settings' => 'Service-Fall E-Mail-Einstellungen',
-  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, and {case}.' => 'Sie können die folgenden Variablen in dieser Vorlage zu verwenden: {first} {last} {phone} {email} {description} und {case}',
+  'You can use the following variables in this template: {first}, {last}, {phone}, {email}, {description}, {case}, and {link}.' => 'Sie können die folgenden Variablen in dieser Vorlage zu verwenden: {first} {last} {phone} {email} {description} {case} und {link}',
   'Introduction' => 'Einbringen',
   'This feature allows X2Engine to receive and record emails at a special address.' => 'Diese Funktion ermöglicht es X2Engine Rekord E-Mails an eine spezielle Adresse zu empfangen und.',
   'Filesystem ownership and permissions' => 'Dateisystem-Eigentümer und Berechtigungen',

@@ -1,0 +1,43 @@
+{
+  "name": "grapesjs-tooltip",
+  "version": "0.1.5",
+  "description": "GrapesJS Tooltip component",
+  "main": "dist/grapesjs-tooltip.min.js",
+  "scripts": {
+    "lint": "eslint src",
+    "v:patch": "npm version --no-git-tag-version patch",
+    "build": "npm run v:patch && webpack --env.production",
+    "start": "webpack-dev-server --open --progress --colors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artf/grapesjs-tooltip.git"
+  },
+  "keywords": [
+    "grapesjs",
+    "plugin",
+    "component",
+    "tooltip"
+  ],
+  "author": "Artur Arseniev",
+  "license": "BSD-3-Clause",
+  "babel": {
+    "presets": [
+      "env"
+    ],
+    "plugins": [
+      "transform-object-rest-spread"
+    ]
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "eslint": "^5.5.0",
+    "html-webpack-plugin": "^3.2.0",
+    "webpack": "^4.18.0",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.8"
+  }
+}

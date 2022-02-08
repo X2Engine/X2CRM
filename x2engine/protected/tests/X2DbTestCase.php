@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -79,7 +80,7 @@ abstract class X2DbTestCase extends CDbTestCase {
     
     private $_oldSession;
     
-    public function setUp () {
+    public function setUp () : void {
         // if loadFixturesForClassOnly was true, reenable fixture loading since we've already
         // skipped the loading of the fixtures directory and still want to have fixtures loaded
         // on a per test case basis
@@ -137,7 +138,7 @@ abstract class X2DbTestCase extends CDbTestCase {
 
     public static function tearDownAppEnvironment() {
         foreach(array('iv','key') as $ext) {
-            rename(self::${$ext}.'.bak',self::${$ext});
+            file_exists(self::${$ext}.'.bak') ? rename(self::${$ext}.'.bak',self::${$ext}) : 'empty';
         }
     }
 
@@ -145,7 +146,7 @@ abstract class X2DbTestCase extends CDbTestCase {
      * Loads "reference fixtures" defined in {@link referenceFixtures()} and
      * sets up some special environment variables before proceeding.
      */
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void {
         if (!YII_UNIT_TESTING) throw new CException ('YII_UNIT_TESTING must be set to true');
         Yii::app()->cache->flush ();
         self::setUpAppEnvironment(); 
@@ -195,7 +196,7 @@ abstract class X2DbTestCase extends CDbTestCase {
     /**
      * Override that copies the original key/iv back
      */
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void {
         if(X2_TEST_DEBUG_LEVEL > 0){
             $timer = TestingAuxLib::getClassTimer ();
             TestingAuxLib::log ("time elapsed for test class: {$timer->stop ()->getTime ()}");
@@ -205,7 +206,7 @@ abstract class X2DbTestCase extends CDbTestCase {
         self::tearDownAppEnvironment();
     }
 
-    public function tearDown () {
+    public function tearDown() : void {
         // try to replace mocks with original components in case mocks were set during test case
         TestingAuxLib::restoreX2WebUser ();
         TestingAuxLib::restoreX2AuthManager ();
@@ -220,7 +221,8 @@ abstract class X2DbTestCase extends CDbTestCase {
             $timer = TestingAuxLib::getCaseTimer ();
             TestingAuxLib::log ("time elapsed for test case: {$timer->stop ()->getTime ()}");
         }
-        return parent::tearDown ();
+        
+        parent::tearDown ();
     }
     
     /**

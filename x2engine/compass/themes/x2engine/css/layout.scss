@@ -1,6 +1,6 @@
 /*!*********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -133,26 +134,28 @@ body {
 }
 
 #page {
-    margin-top: 32px;
+    margin-top: 60px;
     overflow: auto;
     padding-bottom: 200px;
 }
 
 #header {
-    height: 32px;
+    height: 45px;
+    box-shadow: 0px 3px 5px #b3b8bd;
     background: #1f559b;
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 1000;
     &.defaultBg {
-        background: #3d70b4;
+        background: #007FCF;
     }
 }
 
 #header-inner {
     height: 31px;
-    background-image: url(../images/stripes2.png);
+    //background-image: url(../images/stripes2.png);
+    margin-top: 7px;
     background-repeat: no-repeat;
     background-size: auto;
     opacity: 1;
@@ -521,10 +524,11 @@ span.x2-hidden-widgets-menu-item.ui-draggable {
 
 .sidebar-left {
     background: white;
+    box-shadow: 3px 3px 5px #b3b8bd;
     width: 150px;
     clear: left;
     margin: 0px 0px 20px 20px;
-    border: 1px solid #e0e0e0;
+    //border: 1px solid #e0e0e0;
     float: left;
     
     @include border-radius (2px);
@@ -710,7 +714,7 @@ Remove border radius from left widget title bars which are preceded by a collaps
 }
 
 #sidebar-left-widget-box {
-    margin-top: 20px !important;
+    //margin-top: 20px !important;
     .portlet-decoration i {
         @include titleBarIconButton;
     }
@@ -731,8 +735,9 @@ Remove border radius from left widget title bars which are preceded by a collaps
     @include border-radius ();
     
     .portlet {
+	box-shadow: 3px 3px 5px #b3b8bd;
         margin-bottom: 20px;
-        border: 1px solid #e0e0e0;
+        //border: 1px solid #e0e0e0;
     }
 }
 
@@ -749,6 +754,7 @@ Remove border radius from left widget title bars which are preceded by a collaps
         padding-bottom: 0px;
         margin: 0px;
         margin-left: 20px;
+	margin-right: 20px; //missing from no-backdrop
     }
 
     &:not(.no-backdrop) {
@@ -984,6 +990,8 @@ div {
     margin: 1px 0px 0 0;
 }
 
+
+
 .x2-button.icon {
     span {
         width: 26px;
@@ -1218,8 +1226,9 @@ div {
     /* @theme background: content */
     
     margin: 0px 20px 20px 0px !important;
-    border: 1px solid #e0e0e0 !important;
+    //border: 1px solid #e0e0e0 !important;
     background-color: white;
+    box-shadow: 3px 3px 5px #b3b8bd;
     
     @include border-radius (2px);
 
@@ -1261,7 +1270,7 @@ body {
     &:horizontal {
         border-top: 1px solid rgb(230, 230, 230);
     }
-    border-left: 1px solid rgb(230, 230, 230);
+    //border-left: 1px solid rgb(230, 230, 230);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -1316,7 +1325,7 @@ body.disable-mobile-layout {
         @include border-radius (0);
         
         border-top: 1px solid #e0e0e0;
-        margin-top: 5px;
+        margin-top: 13px; //margin-top: 5px;
     }
     .x2-gridview-fixed-top-bar-inner > .page-title {
         @include border-radius (2px 2px 0px 0px);

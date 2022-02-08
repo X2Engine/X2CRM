@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -225,7 +226,7 @@ class MediaController extends x2base {
         $fileUrl = '';
 
         try {
-            if (Yii::app()->user->isGuest)
+            if (Yii::app()->user->isLoggedOut)
                 throw new CHttpException(401, 'You are not logged in.');
 
             if (!isset($_FILES['upload'], $_GET['CKEditorFuncNum'])) //,$_GET['Media']
@@ -555,6 +556,15 @@ class MediaController extends x2base {
                     'submit' => array('delete', 'id' => $modelId),
                     'confirm' => Yii::t('media', 'Are you sure you want to delete this item?'))
             ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('media', 'Media Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2media',
+                'linkOptions' => array(
+                    'id' => 'media-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
+            ),
             RecordViewLayoutManager::getEditLayoutActionMenuListItem(),
         );
 
@@ -587,6 +597,96 @@ class MediaController extends x2base {
             $this->denied();
         }
         $model->renderFile();
+    }
+    
+    public function actionGetImages() {
+        $model = X2Model::model($this->modelClass);
+        if (isset($model)) {
+            
+            $crit = new CDbCriteria();
+            $crit->compare('uploadedBy', Yii::app()->user->getName(), false);
+            $crit->compare('mimetype', 'image', true);
+            $crit->order = 'createDate DESC';
+            $files = Media::model()->findAll($crit);
+            
+            $urls = array();
+            if (!empty($files)) {
+                foreach ($files as $file)
+                    $urls[] = $file->getPublicUrl()."/$file->name"; //make it so gjs renders the name and not the key
+                echo json_encode($urls);
+            }
+        }
+        Yii::app()->end();
+    }
+    
+    // for GrapesJS image uploader
+    public function actionAddImages() {
+
+        try {
+            if (Yii::app()->user->isGuest)
+                throw new CException(403, 'You are not logged in.');
+            if (!isset($_FILES['upload']))
+                throw new CException(400, 'That was an invalid request.');
+            $upload = CUploadedFile::getInstanceByName('upload');
+            if ($upload == null)
+                throw new CException(400, 'Invalid file.');
+
+            $fileName = str_replace(' ', '_', $upload->getName());
+            $tmpName = $upload->getTempName();
+            $fileSize = $upload->getSize();
+            $fileType = $upload->getType();
+            $fileError = $upload->getError();
+
+            if ($fileError != UPLOAD_ERR_OK) {
+                error_log($fileError);
+                echo JSON_encode(null);
+            }
+
+            $fp = fopen($tmpName, 'r');
+            $content = fread($fp, filesize($tmpName));
+            fclose($fp);
+            
+            // save to media
+            $userFolder = Yii::app()->user->name; // place uploaded files in a folder named with the username of the user that uploaded the file
+            $userFolderPath = 'uploads/protected/media/' . $userFolder;
+            // if user folder doesn't exit, try to create it
+            if (!(file_exists($userFolderPath) && is_dir($userFolderPath))) {
+                if (!@mkdir('uploads/protected/media/' . $userFolder, 0777, true)) { // make dir with edit permission
+                    throw new CException(500, 'Error creating user folder.');
+                }
+            }
+
+            if (!$upload->saveAs($userFolderPath . DIRECTORY_SEPARATOR . $fileName))
+                throw new CException(500, 'Error saving file.');
+
+            $model = new Media;
+            $model->fileName = $fileName;
+            $model->createDate = time();
+            $model->lastUpdated = time();
+            $model->uploadedBy = Yii::app()->user->name;
+            $model->associationType = 'none';
+            $model->resolveType();
+
+            if (!$model->save()) {
+                throw new CException(500, 'Error saving Media entry.');
+            }
+
+            $result=array(
+                'name'=>$fileName,
+                'type'=>'image',
+                'src'=>$model->getPublicUrl()."/$fileName",
+                'height'=>350,
+                'width'=>250
+        ); 
+            
+            // return the image to gjs
+            $response = array( 'data' => [$result] );
+            echo json_encode($response);
+
+        } catch (Exception $e) {
+            error_log($e);
+            echo JSON_encode(null);
+        }
     }
 
 }

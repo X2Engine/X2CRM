@@ -82,4 +82,7 @@
   'Hide Directions' => 'הסתר את ההוראות',
   'Clear Route' => 'נתיב ברור',
   'View Contact Map' => 'הצג מפת איש קשר',
+  'Platform' => 'מערכת הפעלה',
+  'Browser' => 'דפדפן אינטרנט',
+  'Browser Version' => 'דפדפן אינטרנט גרסה',
 );

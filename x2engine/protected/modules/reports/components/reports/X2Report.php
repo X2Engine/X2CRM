@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 abstract class X2Report extends X2Widget {
 
     const HIDDEN_ID_ALIAS = '__$hiddenIdAlias$__';
@@ -44,6 +45,13 @@ abstract class X2Report extends X2Widget {
     const EMPTY_ALIAS = '__$empty$__';
 
     const CACHE_GENERATED_REPORT = false;
+
+    /**
+     * Returns array of Action Models that need a special join condition.
+     * (See function getJoinClauses() for usage)
+     * JustinT Sept. 30th
+     */
+    const ACTION_RELATION_CHECK = array('ActionMetaData', 'ActionText');
      
     /**
      * @var string $primaryModelType 
@@ -79,6 +87,17 @@ abstract class X2Report extends X2Widget {
      * @var array $anyFilters 
      */
     public $anyFilters;
+    
+    
+    /**
+     * @var array $relativeFilters 
+     */
+    public $relativeFilters;
+
+    /**
+     * @var array $subTotals
+     */
+    public $subTotals;
 
     /**
      * @var bool $getRawData
@@ -112,6 +131,10 @@ abstract class X2Report extends X2Widget {
     private $_anyFilterAttrs;
 
     private $_allFilterAttrs;
+    
+    private $_relativeFilterAttrs;
+
+    private $_subTotalAttrs;
 
     /**
      * Generate and render the report
@@ -183,6 +206,17 @@ abstract class X2Report extends X2Widget {
             $this->_allFilterAttrs = $this->extractFilterNames ($this->allFilters);
         }
         return $this->_allFilterAttrs;
+    }
+    
+    
+    /**
+     * @return array names of attributes specified in Relative Filters
+     */
+    protected function getRelativeFilterAttrs () {
+        if (!isset ($this->_relativeFilterAttrs)) {
+            $this->_relativeFilterAttrs = $this->extractFilterNames ($this->relativeFilters);
+        }
+        return $this->_relativeFilterAttrs;
     }
 
     /**
@@ -263,9 +297,10 @@ abstract class X2Report extends X2Widget {
         foreach ($relatedModelsByLinkField as $linkField => $relatedModel) {
             if ($this->primaryModelType === 'Actions' && 
                 (in_array ($linkField, array_keys (X2Model::getModelNames ())) ||
-                $linkField === 'ActionText')) {
+                (in_array ($linkField, self::ACTION_RELATION_CHECK)))
+	       ) {
 
-                if ($linkField !== 'ActionText') {
+                if (!in_array ($linkField, self::ACTION_RELATION_CHECK)) {
                     $primaryModelField = $linkField;
                     $joinStmt .= 
                         " JOIN {$relatedModel->tableName ()} as {$joinAliases[$linkField]} 
@@ -406,6 +441,283 @@ abstract class X2Report extends X2Widget {
         $filterConditions .= ')'; 
         return $filterConditions;
     }
+    
+       /**
+     * @param int the month 
+     * @return int the quarter for that month
+     * 
+     */
+    
+    private function getCurQuarter($month){
+        if($month < 4){
+            return 1;
+        }elseif($month < 7){
+            return 2;
+        }elseif($month < 10){
+            return 3;
+        }else{
+            return 4;
+        }
+    }
+    
+
+    
+
+        /* 
+    * days_in_month($month, $year) 
+    * Returns the number of days in a given month and year, taking into account leap years. 
+    * 
+    * $month: numeric month (integers 1-12) 
+    * $year: numeric year (any integer) 
+    * 
+    * Prec: $month is an integer between 1 and 12, inclusive, and $year is an integer. 
+    * Post: none 
+    */ 
+    // corrected by ben at sparkyb dot net 
+    private function days_in_month($month, $year) 
+    { 
+    // calculate number of days in a month 
+        return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31); 
+    } 
+
+    
+         /**
+     * @param array where the dates will be stored 
+     * @param the amount of quarters distance from current quarter
+     * 
+     */
+    
+    
+    
+    
+    private function getFiscalQuarter($dates, $timeScale){
+        $curMonth = date("n");
+        $curYear = date("Y");
+        $numOfYears = $timeScale%4;
+        $numberOfQart = $timeScale - (4 * $numOfYears);
+        $curQuarter = $this->getCurQuarter($curMonth);
+        $wantQuarter = $curQuarter + $numberOfQart;
+        if($wantQuarter > 4){
+            $curYear++;
+            $wantQuarter = $wantQuarter - 4;
+        }
+        if($wantQuarter < 1){
+            $curYear--;
+            $wantQuarter = $wantQuarter + 4;
+        }
+        $wantYear = $curYear + $numberOfQart;
+        $startMonth = ($wantQuarter * 3) - 2;
+        $endMonth = ($wantQuarter * 3);
+        $numOfDays = $this->days_in_month( $endMonth, $wantYear);
+       
+        $dates['start'] = strtotime($wantYear . "/" . $startMonth . "/1" );
+        $dates['end'] = strtotime($wantYear . "/" . $endMonth . "/" . $numOfDays ) + 86400;
+        
+        return $dates;
+    }
+    
+    private function getCurFiscalYear(){
+        if ( date('m') > 6 ) {
+           return (date('Y') + 1);
+        }
+        elseif ( date('m') < 6 ){
+            return date('Y');
+        }else{
+            return NULL;
+        }
+        
+        
+    }
+    
+    private function getMonthDates($month, $year = null){
+        if(!isset($year)){
+            $year = date('Y');
+        }
+        $dates = array( 'start' => NULL , 'end' => NULL);
+        $dates['start'] =  strtotime($month . "/1/" . $year);
+        
+        $numOfDays = ($month == 2) ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31); 
+        $dates['end'] =  $dates['start'] + ($numOfDays * 86400);
+        return $dates;
+        
+    }
+    
+        private function getweekDates($scale){
+            $dates = array( 'start' => NULL , 'end' => NULL);
+            $dates['start'] = strtotime("last Sunday");
+            //86400 is a day, so 7 days is 604800
+            $dates['end'] = $dates['start'] + (($scale + 1) * 604800);
+            $dates['start'] = $dates['start'] + ($scale * 604800);
+            
+            return $dates;
+    }
+    
+    
+    private function getEpocTime($timeName){
+        $dates = array( 'start' => NULL , 'end' => NULL);
+        $curYear = date("Y");
+        $curMonth = date("n");
+        $dayValue = 86400;
+        $fiscalYear = $this->getCurFiscalYear();
+        if($timeName == 'Current FY'){
+            $dates['start'] =  strtotime("October 1 " . ($fiscalYear - 1));
+            $dates['end'] =  strtotime("September 30 " . $fiscalYear) + $dayValue;
+        }elseif($timeName == 'Previous FY'){
+            $dates['start'] =  strtotime("October 1 " . ($fiscalYear - 2));
+            $dates['end'] =  strtotime("September 30 " . ($fiscalYear - 1)) + $dayValue;
+        }elseif($timeName == '2 FY Ago'){
+            $dates['start'] =  strtotime("October 1 " . ($fiscalYear - 3));
+            $dates['end'] =  strtotime("September 30 " . ($fiscalYear - 2)) + $dayValue;
+        }elseif($timeName == 'Next FY'){
+            $dates['start'] =  strtotime("October 1 " . ($fiscalYear));
+            $dates['end'] =  strtotime("September 30 " . ($fiscalYear + 1)) + $dayValue;
+        }elseif($timeName == 'Current FQ'){
+            $dates = $this->getFiscalQuarter($dates , 0);
+        }elseif($timeName == 'Next FQ'){
+            $dates =  $this->getFiscalQuarter($dates , 1);
+        }elseif($timeName == 'Previous FQ'){
+            $dates =  $this->getFiscalQuarter($dates , -1);
+        }elseif($timeName == 'Current CY'){
+            $dates['end'] =  strtotime("december 31 " . ($curYear)) + $dayValue;
+            $dates['start'] =  strtotime("january 1 " . ($curYear));
+        }elseif($timeName == 'Previous CY'){
+            $dates['end'] =  strtotime("december 31 " . ($curYear - 1)) + $dayValue;
+            $dates['start'] =  strtotime("january 1 " . ($curYear - 1));
+        }elseif($timeName == '2 CY Ago'){
+           $dates['end'] =  strtotime("december 31 " . ($curYear - 2)) + $dayValue;
+            $dates['start'] =  strtotime("january 1 " . ($curYear - 2));            
+        }elseif($timeName == 'Next CY'){
+           $dates['end'] =  strtotime("december 31 " . ($curYear + 1)) + $dayValue;
+            $dates['start'] =  strtotime("january 1 " . ($curYear + 1));            
+        }elseif($timeName == 'Current CQ'){
+            $dates =  $this->getFiscalQuarter($dates , 0);
+        }elseif($timeName == 'Next CQ'){
+            $dates =  $this->getFiscalQuarter($dates , 1);
+        }elseif($timeName == 'Previous CQ'){
+            $dates =  $this->getFiscalQuarter($dates , -1);
+        }elseif($timeName == 'Last Month'){
+            $targetMonth =  $curMonth - 1;
+            if($targetMonth == 0){
+                $targetMonth = 12;
+                $curYear --;
+            }
+           $dates = $this->getMonthDates($targetMonth , $curYear);
+        }elseif($timeName == 'This Month'){
+           $dates = $this->getMonthDates($curMonth , $curYear);
+        }elseif($timeName == 'Next Month'){
+            
+            $targetMonth =  $curMonth + 1;
+            if($targetMonth == 13){
+                $targetMonth = 1;
+                $curYear ++;
+            }
+           $dates = $this->getMonthDates($targetMonth , $curYear);
+            
+        }elseif($timeName == 'Last Week'){
+            $dates = $this->getweekDates(-1);
+        }elseif($timeName == 'This Week'){
+            $dates = $this->getweekDates(0);
+        }elseif($timeName == 'Next Week'){
+            $dates = $this->getweekDates(1);
+        }elseif($timeName == 'Yesterday'){
+            $dates['start'] = strtotime("Yesterday");
+            $dates['end'] = strtotime("Today");
+        }elseif($timeName == 'Today'){
+            $dates['start'] = strtotime("Today");
+            $dates['end'] = $dates['start'] + 86400 ;
+            
+        }elseif($timeName == 'Tomorrow'){
+            $dates['start'] = strtotime("Tomorrow");
+            $dates['end'] = $dates['start'] + 86400 ;
+            
+        }elseif($timeName == 'Last 7 Days'){
+            
+            $dates['end'] = strtotime("today");
+            $dates['start'] = strtotime("-7 days", strtotime("today")) ;             
+        }elseif($timeName == 'Last 30 Days'){
+            
+            $dates['end'] = strtotime("today");
+            $dates['start'] =  strtotime("-30 days", strtotime("today")) ;            
+        }elseif($timeName == 'Last 60 Days'){
+            
+            $dates['end'] = strtotime("today");
+            $dates['start'] = strtotime("-60 days", strtotime("today")) ;            
+        }elseif($timeName == 'Last 90 Days'){
+            
+            $dates['end'] = strtotime("today");
+            $dates['start'] =  strtotime("-90 days", strtotime("today")) ;          
+        }elseif($timeName == 'Last 120 Days'){
+            
+            $dates['end'] = strtotime("tomorrow");
+            $dates['start'] = strtotime("-120 days", strtotime("today")) ;            
+        }elseif($timeName == 'Next 7 Days'){
+            
+            $dates['start'] = strtotime("tomorrow");
+            $dates['end'] = strtotime("+8 days", strtotime("today")) ;            
+        }elseif($timeName == 'Next 30 Days'){
+            
+            $dates['start'] = strtotime("tomorrow");
+            $dates['end'] = strtotime("+31 days", strtotime("today")) ;            
+        }elseif($timeName == 'Next 60 Days'){
+            
+            $dates['start'] = strtotime("tomorrow");
+            $dates['end'] = strtotime("+61 days", strtotime("today")) ;            
+        }elseif($timeName == 'Next 90 Days'){
+            
+            $dates['start'] = strtotime("tomorrow");
+            $dates['end'] = strtotime("+91 days", strtotime("today")) ;            
+        }elseif($timeName == 'Next 120 Days'){
+            $dates['start'] = strtotime("tomorrow");
+            $dates['end'] = strtotime("+121 days", strtotime("today"));           
+        }
+        //goning to subtract one sec so midnight is included in dates range
+        $dates['start'] = $dates['start'] - 1;
+        return $dates;
+    }
+    
+    
+        /**
+     * @param string $type {'any', 'all'}
+     * @param array $filters As serialized by X2ConditionList.js
+     * @return string mysql where clause condition 
+     * @throws CException
+     */
+    protected function getRelativeFilterConditions (
+        $type, array $filters, QueryParamGenerator $qpg) {
+
+        if (!in_array ($type, array ('any', 'all'))) {
+            throw new CException ('invalid filter type: '.$type);
+        }
+        $joinAliases = $this->getJoinAliases ();
+        $filterConditions = '('; 
+        $separator = $type === 'any' ? 'OR' : 'AND';
+
+        foreach ($filters as $filter) {
+            if(isset($filter['value'])){
+                if ($filterConditions !== '(') {
+                    $filterConditions .= " $separator ";
+                }
+                $attribute = $filter['name'];
+                $field = $this->getAttrField ($attribute);
+              
+                $Dates = $this->getEpocTime($filter['value']);
+                $start = $Dates['start'];
+                $end = $Dates['end'];
+
+                $attribute = $this->getAliasedAttr ($attribute);
+
+
+                 $filterConditions .= "$attribute > $start AND $attribute < $end";
+            }
+        }
+        if ($filterConditions === '(') {
+            $filterConditions .= 'TRUE';
+        }
+
+        $filterConditions .= ')'; 
+        return $filterConditions;
+    }
+    
 
     /**
      * Taken from CDbCriteria's addSearchCondition ()
@@ -464,11 +776,13 @@ abstract class X2Report extends X2Widget {
      */
     protected function extractFilterNames ($filters) {
         $names = array ();
-        foreach ($filters as $filter) {
-            if (count ($filter) === 2) {
-                $names = array_merge ($names, $this->extractFilterNames ($filter[1]));
-            } else {
-                $names[] = $filter['name'];
+        if (!empty($filters)) {
+            foreach ($filters as $filter) {
+                if (count ($filter) === 2  && !isset($filter['name'])) {
+                    $names = array_merge ($names, $this->extractFilterNames ($filter[1]));
+                } else {
+                    $names[] = $filter['name'];
+                }
             }
         }
         return $names;

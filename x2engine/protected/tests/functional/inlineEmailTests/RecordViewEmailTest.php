@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 /**
  * Tests inline email form 
  */
@@ -49,9 +50,9 @@ class RecordViewEmailTest extends X2WebTestCase {
         'defaultCredentials' => ':x2_credentials_default',
     );
 
-    public function tearDown () {
+    public function tearDown() : void {
         TestingAuxLib::setConstant ('X2_DEBUG_EMAIL', 'false');
-        return parent::tearDown ();
+        parent::tearDown ();
     }
 
     public function assertEmailSuccess () {

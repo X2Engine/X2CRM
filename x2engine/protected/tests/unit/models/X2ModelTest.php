@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import('application.modules.accounts.models.*');
 Yii::import('application.modules.actions.models.*');
 Yii::import('application.modules.contacts.models.*');
@@ -62,18 +63,18 @@ class X2ModelTest extends X2DbTestCase {
 
     private $_nameFields;
 
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         $leadSourceDropdown = Dropdowns::model ()->findByPk (103);
         $leadSourceDropdown->multi = 0;
         if (!$leadSourceDropdown->save ()) throw new CException ('failed to restore dropdown');
-        return parent::setUpBeforeClass ();
+        parent::setUpBeforeClass ();
     }
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         $leadSourceDropdown = Dropdowns::model ()->findByPk (103);
         $leadSourceDropdown->multi = 0;
         $leadSourceDropdown->save ();
-        return parent::tearDownAfterClass ();
+        parent::tearDownAfterClass ();
     }
 
     public function nameFields() {
@@ -103,12 +104,12 @@ class X2ModelTest extends X2DbTestCase {
         Yii::app()->cache->flush();
     }
 
-    public function setUp() {
+    public function setUp() : void {
         parent::setUp();
         $this->setDefaultName();
     }
 
-    public function tearDown() {
+    public function tearDown() : void {
         $this->resetNameFields();
         parent::tearDown();
     }
@@ -132,7 +133,7 @@ class X2ModelTest extends X2DbTestCase {
         $this->assertInstanceOf('Opportunity', X2Model::model('opportunities'));
         $this->assertInstanceOf('Opportunity', X2Model::model('Opportunity'));
         
-        $this->setExpectedException('CHttpException');
+        $this->expectException('CHttpException');
         X2Model::model('obviously bad model name');
     }
     

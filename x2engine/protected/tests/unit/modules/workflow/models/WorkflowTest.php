@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -404,7 +405,7 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // update defaults
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array (4, 5, 6);
@@ -417,7 +418,7 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // clear defaults with empty array
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array ();
@@ -430,7 +431,7 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // restore defaults
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array (4, 5, 6);
@@ -443,7 +444,7 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // clear defaults with empty null
         $workflow2 = $this->workflows ('workflow2');
         $defaults = null;
@@ -456,7 +457,7 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), array ());
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // restore defaults
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array (4, 5, 6);
@@ -469,20 +470,21 @@ class WorkflowTest extends X2DbTestCase {
             order by id asc
         ")->queryColumn (array (':id' => $workflow2->id)), $defaults);
         $this->assertEquals (false, (bool) $workflow2->isDefault);
-
+        
         // clear module-specific defaults by settings global defauts
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array (Workflow::DEFAULT_ALL_MODULES);
         $workflow2->isDefaultFor = $defaults;
         $this->assertSaves ($workflow2);
+        
         $defaultWorkflows = $this->assertEquals (Yii::app()->db->createCommand ("
             select id 
             from x2_modules 
             where defaultWorkflow=:id
             order by id asc
-        ")->queryColumn (array (':id' => $workflow2->id)), array ());
+        ")->queryColumn(array (':id' => $workflow2->id)), array ());
         $this->assertEquals (true, (bool) $workflow2->isDefault);
-
+        
         // clear global default by setting module-specific defaults
         $workflow2 = $this->workflows ('workflow2');
         $defaults = array (Workflow::DEFAULT_ALL_MODULES);

@@ -158,7 +158,7 @@ pre span.error-ln {
 
 <body>
 <!--/* x2modstart */-->
-<div id='x2-php-error' class="container">
+<div id='x2-php-error' class="container">	
 <!--/* x2modend */-->
 	<h1><?php echo $data['type']?></h1>
 

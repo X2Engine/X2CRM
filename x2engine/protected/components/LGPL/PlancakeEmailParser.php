@@ -162,7 +162,7 @@ class PlancakeEmailParser {
      */
     public function getTo()
     {
-        if ( (!isset($this->rawFields['to'])) || (!count($this->rawFields['to'])))
+        if ( (!isset($this->rawFields['to'])) || (!isset($this->rawFields['to'])))
         {
             throw new Exception("Couldn't find the recipients of the email");
         }

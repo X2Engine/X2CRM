@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,11 +37,12 @@
 
 
 
+
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 $contactModule = Modules::model()->findByAttributes(array('name'=>'contacts'));
 
 $menuOptions = array(
-    'index', 'create', 'import', 'export', 'lists',
+    'index', 'create', 'import', 'export', 'lists','helpGuide',
 );
 if ($accountModule->visible && $contactModule->visible)
     $menuOptions[] = 'quick';
@@ -66,6 +67,25 @@ $('.search-form form').submit(function(){
 	return false;
 });
 ");
+
+
+if ($this->route == 'opportunities/opportunities/index') {
+    //$heading = Yii::t('contacts', 'All {module}', array('{module}' => $modTitles['contacts']));
+    
+    $dataProvider = $model->search();
+    //$enableSelectAllOnAllPages = true;
+    //unset($menuItems[0]['url']);
+    //unset($menuItems[4]); // View List
+} elseif ($this->route == 'opportunities/opportunities/myopportunities') {
+    
+    //$heading = Yii::t('contacts', 'My {module}', array('{module}' => $modTitles['contacts']));
+    $dataProvider = $model->searchMyOpportunities();
+    //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
+} elseif ($this->route == 'opportunities/opportunities/newopportunities') {
+    //$heading = Yii::t('contacts', 'Today\'s {module}', array('{module}' => $modTitles['contacts']));
+    $dataProvider = $model->searchNewOpportunities();
+    //$menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
+}
 ?>
 
 <div class="search-form" style="display:none">
@@ -91,7 +111,7 @@ $this->widget('X2GridView', array(
         '{massActionButtons}'.
         '{summary}{topPager}{items}{pager}',
     'fixedHeader'=>true,
-	'dataProvider'=>$model->search(),
+	'dataProvider'=>$dataProvider,
 	// 'enableSorting'=>false,
 	// 'model'=>$model,
 	'filter'=>$model,

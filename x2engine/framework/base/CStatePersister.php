@@ -23,7 +23,7 @@
  * Comparison among state persister, session and cache is as follows:
  * <ul>
  * <li>session: data persisting within a single user session.</li>
- * <li>state persister: data persisting through all rxequests/sessions (e.g. hit counter).</li>
+ * <li>state persister: data persisting through all requests/sessions (e.g. hit counter).</li>
  * <li>cache: volatile and fast storage. It may be used as storage medium for session or state persister.</li>
  * </ul>
  *

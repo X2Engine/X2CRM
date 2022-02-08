@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -144,7 +145,7 @@ class InlineEmailTest extends X2DbTestCase {
             strpos($this->eml->message, $fullImage) !== false,
             'Failed asserting that the body contains the tracking image; body ='.
                 $this->eml->message.$message);
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             InlineEmail::UIDREGEX, $this->eml->trackingImage,
             'Failed asserting that the tracking image has a unique id.'.$message);
         preg_match(InlineEmail::UIDREGEX, $this->eml->trackingImage, $matchId);
@@ -345,9 +346,9 @@ class InlineEmailTest extends X2DbTestCase {
 //		$subjectLine = $contentLines[0];
 //		$fromLine = $contentLines[1];
 //		$toLine = $contentLines[2];
-        $this->assertRegExp('/(<strong>Subject: <\/strong>.*)<br \/>/u', $content);
-        $this->assertRegExp('/(<strong>From: <\/strong>.*)<br \/>/u', $content);
-        $this->assertRegExp('/(<strong>To: <\/strong>.*)<br \/>/u', $content);
+        $this->assertMatchesRegularExpression('/(<strong>Subject: <\/strong>.*)<br \/>/u', $content);
+        $this->assertMatchesRegularExpression('/(<strong>From: <\/strong>.*)<br \/>/u', $content);
+        $this->assertMatchesRegularExpression('/(<strong>To: <\/strong>.*)<br \/>/u', $content);
     }
 
 }

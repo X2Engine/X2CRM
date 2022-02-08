@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 /**
  * @package application.tests.unit.modules.contacts.models
  */
@@ -53,7 +54,7 @@ class X2LeadsTest extends X2DbTestCase {
 
         $leadAttrs = $lead1->getAttributes ();
 
-        $opportunity = $lead1->convert ('Opportunity');
+        $opportunity = $lead1->convert ('Opportunity', true); //force=true due to x2_x2leads.dupecheck
 
         $opportunityAttrs = $opportunity->getAttributes ();
 
@@ -65,15 +66,19 @@ class X2LeadsTest extends X2DbTestCase {
         unset ($leadAttrs['converted']);
         unset ($leadAttrs['conversionDate']);
         unset ($leadAttrs['convertedToType']);
-        unset ($leadAttrs['convertedToId']);
+	unset ($leadAttrs['convertedToId']);
+	unset ($leadAttrs['dupeCheck']); //set to 0 by default
         unset ($opportunityAttrs['id']);
         unset ($opportunityAttrs['nameId']);
-        unset ($opportunityAttrs['createDate']);
+	unset ($opportunityAttrs['createDate']);
+
+	//remove empty items because no information is lost
+	foreach ($leadAttrs as $key => $val) if (empty($val)) unset($leadAttrs[$key]);
 
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($leadAttrs);
         X2_TEST_DEBUG_LEVEL > 1 && print_r ($opportunityAttrs);
 
-        // ensure that opportunity has all attributes of lead, with exceptions
+	// ensure that opportunity has all attributes of lead, with exceptions
         $this->assertTrue (sizeof (array_diff_assoc ($leadAttrs, $opportunityAttrs)) === 0);
 
         // test the testing method itself

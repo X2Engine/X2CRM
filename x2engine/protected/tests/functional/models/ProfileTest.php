@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 class ProfileTest extends X2WebTestCase {
 
     public $autoLogin = false;
@@ -44,7 +45,7 @@ class ProfileTest extends X2WebTestCase {
     /**
      * Copies a test controller into the controllers directory.
      */
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         // ensure that a directory with the same name isn't already in the web root
         exec ('ls ../controllers', $output);
         if (in_array ('ProfileTestController.php', $output)) {
@@ -61,7 +62,7 @@ class ProfileTest extends X2WebTestCase {
     /**
      * Remove all the test pages that were copied over 
      */
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         if (!self::$skipAllTests)
             exec ('rm ../controllers/ProfileTestController.php');
         parent::tearDownAfterClass ();

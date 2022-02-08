@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -163,7 +164,7 @@ CREATE TABLE `x2_admin` (
     /**
      * Set up a mid-update 5.2.1 admin table schema 
      */
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         $results = Yii::app()->db->createCommand ("  
             show create table x2_admin;
         ")->query ()->readAll ();
@@ -173,13 +174,13 @@ CREATE TABLE `x2_admin` (
         ")->queryRow ();
         self::$_oldAdmin = $admin;
 
-        return parent::setUpBeforeClass ();
+        parent::setUpBeforeClass ();
     }
 
     /**
      * Set up a mid-update 5.2.1 admin table schema 
      */
-    public function setUp () {
+    public function setUp() : void {
         Yii::app()->db->createCommand ("  
             drop table x2_admin;
         ")->execute ();
@@ -197,14 +198,14 @@ CREATE TABLE `x2_admin` (
     /**
      * Reinstate old admin schema
      */
-    public function tearDown () {
+    public function tearDown() : void {
         Yii::app()->db->createCommand ("  
             drop table x2_admin;
         ")->execute ();
         Yii::app()->db->createCommand (self::$_oldSchema)->execute ();
         Yii::app()->db->schema->refresh ();
         Yii::app()->db->createCommand ()->insert ('x2_admin', self::$_oldAdmin);
-        return parent::tearDown ();
+        parent::tearDown ();
     }
 
     /**

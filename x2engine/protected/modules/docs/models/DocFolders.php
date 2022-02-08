@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 /**
  * Description of DocFolders
  *
@@ -45,6 +46,7 @@
 class DocFolders extends CActiveRecord {
 
     const TEMPLATES_FOLDER_ID = -1;
+    const KB_FOLDER_ID = -2;
     
     public $module = 'docs';
 
@@ -144,6 +146,16 @@ class DocFolders extends CActiveRecord {
         ));
     }
 
+    public function getKbFolderContents() {
+        $contents = $this->findChildren (self::KB_FOLDER_ID);
+        return new FileSystemObjectDataProvider($contents, array(
+            'id' => 'root-folder-contents',
+            'pagination' => array(
+                'pageSize' => $this->getPageSize (),
+            )
+        ));
+    }
+
     /**
      * Find children of specified file sys object of specified types
      * @return array array of FileSystemObject instances
@@ -156,10 +168,14 @@ class DocFolders extends CActiveRecord {
 
         if ($folderId === 'root') {
             $model = self::model ();
-            $fileSysObjs = array ($model->createFileSystemObject ('templates', null));
+            $fileSysObjs = array ($model->createFileSystemObject ('templates', null), $model->createFileSystemObject ('kb', null),);
         } elseif ($folderId === self::TEMPLATES_FOLDER_ID) {
             $model = self::model ();
             $this->id = self::TEMPLATES_FOLDER_ID;
+            $fileSysObjs = array($this->createFileSystemObject ('parent', null));
+        } elseif ($folderId === self::KB_FOLDER_ID) {
+            $model = self::model ();
+            $this->id = self::KB_FOLDER_ID;
             $fileSysObjs = array($this->createFileSystemObject ('parent', null));
         } elseif ($folderId instanceof DocFolders) {
             $model = $folderId;
@@ -272,6 +288,9 @@ class DocFolders extends CActiveRecord {
             $docsCriteria->condition = 'folderId IS NULL AND type NOT IN ("email","quote")';
         } elseif($option === self::TEMPLATES_FOLDER_ID){
             $docsCriteria->condition = 'folderId IS NULL AND type IN ("email","quote")';
+        } elseif ($option === self::KB_FOLDER_ID) {
+            file_put_contents('/tmp/yeet.txt', $option);
+            $docsCriteria->condition = 'folderId IS NULL AND info = 1';
         } else {
             $docsCriteria->compare('folderId', $this->id);
         }
@@ -305,6 +324,10 @@ class DocFolders extends CActiveRecord {
             $options['type'] = 'folder';
             $options['objId'] = -1;
             $options['name'] = Yii::t('docs', 'Templates');
+        } elseif ($type === 'kb') {
+            $options['type'] = 'folder';
+            $options['objId'] = -2;
+            $options['name'] = Yii::t('docs', 'Knowledge Base');
         } else {
             $options['type'] = $type;
             $options['objId'] = $object->id;

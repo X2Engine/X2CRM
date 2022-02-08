@@ -20,7 +20,7 @@
 
 
 	#body-tag .background {
-		background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] );
+		//background: radial-gradient( $colors[background_hex], $colors[darker_background_hex] );
 	}
 
 	#body-tag #full-name {

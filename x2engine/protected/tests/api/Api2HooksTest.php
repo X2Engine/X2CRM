@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import('application.tests.api.Api2TestBase');
 
 /**
@@ -48,13 +49,13 @@ class Api2HooksTest extends Api2TestBase {
 
     public static $scriptPath;
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass() : void {
         copy(self::webscriptsBasePath().DIRECTORY_SEPARATOR.'api2HooksTest.php',
              self::$scriptPath = implode(DIRECTORY_SEPARATOR,array(Yii::app()->basePath,'..','api2HooksTest.php')));
         parent::setUpBeforeClass();
     }
 
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void{
         parent::tearDownAfterClass();
         if(file_exists(self::$scriptPath)) {
             unlink(self::$scriptPath);

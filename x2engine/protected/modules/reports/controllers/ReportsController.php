@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -99,7 +100,6 @@ class ReportsController extends x2base {
                 'label' => Yii::t('reports', 'Summation'),
                 'url' => array ('summationReport')
             ),
-            
             array(
                 'name' => 'leadPerformance',
                 'label' => Yii::t('reports', 'Lead Performance'),
@@ -119,6 +119,15 @@ class ReportsController extends x2base {
                 'name' => 'externalReports',
                 'label' => Yii::t('reports', 'External Reports'),
                 'url' => array ('externalReport')
+            ),
+            array(
+                'name' => 'helpGuide',
+                'label' => Yii::t('reports', 'Reports Help'),
+                'url' => 'https://x2crm.com/reference-guide/x2crm-x2reports',
+                'linkOptions' => array(
+                    'id' => 'report-help-guide-action-menu-link',
+                    'target' => '_blank',
+                )
             ),
         );
 
@@ -729,7 +738,7 @@ class ReportsController extends x2base {
             echo parent::widget ($className, $properties, true);
         }
     }
-
+    
     public function actionSummationReport ($report=null) {
         $formModel = new SummationReportFormModel;
         if (isset ($_GET['SummationReportFormModel'])) {
@@ -749,8 +758,6 @@ class ReportsController extends x2base {
             'report' => $report,
         ), $formModel->refreshForm);
     }
-    
-    
 
     /**
      * Handles both report page rendering and report form refresh 
@@ -1010,8 +1017,8 @@ class ReportsController extends x2base {
     public function actionPrintChart(){
         Yii::app()->clientScript
             ->registerScriptFile(Yii::app()->baseUrl.'/js/d3/d3.min.js')
-            ->registerScriptFile(Yii::app()->baseUrl.'/js/c3/c3.min.js')
-            ->registerCssFile(Yii::app()->baseUrl.'/js/c3/c3.css');
+            ->registerScriptFile(Yii::app()->baseUrl.'/js/bb/billboard.min.js')
+            ->registerCssFile(Yii::app()->baseUrl.'/js/bb/billboard.min.css');
 
         $chartIds = $_POST['ids'];
         $report = null;

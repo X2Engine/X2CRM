@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -76,4 +77,29 @@
 		'id' => 'profile-widget-action-menu')
 	, 'x2-minimal-button');
 	?>
+</div>
+<div id='profile-layout'>
+	<center>
+        <div id='profile-layout-selector' style='padding:5px;'>
+        <?php
+        $choice = '';
+        $myGroups = Groups::model()->getUserGroups(Yii::app()->user->getId(), false);
+        if(isset($myGroups) || count($myGroups) > 0) {
+            $groupsWithLabel = array();
+            foreach($myGroups as $groupsId){
+                $groupsWithLabel[$groupsId] = Groups::model()->findByPk($groupsId)->name;
+            }
+            $myGroups = $groupsWithLabel;
+        }
+
+        if(isset($this->model->currentLayout) && !empty($this->model->currentLayout)){
+            $choice = $this->model->currentLayout;
+        }
+
+        $myGroups['personal'] = 'personal';
+
+        echo CHtml::dropDownList('currentLayout', $choice, $myGroups);
+        ?>
+        </div>
+        </center>
 </div>

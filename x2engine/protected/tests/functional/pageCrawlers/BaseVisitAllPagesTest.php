@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -73,7 +74,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         'groups' => 'Groups',
     );
 
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         Yii::app()->db->createCommand ("
             insert ignore into x2_auth_item_child (`parent`, `child`) values 
                 ('DefaultRole', 'ReportsReadOnlyAccess'),
@@ -85,10 +86,10 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         Yii::app()->db->createCommand('INSERT INTO x2_fields (id, modelName, fieldName, attributeLabel, type) '
                 .'VALUES (-999, "Contacts", "badField", "Bad\'s Field", "varchar");');
         Yii::app()->authCache->clear ();
-        return parent::setUpBeforeClass ();
+        parent::setUpBeforeClass ();
     }
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         Yii::app()->db->createCommand ("
             delete from x2_auth_item_child where
                 parent='DefaultRole' and child='ReportsReadOnlyAccess' or
@@ -99,7 +100,7 @@ abstract class BaseVisitAllPagesTest extends X2WebTestCase {
         Yii::app()->db->createCommand('DELETE FROM x2_fields WHERE id = -999');
         Yii::app()->db->createCommand('ALTER TABLE x2_contacts DROP COLUMN badField;');
         Yii::app()->authCache->clear ();
-        return parent::tearDownAfterClass ();
+        parent::tearDownAfterClass ();
     }
     
     public $allPages = array(

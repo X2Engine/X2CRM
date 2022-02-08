@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 /**
  * @package application.tests.unit.components.x2flow.actions
  */
@@ -55,7 +56,7 @@ class X2FlowRecordEmailTest extends X2FlowTestBase {
     /**
      * Replace credId token with cred id from x2_credentials-local.
      */
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         $fixtureDir = implode(DIRECTORY_SEPARATOR, array(__DIR__,'..','..','..','..','fixtures'));
         $file = $fixtureDir.DIRECTORY_SEPARATOR.'x2_flows.X2FlowRecordEmailTestTemplate.php';
         $content = file_get_contents ($file);

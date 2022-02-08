@@ -210,7 +210,7 @@ class CDateTimeParser
 				default:
 				{
 					$tn=self::$_mbstringAvailable ? mb_strlen($token,Yii::app()->charset) : strlen($token);
-					if($i>=$n || ($token{0}!='?' && (self::$_mbstringAvailable ? mb_substr($value,$i,$tn,Yii::app()->charset) : substr($value,$i,$tn))!==$token))
+					if($i>=$n || ($token[0]!='?' && (self::$_mbstringAvailable ? mb_substr($value,$i,$tn,Yii::app()->charset) : substr($value,$i,$tn))!==$token))
 						return false;
 					$i+=$tn;
 					break;
@@ -265,9 +265,9 @@ class CDateTimeParser
 	/*
 	 * @param string $pattern the pattern that the date string is following
 	 */
-    /* x2modstart */  
-    // changed from private to public
-	public static function tokenize($pattern)
+	/* x2modstart */
+    // changed from private to public	
+	public static function tokenize($pattern)	
     /* x2modend */ 
 	{
 		if(!($n=self::$_mbstringAvailable ? mb_strlen($pattern,Yii::app()->charset) : strlen($pattern)))

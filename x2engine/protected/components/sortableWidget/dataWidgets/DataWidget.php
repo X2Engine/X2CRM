@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -357,13 +358,13 @@ class DataWidget extends SortableWidget {
                             'js/d3/d3.js',
                         ),
                     ),
-                    'c3' => array(
+                    'bb' => array(
                         'baseUrl' => Yii::app()->request->baseUrl,
                         'js' => array(
-                            'js/c3/c3.min.js',
+                            'js/bb/billboard.min.js',
                         ),
                         'css' => array(
-                            'js/c3/c3.css'
+                            'js/bb/billboard.min.css'
                         ),
                         'depends' => array('d3')
                     ),
@@ -372,7 +373,7 @@ class DataWidget extends SortableWidget {
                         'js' => array(
                             'js/DataWidget/DataWidget.js',
                         ),
-                        'depends' => array ('SortableWidgetJS', 'c3')
+                        'depends' => array ('SortableWidgetJS', 'bb')
                     ),
                     'DataWidgetCSS' => array(
                         'baseUrl' => Yii::app()->theme->baseUrl,
@@ -385,7 +386,7 @@ class DataWidget extends SortableWidget {
                         'js' => array(
                             'js/DataWidget/'.$widgetClass.'.js',
                         ),
-                        'depends' => array ('DataWidgetJS', 'c3')
+                        'depends' => array ('DataWidgetJS', 'bb')
                     ),
 
                 ),

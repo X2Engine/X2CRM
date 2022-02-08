@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -323,8 +324,8 @@ DataWidget.prototype.toggleError = function(error) {
 
 
 /**
- * Wrapper for c3.generate.
- * All charts should use this function instead of c3.generate to 
+ * Wrapper for bb.generate.
+ * All charts should use this function instead of bb.generate to 
  * incorporate common functionality into the charts. 
  * 
  * @param {object} argsDict Dictionary of arguments to be merged into the defaults.
@@ -334,7 +335,6 @@ DataWidget.prototype.generate = function(argsDict) {
 
     var defaultDict = {
         bindto: this.contentSelector,
-
         data: {
             type: this.displayType,
             onselected: function (dataPoint, element){
@@ -342,7 +342,6 @@ DataWidget.prototype.generate = function(argsDict) {
             },
             hide: this.legend,
         },
-
         legend: {
             item: {
                 onclick: function(item) {
@@ -350,12 +349,11 @@ DataWidget.prototype.generate = function(argsDict) {
                 }
             }
         },
-
     };
 
 
     var chartSettings = $.extend(true,  argsDict, defaultDict);
-
+    
     // Fix for the current bug rendering selections on 
     // stacked area or line charts. This fix moves the select
     // handler to a on click handler if appropriate
@@ -373,7 +371,7 @@ DataWidget.prototype.generate = function(argsDict) {
     }
 
     this.cachedSettings = chartSettings;
-    this.chart = c3.generate(chartSettings);
+    this.chart = bb.generate(chartSettings);
 };
 
 /**
@@ -393,7 +391,7 @@ DataWidget.prototype.fetchReport = function(conditions, options) {
  */
 DataWidget.prototype.toggleLegend = function(item) {
     var index = $.inArray (item, this.legend);
-
+    
     if (index >= 0) {
         this.legend.splice (index, 1);
         this.chart.show (item);

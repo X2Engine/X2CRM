@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -193,7 +194,13 @@ class Formatter {
                 Yii::t('admin','Input evaluates to an invalid formula: ').
                     strtr($formula,$replacementTokens));
         }
-
+        //check to make sure all values are set
+        foreach($replacementTokens as $key => $value){
+            if(empty($value))            
+                return array(
+                    false,
+                    Yii::t('admin','Error: ' . $key . " is not set, can not be used in a formula!"));
+        }
         try{
             $retVal = @eval(strtr($formula,$replacementTokens));
         }catch(Exception $e){

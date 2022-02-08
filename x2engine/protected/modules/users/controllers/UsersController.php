@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -153,6 +154,9 @@ class UsersController extends x2base {
             $profile->emailAddress=$model->emailAddress;
             $profile->status=$model->status;
 
+            //set a default layout
+            $profile->currentLayout = 'personal';
+
              
             // set a default theme if there is one
             $admin = Yii::app()->settings;
@@ -192,6 +196,31 @@ class UsersController extends x2base {
                         $link->save();
                     }
                 }
+
+		/**
+                * Profile Save Layout (Groups) BEGIN
+                * 1. once  new user is created with a group, they will inherit the layout
+                * Related code area: protected/controllers/ProfileController.php (actionSaveGroupLayout())
+                * date: September 4th, 2019
+                * writer: Justin Toyomitsu
+                */
+                if(isset($_POST['groups']) && count($_POST['groups']) > 0){
+                     if(isset($profile)){
+			$group = Groups::model()->findByPk($_POST['groups'][0]); //get first group for layout
+			if(isset($group)){
+                            $profile->setProfileWidgetLayout(CJSON::decode($group->layout));
+			    $profile->currentLayout = $_POST['groups'][0];
+			}else{
+			    $profile->currentLayout = 'personal';
+			}
+			$profile->personalLayout = '';
+                        $profile->save();
+                     }
+                }
+               /**
+                * Profile Save Layout (Groups) END
+                */
+
                 $this->redirect(array('view','id'=>$model->id));
             }
         }
@@ -253,6 +282,55 @@ class UsersController extends x2base {
         }else{
             $this->redirect($this->createUrl('/site/login'));
         }
+    }
+
+    public function actionCreatePortal(){
+        Yii::import('application.components.ThemeGenerator.LoginThemeHelper');
+        $this->layout='//layouts/login';
+        if(isset($_GET['key'])){
+            $key=$_GET['key'];
+            $user=User::model()->findByAttributes(array('inviteKey'=>$key));
+            if(isset($user)){
+                $user->setScenario('insert');
+                if(isset($_POST['User'])) {
+                    $model=$user;
+                    $model->attributes=$_POST['User'];
+                    $model->status=1;
+                    //$this->updateChangelog($model);
+                    
+                    if ($model->validate (array('password'))) {
+                        $model->password = PasswordUtil::createHash($model->password);
+                    }
+                    $model->userKey=substr(str_shuffle(str_repeat('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', 32)), 0, 32);
+                    $profile=new Profile;
+                    $profile->fullName=$model->firstName." ".$model->lastName;
+                    $profile->username=$model->username;
+                    $profile->allowPost=1;
+                    $profile->emailAddress=$model->emailAddress;
+                    $profile->status=$model->status;
+
+                    if($model->save()){
+                        $model->inviteKey=null;
+                        $model->temporary=0;
+                        $model->save();
+                        $profile->id=$model->id;
+                        $profile->save();
+                        
+                        $cookieName = 'portal_user';
+                        $cookie = new CHttpCookie($cookieName, 1);
+                        $cookie->expire = time()+60*60*24*365; // ~year expiration
+                        Yii::app()->request->cookies[$cookieName] = $cookie;
+                        $this->redirect(['/site/portalLogin']);
+                    }
+                }
+                $this->render('createAccount',array(
+                    'user'=>$user,
+                ));
+                return;
+            }
+        }
+        //bad request
+        $this->redirect($this->createUrl('/site/login'));
     }
 
     /**

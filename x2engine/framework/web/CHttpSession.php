@@ -241,7 +241,7 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	 * The effect of this method only lasts for the duration of the script.
 	 * Call this method before the session starts.
 	 * @param array $value cookie parameters, valid keys include: lifetime, path,
-	 * domain, secure, httponly. Note that httponly is all lowercase.
+	 * domain, secure, httponly, samesite. Note that httponly and samesite is all lowercase.
 	 * @see http://us2.php.net/manual/en/function.session-set-cookie-params.php
 	 */
 	public function setCookieParams($value)
@@ -249,10 +249,24 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 		$data=session_get_cookie_params();
 		extract($data);
 		extract($value);
-		if(isset($httponly))
+		$this->freeze();
+		if(isset($httponly) && isset($samesite))
+		{
+			if(version_compare(PHP_VERSION,'7.3.0','>='))
+				session_set_cookie_params(array('lifetime'=>$lifetime,'path'=>$path,'domain'=>$domain,'secure'=>$secure,'httponly'=>$httponly,'samesite'=>$samesite));
+			else
+			{
+				// Work around for setting sameSite cookie prior PHP 7.3
+				// https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict/46971326#46971326
+				$path .= '; samesite=' . $samesite;
+				session_set_cookie_params($lifetime,$path,$domain,$secure,$httponly);
+			}
+		}
+		else if(isset($httponly))
 			session_set_cookie_params($lifetime,$path,$domain,$secure,$httponly);
 		else
 			session_set_cookie_params($lifetime,$path,$domain,$secure);
+		$this->unfreeze();
 	}
 
 	/**
@@ -339,7 +353,9 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function setUseTransparentSessionID($value)
 	{
+		$this->freeze();
 		ini_set('session.use_trans_sid',$value?'1':'0');
+		$this->unfreeze();
 	}
 
 	/**
@@ -355,7 +371,9 @@ class CHttpSession extends CApplicationComponent implements IteratorAggregate,Ar
 	 */
 	public function setTimeout($value)
 	{
+		$this->freeze();
 		ini_set('session.gc_maxlifetime',$value);
+		$this->unfreeze();
 	}
 
 	/**

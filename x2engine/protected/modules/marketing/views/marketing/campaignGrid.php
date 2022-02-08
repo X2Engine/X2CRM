@@ -1,7 +1,7 @@
 <?php 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,19 +36,12 @@
 
 
 
-$contactList = $model->list;
 
-$typeOfList = $contactList->modelName;
-$ModelName;
-if ($typeOfList == 'X2Leads'){
-    $ModelName = '/x2Leads/x2Leads/view';
-} elseif ($typeOfList == 'Contacts'){
-    $ModelName = '/contacts/contacts/view';
-} elseif ($typeOfList == 'Accounts'){
-    $ModelName = '/accounts/accounts/view';
-} elseif ($typeOfList == 'Opportunity'){
-    $ModelName = '/opportunities/opportunities/view';
-} 
+$contactList = $model->list;
+$views = array('X2Leads' => '/x2Leads/x2Leads/view', 'Contacts' => '/contacts/contacts/view',
+'Accounts' => '/accounts/accounts/view', 'Opportunity' => '/opportunities/opportunities/view');
+$listModel = $contactList->modelName;
+$modelView = $views[$listModel];
 
 //these columns will be passed to gridview, depending on the campaign type
     $displayColumns = array(
@@ -56,7 +49,9 @@ if ($typeOfList == 'X2Leads'){
             'name' => 'name',
             'header' => Yii::t('contacts', 'Name'),
             'headerHtmlOptions' => array('style' => 'width: 15%;'),
-            'value' => 'CHtml::link($data["firstName"] . " " . $data["lastName"],array("'. $ModelName .'","id"=>$data["id"]))',
+            'value' => '(isset($data["name"]) && !empty($data["name"])) ?
+                        CHtml::link($data["name"],array("'. $modelView .'","id"=>$data["id"])) :
+                        CHtml::link($data["firstName"] . " " . $data["lastName"],array("'. $modelView .'","id"=>$data["id"]))',
             'type' => 'raw',
         ),
     );
@@ -68,51 +63,36 @@ if ($typeOfList == 'X2Leads'){
                 'headerHtmlOptions' => array('style' => 'width: 20%;'),
                 //email comes from contacts table, emailAddress from list items table, we could 
                 // have either one or none
-                'value' => '!empty($data["preferredEmail"]) ? 
-                    ($data["preferredEmail"] == "Default" ||  $data["preferredEmail"] == "email") ?
-		    	(!empty($data["email"])) ? 
-                    		$data["email"] 
-				: 
-				(!empty($data["emailAddress"]) ? 
-					$data["emailAddress"] 
-					: 
-					"")
-			:
-			($data["preferredEmail"] == "businessEmail") ?
-				(!empty($data["businessEmail"])) ? 
-					$data["businessEmail"]
-					:
-					(!empty($data["emailAddress"]) ? 
-						$data["emailAddress"] 
-						: 
-						"")
-				:				
-				($data["preferredEmail"] == "personalEmail") ?
-					(!empty($data["personalEmail"])) ? 
-						$data["personalEmail"]
-						:
-						(!empty($data["emailAddress"]) ? 
-							$data["emailAddress"] 
-							: 
-							"")					
-					:
-					(!empty($data["alternativeEmail"])) ? 
-						$data["alternativeEmail"]
-						:
-						(!empty($data["emailAddress"]) ? 
-							$data["emailAddress"] 
-							: 
-							"")	
+                'value' => '
+!empty($data["preferredEmail"]) ? 
+	(($data["preferredEmail"] == "Default" ||  $data["preferredEmail"] == "email") ? 
+		(!empty($data["email"])?
+			($data["emailAddress"])
+			:(""))
+		:($data["preferredEmail"] == "businessEmail" ? 
+			(!empty($data["businessEmail"]) ? 
+				( $data["businessEmail"])
+				:(!empty($data["emailAddress"])?
+					($data["emailAddress"])
+					:("")))
+			:($data["preferredEmail"] == "personalEmail" ? 
+				(!empty($data["personalEmail"]) ? 
+					($data["personalEmail"])
+					:(!empty($data["emailAddress"]) ?
+						($data["emailAddress"])
+						:("")))
+				:(!empty($data["alternativeEmail"]) ? 
+					($data["alternativeEmail"])
+					:(!empty($data["emailAddress"]) ? 
+						($data["emailAddress"])
+						:(""))))))
+	:(!empty($data["email"]) ? 
+		($data["email"])
+		:(!empty($data["emailAddress"]) ? 
+			($data["emailAddress"])
+			:("")))
 
-			
-		    : 
-		    (!empty($data["email"])) ? 
-                    	$data["email"] 
-			: 
-			(!empty($data["emailAddress"]) ? 
-				$data["emailAddress"] 
-				: 
-				"")',
+				            ',
             ),
             array(
                 'name' => 'sent',
@@ -170,6 +150,30 @@ if ($typeOfList == 'X2Leads'){
                 'htmlOptions' => array('style' => 'text-align: center;'),
                 'headerHtmlOptions' => array('style' => 'width: 7%;', 'title' => $contactList->statusCount('bounced'))
             ),
+            array(
+                'name' => 'platform',
+                'header' => Yii::t('contacts', 'Platform'),
+                'headerHtmlOptions' => array('style' => 'width: 20%;'),
+                //email comes from contacts table, emailAddress from list items table, we could 
+                // have either one or none
+                'value' => '!empty($data["platform"]) ? $data["platform"] : ""',
+            ),
+            array(
+                'name' => 'browser',
+                'header' => Yii::t('contacts', 'Browser'),
+                'headerHtmlOptions' => array('style' => 'width: 20%;'),
+                //email comes from contacts table, emailAddress from list items table, we could 
+                // have either one or none
+                'value' => '!empty($data["browser"]) ? $data["browser"] : ""',
+            ),
+            array(
+                'name' => 'version',
+                'header' => Yii::t('contacts', 'Browser Version'),
+                'headerHtmlOptions' => array('style' => 'width: 20%;'),
+                //email comes from contacts table, emailAddress from list items table, we could 
+                // have either one or none
+                'value' => '!empty($data["version"]) ? $data["version"] : ""',
+            ),
         ));
 
         if ($model->enableRedirectLinks) {
@@ -205,24 +209,31 @@ if ($typeOfList == 'X2Leads'){
     } ?>
 
 <div class='x2-layout-island'>
-    <?php $this->widget('X2GridViewGeneric', array(
-        'defaultGvSettings' => array (
-            'name' => 140,
-            'email' => 140,
-            'sent' => 80,
-            'opened' => 80,
-            'clicked' => 80,
-            'unsubscribed' => 80,
-            'doNotEmail' => 80,
-            'openedAt' => 120,
-        ),
-        'id' => 'campaign-grid',
-        'template'=> '<div class="page-title">{title}'
-            .'{buttons}{summary}</div>{items}{pager}',
-        'buttons' => array ('autoResize'),
-        'dataProvider' => $contactList->campaignDataProvider(Profile::getResultsPerPage()),
-        'columns' => $displayColumns,
-        'enablePagination' => true,
-        'gvSettingsName' => 'campaignProgressGrid',
-    )); ?>
+    <?php 
+        $this->renderPartial('campaignHeatMap', array(
+            'model'=>$model,
+        ));
+
+        $this->widget('X2GridViewGeneric', array(
+            'defaultGvSettings' => array (
+                'name' => 140,
+                'email' => 140,
+                'sent' => 80,
+                'opened' => 80,
+                'clicked' => 80,
+                'unsubscribed' => 80,
+                'doNotEmail' => 80,
+                'openedAt' => 120,
+            ),
+            'id' => 'campaign-grid',
+            'template'=> '<div class="page-title">{title}'
+                .'{buttons}{summary}</div>{items}{pager}',
+            'buttons' => array ('autoResize'),
+            'dataProvider' => $contactList->campaignDataProvider(Profile::getResultsPerPage()),
+            'columns' => $displayColumns,
+            'enablePagination' => true,
+            'gvSettingsName' => 'campaignProgressGrid',
+        ));
+        
+    ?>
 </div>

@@ -31,4 +31,38 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/.connected-sortable-widget-container .transactional-view-widget .relationships-toggle input{margin-left:5px;position:relative;top:2px}.connected-sortable-widget-container .transactional-view-widget .relationships-toggle span{margin-left:5px}.connected-sortable-widget-container .transactional-view-widget .overdue{font-weight:bold;color:#2f2f2f}.connected-sortable-widget-container .transactional-view-widget .widget-title{min-width:135px}.connected-sortable-widget-container .transactional-view-widget .x2grid-body-container .items{border:none}.connected-sortable-widget-container .transactional-view-widget .x2grid-body-container .items td{border-right:none;overflow:hidden;text-overflow:ellipsis}.connected-sortable-widget-container.sortable-widget-drag,.connected-sortable-widget-container .sortable-widget-drag{padding-bottom:100px;margin-bottom:-100px}
+ **********************************************************************************/
+/* line 42, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .relationships-toggle input {
+  margin-left: 5px;
+  position: relative;
+  top: 2px;
+}
+/* line 47, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .relationships-toggle span {
+  margin-left: 5px;
+}
+/* line 51, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .overdue {
+  font-weight: bold;
+  color: #2f2f2f;
+}
+/* line 55, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .widget-title {
+  min-width: 135px;
+}
+/* line 59, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .x2grid-body-container .items {
+  border: none;
+}
+/* line 61, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container .transactional-view-widget .x2grid-body-container .items td {
+  border-right: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* line 69, ../../../../../../compass/themes/x2engine/css/components/sortableWidget/recordViewWidgets/TransactionalViewWidget.scss */
+.connected-sortable-widget-container.sortable-widget-drag, .connected-sortable-widget-container .sortable-widget-drag {
+  padding-bottom: 100px;
+  margin-bottom: -100px;
+}

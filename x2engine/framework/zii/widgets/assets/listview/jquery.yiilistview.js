@@ -33,12 +33,12 @@
 			$.fn.yiiListView.settings[id] = settings;
 
 			if(settings.ajaxUpdate.length > 0) {
-                /* x2modstart */ 
-                // unbind events before binding them so that list view can be reloaded via ajax
-                // without binding duplicate events
-				$(document).off('click.yiiListView', settings.updateSelector)
-                    .on ('click.yiiListView', settings.updateSelector,function(){
-                /* x2modend */                
+				/* x2modstart */
+				// unbind events before binding them so that list view can be reloaded via ajax	
+                // without binding duplicate events	
+				$(document).off('click.yiiListView', settings.updateSelector)	
+                    .on ('click.yiiListView', settings.updateSelector,function(){	
+                /* x2modend */          
 					if(settings.enableHistory && window.History.enabled) {
 						var href = $(this).attr('href');
 						if(href){

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $heading = $listModel->name; //Yii::t('contacts','All Contacts');
 
 $authParams['X2Model'] = $listModel;
@@ -51,7 +52,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name'=>'opportuni
 $accountModule = Modules::model()->findByAttributes(array('name'=>'accounts'));
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList',
+    'all', 'lists', 'create', 'createList', 'viewList', 'editList', 'deleteList','helpGuide',
 );
 if ($opportunityModule->visible && $accountModule->visible)
     $menuOptions[] = 'quick';
@@ -176,16 +177,13 @@ $this->widget('X2GridView', array(
     'filter'=>$model,
     'pager'=>array('class'=>'CLinkPager','maxButtonCount'=>10),
     // 'columns'=>$columns,
-    'modelName'=>'Contacts',
+    'modelName'=>'X2Leads',
     'viewName'=>'contacts_list'.$listModel->id,
     // 'columnSelectorId'=>'contacts-column-selector',
     'defaultGvSettings'=>array(
         'gvCheckbox' => 30,
         'name' => 125,
         'email' => 165,
-        'leadSource' => 83,
-        'leadstatus' => 91,
-        'phone' => 107,
         'lastActivity' => 78,
         'gvControls' => 73,
     ),

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,12 +36,13 @@
 
 
 
+
 include("protected/modules/bugReports/bugReportsConfig.php");
 
 $this->actionMenu = $this->formatMenu(array(
     array('label'=>Yii::t('module','{X} List',array('{X}'=>Modules::itemDisplayName()))),
     array('label'=>Yii::t('module','Create {X}',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('create')),
-    array('label'=>Yii::t('module','{X} Lists',array('{X}'=>Modules::itemDisplayName())), 'url'=>array('lists')),
+   
     array('label'=>Yii::t('module','Import {X}', array('{X}'=>Modules::itemDisplayName())),
         'url'=>array('admin/importModels', 'model'=>ucfirst($moduleConfig['moduleName'])), 'visibility'=>Yii::app()->params->isAdmin),
     array('label'=>Yii::t('module','Export {X}', array('{X}'=>Modules::itemDisplayName())),

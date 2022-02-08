@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -255,6 +256,26 @@ $(function() {
 			},
 		update: function(event,ui) { sortFieldList(); }
 	});
+
+    // Similar to Field list but respawns sortable items after they have been removed from the bank
+    $('#editorHtmlBlockList').sortable({
+        connectWith: '.formSortable',
+        tolerance: 'pointer',
+        placeholder:'formItemPlaceholder',
+        remove: function(event, ui) {       // make items resizable when removed from main list
+                $(ui.item).closest('.formItem').data({'labelType':'left','readOnly':0}).find('.formInputBox').closest('.formInput').addClass('leftLabel');
+                window.layoutChanged = true;
+                var newBlock = ui.item.clone();
+                $('#editorHtmlBlockList').append(newBlock);
+                resetFormItem($(newBlock));
+            },
+        receive: function(event, ui) {
+                resetFormItem($(ui.item));  // clear formItem's settings
+                sortFieldList();            // sort field list
+                window.layoutChanged = true;
+            },
+        update: function(event,ui) { sortFieldList(); }
+    });
 
 	// setup field text toggling for any formItem that might get changed to inlineLabel
 	$('div.x2-layout').delegate('div.x2-layout .inlineLabel input:text, div.x2-layout .inlineLabel textarea','focus',function() { x2.forms.formFieldFocus(this); });
@@ -595,6 +616,11 @@ function generateFormJson() {
 					itemJson.readOnly = $(item).data('readOnly');
 					itemJson.tabindex = $(item).find('input,textarea,checkbox,select').first().attr('tabindex');
 
+                    if (item.id === 'formItem_textarea_block') {
+                        itemJson.blockType = 'textarea';
+                        itemJson.blockData = $(item).find('textarea').val();
+                    }
+
 					columnJson.items.push(itemJson);
 				});
 
@@ -663,12 +689,20 @@ function loadFormJson(formJson) {
                 x2.formEditor.setWidthOfHiddenCell ($col, formSection.rows[0].cols[j].width);
 
 				for(k=0; k<formSection.rows[0].cols[j].items.length; k++) {
-					// console.log(formSection.rows[0].cols[j].items[k]);
 					var properties = formSection.rows[0].cols[j].items[k];
 					var formItem = $('#editorFieldList').find('#'+properties.name);
 					formItem.appendTo($col.find('.formSortable'))
 						.data({'labelType':properties.labelType,'readOnly':properties.readOnly}).find('.formInputBox').find('input,textarea,checkbox,select').attr('tabindex',properties.tabindex);
-
+                    if (properties.blockData !== undefined && properties.blockType !== undefined) {
+                        var formItem = $('#editorHtmlBlockList').find('#'+properties.name);
+                        var formItemClone = formItem.clone();
+                        formItem.appendTo($col.find('.formSortable'))
+                            .data({'labelType':properties.labelType,'readOnly':properties.readOnly}).find('.formInputBox').find('textarea').val(properties.blockData);
+                        var item = $col.find('#'+properties.name).find('textarea');
+                        $('#editorHtmlBlockList').append(formItemClone);
+                        resetFormItem(formItemClone);
+                        continue;
+                    }
 					setReadOnly(formItem,properties.readOnly);
 					setLabelType(formItem,properties.labelType);
 				}

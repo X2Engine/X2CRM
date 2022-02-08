@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 $imgUrl = $this->controller->module->assetsUrl.'/images/';
 
 // Yii::app()->clientScript->registerScript('CreateChartJS',"
@@ -57,14 +58,10 @@ $imgUrl = $this->controller->module->assetsUrl.'/images/';
 // ", CClientScript::POS_END);
 ?>
 
-<!-- <div class='charts-page-title page-title'>
-    <h2>New Chart</h2>
-</div>
- -->
 <div id='chart-creator' class='chart-form' style='display: none'>
     <div class='form-header'>
     <?php
-    CHtml::encode (Yii::t('reports', 'Select a Chart Type'))   
+    CHtml::encode (Yii::t('reports', 'Select a Chart Type'))
     ?>
     </div>
     <div class='chart-selector'>

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import('application.components.util.FileUtil');
 
 /**
@@ -57,7 +58,7 @@ class FileUtilTest extends FileOperTestCase {
         $this->setupTestDirs();
         FileUtil::rrmdir($this->baseDir, '/(exclFile$|exclDir1$)/');
         foreach(array_merge($this->files, $this->subDirs) as $path)
-            $this->assertFileNotExists($this->baseDir.FileUtil::rpath("/$path"));
+            $this->assertFileDoesNotExist($this->baseDir.FileUtil::rpath("/$path"));
         foreach(array_merge($this->exclFiles, $this->exclSubDirs) as $path)
             $this->assertFileExists($this->baseDir.FileUtil::rpath("/$path"));
         $this->removeTestDirs();
@@ -66,7 +67,7 @@ class FileUtilTest extends FileOperTestCase {
     public function testRrmDirWithoutPat(){
         $this->setupTestDirs();
         FileUtil::rrmdir($this->baseDir);
-        $this->assertFileNotExists($this->baseDir);
+        $this->assertFileDoesNotExist($this->baseDir);
         $this->removeTestDirs();
     }
 
@@ -269,7 +270,7 @@ class FileUtilTest extends FileOperTestCase {
     public function testFailPathRmDir(){
         $this->setupTestDirs();
         FileUtil::rrmdir(FileUtil::rpath($this->baseDir.'/subdir1/.'));
-        $this->assertFileNotExists(FileUtil::rpath($this->baseDir.'/subdir1/testFile'));
+        $this->assertFileDoesNotExist(FileUtil::rpath($this->baseDir.'/subdir1/testFile'));
         $this->removeTestDirs();
     }
 

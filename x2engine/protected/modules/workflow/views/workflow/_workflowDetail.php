@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -117,6 +118,50 @@ if($editable) {
 		<td class="text-field">
 			<span><?php if(!empty($model->completedBy) && $model->complete=='Yes' && isset($users[$model->completedBy])) echo $users[$model->completedBy]; ?></span>
 			<?php if($editable) echo $form->dropDownList($model, 'completedBy', User::getNames(),array('disabled'=>$allowReassignment?null:'disabled')); ?>
+		</td>
+	</tr>
+        <tr>
+		<td class="label"><?php echo CHtml::label(Yii::t('workflow','Terminated'),'terminateDate'); ?></td>
+		<td class="text-field">
+			<span><?php echo $model->terminateDate; ?></span>
+			<?php
+			$model->terminateDate = Formatter::formatDate($model->terminateDate);
+			if($editable) {
+				$this->widget('CJuiDateTimePicker',array(
+					// 'name'=>'completeDate',
+					// 'value'=>0,
+					'model'=>$model, //Model object
+					'attribute'=>'terminateDate', //attribute name
+					'mode'=>'date', //use "time","date" or "datetime" (default)
+					'options'=>array(
+						'dateFormat'=>Formatter::formatDatePicker(),
+						'changeMonth'=>true,
+						'changeYear'=>true,
+						'minDate'=>$minDate,
+						'maxDate'=>'0'
+
+					), // jquery plugin options
+					'htmlOptions'=>array(
+						'title'=>Yii::t('actions','Terminate Date'),
+						// 'id'=>'workflowDetails_terminateDate',
+					),
+					'language' => (Yii::app()->language == 'en')? '':Yii::app()->getLanguage(),
+				));
+			}
+			?>
+		</td>
+	</tr>
+        <tr>
+		<td class="label"><?php echo CHtml::label(Yii::t('workflow','Terminated By'),'terminatedBy'); ?></td>
+		<td class="text-field">
+			<span><?php if(!empty($model->terminatedBy) && $model->terminate=='Yes' && isset($users[$model->terminatedBy])) echo $users[$model->terminatedBy]; ?></span>
+			<?php if($editable) echo $form->dropDownList($model, 'terminatedBy', User::getNames(),array('disabled'=>$allowReassignment?null:'disabled')); ?>
+		</td>
+	</tr>
+        <tr>
+		<td class="label"><?php echo CHtml::label(Yii::t('workflow','Terminated Stage'),'terminatedStage'); ?></td>
+		<td class="text-field">
+                    <span><?php echo $model->terminatedStage ?> </span>
 		</td>
 	</tr>
 	<tr>

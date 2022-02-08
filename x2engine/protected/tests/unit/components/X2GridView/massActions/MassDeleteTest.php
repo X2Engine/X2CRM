@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,7 @@
 
 
 
+
 Yii::import ('application.components.X2GridView.massActions.*');
 Yii::import ('application.modules.contacts.ContactsModule');
 Yii::import ('application.modules.contacts.controllers.*');
@@ -52,13 +53,13 @@ class MassDeleteTest extends X2DbTestCase {
     private $_oldServer;
     private $_oldController;
     
-    public function setUp(){
+    public function setUp() : void{
         $this->_oldServer = $_SERVER;
         $this->_oldController = Yii::app()->controller;
-        return parent::setUp();
+        parent::setUp();
     }
     
-    public function tearDown(){
+    public function tearDown() : void{
         $_SERVER = $this->_oldServer;
         Yii::app()->controller = $this->_oldController;
         parent::tearDown();
@@ -127,6 +128,7 @@ class MassDeleteTest extends X2DbTestCase {
 
     /**
      * Attempt to super mass delete range of records in fixture file
+     * @runInSeparateProcess
      */
     public function testSuperExecute () {
         $_SESSION = array ();
@@ -190,6 +192,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteWithFiltersAndSortOrder () {
         $_SESSION = array ();
@@ -259,6 +262,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteBatchSize () {
         Yii::app()->settings->massActionsBatchSize = 100;
@@ -338,6 +342,7 @@ class MassDeleteTest extends X2DbTestCase {
     /**
      * Attempt to super mass delete records in fixture file filtered and sorted as specified in
      * POST parameters.
+     * @runInSeparateProcess
      */
     public function testSuperExecuteSmallBatchSize () {
         $batchSize = 7;

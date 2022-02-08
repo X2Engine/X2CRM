@@ -31,4 +31,78 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/div.workflow-funnel-box{display:block;float:left;overflow:auto;text-align:center}div#workflow-diagram .row:first-child .workflow-funnel-stage{border-top-width:1px}div.workflow-funnel-stage{display:block;margin-right:auto;margin-left:auto;text-align:center;border:1px solid #999;border-top-width:0;line-height:24px}.workflow-funnel-stage span.name a{text-decoration:none}.workflow-funnel-stage span.contact-icon{display:inline-block;background:url(../images/contact-icon.png) 5px center no-repeat;padding-left:24px}.workflow-funnel-stage span.sales-icon{display:inline-block;background:url(../images/sales-icon.png) 5px center no-repeat;padding-left:24px}#workflowStageDetails{text-align:center}#workflowStageDetails label{display:inline}#workflowStageDetails input,#workflowStageDetails textarea,#workflowStageDetails select{display:none}#workflowStageDetails span{display:inline}#workflowStageDetails.editMode input,#workflowStageDetails.editMode textarea,#workflowStageDetails.editMode select{display:block}#workflowStageDetails.editMode span{display:none}#workflowStageDetails img.loading{margin:40px 0}@media (max-width: 434px){#funnel-container .workflow-status-string{display:none}}
+ **********************************************************************************/
+/* line 40, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+div.workflow-funnel-box {
+  display: block;
+  float: left;
+  overflow: auto;
+  text-align: center;
+}
+/* line 46, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+div#workflow-diagram .row:first-child .workflow-funnel-stage {
+  border-top-width: 1px;
+}
+/* line 49, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+div.workflow-funnel-stage {
+  display: block;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: center;
+  border: 1px solid #999;
+  border-top-width: 0;
+  line-height: 24px;
+}
+
+/* line 61, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+.workflow-funnel-stage span.name a {
+  text-decoration: none;
+}
+/* line 64, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+.workflow-funnel-stage span.contact-icon {
+  display: inline-block;
+  background: url(../images/contact-icon.png) 5px center no-repeat;
+  padding-left: 24px;
+}
+/* line 69, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+.workflow-funnel-stage span.sales-icon {
+  display: inline-block;
+  background: url(../images/sales-icon.png) 5px center no-repeat;
+  padding-left: 24px;
+}
+
+/* line 76, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails {
+  text-align: center;
+}
+/* line 77, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails label {
+  display: inline;
+}
+/* line 80, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails input, #workflowStageDetails textarea, #workflowStageDetails select {
+  display: none;
+}
+/* line 83, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails span {
+  display: inline;
+}
+/* line 87, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails.editMode input, #workflowStageDetails.editMode textarea, #workflowStageDetails.editMode select {
+  display: block;
+}
+/* line 90, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails.editMode span {
+  display: none;
+}
+/* line 95, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+#workflowStageDetails img.loading {
+  margin: 40px 0;
+}
+
+@media (max-width: 434px) {
+  /* line 101, ../../../compass/themes/x2engine/css/workflowFunnel.scss */
+  #funnel-container .workflow-status-string {
+    display: none;
+  }
+}

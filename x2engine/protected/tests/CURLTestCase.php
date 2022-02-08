@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -103,7 +104,7 @@ abstract class CURLTestCase extends X2TestCase {
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($response, 0, $headerSize);
         foreach($fields as $field => $value){
-            $this->assertRegExp(
+            $this->assertMatchesRegularExpression(
                     sprintf('/^%s: %s/m', preg_quote($field,'/'), preg_quote($value,'/')),
                     $header,
                     "Header $field not found in response, or was not equal to \"$value\". Response body = $response");

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,6 +39,7 @@
 
 
 
+
 $user = X2Model::model('User')->findByPk(Yii::app()->user->getId());
 $showCalendars = json_decode($user->showCalendars, true);
 
@@ -63,8 +64,7 @@ if(isset($this->calendarUsers) && $this->calendarUsers !== null) {
         )
     );
 
-    $showUserCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : array();
-    //$showUserCalendars = $showCalendars['userCalendars'];
+    $showUserCalendars = isset($showCalendars['userCalendars']) ? $showCalendars['userCalendars'] : 1;
     echo '<ul style="font-size: 0.8em; font-weight: bold; color: black;">';
     foreach($this->calendarUsers as $userName=>$user) {
         // check if current user has permission to edit calendar
@@ -115,6 +115,29 @@ foreach (array("Actions", "Contacts", "Accounts", "Products", "Quotes",
 
 
 if ($this->action->id === 'index') {
+    /**
+     * schedule appointment feature (start)
+     * By: Justin Toyomitsu 2019
+     */
+    $appointment = Yii::app()->request->hostInfo . Yii::app()->createUrl('/calendar/appointment');;
+    if(!is_null(Yii::app()->params->profile->appointmentCalendar))
+        $calendar = X2Model::model('Calendar')->findByPk(Yii::app()->params->profile->appointmentCalendar);
+        $appointment .= '?user='.Yii::app()->user->getId().'&id='.Yii::app()->params->profile->appointmentCalendar;
+        $this->beginWidget('leftWidget',array(
+            'widgetLabel'=>Yii::t('calendar','Open Appointment'),
+            'widgetName' => 'IcalScheduleUrl',
+            'id'=>'ical-schedule-url',
+        ));
+        if(isset($calendar)) {
+            echo X2Calendar::getAppointmentSideBar($calendar, $appointment);
+        }else{
+            echo '<div> Set an Appointment Calendar on Profile Settings. </div>'; 
+        }
+        $this->endWidget();
+    /**
+     * schedule appointment feature (end)
+     */
+    
     $this->beginWidget('leftWidget',array(
         'widgetLabel'=>Yii::t('calendar','Export {calendar}', array('{calendar}'=>Modules::displayName())),
         'widgetName' => 'IcalExportUrl',

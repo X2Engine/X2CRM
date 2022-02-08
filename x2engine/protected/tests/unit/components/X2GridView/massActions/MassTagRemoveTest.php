@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -39,19 +39,20 @@
 
 
 
+
 Yii::import ('application.tests.unit.components.X2GridView.massActions.*');
 
 class MassTagRemoveTest extends TagActionTestBase {
 
     private static $_massActionsBatchSize;
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         self::$_massActionsBatchSize = Yii::app()->settings->massActionsBatchSize;
-        return parent::setUpBeforeClass ();
+        parent::setUpBeforeClass ();
     }
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         Yii::app()->settings->massActionsBatchSize = self::$_massActionsBatchSize;
-        return parent::tearDownAfterClass ();
+        parent::tearDownAfterClass ();
     }
 
     /**
@@ -83,6 +84,7 @@ class MassTagRemoveTest extends TagActionTestBase {
 
     /**
      * Attempt to super mass remove tags from range of records in fixture file
+     * @runInSeparateProcess
      */
     public function testSuperExecute () {
         Yii::app()->settings->massActionsBatchSize = 5;

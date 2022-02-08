@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 /**
  * This is the model class for table "x2_list_items".
  *
@@ -48,6 +49,12 @@
  */
 class X2ListItem extends CActiveRecord {
     public $verifyCode; // CAPTCHA for weblead form
+    
+        public function behaviors() {
+            return array_merge(parent::behaviors(), array(
+                'UserAgentBehavior' => array('class' => 'UserAgentBehavior'),
+            ));
+        }
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -156,7 +163,17 @@ class X2ListItem extends CActiveRecord {
 	public function markOpened() {
 		if($this->opened == 0) {
 			$this->opened = time();
-			$this->update(array('opened'));
+                        // set user agent fields
+                        $ua = Yii::app()->request->getUserAgent();
+                        $uaInfo = $this->parse_user_agent($ua);
+                        $this->platform = $uaInfo['platform'];
+                        $this->browser = $uaInfo['browser'];
+                        $this->version = $uaInfo['version'];
+                        Fields::getPurifier()->purify($this->platform);
+                        Fields::getPurifier()->purify($this->browser);
+                        Fields::getPurifier()->purify($this->version);
+                        
+			$this->update(array('opened', 'platform', 'browser', 'version'));
 		}
 		
 		if($this->list->campaign !== null) {

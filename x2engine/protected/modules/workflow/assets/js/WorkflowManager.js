@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -32,6 +32,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -120,6 +121,21 @@ WorkflowManager.prototype.completeWorkflowStage = function (workflowId,stageNumb
     var that = this;
     $.ajax({
         url: that.completeStageUrl,
+        type: 'GET',
+        dataType: 'json',
+        data: "workflowId="+workflowId+"&stageNumber="+stageNumber+"&modelId="+
+            that.modelId + '&type=' + that.modelName + '&renderFlag=0',
+        success: function(response) {
+            callback (response['workflowStatus'], response['flashes']);
+            x2.Notifs.updateHistory();
+        }
+    });
+};
+
+WorkflowManager.prototype.terminateWorkflowStage = function (workflowId,stageNumber,callback) {
+    var that = this;
+    $.ajax({
+        url: that.terminateStageUrl,
         type: 'GET',
         dataType: 'json',
         data: "workflowId="+workflowId+"&stageNumber="+stageNumber+"&modelId="+

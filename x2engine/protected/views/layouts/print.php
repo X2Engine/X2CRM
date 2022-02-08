@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 /**************************************
 * Print page layout with configuration
 * To add the the configuration panel,
@@ -54,6 +55,7 @@ $cs->registerPackages($cs->getDefaultPackages());
 $cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/printPage.css');
 $cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/ui-elements.css');
 $cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/fontAwesome/css/font-awesome.css');
+$cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/fontAwesome/css/fontawesome.css');
 $cs->registerCssFile(Yii::app()->theme->baseUrl.'/css/css-loaders/load8.css');
 
 $cs->registerScript('ConfigMenuJS', "
@@ -84,15 +86,16 @@ mb_regex_encoding('UTF-8');
 		<h3 id='config-panel-header'><?php echo Yii::t('app', 'Configuration')?></h3>
 		<div id='config-panel-inner'></div>
 		<div class="row">
-			<button class='label x2-button' id='print-button' type="button" onClick="window.print()"><i class='fa fa-print'></i> <?php echo Yii::t('app','Print') 
-			?></button>
+			<button class='label x2-button' id='print-button' type="button" onClick="window.print()"><?php echo X2Html::fa('fa-print') . ' ' . Yii::t('app','Print'); ?></button>
 		</div>
 		<div style="clear:both" ></div>
 		</div>
 	</div>
 
 	<div class='container'>
-		<?php echo $content; ?>
+        <?php
+            echo $content;
+        ?>
 	</div>
 	
 	<!-- Remove the Loader, and remove the screen -->

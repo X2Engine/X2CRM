@@ -2197,6 +2197,10 @@ EOD;
 	 * make the error summary to show only the first error message of each attribute.
 	 * If this is not set or is false, all error messages will be displayed.
 	 * This option has been available since version 1.1.3.
+	 * Another special option named 'encode' is recognized, which when set false, will
+	 * disable the CHtml::encode encoding of all error messages.
+	 * If this is not set or is true, all error messages will be encoded by CHtml::encode.
+	 * This option has been available since version 1.1.23.
 	 * @return string the error summary. Empty if no errors are found.
 	 * @see CModel::getErrors
 	 * @see errorSummaryCss
@@ -2220,7 +2224,11 @@ EOD;
 				foreach($errors as $error)
 				{
 					if($error!='')
-						$content.= '<li>'.self::encode($error)."</li>\n";
+					{
+						if (!isset($htmlOptions['encode']) || $htmlOptions['encode'])
+							$error=self::encode($error);
+						$content.= '<li>'.$error."</li>\n";
+					}
 					if($firstError)
 						break;
 				}
@@ -2251,7 +2259,9 @@ EOD;
 	public static function error($model,$attribute,$htmlOptions=array())
 	{
 		self::resolveName($model,$attribute); // turn [a][b]attr into attr
-		$error=self::encode($model->getError($attribute));
+		$error=$model->getError($attribute);
+		if (!isset($htmlOptions['encode']) || $htmlOptions['encode'])
+			$error=self::encode($error);
 		if($error!='')
 		{
 			if(!isset($htmlOptions['class']))
@@ -2386,7 +2396,7 @@ EOD;
 
 	/**
 	 * Generates input field ID for a model attribute.
-	 * @param CModel $model the data model
+	 * @param CModel|string $model the data model
 	 * @param string $attribute the attribute
 	 * @return string the generated input field ID
 	 */
@@ -2433,7 +2443,7 @@ EOD;
 	/**
 	 * Generates input field name for a model attribute.
 	 * Unlike {@link resolveName}, this method does NOT modify the attribute name.
-	 * @param CModel $model the data model
+	 * @param CModel|string $model the data model
 	 * @param string $attribute the attribute
 	 * @return string the generated input field name
 	 */
@@ -2679,7 +2689,7 @@ EOD;
 	 * This method will update the HTML options by setting appropriate 'name' and 'id' attributes.
 	 * This method may also modify the attribute name if the name
 	 * contains square brackets (mainly used in tabular input).
-	 * @param CModel $model the data model
+	 * @param CModel|string $model the data model
 	 * @param string $attribute the attribute
 	 * @param array $htmlOptions the HTML options
 	 */
@@ -2697,7 +2707,7 @@ EOD;
 	 * Generates input name for a model attribute.
 	 * Note, the attribute name may be modified after calling this method if the name
 	 * contains square brackets (mainly used in tabular input) before the real attribute name.
-	 * @param CModel $model the data model
+	 * @param CModel|string $model the data model
 	 * @param string $attribute the attribute
 	 * @return string the input name
 	 */

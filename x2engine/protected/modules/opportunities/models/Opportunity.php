@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -221,6 +222,54 @@ class Opportunity extends X2Model {
 
 		return $this->searchBase($criteria, $resultsPerPage);
 	}
+        
+        
+    /**
+     * Searches in current user's contacts
+     * 
+     * @return type
+     */
+    public function searchMyOpportunities() {
+        $criteria = new CDbCriteria;
+
+        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
+        $conditions = $this->getAccessConditions($accessLevel);
+        foreach ($conditions as $arr) {
+            $criteria->addCondition($arr['condition'], $arr['operator']);
+            $criteria->params = array_merge($criteria->params, $arr['params']);
+        }
+
+        // $condition = 'assignedTo="'.Yii::app()->user->getName().'"';
+        // $parameters=array('limit'=>ceil(Profile::getResultsPerPage()));
+        // $parameters['condition']=$condition;
+        // $criteria->scopes=array('findAll'=>array($parameters));
+
+        return $this->searchBase($criteria);
+    }
+
+    /**
+     * Searches newest contacts
+     * 
+     * @return type
+     */
+    public function searchNewOpportunities() {
+        $criteria = new CDbCriteria;
+        $condition = 't.createDate > ' . mktime(0, 0, 0);
+        $accessLevel = Yii::app()->user->checkAccess('ContactsView') ? 1 : 0;
+        $conditions = $this->getAccessConditions($accessLevel);
+        foreach ($conditions as $arr) {
+            $criteria->addCondition($arr['condition'], $arr['operator']);
+            $criteria->params = array_merge($criteria->params, $arr['params']);
+        }
+
+        $parameters = array('limit' => ceil(Profile::getResultsPerPage()));
+
+        $parameters['condition'] = $condition;
+        $criteria->scopes = array('findAll' => array($parameters));
+
+        return $this->searchBase($criteria);
+    }
+        
 
 	public function searchAdmin() {
 		$criteria=new CDbCriteria;

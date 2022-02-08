@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,7 @@
 
 
 
+
 $modTitles = array(
     'contact' => Modules::displayName(false),
     'contacts' => Modules::displayName(),
@@ -54,7 +55,7 @@ $opportunityModule = Modules::model()->findByAttributes(array('name' => 'opportu
 $accountModule = Modules::model()->findByAttributes(array('name' => 'accounts'));
 
 $menuOptions = array(
-    'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps',
+    'all', 'lists', 'create', 'import', 'export', 'map', 'savedMaps', 'helpGuide',
 );
 $enableSelectAllOnAllPages = false;
 if ($this->route == 'contacts/contacts/index') {
@@ -64,11 +65,11 @@ if ($this->route == 'contacts/contacts/index') {
     $enableSelectAllOnAllPages = true;
     //unset($menuItems[0]['url']);
     //unset($menuItems[4]); // View List
-} elseif ($this->route == 'contacts/contacts/myContacts') {
+} elseif ($this->route == 'contacts/contacts/mycontacts') {
     $heading = Yii::t('contacts', 'My {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchMyContacts();
     $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));
-} elseif ($this->route == 'contacts/contacts/newContacts') {
+} elseif ($this->route == 'contacts/contacts/newcontacts') {
     $heading = Yii::t('contacts', 'Today\'s {module}', array('{module}' => $modTitles['contacts']));
     $dataProvider = $model->searchNewContacts();
     $menuOptions = array_merge($menuOptions, array('createList', 'viewList'));

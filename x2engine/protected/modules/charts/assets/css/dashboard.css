@@ -31,4 +31,88 @@
  * X2 Engine" logo. If the display of the logo is not reasonably feasible for
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
- **********************************************************************************/div.x2-chart-container-large{width:100%;height:600px}div.x2-chart-container{width:100%;height:300px}div.x2-chart-container-controls{width:100%;height:30px;border:3px dashed gainsboro}div.x2-chart-container-left{width:45%;float:left;height:300px;border:2px dashed gainsboro}div.x2-chart-container-right{width:45%;float:right;height:300px;border:2px dashed gainsboro}div.x2-chart-container-center{width:90%;margin:0px auto;height:450px;border:2px dashed gainsboro}div.x2-chart-container-center-large{width:90%;margin:0px auto;height:600px;border:2px dashed gainsboro}.x2-chart{text-align:left;width:100%;height:100%}p.x2-chart-separator{clear:both}div.x2-chart-control LABEL,div.x2-chart-control SPAN,div.x2-chart-control INPUT{display:inline !important;width:auto !important;height:20px !important;font-size:14px !important}
+ **********************************************************************************/
+/* line 2, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 4, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 43, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-large {
+  width: 100%;
+  height: 600px;
+}
+/* line 47, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container {
+  width: 100%;
+  height: 300px;
+}
+/* line 51, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-controls {
+  width: 100%;
+  height: 30px;
+  border: 3px dashed gainsboro;
+}
+/* line 56, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-left {
+  width: 45%;
+  float: left;
+  height: 300px;
+  border: 2px dashed gainsboro;
+}
+/* line 62, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-right {
+  width: 45%;
+  float: right;
+  height: 300px;
+  border: 2px dashed gainsboro;
+}
+/* line 68, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-center {
+  width: 90%;
+  margin: 0px auto;
+  height: 450px;
+  border: 2px dashed gainsboro;
+}
+/* line 74, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-container-center-large {
+  width: 90%;
+  margin: 0px auto;
+  height: 600px;
+  border: 2px dashed gainsboro;
+}
+
+/* line 8, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 12, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 17, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 23, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 29, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 35, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 6, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 10, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 15, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 21, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 27, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 33, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 41, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 57, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 103, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+.x2-chart {
+  text-align: left;
+  width: 100%;
+  height: 100%;
+}
+
+/* line 47, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 65, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 112, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+p.x2-chart-separator {
+  clear: both;
+}
+
+/* line 52, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 72, ../../../../../compass/sass/protected/modules/charts/assets/css/dashboard.scss */
+/* line 120, ../../../../../compass/protected/modules/charts/assets/css/dashboard.scss */
+div.x2-chart-control LABEL, div.x2-chart-control SPAN, div.x2-chart-control INPUT {
+  display: inline !important;
+  width: auto !important;
+  height: 20px !important;
+  font-size: 14px !important;
+}

@@ -1,6 +1,6 @@
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -36,6 +36,7 @@
 
 
 
+
 /**
  * Sublclasses classes defined in x2gridview.js
  */
@@ -59,6 +60,12 @@ $.widget('x2.rowsAndColumnsReportGridResizing', $.x2.reportGridResizing, {
  */
 $.widget("x2.rowsAndColumnsReportGridSettings", $.x2.reportGridSettings, {
     _create:function() {
+	
+	$('.subTotalRow').each(function() { //subTotal for rowsAndColumn
+            var tableRow = $(this).closest('tr');
+            tableRow.css('background-color', '#ffff82');
+        });	
+
         x2.DEBUG && console.log ('rowsAndColumnsReportGridSettings');
         // swap class dependencies
         this.options.gridResizingClass = 'rowsAndColumnsReportGridResizing';

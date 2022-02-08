@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -81,12 +82,12 @@ class EventTextFormatterTest extends X2DbTestCase {
         );
     }
 
-    public function setUp() {
+    public function setUp() : void {
         TestingAuxLib::loadControllerMock();
         parent::setUp();
     }
 
-    public function tearDown() {
+    public function tearDown() : void {
         Yii::app()->params->isMobileApp = false;
         TestingAuxLib::restoreController();
         parent::tearDown();
@@ -833,7 +834,7 @@ Etiam eget iaculis nisl. Duis id malesuada orci. Mauris imperdiet ut elit rhoncu
         $event = $this->events('media');
         $text = $event->getText();
         $this->assertNotEmpty($text);
-        $this->assertEquals('<a href="http://localhost/index-test.php/profile/1">You</a>: <br><br><img class="attachment-img" src="http://localhost/index-test.php/media/media/getFile?id=1&key=d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" /><br>',
+        $this->assertMatchesRegularExpression('/<a href="http:\/\/localhost\/index-test\.php\/profile\/1">You<\/a>: <br><br><img class="attachment-img" src="http:\/\/.*\/index-test.php\/media\/media\/getFile\?id=1&key=d84e7834f79223ad17981fe3f9e61b12ae5c012345cbc29bcfe1d7b982edc9b9" alt="" \/><br>/',
                 $text);
 
         $truncatedText = $event->getText(array('truncated' => true));

@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -81,6 +82,17 @@ $(function() {
         <?php
         echo $form->label($formModel, 'anyFilters');
         echo $form->filterConditionList($formModel, 'anyFilters');
+        ?>
+        <br/>
+	<?php
+        echo $form->label($formModel, 'subTotals');
+        echo $form->subTotalList($formModel, 'subTotals');
+        ?>
+        <br/>
+        <div id="quick-create-list-form" style="display:none"></div>
+        <?php
+        echo $form->label($formModel, 'relativeFilters');
+        echo $form->filterConditionTimeList($formModel, 'relativeFilters');
         ?>
         <br/>
         <?php

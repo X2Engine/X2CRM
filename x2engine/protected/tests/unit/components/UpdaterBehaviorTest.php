@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 Yii::import('application.components.util.*');
 
 /**
@@ -65,14 +66,14 @@ class UpdaterBehaviorTest extends FileOperTestCase {
     public $testTables;
 
 
-    public static function setUpBeforeClass(){
+    public static function setUpBeforeClass() : void{
         X2DbTestCase::setUpAppEnvironment();
-        return parent::setUpBeforeClass();
+        parent::setUpBeforeClass();
     }
 
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() : void{
         X2DbTestCase::tearDownAppEnvironment();
-        return parent::tearDownAfterClass();
+        parent::tearDownAfterClass();
     }
 
     //////////////////////
@@ -478,7 +479,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $sourcePath = $ube->sourceDir;
         $pkgFile = $ube->webRoot.DIRECTORY_SEPARATOR.UpdaterBehavior::PKGFILE;
         // Set up all files for the test:
-        $setupApplyFiles = function() use($ube, $newDirPath, $ube, $basePathNodes, $copiedBasePath, $newFileContents,$sourcePath,$pkgFile){
+        $setupApplyFiles = function() use($ube, $newDirPath, $basePathNodes, $copiedBasePath, $newFileContents,$sourcePath,$pkgFile){
                     mkdir($ube->updateDir);
                     mkdir($ube->sourceDir);
                     foreach($basePathNodes as $node){
@@ -507,9 +508,9 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                     }
                     $that->assertFileExists($filePath = $ube->webRoot.DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR, array_merge($basePathNodes, array('UpdaterBehavior.php'))));
                     $that->assertFileEquals(Yii::getPathOfAlias('application.components.UpdaterBehavior').'.php', $filePath);
-                    $that->assertFileNotExists($pkgFile);
-                    $that->assertFileNotExists($ube->sourceDir);
-                    $that->assertFileNotExists($ube->updateDir);
+                    $that->assertFileDoesNotExist($pkgFile);
+                    $that->assertFileDoesNotExist($ube->sourceDir);
+                    $that->assertFileDoesNotExist($ube->updateDir);
                 };
 
         // Explicitly set manifest:
@@ -930,7 +931,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $this->assertEquals(UpdaterBehavior::ERR_DATABASE, $e->getCode(),"Wrong error code thrown in an exception thrown by enactChanges. The message was: ".$e->getMessage());
         }
         $this->assertChangesReverted($ube);
-        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a failed update.");
+        $this->assertFileDoesNotExist($lockFile, "Failed asserting that the lock file was deleted after a failed update.");
 
         // Test exiting with a lock file. It should not exist at this point.
         $now = time();
@@ -956,7 +957,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $ube->enactChanges(true);
         $this->obEndClean();
         $this->assertChangesApplied($ube);
-        $this->assertFileNotExists($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
+        $this->assertFileDoesNotExist($lockFile, "Failed asserting that the lock file was deleted after a successful update.");
         $this->resetAfterChanges($ube);
 
         // Prepare files:
@@ -1059,13 +1060,14 @@ class UpdaterBehaviorTest extends FileOperTestCase {
                         'json' => true,
                         'hash' => true,
                         'curl' => true,
-                        'mcrypt' => true,
                         'openssl' => true,
                         'zip' => true,
                         'fileinfo' => true,
                         'gd' => true,
                         'posix' => true,
-                        'imap' => true
+			'imap' => true,
+                        'ssh2' => true,
+                        'iconv' => true,
                     ),
                     'environment' =>
                     array(
@@ -1333,7 +1335,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $deletionList = $this->fileList;
         $ube->removeFiles($deletionList);
         foreach($deletionList as $deletedFile)
-            $this->assertFileNotExists("{$ube->webRoot}/$deletedFile");
+            $this->assertFileDoesNotExist("{$ube->webRoot}/$deletedFile");
         $this->removeTestDirs();
     }
 
@@ -1355,7 +1357,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
         $file = "{$ube->webRoot}/assets/$crcDir/something.js";
         file_put_contents($file, '/* cockadoodledoo */');
         $ube->resetAssets();
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
     }
 
     public function testRunMigrationScripts() {
@@ -1491,7 +1493,7 @@ class UpdaterBehaviorTest extends FileOperTestCase {
             $ube->sqlError('HOW DO I WROTE SQL', array('UPDATE x2_actions SET actionDescription="stuff and things"'), 'SQL syntax error.', true);
             $this->assertFalse(true,'sqlError should throw an exception.');
         }catch(Exception $e){
-            $this->assertRegExp('/SQL syntax error/m', $e->getMessage());
+            $this->assertMatchesRegularExpression('/SQL syntax error/m', $e->getMessage());
         }
     }
 

@@ -298,13 +298,13 @@ class CFile extends CApplicationComponent
             {
                 $workingDir = getcwd();
                 $winDrive = substr($workingDir, 0, 2);
-                if ($currentPath{0} !== $dir_separator{0})
+                if ($currentPath[0] !== $dir_separator[0])
                 {
                     $currentPath = substr($workingDir, 3).$dir_separator.$currentPath;
                 }
             }
         }
-        elseif ($currentPath{0} !== $dir_separator)
+        elseif ($currentPath[0] !== $dir_separator)
         {
             $currentPath = getcwd().$dir_separator.$currentPath;
         }

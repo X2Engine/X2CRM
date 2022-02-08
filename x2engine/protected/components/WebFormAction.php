@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -34,6 +34,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -418,12 +419,14 @@ class WebFormAction extends CAction {
                 $model->contactId = "Unregistered";
             }
 
+            $authorField = empty($model->subject) ? 'subject' : 'description';
+            if ($authorField == 'description' && !empty($model->description)) $model->description .= "\n\n";
             if (isset($fullName) || isset($email)) {
-                $model->subject = Yii::t('services', 'Web Form Case entered by {name}', array(
+                $model->{$authorField} .= Yii::t('services', 'Web Form Case entered by {name}', array(
                             '{name}' => isset($fullName) ? $fullName : $email,
                 ));
             } else {
-                $model->subject = Yii::t('services', 'Web Form Case');
+                $model->{$authorField} .= Yii::t('services', 'Web Form Case');
             }
 
             $model->origin = 'Web';
@@ -540,6 +543,36 @@ class WebFormAction extends CAction {
                         }
                         if (isset($email)) {
                             $emailBody = preg_replace('/{email}/u', $email, $emailBody);
+                            /* x2entstart */
+                            // handle portal user creation and a link to registration
+                            if (preg_match('/{link}/u', $emailBody)) {
+                                if (!User::model()->findByAttributes(['emailAddress'=>$email], 'temporary=0')) {
+                                    $key=substr(str_shuffle(str_repeat(
+                                        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',16)),0, 16);
+                                    $msg = Yii::t('users', 'Create User');
+                                    $url = Yii::app()->controller->createUrl('/users/users/createPortal',array('key'=>$key));
+                                    
+                                    $user = new User ('invite');
+                                    $user->inviteKey=$key;
+                                    $user->temporary=1;
+                                    $user->portal=1;
+                                    $user->emailAddress=$email;
+                                    $user->firstName = isset($firstName) ? $firstName : '';
+                                    $user->lastName = isset($lastName) ? $lastName : '';
+                                    $user->status=0;
+                                    User::model()->deleteAllByAttributes(['emailAddress'=>$email], 'temporary=1');
+                                    $user->save();
+                                } else {
+                                    $msg = Yii::t('services', 'Case {n}', ['{n}' => $model->id]);
+                                    $url = Yii::app()->createUrl("/services/portal?servId=$model->id");
+                                }
+                                $link = CHtml::link(
+                                    $msg,
+                                    (@$_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] .
+                                    $url);
+                                $emailBody = preg_replace('/{link}/u', $link, $emailBody);
+                            }
+                            /*x2entend */
                         }
                         if (isset($description)) {
                             $emailBody = preg_replace('/{description}/u', $description, $emailBody);

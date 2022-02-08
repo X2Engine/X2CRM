@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -33,6 +33,7 @@
  * technical reasons, the Appropriate Legal Notices must display the words
  * "Powered by X2 Engine".
  **********************************************************************************/
+
 
 
 
@@ -81,7 +82,7 @@ class EncryptUtil {
 	public static function dependencyCheck($throw) {
 		$hasDeps = extension_loaded('openssl');
 		if(!$hasDeps && $throw)
-			throw new Exception('The "openssl" and "mcrypt" extensions are not loaded. The EncryptUtil class cannot function properly.');
+			throw new Exception('The "openssl"  extension is not loaded. The EncryptUtil class cannot function properly.');
 		return $hasDeps;
 	}
 

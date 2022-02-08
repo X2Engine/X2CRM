@@ -2,7 +2,7 @@
 
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -38,6 +38,7 @@
 
 
 
+
 Yii::import ('application.modules.contacts.models.*');
 Yii::import ('application.modules.accounts.models.*');
 
@@ -57,19 +58,19 @@ class AdminTest extends X2DbTestCase {
         );
     }
 
-    public static function setUpBeforeClass () {
+    public static function setUpBeforeClass() : void {
         self::$_appFileUtilState['alwaysCurl'] = AppFileUtil::$alwaysCurl;
         self::$_appFileUtilState['neverCurl'] = AppFileUtil::$neverCurl;
         self::$_adminState['unique_id'] = Yii::app()->settings->unique_id;
-        return parent::setUpBeforeClass ();
+        parent::setUpBeforeClass ();
     }
 
-    public static function tearDownAfterClass () {
+    public static function tearDownAfterClass() : void {
         AppFileUtil::$alwaysCurl = self::$_appFileUtilState['alwaysCurl'];
         AppFileUtil::$neverCurl = self::$_appFileUtilState['neverCurl'];
         Yii::app()->settings->unique_id = self::$_adminState['unique_id'];
         Yii::app()->settings->save ();
-        return parent::tearDownAfterClass ();
+        parent::tearDownAfterClass ();
     }
     
     public function testLocationSettings() {

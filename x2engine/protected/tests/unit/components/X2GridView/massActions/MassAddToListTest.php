@@ -1,7 +1,7 @@
 <?php
 /***********************************************************************************
  * X2Engine Open Source Edition is a customer relationship management program developed by
- * X2 Engine, Inc. Copyright (C) 2011-2019 X2 Engine Inc.
+ * X2 Engine, Inc. Copyright (C) 2011-2022 X2 Engine Inc.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by the
@@ -37,6 +37,7 @@
 
 
 
+
 Yii::import ('application.modules.contacts.controllers.*');
 Yii::import ('application.modules.contacts.*');
 Yii::import ('application.components.X2GridView.massActions.*');
@@ -50,13 +51,13 @@ class MassAddToListTest extends X2DbTestCase {
     private $_oldServer;
     private $_oldController;
     
-    public function setUp(){
+    public function setUp() : void{
         $this->_oldServer = $_SERVER;
         $this->_oldController = Yii::app()->controller;
-        return parent::setUp();
+        parent::setUp();
     }
     
-    public function tearDown(){
+    public function tearDown() : void{
         $_SERVER = $this->_oldServer;
         Yii::app()->controller = $this->_oldController;
         parent::tearDown();
@@ -98,6 +99,7 @@ class MassAddToListTest extends X2DbTestCase {
 
      /**
       * Test new list + add to list super mass actions
+      * @runInSeparateProcess
       */
     public function testSuperExecute () {
         X2List::model ()->deleteAllByAttributes (array ('name' => 'test'));
