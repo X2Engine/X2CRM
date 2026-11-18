@@ -230,7 +230,9 @@ class ContactsController extends x2base {
         // Find all the changelog entries associated with this Contact after the given
         // timestamp. Realistically, this would be more accurate if Changelog ID
         // was used instead of the timestamp.
-        $changes = X2Model::model('Changelog')->findAll('type="Contacts" AND itemId="' . $contact->id . '" AND timestamp > ' . $timestamp . ' ORDER BY timestamp DESC');
+        $changes = X2Model::model('Changelog')->findAll(
+            'type="Contacts" AND itemId=:itemId AND timestamp > :timestamp ORDER BY timestamp DESC',
+            array(':itemId' => $contact->id, ':timestamp' => (int) $timestamp));
         // Loop through the changes and apply each one retroactively to the Contact record.
         foreach ($changes as $change) {
             $fieldName = $change->fieldName;
